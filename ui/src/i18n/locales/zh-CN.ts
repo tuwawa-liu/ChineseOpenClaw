@@ -451,6 +451,11 @@ export const zh_CN: TranslationMap = {
     installing: "安装中…",
     apiKey: "API 密钥",
     saveKey: "保存密钥",
+    bundled: "内置",
+    eligible: "可用",
+    blocked: "已阻止",
+    disabled: "已禁用",
+    blockedByAllowlist: "被白名单阻止",
   },
   debug: {
     snapshots: "快照",
@@ -545,6 +550,8 @@ export const zh_CN: TranslationMap = {
     unavailable: "不可用",
     yes: "是",
     no: "否",
+    currentModel: "当前 ({current})",
+    noConfiguredModels: "没有已配置的模型",
   },
   usage: {
     title: "使用情况",
@@ -1186,6 +1193,9 @@ export const zh_CN: TranslationMap = {
     failureAlertCooldown: "故障告警冷却时间",
     switchToConfigForm: "切换到配置选项卡的表单模式以在此编辑绑定。",
     loadConfigToEdit: "加载配置以编辑绑定。",
+    runIfDue: "到期运行",
+    totalTokens: "{count} 令牌",
+    tokensInOut: "{input} 输入 / {output} 输出",
   },
   nodesExtra: {
     switchToConfig: "切换到配置选项卡的表单模式以在此编辑绑定。",
@@ -1194,24 +1204,8 @@ export const zh_CN: TranslationMap = {
   usageExtra: {
     tokenUsage: "令牌使用量",
   },
-  skills: {
-    bundled: "内置",
-    eligible: "可用",
-    blocked: "已阻止",
-    disabled: "已禁用",
-    blockedByAllowlist: "被白名单阻止",
-  },
-  agents: {
-    currentModel: "当前 ({current})",
-    noConfiguredModels: "没有已配置的模型",
-  },
   usageSort: {
     tokens: "令牌数",
-  },
-  cronExtra: {
-    runIfDue: "到期运行",
-    totalTokens: "{count} 令牌",
-    tokensInOut: "{input} 输入 / {output} 输出",
   },
   instancesExtra: {
     lastInput: "{seconds}秒前",

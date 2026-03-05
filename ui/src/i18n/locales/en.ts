@@ -455,6 +455,11 @@ export const en: TranslationMap = {
     installing: "Installing…",
     apiKey: "API key",
     saveKey: "Save key",
+    bundled: "bundled",
+    eligible: "eligible",
+    blocked: "blocked",
+    disabled: "disabled",
+    blockedByAllowlist: "blocked by allowlist",
   },
   debug: {
     snapshots: "Snapshots",
@@ -1190,6 +1195,9 @@ export const en: TranslationMap = {
     failureAlertCooldown: "Failure alert cooldown",
     switchToConfigForm: "Switch the Config tab to Form mode to edit bindings here.",
     loadConfigToEdit: "Load config to edit bindings.",
+    runIfDue: "Run if due",
+    totalTokens: "{count} tokens",
+    tokensInOut: "{input} in / {output} out",
   },
   nodesExtra: {
     switchToConfig: "Switch the Config tab to Form mode to edit bindings here.",
@@ -1198,24 +1206,8 @@ export const en: TranslationMap = {
   usageExtra: {
     tokenUsage: "Token Usage",
   },
-  skills: {
-    bundled: "bundled",
-    eligible: "eligible",
-    blocked: "blocked",
-    disabled: "disabled",
-    blockedByAllowlist: "blocked by allowlist",
-  },
-  agents: {
-    currentModel: "Current ({current})",
-    noConfiguredModels: "No configured models",
-  },
   usageSort: {
     tokens: "Tokens",
-  },
-  cronExtra: {
-    runIfDue: "Run if due",
-    totalTokens: "{count} tokens",
-    tokensInOut: "{input} in / {output} out",
   },
   instancesExtra: {
     lastInput: "{seconds}s ago",
