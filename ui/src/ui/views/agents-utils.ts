@@ -104,7 +104,7 @@ export function resolveAgentEmoji(
 }
 
 export function agentBadgeText(agentId: string, defaultId: string | null) {
-  return defaultId && agentId === defaultId ? "default" : null;
+  return defaultId && agentId === defaultId ? t("agentsExtra.default") : null;
 }
 
 export function formatBytes(bytes?: number) {
@@ -173,7 +173,7 @@ export function buildAgentContext(
     model: modelLabel,
     identityName,
     identityEmoji,
-    skillsLabel: skillFilter ? `${skillCount} selected` : "all skills",
+    skillsLabel: skillFilter ? t("agentsExtra.selected", { count: String(skillCount) }) : t("agentsExtra.allSkills"),
     isDefault: Boolean(defaultId && agent.id === defaultId),
   };
 }
@@ -190,14 +190,14 @@ export function resolveModelLabel(model?: unknown): string {
     const primary = record.primary?.trim();
     if (primary) {
       const fallbackCount = Array.isArray(record.fallbacks) ? record.fallbacks.length : 0;
-      return fallbackCount > 0 ? `${primary} (+${fallbackCount} fallback)` : primary;
+      return fallbackCount > 0 ? `${primary} ${t("agentsExtra.fallback", { count: String(fallbackCount) })}` : primary;
     }
   }
   return "-";
 }
 
 export function normalizeModelValue(label: string): string {
-  const match = label.match(/^(.+) \(\+\d+ fallback\)$/);
+  const match = label.match(/^(.+) \(\+\d+ .+\)$/);
   return match ? match[1] : label;
 }
 

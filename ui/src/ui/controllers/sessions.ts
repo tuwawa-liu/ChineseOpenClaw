@@ -1,6 +1,7 @@
 import { toNumber } from "../format.ts";
 import type { GatewayBrowserClient } from "../gateway.ts";
 import type { SessionsListResult } from "../types.ts";
+import { t } from "../../i18n/index.ts";
 
 export type SessionsState = {
   client: GatewayBrowserClient | null;
@@ -99,7 +100,7 @@ export async function deleteSession(state: SessionsState, key: string): Promise<
     return false;
   }
   const confirmed = window.confirm(
-    `Delete session "${key}"?\n\nDeletes the session entry and archives its transcript.`,
+    t("controllersExtra.deleteSessionConfirm", { key }),
   );
   if (!confirmed) {
     return false;

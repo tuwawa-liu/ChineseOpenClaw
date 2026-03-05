@@ -534,7 +534,7 @@ function buildChatItems(props: ChatProps): Array<ChatItem | MessageGroup> {
       key: "chat:history:notice",
       message: {
         role: "system",
-        content: `Showing last ${CHAT_HISTORY_RENDER_LIMIT} messages (${historyStart} hidden).`,
+        content: t("chatExtra2.showingLast", { limit: String(CHAT_HISTORY_RENDER_LIMIT), hidden: String(historyStart) }),
         timestamp: Date.now(),
       },
     });
@@ -551,7 +551,7 @@ function buildChatItems(props: ChatProps): Array<ChatItem | MessageGroup> {
           typeof marker.id === "string"
             ? `divider:compaction:${marker.id}`
             : `divider:compaction:${normalized.timestamp}:${i}`,
-        label: "Compaction",
+        label: t("chatExtra2.compaction"),
         timestamp: normalized.timestamp ?? Date.now(),
       });
       continue;

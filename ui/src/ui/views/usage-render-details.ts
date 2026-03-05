@@ -539,10 +539,10 @@ function renderTimeSeriesCompact(
               `${formatTokens(val)} ${t("usageDetails.tokens")}`,
             ];
             if (breakdownByType) {
-              tooltipLines.push(`Out ${formatTokens(p.output)}`);
-              tooltipLines.push(`In ${formatTokens(p.input)}`);
-              tooltipLines.push(`CW ${formatTokens(p.cacheWrite)}`);
-              tooltipLines.push(`CR ${formatTokens(p.cacheRead)}`);
+              tooltipLines.push(`${t("usageDetailsExtra.outToken")} ${formatTokens(p.output)}`);
+              tooltipLines.push(`${t("usageDetailsExtra.inToken")} ${formatTokens(p.input)}`);
+              tooltipLines.push(`${t("usageDetailsExtra.cacheWrite")} ${formatTokens(p.cacheWrite)}`);
+              tooltipLines.push(`${t("usageDetailsExtra.cacheRead")} ${formatTokens(p.cacheRead)}`);
             }
             const tooltip = tooltipLines.join(" · ");
             const isOutside = hasSelection && (i < rangeStartIdx || i >= rangeEndIdx);
@@ -679,7 +679,7 @@ function renderTimeSeriesCompact(
               ${formatTokens(filteredOutput + filteredInput + filteredCacheRead + filteredCacheWrite)} · 
               ${formatCost(filteredPoints.reduce((s, p) => s + (p.cost || 0), 0))}
             `
-            : html`${points.length} msgs · ${formatTokens(cumTokens)} · ${formatCost(cumCost)}`
+            : html`${points.length} ${t("usageDetailsExtra.msgs")} · ${formatTokens(cumTokens)} · ${formatCost(cumCost)}`
         }
       </div>
       ${
@@ -743,7 +743,7 @@ function renderContextPanel(
   if (usage && usage.totalTokens > 0) {
     const inputTokens = usage.input + usage.cacheRead;
     if (inputTokens > 0) {
-      contextPct = `~${Math.min((totalContextTokens / inputTokens) * 100, 100).toFixed(0)}% of input`;
+      contextPct = `~${Math.min((totalContextTokens / inputTokens) * 100, 100).toFixed(0)}% ${t("usageDetailsExtra.ofInput")}`;
     }
   }
 
@@ -780,10 +780,10 @@ function renderContextPanel(
         ${contextPct || t("usageDetails.baseContextPerMessage")}
       </p>
       <div class="context-stacked-bar">
-        <div class="context-segment system" style="width: ${pct(systemTokens, totalContextTokens).toFixed(1)}%" title="System: ~${formatTokens(systemTokens)}"></div>
-        <div class="context-segment skills" style="width: ${pct(skillsTokens, totalContextTokens).toFixed(1)}%" title="Skills: ~${formatTokens(skillsTokens)}"></div>
-        <div class="context-segment tools" style="width: ${pct(toolsTokens, totalContextTokens).toFixed(1)}%" title="Tools: ~${formatTokens(toolsTokens)}"></div>
-        <div class="context-segment files" style="width: ${pct(filesTokens, totalContextTokens).toFixed(1)}%" title="Files: ~${formatTokens(filesTokens)}"></div>
+        <div class="context-segment system" style="width: ${pct(systemTokens, totalContextTokens).toFixed(1)}%" title="${t("usageDetailsExtra.systemTitle", { tokens: formatTokens(systemTokens) })}"></div>
+        <div class="context-segment skills" style="width: ${pct(skillsTokens, totalContextTokens).toFixed(1)}%" title="${t("usageDetailsExtra.skillsTitle", { tokens: formatTokens(skillsTokens) })}"></div>
+        <div class="context-segment tools" style="width: ${pct(toolsTokens, totalContextTokens).toFixed(1)}%" title="${t("usageDetailsExtra.toolsTitle", { tokens: formatTokens(toolsTokens) })}"></div>
+        <div class="context-segment files" style="width: ${pct(filesTokens, totalContextTokens).toFixed(1)}%" title="${t("usageDetailsExtra.filesTitle", { tokens: formatTokens(filesTokens) })}"></div>
       </div>
       <div class="context-legend">
         <span class="legend-item"><span class="legend-dot system"></span>${t("usageDetails.sys")} ~${formatTokens(systemTokens)}</span>
@@ -1031,7 +1031,7 @@ function renderSessionLogsCompact(
           const { log, toolInfo, cleanContent } = entry;
           const roleClass = log.role === "user" ? "user" : "assistant";
           const roleLabel =
-            log.role === "user" ? "You" : log.role === "assistant" ? "Assistant" : "Tool";
+            log.role === "user" ? t("usageDetailsExtra.you") : log.role === "assistant" ? t("usageDetailsExtra.assistant") : t("usageDetailsExtra.tool");
           return html`
           <div class="session-log-entry ${roleClass}">
             <div class="session-log-meta">

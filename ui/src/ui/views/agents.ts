@@ -407,7 +407,7 @@ function renderAgentOverview(params: {
   const skillFilter = Array.isArray(config.entry?.skills) ? config.entry?.skills : null;
   const skillCount = skillFilter?.length ?? null;
   const identityStatus = agentIdentityLoading
-    ? "Loading…"
+    ? t("agentsExtra.loading")
     : agentIdentityError
       ? t("agents.unavailable")
       : "";

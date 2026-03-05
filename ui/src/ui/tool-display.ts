@@ -7,6 +7,7 @@ import {
   type ToolDisplaySpec as ToolDisplaySpecBase,
 } from "../../../src/agents/tool-display-common.js";
 import type { IconName } from "./icons.ts";
+import { t } from "../i18n/index.ts";
 
 type ToolDisplaySpec = ToolDisplaySpecBase & {
   icon?: string;
@@ -48,23 +49,25 @@ const EMOJI_ICON_MAP: Record<string, IconName> = {
   "💬": "messageSquare",
 };
 
-const SLACK_SPEC: ToolDisplaySpec = {
-  icon: "messageSquare",
-  title: "Slack",
-  actions: {
-    react: { label: "react", detailKeys: ["channelId", "messageId", "emoji"] },
-    reactions: { label: "reactions", detailKeys: ["channelId", "messageId"] },
-    sendMessage: { label: "send", detailKeys: ["to", "content"] },
-    editMessage: { label: "edit", detailKeys: ["channelId", "messageId"] },
-    deleteMessage: { label: "delete", detailKeys: ["channelId", "messageId"] },
-    readMessages: { label: "read messages", detailKeys: ["channelId", "limit"] },
-    pinMessage: { label: "pin", detailKeys: ["channelId", "messageId"] },
-    unpinMessage: { label: "unpin", detailKeys: ["channelId", "messageId"] },
-    listPins: { label: "list pins", detailKeys: ["channelId"] },
-    memberInfo: { label: "member", detailKeys: ["userId"] },
-    emojiList: { label: "emoji list" },
-  },
-};
+function getSlackSpec(): ToolDisplaySpec {
+  return {
+    icon: "messageSquare",
+    title: "Slack",
+    actions: {
+      react: { label: t("slackActions.react"), detailKeys: ["channelId", "messageId", "emoji"] },
+      reactions: { label: t("slackActions.reactions"), detailKeys: ["channelId", "messageId"] },
+      sendMessage: { label: t("slackActions.send"), detailKeys: ["to", "content"] },
+      editMessage: { label: t("slackActions.edit"), detailKeys: ["channelId", "messageId"] },
+      deleteMessage: { label: t("slackActions.delete"), detailKeys: ["channelId", "messageId"] },
+      readMessages: { label: t("slackActions.readMessages"), detailKeys: ["channelId", "limit"] },
+      pinMessage: { label: t("slackActions.pin"), detailKeys: ["channelId", "messageId"] },
+      unpinMessage: { label: t("slackActions.unpin"), detailKeys: ["channelId", "messageId"] },
+      listPins: { label: t("slackActions.listPins"), detailKeys: ["channelId"] },
+      memberInfo: { label: t("slackActions.member"), detailKeys: ["userId"] },
+      emojiList: { label: t("slackActions.emojiList") },
+    },
+  };
+}
 
 function iconForEmoji(emoji?: string): IconName {
   if (!emoji) {
@@ -91,7 +94,7 @@ const TOOL_MAP: Record<string, ToolDisplaySpec> = Object.fromEntries(
     convertSpec(spec),
   ]),
 );
-TOOL_MAP.slack = SLACK_SPEC;
+// Slack spec is resolved lazily via getSlackSpec() in resolveToolDisplay()
 
 function shortenHomeInString(input: string): string {
   if (!input) {
@@ -121,7 +124,7 @@ export function resolveToolDisplay(params: {
 }): ToolDisplay {
   const name = normalizeToolName(params.name);
   const key = name.toLowerCase();
-  const spec = TOOL_MAP[key];
+  const spec = key === "slack" ? getSlackSpec() : TOOL_MAP[key];
   const icon = (spec?.icon ?? FALLBACK.icon ?? "puzzle") as IconName;
   const title = spec?.title ?? defaultTitle(name);
   const label = spec?.label ?? title;

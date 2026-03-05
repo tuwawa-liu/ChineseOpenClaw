@@ -259,29 +259,27 @@ function hasRecentActivity(account: ChannelAccountSnapshot): boolean {
   return Date.now() - account.lastInboundAt < RECENT_ACTIVITY_THRESHOLD_MS;
 }
 
-function deriveRunningStatus(account: ChannelAccountSnapshot): "Yes" | "No" | "Active" {
+function deriveRunningStatus(account: ChannelAccountSnapshot): string {
   if (account.running) {
-    return "Yes";
+    return t("channelStatus.yes");
   }
-  // If we have recent inbound activity, the channel is effectively running
   if (hasRecentActivity(account)) {
-    return "Active";
+    return t("channelStatus.active");
   }
-  return "No";
+  return t("channelStatus.no");
 }
 
-function deriveConnectedStatus(account: ChannelAccountSnapshot): "Yes" | "No" | "Active" | "n/a" {
+function deriveConnectedStatus(account: ChannelAccountSnapshot): string {
   if (account.connected === true) {
-    return "Yes";
+    return t("channelStatus.yes");
   }
   if (account.connected === false) {
-    return "No";
+    return t("channelStatus.no");
   }
-  // If connected is null/undefined but we have recent activity, show as active
   if (hasRecentActivity(account)) {
-    return "Active";
+    return t("channelStatus.active");
   }
-  return "n/a";
+  return t("presenterExtra.na");
 }
 
 function renderGenericAccount(account: ChannelAccountSnapshot) {

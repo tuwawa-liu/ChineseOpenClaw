@@ -1,9 +1,73 @@
-import { formatDurationHuman } from "../../../src/infra/format-time/format-duration.ts";
-import { formatRelativeTimestamp } from "../../../src/infra/format-time/format-relative.ts";
+import { formatDurationHuman as _formatDurationHuman } from "../../../src/infra/format-time/format-duration.ts";
+import {
+  formatRelativeTimestamp as _formatRelativeTimestamp,
+  type FormatRelativeTimestampOptions,
+  formatTimeAgo as _formatTimeAgo,
+  type FormatTimeAgoOptions,
+} from "../../../src/infra/format-time/format-relative.ts";
+import { formatDurationSeconds as _formatDurationSeconds, type FormatDurationSecondsOptions } from "../../../src/infra/format-time/format-duration.ts";
 import { stripAssistantInternalScaffolding } from "../../../src/shared/text/assistant-visible-text.js";
 import { t } from "../i18n/index.ts";
 
-export { formatRelativeTimestamp, formatDurationHuman };
+/**
+ * i18n-aware wrappers around shared time formatting functions.
+ * These replace the raw English strings with translated versions.
+ */
+
+function localizeRelativeTime(raw: string): string {
+  if (raw === "unknown") return t("timeRelative.unknown");
+  if (raw === "just now") return t("timeRelative.justNow");
+  if (raw === "n/a") return t("presenterExtra.na");
+  if (raw === "in <1m") return t("timeRelative.inLessThan1m");
+
+  let m: RegExpMatchArray | null;
+  m = raw.match(/^(\d+)m ago$/);
+  if (m) return t("timeRelative.minutesAgo", { min: m[1] });
+  m = raw.match(/^(\d+)h ago$/);
+  if (m) return t("timeRelative.hoursAgo", { hr: m[1] });
+  m = raw.match(/^(\d+)d ago$/);
+  if (m) return t("timeRelative.daysAgo", { day: m[1] });
+  m = raw.match(/^in (\d+)m$/);
+  if (m) return t("timeRelative.inMinutes", { min: m[1] });
+  m = raw.match(/^in (\d+)h$/);
+  if (m) return t("timeRelative.inHours", { hr: m[1] });
+  m = raw.match(/^in (\d+)d$/);
+  if (m) return t("timeRelative.inDays", { day: m[1] });
+
+  return raw;
+}
+
+function localizeDuration(raw: string): string {
+  if (raw === "unknown") return t("timeDuration.unknown");
+  const m = raw.match(/^(.+) seconds$/);
+  if (m) return t("timeDuration.seconds", { value: m[1] });
+  return raw;
+}
+
+export function formatRelativeTimestamp(
+  timestampMs: number | null | undefined,
+  options?: FormatRelativeTimestampOptions,
+): string {
+  return localizeRelativeTime(_formatRelativeTimestamp(timestampMs, options));
+}
+
+export function formatTimeAgo(
+  durationMs: number | null | undefined,
+  options?: FormatTimeAgoOptions,
+): string {
+  return localizeRelativeTime(_formatTimeAgo(durationMs, options));
+}
+
+export function formatDurationHuman(ms?: number | null, fallback?: string): string {
+  return localizeDuration(_formatDurationHuman(ms, fallback));
+}
+
+export function formatDurationSeconds(
+  ms: number,
+  options?: FormatDurationSecondsOptions,
+): string {
+  return localizeDuration(_formatDurationSeconds(ms, options));
+}
 
 export function formatMs(ms?: number | null): string {
   if (!ms && ms !== 0) {

@@ -79,7 +79,7 @@ function buildPeakErrorHours(sessions: UsageSessionEntry[], timeZone: "local" | 
     .map((entry) => ({
       label: formatHourLabel(entry.hour),
       value: `${(entry.rate * 100).toFixed(2)}%`,
-      sub: `${Math.round(entry.errors)} ${t("usageOverview.errors").toLowerCase()} · ${Math.round(entry.msgs)} msgs`,
+      sub: `${Math.round(entry.errors)} ${t("usageOverview.errors").toLowerCase()} · ${Math.round(entry.msgs)} ${t("usageDetailsExtra.msgs")}`,
     }));
 }
 

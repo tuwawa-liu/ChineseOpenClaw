@@ -1,9 +1,13 @@
 import { coerceIdentityValue } from "../../../src/shared/assistant-identity-values.js";
+import { t } from "../i18n/index.ts";
 
 const MAX_ASSISTANT_NAME = 50;
 const MAX_ASSISTANT_AVATAR = 200;
 
 export const DEFAULT_ASSISTANT_NAME = "Assistant";
+export function getDefaultAssistantName() {
+  return t("chatExtra.assistant");
+}
 export const DEFAULT_ASSISTANT_AVATAR = "A";
 
 export type AssistantIdentity = {

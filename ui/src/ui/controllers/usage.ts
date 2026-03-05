@@ -1,6 +1,7 @@
 import type { GatewayBrowserClient } from "../gateway.ts";
 import type { SessionsUsageResult, CostUsageSummary, SessionUsageTimeSeries } from "../types.ts";
 import type { SessionLogEntry } from "../views/usage.ts";
+import { t } from "../../i18n/index.ts";
 
 export type UsageState = {
   client: GatewayBrowserClient | null;
@@ -179,7 +180,7 @@ function toErrorMessage(err: unknown): string {
       // ignore
     }
   }
-  return "request failed";
+  return t("controllersExtra.requestFailed");
 }
 
 export async function loadUsage(

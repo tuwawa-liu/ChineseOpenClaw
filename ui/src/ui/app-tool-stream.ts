@@ -1,4 +1,5 @@
 import { truncateText } from "./format.ts";
+import { t } from "../i18n/index.ts";
 
 const TOOL_STREAM_LIMIT = 50;
 const TOOL_STREAM_THROTTLE_MS = 80;
@@ -102,9 +103,9 @@ function parseFallbackAttempts(value: unknown): FallbackAttempt[] {
     const reason =
       toTrimmedString(item.reason)?.replace(/_/g, " ") ??
       toTrimmedString(item.code) ??
-      (typeof item.status === "number" ? `HTTP ${item.status}` : null) ??
+      (typeof item.status === "number" ? t("appToolStream.httpError", { status: String(item.status) }) : null) ??
       toTrimmedString(item.error) ??
-      "error";
+      t("appToolStream.error");
     out.push({ provider, model, reason });
   }
   return out;
