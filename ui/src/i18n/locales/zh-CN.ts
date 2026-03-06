@@ -1405,4 +1405,13 @@ export const zh_CN: TranslationMap = {
   cronPlaceholder: {
     phoneOrChatId: "+1555... 或聊天 ID",
   },
+  gatewayErrors: {
+    chatError: "聊天错误",
+    disconnected: "已断开连接 ({code})：{reason}",
+    noReason: "无原因",
+    eventGap: "检测到事件缺失（期望序号 {expected}，实际 {received}），建议刷新",
+  },
+  whatsappQr: {
+    alt: "WhatsApp 二维码",
+  },
 };

@@ -1407,4 +1407,13 @@ export const en: TranslationMap = {
   cronPlaceholder: {
     phoneOrChatId: "+1555... or chat id",
   },
+  gatewayErrors: {
+    chatError: "chat error",
+    disconnected: "disconnected ({code}): {reason}",
+    noReason: "no reason",
+    eventGap: "event gap detected (expected seq {expected}, got {received}); refresh recommended",
+  },
+  whatsappQr: {
+    alt: "WhatsApp QR code",
+  },
 };

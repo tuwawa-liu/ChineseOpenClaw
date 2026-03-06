@@ -3,6 +3,7 @@ import {
   type GatewayUpdateAvailableEventPayload,
 } from "../../../src/gateway/events.js";
 import { CHAT_SESSIONS_ACTIVE_MINUTES, flushChatQueueForEvent } from "./app-chat.ts";
+import { t } from "../i18n/index.ts";
 import type { EventLogEntry } from "./app-events.ts";
 import {
   applySettings,
@@ -221,7 +222,7 @@ export function connectGateway(host: GatewayHost) {
           host.lastError = error.message;
           return;
         }
-        host.lastError = `disconnected (${code}): ${reason || "no reason"}`;
+        host.lastError = t("gatewayErrors.disconnected", { code: String(code), reason: reason || t("gatewayErrors.noReason") });
       } else {
         host.lastError = null;
         host.lastErrorCode = null;
@@ -237,7 +238,7 @@ export function connectGateway(host: GatewayHost) {
       if (host.client !== client) {
         return;
       }
-      host.lastError = `event gap detected (expected seq ${expected}, got ${received}); refresh recommended`;
+      host.lastError = t("gatewayErrors.eventGap", { expected: String(expected), received: String(received) });
       host.lastErrorCode = null;
     },
   });
