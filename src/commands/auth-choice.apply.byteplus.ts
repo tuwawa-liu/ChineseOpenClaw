@@ -1,4 +1,5 @@
 import { normalizeApiKeyInput, validateApiKeyInput } from "./auth-choice.api-key.js";
+import { t } from "../i18n/index.js";
 import {
   ensureApiKeyFromOptionEnvOrPrompt,
   normalizeSecretInputModeInput,
@@ -26,7 +27,7 @@ export async function applyAuthChoiceBytePlus(
     expectedProviders: ["byteplus"],
     provider: "byteplus",
     envLabel: "BYTEPLUS_API_KEY",
-    promptMessage: "Enter BytePlus API key",
+    promptMessage: t("commands.authByteplus.enterApiKey"),
     normalize: normalizeApiKeyInput,
     validate: validateApiKeyInput,
     prompter: params.prompter,

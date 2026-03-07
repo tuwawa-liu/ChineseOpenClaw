@@ -2,6 +2,7 @@ import { cancel, confirm, isCancel } from "@clack/prompts";
 import { formatCliCommand } from "../cli/command-format.js";
 import { isNixMode } from "../config/config.js";
 import { resolveGatewayService } from "../daemon/service.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { selectStyled } from "../terminal/prompt-select-styled.js";
 import { stylePromptMessage, stylePromptTitle } from "../terminal/prompt-style.js";
@@ -31,7 +32,7 @@ async function stopGatewayIfRunning(runtime: RuntimeEnv) {
   try {
     loaded = await service.isLoaded({ env: process.env });
   } catch (err) {
-    runtime.error(`Gateway service check failed: ${String(err)}`);
+    runtime.error(t("commands.reset.serviceCheckFailed", { error: String(err) }));
     return;
   }
   if (!loaded) {
@@ -40,14 +41,14 @@ async function stopGatewayIfRunning(runtime: RuntimeEnv) {
   try {
     await service.stop({ env: process.env, stdout: process.stdout });
   } catch (err) {
-    runtime.error(`Gateway stop failed: ${String(err)}`);
+    runtime.error(t("commands.reset.stopFailed", { error: String(err) }));
   }
 }
 
 export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
   const interactive = !opts.nonInteractive;
   if (!interactive && !opts.yes) {
-    runtime.error("Non-interactive mode requires --yes.");
+    runtime.error(t("commands.reset.nonInteractiveYes"));
     runtime.exit(1);
     return;
   }
@@ -55,33 +56,33 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
   let scope = opts.scope;
   if (!scope) {
     if (!interactive) {
-      runtime.error("Non-interactive mode requires --scope.");
+      runtime.error(t("commands.reset.nonInteractiveScope"));
       runtime.exit(1);
       return;
     }
     const selection = await selectStyled<ResetScope>({
-      message: "Reset scope",
+      message: t("commands.reset.scopeMsg"),
       options: [
         {
           value: "config",
-          label: "Config only",
-          hint: "openclaw.json",
+          label: t("commands.reset.configOnlyLabel"),
+          hint: t("commands.reset.configOnlyHint"),
         },
         {
           value: "config+creds+sessions",
-          label: "Config + credentials + sessions",
-          hint: "keeps workspace + auth profiles",
+          label: t("commands.reset.configCredsLabel"),
+          hint: t("commands.reset.configCredsHint"),
         },
         {
           value: "full",
-          label: "Full reset",
-          hint: "state dir + workspace",
+          label: t("commands.reset.fullResetLabel"),
+          hint: t("commands.reset.fullResetHint"),
         },
       ],
       initialValue: "config+creds+sessions",
     });
     if (isCancel(selection)) {
-      cancel(stylePromptTitle("Reset cancelled.") ?? "Reset cancelled.");
+      cancel(stylePromptTitle(t("commands.reset.cancelled")) ?? t("commands.reset.cancelled"));
       runtime.exit(0);
       return;
     }
@@ -89,17 +90,17 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
   }
 
   if (!["config", "config+creds+sessions", "full"].includes(scope)) {
-    runtime.error('Invalid --scope. Expected "config", "config+creds+sessions", or "full".');
+    runtime.error(t("commands.reset.invalidScope"));
     runtime.exit(1);
     return;
   }
 
   if (interactive && !opts.yes) {
     const ok = await confirm({
-      message: stylePromptMessage(`Proceed with ${scope} reset?`),
+      message: stylePromptMessage(t("commands.reset.confirmMsg", { scope })),
     });
     if (isCancel(ok) || !ok) {
-      cancel(stylePromptTitle("Reset cancelled.") ?? "Reset cancelled.");
+      cancel(stylePromptTitle(t("commands.reset.cancelled")) ?? t("commands.reset.cancelled"));
       runtime.exit(0);
       return;
     }
@@ -111,7 +112,7 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
 
   if (scope !== "config") {
     if (dryRun) {
-      runtime.log("[dry-run] stop gateway service");
+      runtime.log(t("commands.reset.dryRunStop"));
     } else {
       await stopGatewayIfRunning(runtime);
     }
@@ -129,7 +130,7 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
     for (const dir of sessionDirs) {
       await removePath(dir, runtime, { dryRun, label: dir });
     }
-    runtime.log(`Next: ${formatCliCommand("openclaw onboard --install-daemon")}`);
+    runtime.log(t("commands.reset.nextStep", { cmd: formatCliCommand("openclaw onboard --install-daemon") }));
     return;
   }
 
@@ -140,7 +141,7 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
       { dryRun },
     );
     await removeWorkspaceDirs(workspaceDirs, runtime, { dryRun });
-    runtime.log(`Next: ${formatCliCommand("openclaw onboard --install-daemon")}`);
+    runtime.log(t("commands.reset.nextStep", { cmd: formatCliCommand("openclaw onboard --install-daemon") }));
     return;
   }
 }

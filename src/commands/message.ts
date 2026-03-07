@@ -7,6 +7,7 @@ import { getChannelsCommandSecretTargetIds } from "../cli/command-secret-targets
 import { createOutboundSendDeps, type CliDeps } from "../cli/outbound-send-deps.js";
 import { withProgress } from "../cli/progress.js";
 import { loadConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import type { OutboundSendDeps } from "../infra/outbound/deliver.js";
 import { runMessageAction } from "../infra/outbound/message-action-runner.js";
 import type { RuntimeEnv } from "../runtime.js";
@@ -58,7 +59,7 @@ export async function messageCommand(
   const result = needsSpinner
     ? await withProgress(
         {
-          label: action === "poll" ? "Sending poll..." : "Sending...",
+          label: action === "poll" ? t("commands.message.sendingPoll") : t("commands.message.sending"),
           indeterminate: true,
           enabled: true,
         },

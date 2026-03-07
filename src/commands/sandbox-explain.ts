@@ -12,6 +12,7 @@ import {
   resolveMainSessionKey,
   resolveStorePath,
 } from "../config/sessions.js";
+import { t } from "../i18n/index.js";
 import {
   buildAgentMainSessionKey,
   normalizeAgentId,
@@ -276,43 +277,43 @@ export async function sandboxExplainCommand(
   const bool = (flag: boolean) => (flag ? ok("true") : err("false"));
 
   const lines: string[] = [];
-  lines.push(heading("Effective sandbox:"));
-  lines.push(`  ${key("agentId:")} ${value(payload.agentId)}`);
-  lines.push(`  ${key("sessionKey:")} ${value(payload.sessionKey)}`);
-  lines.push(`  ${key("mainSessionKey:")} ${value(payload.mainSessionKey)}`);
+  lines.push(heading(t("commands.sandboxExplain.effectiveSandbox")));
+  lines.push(`  ${key(t("commands.sandboxExplain.agentId"))} ${value(payload.agentId)}`);
+  lines.push(`  ${key(t("commands.sandboxExplain.sessionKey"))} ${value(payload.sessionKey)}`);
+  lines.push(`  ${key(t("commands.sandboxExplain.mainSessionKey"))} ${value(payload.mainSessionKey)}`);
   lines.push(
-    `  ${key("runtime:")} ${payload.sandbox.sessionIsSandboxed ? warn("sandboxed") : ok("direct")}`,
+    `  ${key(t("commands.sandboxExplain.runtime"))} ${payload.sandbox.sessionIsSandboxed ? warn(t("commands.sandboxExplain.sandboxed")) : ok(t("commands.sandboxExplain.direct"))}`,
   );
   lines.push(
-    `  ${key("mode:")} ${value(payload.sandbox.mode)} ${key("scope:")} ${value(
+    `  ${key(t("commands.sandboxExplain.modeLabel"))} ${value(payload.sandbox.mode)} ${key(t("commands.sandboxExplain.scopeLabel"))} ${value(
       payload.sandbox.scope,
-    )} ${key("perSession:")} ${bool(payload.sandbox.perSession)}`,
+    )} ${key(t("commands.sandboxExplain.perSession"))} ${bool(payload.sandbox.perSession)}`,
   );
   lines.push(
-    `  ${key("workspaceAccess:")} ${value(
+    `  ${key(t("commands.sandboxExplain.workspaceAccess"))} ${value(
       payload.sandbox.workspaceAccess,
-    )} ${key("workspaceRoot:")} ${value(payload.sandbox.workspaceRoot)}`,
+    )} ${key(t("commands.sandboxExplain.workspaceRoot"))} ${value(payload.sandbox.workspaceRoot)}`,
   );
   lines.push("");
-  lines.push(heading("Sandbox tool policy:"));
+  lines.push(heading(t("commands.sandboxExplain.toolPolicy")));
   lines.push(
     `  ${key(`allow (${payload.sandbox.tools.sources.allow.source}):`)} ${value(
-      payload.sandbox.tools.allow.join(", ") || "(empty)",
+      payload.sandbox.tools.allow.join(", ") || t("commands.sandboxExplain.empty"),
     )}`,
   );
   lines.push(
     `  ${key(`deny  (${payload.sandbox.tools.sources.deny.source}):`)} ${value(
-      payload.sandbox.tools.deny.join(", ") || "(empty)",
+      payload.sandbox.tools.deny.join(", ") || t("commands.sandboxExplain.empty"),
     )}`,
   );
   lines.push("");
-  lines.push(heading("Elevated:"));
-  lines.push(`  ${key("enabled:")} ${bool(payload.elevated.enabled)}`);
-  lines.push(`  ${key("channel:")} ${value(payload.elevated.channel ?? "(unknown)")}`);
-  lines.push(`  ${key("allowedByConfig:")} ${bool(payload.elevated.allowedByConfig)}`);
+  lines.push(heading(t("commands.sandboxExplain.elevated")));
+  lines.push(`  ${key(t("commands.sandboxExplain.enabled"))} ${bool(payload.elevated.enabled)}`);
+  lines.push(`  ${key(t("commands.sandboxExplain.channelLabel"))} ${value(payload.elevated.channel ?? t("commands.sandboxExplain.unknownChannel"))}`);
+  lines.push(`  ${key(t("commands.sandboxExplain.allowedByConfig"))} ${bool(payload.elevated.allowedByConfig)}`);
   if (payload.elevated.failures.length > 0) {
     lines.push(
-      `  ${key("failing gates:")} ${warn(
+      `  ${key(t("commands.sandboxExplain.failingGates"))} ${warn(
         payload.elevated.failures.map((f) => `${f.gate} (${f.key})`).join(", "),
       )}`,
     );
@@ -320,18 +321,16 @@ export async function sandboxExplainCommand(
   if (payload.sandbox.mode === "non-main" && payload.sandbox.sessionIsSandboxed) {
     lines.push("");
     lines.push(
-      `${warn("Hint:")} sandbox mode is non-main; use main session key to run direct: ${value(
-        payload.mainSessionKey,
-      )}`,
+      `${warn(t("commands.sandboxExplain.hintNonMain", { key: payload.mainSessionKey }))}`,
     );
   }
   lines.push("");
-  lines.push(heading("Fix-it:"));
-  for (const key of payload.fixIt) {
-    lines.push(`  - ${key}`);
+  lines.push(heading(t("commands.sandboxExplain.fixIt")));
+  for (const k of payload.fixIt) {
+    lines.push(`  - ${k}`);
   }
   lines.push("");
-  lines.push(`${key("Docs:")} ${formatDocsLink("/sandbox", "docs.openclaw.ai/sandbox")}`);
+  lines.push(`${key(t("commands.sandboxExplain.docs"))} ${formatDocsLink("/sandbox", "docs.openclaw.ai/sandbox")}`);
 
   runtime.log(`${lines.join("\n")}\n`);
 }

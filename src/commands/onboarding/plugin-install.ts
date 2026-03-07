@@ -11,6 +11,7 @@ import { loadOpenClawPlugins } from "../../plugins/loader.js";
 import { createPluginLoaderLogger } from "../../plugins/logger.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import type { WizardPrompter } from "../../wizard/prompts.js";
+import { t } from "../../i18n/index.js";
 
 type InstallChoice = "npm" | "local" | "skip";
 
@@ -84,20 +85,20 @@ async function promptInstallChoice(params: {
     ? [
         {
           value: "local",
-          label: "Use local plugin path",
+          label: t("commands.pluginInstall.useLocal"),
           hint: localPath,
         },
       ]
     : [];
   const options: Array<{ value: InstallChoice; label: string; hint?: string }> = [
-    { value: "npm", label: `Download from npm (${entry.install.npmSpec})` },
+    { value: "npm", label: t("commands.pluginInstall.downloadNpm", { spec: entry.install.npmSpec }) },
     ...localOptions,
-    { value: "skip", label: "Skip for now" },
+    { value: "skip", label: t("commands.pluginInstall.skipForNow") },
   ];
   const initialValue: InstallChoice =
     defaultChoice === "local" && !localPath ? "npm" : defaultChoice;
   return await prompter.select<InstallChoice>({
-    message: `Install ${entry.meta.label} plugin?`,
+    message: t("commands.pluginInstall.installPlugin", { label: entry.meta.label }),
     options,
     initialValue,
   });
@@ -181,13 +182,13 @@ export async function ensureOnboardingPluginInstalled(params: {
   }
 
   await prompter.note(
-    `Failed to install ${entry.install.npmSpec}: ${result.error}`,
-    "Plugin install",
+    t("commands.pluginInstall.installFailed", { spec: entry.install.npmSpec, error: String(result.error) }),
+    t("commands.pluginInstall.pluginInstallTitle"),
   );
 
   if (localPath) {
     const fallback = await prompter.confirm({
-      message: `Use local plugin path instead? (${localPath})`,
+      message: t("commands.pluginInstall.useLocalInstead", { path: localPath }),
       initialValue: true,
     });
     if (fallback) {
@@ -197,7 +198,7 @@ export async function ensureOnboardingPluginInstalled(params: {
     }
   }
 
-  runtime.error?.(`Plugin install failed: ${result.error}`);
+  runtime.error?.(t("commands.pluginInstall.pluginInstallFailed", { error: String(result.error) }));
   return { cfg: next, installed: false };
 }
 

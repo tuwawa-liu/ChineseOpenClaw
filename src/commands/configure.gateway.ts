@@ -7,6 +7,7 @@ import {
   TAILSCALE_EXPOSURE_OPTIONS,
   TAILSCALE_MISSING_BIN_NOTE_LINES,
 } from "../gateway/gateway-config-prompts.shared.js";
+import { t } from "../i18n/index.js";
 import { findTailscaleBinary } from "../infra/tailscale.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { resolveDefaultSecretProviderAlias } from "../secrets/ref-contract.js";
@@ -34,9 +35,9 @@ export async function promptGatewayConfig(
 }> {
   const portRaw = guardCancel(
     await text({
-      message: "Gateway port",
+      message: t("commands.configGw.portMsg"),
       initialValue: String(resolveGatewayPort(cfg)),
-      validate: (value) => (Number.isFinite(Number(value)) ? undefined : "Invalid port"),
+      validate: (value) => (Number.isFinite(Number(value)) ? undefined : t("commands.configGw.invalidPort")),
     }),
     runtime,
   );
@@ -44,32 +45,32 @@ export async function promptGatewayConfig(
 
   let bind = guardCancel(
     await select({
-      message: "Gateway bind mode",
+      message: t("commands.configureGateway.bindMode"),
       options: [
         {
           value: "loopback",
-          label: "Loopback (Local only)",
-          hint: "Bind to 127.0.0.1 - secure, local-only access",
+          label: t("commands.configureGateway.loopbackLabel"),
+          hint: t("commands.configureGateway.loopbackHint"),
         },
         {
           value: "tailnet",
-          label: "Tailnet (Tailscale IP)",
-          hint: "Bind to your Tailscale IP only (100.x.x.x)",
+          label: t("commands.configureGateway.tailnetLabel"),
+          hint: t("commands.configureGateway.tailnetHint"),
         },
         {
           value: "auto",
-          label: "Auto (Loopback → LAN)",
-          hint: "Prefer loopback; fall back to all interfaces if unavailable",
+          label: t("commands.configureGateway.autoLabel"),
+          hint: t("commands.configureGateway.autoHint"),
         },
         {
           value: "lan",
-          label: "LAN (All interfaces)",
-          hint: "Bind to 0.0.0.0 - accessible from anywhere on your network",
+          label: t("commands.configureGateway.lanLabel"),
+          hint: t("commands.configureGateway.lanHint"),
         },
         {
           value: "custom",
-          label: "Custom IP",
-          hint: "Specify a specific IP address, with 0.0.0.0 fallback if unavailable",
+          label: t("commands.configureGateway.customLabel"),
+          hint: t("commands.configureGateway.customHint"),
         },
       ],
     }),
@@ -80,7 +81,7 @@ export async function promptGatewayConfig(
   if (bind === "custom") {
     const input = guardCancel(
       await text({
-        message: "Custom IP address",
+        message: t("commands.configGw.customIpMsg"),
         placeholder: "192.168.1.100",
         validate: validateIPv4AddressInput,
       }),
@@ -91,14 +92,14 @@ export async function promptGatewayConfig(
 
   let authMode = guardCancel(
     await select({
-      message: "Gateway auth",
+      message: t("commands.configGw.authMsg"),
       options: [
-        { value: "token", label: "Token", hint: "Recommended default" },
-        { value: "password", label: "Password" },
+        { value: "token", label: t("commands.configGw.tokenLabel"), hint: t("commands.configGw.tokenHint") },
+        { value: "password", label: t("commands.configGw.passwordLabel") },
         {
           value: "trusted-proxy",
-          label: "Trusted Proxy",
-          hint: "Behind reverse proxy (Pomerium, Caddy, Traefik, etc.)",
+          label: t("commands.configGw.trustedProxyLabel"),
+          hint: t("commands.configGw.trustedProxyHint"),
         },
       ],
       initialValue: "token",
@@ -108,7 +109,7 @@ export async function promptGatewayConfig(
 
   let tailscaleMode = guardCancel(
     await select({
-      message: "Tailscale exposure",
+      message: t("commands.configGw.tailscaleMsg"),
       options: [...TAILSCALE_EXPOSURE_OPTIONS],
     }),
     runtime,
@@ -120,17 +121,17 @@ export async function promptGatewayConfig(
   if (tailscaleMode !== "off") {
     tailscaleBin = await findTailscaleBinary();
     if (!tailscaleBin) {
-      note(TAILSCALE_MISSING_BIN_NOTE_LINES.join("\n"), "Tailscale Warning");
+      note(TAILSCALE_MISSING_BIN_NOTE_LINES.join("\n"), t("commands.configGw.tailscaleWarning"));
     }
   }
 
   let tailscaleResetOnExit = false;
   if (tailscaleMode !== "off") {
-    note(TAILSCALE_DOCS_LINES.join("\n"), "Tailscale");
+    note(TAILSCALE_DOCS_LINES.join("\n"), t("commands.configGw.tailscaleTitle"));
     tailscaleResetOnExit = Boolean(
       guardCancel(
         await confirm({
-          message: "Reset Tailscale serve/funnel on exit?",
+          message: t("commands.configGw.tailscaleResetConfirm"),
           initialValue: false,
         }),
         runtime,
@@ -139,12 +140,12 @@ export async function promptGatewayConfig(
   }
 
   if (tailscaleMode !== "off" && bind !== "loopback") {
-    note("Tailscale requires bind=loopback. Adjusting bind to loopback.", "Note");
+    note(t("commands.configGw.tailscaleBindNote"), t("commands.configGw.noteTitle"));
     bind = "loopback";
   }
 
   if (tailscaleMode === "funnel" && authMode !== "password") {
-    note("Tailscale funnel requires password auth.", "Note");
+    note(t("commands.configGw.tailscaleFunnelNote"), t("commands.configGw.noteTitle"));
     authMode = "password";
   }
 
@@ -152,8 +153,8 @@ export async function promptGatewayConfig(
   // host (e.g. cloudflared, nginx, Caddy). trustedProxies must include 127.0.0.1.
   if (authMode === "trusted-proxy" && tailscaleMode !== "off") {
     note(
-      "Trusted proxy auth is incompatible with Tailscale serve/funnel. Disabling Tailscale.",
-      "Note",
+      t("commands.configGw.trustedProxyIncompat"),
+      t("commands.configGw.noteTitle"),
     );
     tailscaleMode = "off";
     tailscaleResetOnExit = false;
@@ -171,17 +172,17 @@ export async function promptGatewayConfig(
   if (authMode === "token") {
     const tokenInputMode = guardCancel(
       await select<GatewayTokenInputMode>({
-        message: "Gateway token source",
+        message: t("commands.configGw.tokenSourceMsg"),
         options: [
           {
             value: "plaintext",
-            label: "Generate/store plaintext token",
-            hint: "Default",
+            label: t("commands.configGw.plaintextLabel"),
+            hint: t("commands.configGw.plaintextHint"),
           },
           {
             value: "ref",
-            label: "Use SecretRef",
-            hint: "Store an env-backed reference instead of plaintext",
+            label: t("commands.configGw.refLabel"),
+            hint: t("commands.configGw.refHint"),
           },
         ],
         initialValue: "plaintext",
@@ -191,17 +192,17 @@ export async function promptGatewayConfig(
     if (tokenInputMode === "ref") {
       const envVar = guardCancel(
         await text({
-          message: "Gateway token env var",
+          message: t("commands.configGw.envVarMsg"),
           initialValue: "OPENCLAW_GATEWAY_TOKEN",
           placeholder: "OPENCLAW_GATEWAY_TOKEN",
           validate: (value) => {
             const candidate = String(value ?? "").trim();
             if (!isValidEnvSecretRefId(candidate)) {
-              return "Use an env var name like OPENCLAW_GATEWAY_TOKEN.";
+              return t("commands.configGw.envVarValidate");
             }
             const resolved = process.env[candidate]?.trim();
             if (!resolved) {
-              return `Environment variable "${candidate}" is missing or empty in this session.`;
+              return t("commands.configGw.envVarMissing", { name: candidate });
             }
             return undefined;
           },
@@ -216,11 +217,11 @@ export async function promptGatewayConfig(
         }),
         id: envVarName,
       };
-      note(`Validated ${envVarName}. OpenClaw will store a token SecretRef.`, "Gateway token");
+      note(t("commands.configGw.envVarValidated", { name: envVarName }), t("commands.configGw.gatewayTokenTitle"));
     } else {
       const tokenInput = guardCancel(
         await text({
-          message: "Gateway token (blank to generate)",
+          message: t("commands.configGw.tokenBlankMsg"),
           initialValue: randomToken(),
         }),
         runtime,
@@ -233,7 +234,7 @@ export async function promptGatewayConfig(
   if (authMode === "password") {
     const password = guardCancel(
       await text({
-        message: "Gateway password",
+        message: t("commands.configGw.passwordMsg"),
         validate: validateGatewayPasswordInput,
       }),
       runtime,
@@ -243,30 +244,23 @@ export async function promptGatewayConfig(
 
   if (authMode === "trusted-proxy") {
     note(
-      [
-        "Trusted proxy mode: OpenClaw trusts user identity from a reverse proxy.",
-        "The proxy must authenticate users and pass identity via headers.",
-        "Only requests from specified proxy IPs will be trusted.",
-        "",
-        "Common use cases: Pomerium, Caddy + OAuth, Traefik + forward auth",
-        "Docs: https://docs.openclaw.ai/gateway/trusted-proxy-auth",
-      ].join("\n"),
-      "Trusted Proxy Auth",
+      t("commands.configGw.trustedProxyNote"),
+      t("commands.configGw.trustedProxyAuthTitle"),
     );
 
     const userHeader = guardCancel(
       await text({
-        message: "Header containing user identity",
+        message: t("commands.configGw.userHeaderMsg"),
         placeholder: "x-forwarded-user",
         initialValue: "x-forwarded-user",
-        validate: (value) => (value?.trim() ? undefined : "User header is required"),
+        validate: (value) => (value?.trim() ? undefined : t("commands.configGw.userHeaderRequired")),
       }),
       runtime,
     );
 
     const requiredHeadersRaw = guardCancel(
       await text({
-        message: "Required headers (comma-separated, optional)",
+        message: t("commands.configGw.requiredHeadersMsg"),
         placeholder: "x-forwarded-proto,x-forwarded-host",
       }),
       runtime,
@@ -280,7 +274,7 @@ export async function promptGatewayConfig(
 
     const allowUsersRaw = guardCancel(
       await text({
-        message: "Allowed users (comma-separated, blank = all authenticated users)",
+        message: t("commands.configGw.allowUsersMsg"),
         placeholder: "nick@example.com,admin@company.com",
       }),
       runtime,
@@ -294,11 +288,11 @@ export async function promptGatewayConfig(
 
     const trustedProxiesRaw = guardCancel(
       await text({
-        message: "Trusted proxy IPs (comma-separated)",
+        message: t("commands.configGw.trustedProxyIpsMsg"),
         placeholder: "10.0.1.10,192.168.1.5",
         validate: (value) => {
           if (!value || String(value).trim() === "") {
-            return "At least one trusted proxy IP is required";
+            return t("commands.configGw.trustedProxyIpsRequired");
           }
           return undefined;
         },

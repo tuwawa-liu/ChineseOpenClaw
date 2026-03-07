@@ -1,6 +1,7 @@
 import type { Command } from "commander";
 import { sandboxExplainCommand } from "../commands/sandbox-explain.js";
 import { sandboxListCommand, sandboxRecreateCommand } from "../commands/sandbox.js";
+import { t } from "../i18n/index.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
 import { theme } from "../terminal/theme.js";
@@ -59,7 +60,7 @@ function createRunner(
 export function registerSandboxCli(program: Command) {
   const sandbox = program
     .command("sandbox")
-    .description("Manage sandbox containers (Docker-based agent isolation)")
+    .description(t("cli.sandbox.desc"))
     .addHelpText(
       "after",
       () => `\n${theme.heading("Examples:")}\n${formatHelpExamples(SANDBOX_EXAMPLES.main)}\n`,
@@ -67,7 +68,7 @@ export function registerSandboxCli(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/sandbox", "docs.openclaw.ai/cli/sandbox")}\n`,
+        `\n${theme.muted(t("helpDocs"))} ${formatDocsLink("/cli/sandbox", "docs.openclaw.ai/cli/sandbox")}\n`,
     )
     .action(() => {
       sandbox.help({ error: true });
@@ -77,9 +78,9 @@ export function registerSandboxCli(program: Command) {
 
   sandbox
     .command("list")
-    .description("List sandbox containers and their status")
-    .option("--json", "Output result as JSON", false)
-    .option("--browser", "List browser containers only", false)
+    .description(t("cli.sandbox.list.desc"))
+    .option("--json", t("cli.sandbox.list.optJson"), false)
+    .option("--browser", t("cli.sandbox.list.optBrowser"), false)
     .addHelpText(
       "after",
       () =>
@@ -107,12 +108,12 @@ export function registerSandboxCli(program: Command) {
 
   sandbox
     .command("recreate")
-    .description("Remove containers to force recreation with updated config")
-    .option("--all", "Recreate all sandbox containers", false)
-    .option("--session <key>", "Recreate container for specific session")
-    .option("--agent <id>", "Recreate containers for specific agent")
-    .option("--browser", "Only recreate browser containers", false)
-    .option("--force", "Skip confirmation prompt", false)
+    .description(t("cli.sandbox.recreate.desc"))
+    .option("--all", t("cli.sandbox.recreate.optAll"), false)
+    .option("--session <key>", t("cli.sandbox.recreate.optSession"))
+    .option("--agent <id>", t("cli.sandbox.recreate.optAgent"))
+    .option("--browser", t("cli.sandbox.recreate.optBrowser"), false)
+    .option("--force", t("cli.sandbox.recreate.optForce"), false)
     .addHelpText(
       "after",
       () =>
@@ -151,10 +152,10 @@ export function registerSandboxCli(program: Command) {
 
   sandbox
     .command("explain")
-    .description("Explain effective sandbox/tool policy for a session/agent")
-    .option("--session <key>", "Session key to inspect (defaults to agent main)")
-    .option("--agent <id>", "Agent id to inspect (defaults to derived agent)")
-    .option("--json", "Output result as JSON", false)
+    .description(t("cli.sandbox.explain.desc"))
+    .option("--session <key>", t("cli.sandbox.explain.optSession"))
+    .option("--agent <id>", t("cli.sandbox.explain.optAgent"))
+    .option("--json", t("cli.sandbox.explain.optJson"), false)
     .addHelpText(
       "after",
       () => `\n${theme.heading("Examples:")}\n${formatHelpExamples(SANDBOX_EXAMPLES.explain)}\n`,

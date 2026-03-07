@@ -1,6 +1,7 @@
 import { readConfigFileSnapshot, resolveGatewayPort } from "../config/config.js";
 import type { OpenClawConfig } from "../config/types.js";
 import { resolveSecretInputRef } from "../config/types.secrets.js";
+import { t } from "../i18n/index.js";
 import { copyToClipboard } from "../infra/clipboard.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -108,21 +109,17 @@ export async function dashboardCommand(
     ? `${links.httpUrl}#token=${encodeURIComponent(token)}`
     : links.httpUrl;
 
-  runtime.log(`Dashboard URL: ${dashboardUrl}`);
+  runtime.log(t("commands.dashboard.dashboardUrl", { url: dashboardUrl }));
   if (resolvedToken.tokenSecretRefConfigured && token) {
-    runtime.log(
-      "Token auto-auth is disabled for SecretRef-managed gateway.auth.token; use your external token source if prompted.",
-    );
+    runtime.log(t("commands.dashboard.secretRefDisabled"));
   }
   if (resolvedToken.unresolvedRefReason) {
-    runtime.log(`Token auto-auth unavailable: ${resolvedToken.unresolvedRefReason}`);
-    runtime.log(
-      "Set OPENCLAW_GATEWAY_TOKEN in this shell or resolve your secret provider, then rerun `openclaw dashboard`.",
-    );
+    runtime.log(t("commands.dashboard.autoAuthUnavailable", { reason: resolvedToken.unresolvedRefReason }));
+    runtime.log(t("commands.dashboard.setTokenHint"));
   }
 
   const copied = await copyToClipboard(dashboardUrl).catch(() => false);
-  runtime.log(copied ? "Copied to clipboard." : "Copy to clipboard unavailable.");
+  runtime.log(copied ? t("commands.dashboard.copiedClipboard") : t("commands.dashboard.clipboardUnavailable"));
 
   let opened = false;
   let hint: string | undefined;
@@ -139,11 +136,11 @@ export async function dashboardCommand(
       });
     }
   } else {
-    hint = "Browser launch disabled (--no-open). Use the URL above.";
+    hint = t("commands.dashboard.browserDisabled");
   }
 
   if (opened) {
-    runtime.log("Opened in your browser. Keep that tab to control OpenClaw.");
+    runtime.log(t("commands.dashboard.browserOpened"));
   } else if (hint) {
     runtime.log(hint);
   }

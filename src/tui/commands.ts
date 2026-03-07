@@ -2,6 +2,7 @@ import type { SlashCommand } from "@mariozechner/pi-tui";
 import { listChatCommands, listChatCommandsForConfig } from "../auto-reply/commands-registry.js";
 import { formatThinkingLevels, listThinkingLevelLabels } from "../auto-reply/thinking.js";
 import type { OpenClawConfig } from "../config/types.js";
+import { t } from "../i18n/index.js";
 
 const VERBOSE_LEVELS = ["on", "off"];
 const REASONING_LEVELS = ["on", "off"];
@@ -57,20 +58,20 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
   const elevatedCompletions = createLevelCompletion(ELEVATED_LEVELS);
   const activationCompletions = createLevelCompletion(ACTIVATION_LEVELS);
   const commands: SlashCommand[] = [
-    { name: "help", description: "Show slash command help" },
-    { name: "status", description: "Show gateway status summary" },
-    { name: "agent", description: "Switch agent (or open picker)" },
-    { name: "agents", description: "Open agent picker" },
-    { name: "session", description: "Switch session (or open picker)" },
-    { name: "sessions", description: "Open session picker" },
+    { name: "help", description: t("tui.cmdHelp") },
+    { name: "status", description: t("tui.cmdStatus") },
+    { name: "agent", description: t("tui.cmdAgent") },
+    { name: "agents", description: t("tui.cmdAgents") },
+    { name: "session", description: t("tui.cmdSession") },
+    { name: "sessions", description: t("tui.cmdSessions") },
     {
       name: "model",
-      description: "Set model (or open picker)",
+      description: t("tui.cmdModel"),
     },
-    { name: "models", description: "Open model picker" },
+    { name: "models", description: t("tui.cmdModels") },
     {
       name: "think",
-      description: "Set thinking level",
+      description: t("tui.cmdThink"),
       getArgumentCompletions: (prefix) =>
         thinkLevels
           .filter((v) => v.startsWith(prefix.toLowerCase()))
@@ -78,40 +79,40 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
     },
     {
       name: "verbose",
-      description: "Set verbose on/off",
+      description: t("tui.cmdVerbose"),
       getArgumentCompletions: verboseCompletions,
     },
     {
       name: "reasoning",
-      description: "Set reasoning on/off",
+      description: t("tui.cmdReasoning"),
       getArgumentCompletions: reasoningCompletions,
     },
     {
       name: "usage",
-      description: "Toggle per-response usage line",
+      description: t("tui.cmdUsage"),
       getArgumentCompletions: usageCompletions,
     },
     {
       name: "elevated",
-      description: "Set elevated on/off/ask/full",
+      description: t("tui.cmdElevated"),
       getArgumentCompletions: elevatedCompletions,
     },
     {
       name: "elev",
-      description: "Alias for /elevated",
+      description: t("tui.cmdElev"),
       getArgumentCompletions: elevatedCompletions,
     },
     {
       name: "activation",
-      description: "Set group activation",
+      description: t("tui.cmdActivation"),
       getArgumentCompletions: activationCompletions,
     },
-    { name: "abort", description: "Abort active run" },
-    { name: "new", description: "Reset the session" },
-    { name: "reset", description: "Reset the session" },
-    { name: "settings", description: "Open settings" },
-    { name: "exit", description: "Exit the TUI" },
-    { name: "quit", description: "Exit the TUI" },
+    { name: "abort", description: t("tui.cmdAbort") },
+    { name: "new", description: t("tui.cmdNew") },
+    { name: "reset", description: t("tui.cmdReset") },
+    { name: "settings", description: t("tui.cmdSettings") },
+    { name: "exit", description: t("tui.cmdExit") },
+    { name: "quit", description: t("tui.cmdQuit") },
   ];
 
   const seen = new Set(commands.map((command) => command.name));
@@ -134,7 +135,7 @@ export function getSlashCommands(options: SlashCommandOptions = {}): SlashComman
 export function helpText(options: SlashCommandOptions = {}): string {
   const thinkLevels = formatThinkingLevels(options.provider, options.model, "|");
   return [
-    "Slash commands:",
+    t("tui.helpTitle"),
     "/help",
     "/commands",
     "/status",

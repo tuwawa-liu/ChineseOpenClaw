@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index.js";
 import type { ProgressReporter } from "../../cli/progress.js";
 import { renderTable } from "../../terminal/table.js";
 import { isRich, theme } from "../../terminal/theme.js";
@@ -62,8 +63,8 @@ export async function buildStatusAllReportLines(params: {
   const overview = renderTable({
     width: tableWidth,
     columns: [
-      { key: "Item", header: "Item", minWidth: 10 },
-      { key: "Value", header: "Value", flex: true, minWidth: 24 },
+      { key: "Item", header: t("statusAllReportLines.itemHeader"), minWidth: 10 },
+      { key: "Value", header: t("statusAllReportLines.valueHeader"), flex: true, minWidth: 24 },
     ],
     rows: params.overviewRows,
   });
@@ -71,15 +72,15 @@ export async function buildStatusAllReportLines(params: {
   const channelRows = params.channels.rows.map((row) => ({
     channelId: row.id,
     Channel: row.label,
-    Enabled: row.enabled ? ok("ON") : muted("OFF"),
+    Enabled: row.enabled ? ok(t("statusAllReportLines.statusOn")) : muted(t("statusAllReportLines.statusOff")),
     State:
       row.state === "ok"
-        ? ok("OK")
+        ? ok(t("statusAllReportLines.statusOk"))
         : row.state === "warn"
-          ? warn("WARN")
+          ? warn(t("statusAllReportLines.statusWarn"))
           : row.state === "off"
-            ? muted("OFF")
-            : theme.accentDim("SETUP"),
+            ? muted(t("statusAllReportLines.statusOff"))
+            : theme.accentDim(t("statusAllReportLines.statusSetup")),
     Detail: row.detail,
   }));
   const channelIssuesByChannel = groupChannelIssuesByChannel(params.channelIssues);
@@ -89,10 +90,10 @@ export async function buildStatusAllReportLines(params: {
       return row;
     }
     const issue = issues[0];
-    const suffix = ` · ${warn(`gateway: ${String(issue.message).slice(0, 90)}`)}`;
+    const suffix = ` · ${warn(t("statusAllReportLines.gatewayIssue", { message: String(issue.message).slice(0, 90) }))}`;
     return {
       ...row,
-      State: warn("WARN"),
+      State: warn(t("statusAllReportLines.statusWarn")),
       Detail: `${row.Detail}${suffix}`,
     };
   });
@@ -100,10 +101,10 @@ export async function buildStatusAllReportLines(params: {
   const channelsTable = renderTable({
     width: tableWidth,
     columns: [
-      { key: "Channel", header: "Channel", minWidth: 10 },
-      { key: "Enabled", header: "Enabled", minWidth: 7 },
-      { key: "State", header: "State", minWidth: 8 },
-      { key: "Detail", header: "Detail", flex: true, minWidth: 28 },
+      { key: "Channel", header: t("statusAllReportLines.channelHeader"), minWidth: 10 },
+      { key: "Enabled", header: t("statusAllReportLines.enabledHeader"), minWidth: 7 },
+      { key: "State", header: t("statusAllReportLines.stateHeader"), minWidth: 8 },
+      { key: "Detail", header: t("statusAllReportLines.detailHeader"), flex: true, minWidth: 28 },
     ],
     rows: channelRowsWithIssues,
   });
@@ -112,34 +113,34 @@ export async function buildStatusAllReportLines(params: {
     Agent: a.name?.trim() ? `${a.id} (${a.name.trim()})` : a.id,
     BootstrapFile:
       a.bootstrapPending === true
-        ? warn("PRESENT")
+        ? warn(t("statusAllReportLines.statusPresent"))
         : a.bootstrapPending === false
-          ? ok("ABSENT")
-          : "unknown",
+          ? ok(t("statusAllReportLines.statusAbsent"))
+          : t("statusAllReportLines.unknown"),
     Sessions: String(a.sessionsCount),
-    Active: a.lastActiveAgeMs != null ? formatTimeAgo(a.lastActiveAgeMs) : "unknown",
+    Active: a.lastActiveAgeMs != null ? formatTimeAgo(a.lastActiveAgeMs) : t("statusAllReportLines.unknown"),
     Store: a.sessionsPath,
   }));
 
   const agentsTable = renderTable({
     width: tableWidth,
     columns: [
-      { key: "Agent", header: "Agent", minWidth: 12 },
-      { key: "BootstrapFile", header: "Bootstrap file", minWidth: 14 },
-      { key: "Sessions", header: "Sessions", align: "right", minWidth: 8 },
-      { key: "Active", header: "Active", minWidth: 10 },
-      { key: "Store", header: "Store", flex: true, minWidth: 34 },
+      { key: "Agent", header: t("statusAllReportLines.agentHeader"), minWidth: 12 },
+      { key: "BootstrapFile", header: t("statusAllReportLines.bootstrapFileHeader"), minWidth: 14 },
+      { key: "Sessions", header: t("statusAllReportLines.sessionsHeader"), align: "right", minWidth: 8 },
+      { key: "Active", header: t("statusAllReportLines.activeHeader"), minWidth: 10 },
+      { key: "Store", header: t("statusAllReportLines.storeHeader"), flex: true, minWidth: 34 },
     ],
     rows: agentRows,
   });
 
   const lines: string[] = [];
-  lines.push(heading("OpenClaw status --all"));
+  lines.push(heading(t("statusAllReportLines.title")));
   lines.push("");
-  lines.push(heading("Overview"));
+  lines.push(heading(t("statusAllReportLines.overview")));
   lines.push(overview.trimEnd());
   lines.push("");
-  lines.push(heading("Channels"));
+  lines.push(heading(t("statusAllReportLines.channels")));
   lines.push(channelsTable.trimEnd());
   for (const detail of params.channels.details) {
     lines.push("");
@@ -150,25 +151,25 @@ export async function buildStatusAllReportLines(params: {
         columns: detail.columns.map((c) => ({
           key: c,
           header: c,
-          flex: c === "Notes",
-          minWidth: c === "Notes" ? 28 : 10,
+          flex: c === t("statusAllReportLines.notesHeader"),
+          minWidth: c === t("statusAllReportLines.notesHeader") ? 28 : 10,
         })),
         rows: detail.rows.map((r) => ({
           ...r,
           ...(r.Status === "OK"
-            ? { Status: ok("OK") }
+            ? { Status: ok(t("statusAllReportLines.statusOk")) }
             : r.Status === "WARN"
-              ? { Status: warn("WARN") }
+              ? { Status: warn(t("statusAllReportLines.statusWarn")) }
               : {}),
         })),
       }).trimEnd(),
     );
   }
   lines.push("");
-  lines.push(heading("Agents"));
+  lines.push(heading(t("statusAllReportLines.agents")));
   lines.push(agentsTable.trimEnd());
   lines.push("");
-  lines.push(heading("Diagnosis (read-only)"));
+  lines.push(heading(t("statusAllReportLines.diagnosis")));
 
   await appendStatusAllDiagnosis({
     lines,

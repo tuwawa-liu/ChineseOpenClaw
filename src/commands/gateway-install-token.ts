@@ -1,6 +1,7 @@
 import { formatCliCommand } from "../cli/command-format.js";
 import { readConfigFileSnapshot, writeConfigFile, type OpenClawConfig } from "../config/config.js";
 import { resolveSecretInputRef } from "../config/types.secrets.js";
+import { t } from "../i18n/index.js";
 import { shouldRequireGatewayTokenForInstall } from "../gateway/auth-install-policy.js";
 import { hasAmbiguousGatewayAuthModeConfig } from "../gateway/auth-mode-policy.js";
 import { resolveGatewayAuth } from "../gateway/auth.js";
@@ -25,8 +26,8 @@ export type GatewayInstallTokenResolution = {
 
 function formatAmbiguousGatewayAuthModeReason(): string {
   return [
-    "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
-    `Set ${formatCliCommand("openclaw config set gateway.auth.mode token")} or ${formatCliCommand("openclaw config set gateway.auth.mode password")}.`,
+    t("commands.gatewayInstallToken.ambiguousBoth"),
+    t("commands.gatewayInstallToken.ambiguousFix", { tokenCmd: formatCliCommand("openclaw config set gateway.auth.mode token"), passwordCmd: formatCliCommand("openclaw config set gateway.auth.mode password") }),
   ].join(" ");
 }
 
@@ -75,13 +76,13 @@ export async function resolveGatewayInstallToken(
       });
       const value = resolved.get(secretRefKey(tokenRef));
       if (typeof value !== "string" || value.trim().length === 0) {
-        throw new Error("gateway.auth.token resolved to an empty or non-string value.");
+        throw new Error(t("commands.gatewayInstallToken.resolvedEmpty"));
       }
       warnings.push(
-        "gateway.auth.token is SecretRef-managed; install will not persist a resolved token in service environment. Ensure the SecretRef is resolvable in the daemon runtime context.",
+        t("commands.gatewayInstallToken.secretRefManaged"),
       );
     } catch (err) {
-      unavailableReason = `gateway.auth.token SecretRef is configured but unresolved (${String(err)}).`;
+      unavailableReason = t("commands.gatewayInstallToken.secretRefUnresolved", { error: String(err) });
     }
   }
 
@@ -91,8 +92,8 @@ export async function resolveGatewayInstallToken(
     token = randomToken();
     warnings.push(
       persistGeneratedToken
-        ? "No gateway token found. Auto-generated one and saving to config."
-        : "No gateway token found. Auto-generated one for this run without saving to config.",
+        ? t("commands.gatewayInstallToken.autoGenSaved")
+        : t("commands.gatewayInstallToken.autoGenTemp"),
     );
 
     if (persistGeneratedToken) {
@@ -100,7 +101,7 @@ export async function resolveGatewayInstallToken(
       try {
         const snapshot = await readConfigFileSnapshot();
         if (snapshot.exists && !snapshot.valid) {
-          warnings.push("Warning: config file exists but is invalid; skipping token persistence.");
+          warnings.push(t("commands.gatewayInstallToken.configInvalidSkip"));
         } else {
           const baseConfig = snapshot.exists ? snapshot.config : {};
           const existingTokenRef = resolveSecretInputRef({
@@ -128,12 +129,12 @@ export async function resolveGatewayInstallToken(
           } else {
             token = undefined;
             warnings.push(
-              "Warning: gateway.auth.token is SecretRef-managed; skipping plaintext token persistence.",
+              t("commands.gatewayInstallToken.secretRefSkip"),
             );
           }
         }
       } catch (err) {
-        warnings.push(`Warning: could not persist token to config: ${String(err)}`);
+        warnings.push(t("commands.gatewayInstallToken.persistError", { error: String(err) }));
       }
     }
   }

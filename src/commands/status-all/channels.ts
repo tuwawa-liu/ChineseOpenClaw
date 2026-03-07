@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index.js";
 import fs from "node:fs";
 import {
   buildChannelAccountSnapshot,
@@ -41,13 +42,13 @@ function summarizeSources(sources: Array<string | undefined>): {
 } {
   const counts = new Map<string, number>();
   for (const s of sources) {
-    const key = s?.trim() ? s.trim() : "unknown";
+    const key = s?.trim() ? s.trim() : t("statusAllChannels.unknownSource");
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
   const parts = [...counts.entries()]
     .toSorted((a, b) => b[1] - a[1])
     .map(([key, n]) => `${key}${n > 1 ? `×${n}` : ""}`);
-  const label = parts.length > 0 ? parts.join("+") : "unknown";
+  const label = parts.length > 0 ? parts.join("+") : t("statusAllChannels.unknownSource");
   return { label, parts };
 }
 
@@ -64,23 +65,23 @@ function existsSyncMaybe(p: string | undefined): boolean | null {
 }
 
 function formatTokenHint(token: string, opts: { showSecrets: boolean }): string {
-  const t = token.trim();
-  if (!t) {
-    return "empty";
+  const tok = token.trim();
+  if (!tok) {
+    return t("statusAllChannels.empty");
   }
   if (!opts.showSecrets) {
-    return `sha256:${sha256HexPrefix(t, 8)} · len ${t.length}`;
+    return t("statusAllChannels.sha256Hint", { prefix: sha256HexPrefix(tok, 8), length: String(tok.length) });
   }
-  const head = t.slice(0, 4);
-  const tail = t.slice(-4);
-  if (t.length <= 10) {
-    return `${t} · len ${t.length}`;
+  const head = tok.slice(0, 4);
+  const tail = tok.slice(-4);
+  if (tok.length <= 10) {
+    return t("statusAllChannels.tokenShort", { token: tok, length: String(tok.length) });
   }
-  return `${head}…${tail} · len ${t.length}`;
+  return t("statusAllChannels.tokenMasked", { head, tail, length: String(tok.length) });
 }
 
 const formatAccountLabel = (params: { accountId: string; name?: string }) => {
-  const base = params.accountId || "default";
+  const base = params.accountId || t("statusAllChannels.defaultAccount");
   if (params.name?.trim()) {
     return `${base} (${params.name.trim()})`;
   }
@@ -96,7 +97,7 @@ const buildAccountNotes = (params: {
   const notes: string[] = [];
   const snapshot = entry.snapshot;
   if (snapshot.enabled === false) {
-    notes.push("disabled");
+    notes.push(t("statusAllChannels.disabled"));
   }
   if (snapshot.dmPolicy) {
     notes.push(`dm:${snapshot.dmPolicy}`);
@@ -216,12 +217,12 @@ function summarizeTokenConfig(params: {
     if (partial.length > 0) {
       return {
         state: "warn",
-        detail: `partial tokens (need bot+app) · accounts ${partial.length}`,
+        detail: t("statusAllChannels.partialTokens", { count: String(partial.length) }),
       };
     }
 
     if (ready.length === 0) {
-      return { state: "setup", detail: "no tokens (need bot+app)" };
+      return { state: "setup", detail: t("statusAllChannels.noTokensBotApp") };
     }
 
     const botSources = summarizeSources(ready.map((a) => a.snapshot.botTokenSource ?? "none"));
@@ -240,7 +241,7 @@ function summarizeTokenConfig(params: {
     const hint = botHint || appHint ? ` (bot ${botHint || "?"}, app ${appHint || "?"})` : "";
     return {
       state: "ok",
-      detail: `tokens ok (bot ${botSources.label}, app ${appSources.label})${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+      detail: t("statusAllChannels.tokensOk", { botSources: botSources.label, appSources: appSources.label, hint, ready: String(ready.length), total: String(enabled.length || 1) }),
     };
   }
 
@@ -252,7 +253,7 @@ function summarizeTokenConfig(params: {
     });
 
     if (ready.length === 0) {
-      return { state: "setup", detail: "no bot token" };
+      return { state: "setup", detail: t("statusAllChannels.noBotToken") };
     }
 
     const sample = ready[0]?.account ? asRecord(ready[0].account) : {};
@@ -264,7 +265,7 @@ function summarizeTokenConfig(params: {
 
     return {
       state: "ok",
-      detail: `bot token config${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+      detail: t("statusAllChannels.botTokenConfig", { hint, ready: String(ready.length), total: String(enabled.length || 1) }),
     };
   }
 
@@ -273,7 +274,7 @@ function summarizeTokenConfig(params: {
     return typeof rec.token === "string" ? Boolean(rec.token.trim()) : false;
   });
   if (ready.length === 0) {
-    return { state: "setup", detail: "no token" };
+    return { state: "setup", detail: t("statusAllChannels.noToken") };
   }
 
   const sources = summarizeSources(ready.map((a) => a.snapshot.tokenSource));
@@ -284,7 +285,7 @@ function summarizeTokenConfig(params: {
     : "";
   return {
     state: "ok",
-    detail: `token ${sources.label}${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+    detail: t("statusAllChannels.tokenDetail", { sources: sources.label, hint, ready: String(ready.length), total: String(enabled.length || 1) }),
   };
 }
 
@@ -397,19 +398,19 @@ export async function buildChannelsTable(
     const detail = (() => {
       if (!anyEnabled) {
         if (!defaultEntry) {
-          return "disabled";
+          return t("statusAllChannels.disabled");
         }
-        return plugin.config.disabledReason?.(defaultEntry.account, cfg) ?? "disabled";
+        return plugin.config.disabledReason?.(defaultEntry.account, cfg) ?? t("statusAllChannels.disabled");
       }
       if (missingPaths.length > 0) {
-        return `missing file (${missingPaths[0]})`;
+        return t("statusAllChannels.missingFile", { path: missingPaths[0] });
       }
       if (issues.length > 0) {
-        return issues[0]?.message ?? "misconfigured";
+        return issues[0]?.message ?? t("statusAllChannels.misconfigured");
       }
 
       if (link.linked !== null) {
-        const base = link.linked ? "linked" : "not linked";
+        const base = link.linked ? t("statusAllChannels.linked") : t("statusAllChannels.notLinked");
         const extra: string[] = [];
         if (link.linked && link.selfE164) {
           extra.push(link.selfE164);
@@ -428,7 +429,7 @@ export async function buildChannelsTable(
       }
 
       if (configuredAccounts.length > 0) {
-        const head = "configured";
+        const head = t("statusAllChannels.configured");
         if (accounts.length <= 1 && !plugin.meta.forceAccountBinding) {
           return head;
         }
@@ -439,7 +440,7 @@ export async function buildChannelsTable(
         defaultEntry && plugin.config.unconfiguredReason
           ? plugin.config.unconfiguredReason(defaultEntry.account, cfg)
           : null;
-      return reason ?? "not configured";
+      return reason ?? t("statusAllChannels.notConfigured");
     })();
 
     rows.push({
@@ -452,8 +453,8 @@ export async function buildChannelsTable(
 
     if (configuredAccounts.length > 0) {
       details.push({
-        title: `${label} accounts`,
-        columns: ["Account", "Status", "Notes"],
+        title: t("statusAllChannels.accountsTitle", { label }),
+        columns: [t("statusAllChannels.accountHeader"), t("statusAllChannels.statusHeader"), t("statusAllChannels.notesColumnHeader")],
         rows: configuredAccounts.map((entry) => {
           const notes = buildAccountNotes({ plugin, cfg, entry });
           return {

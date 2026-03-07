@@ -7,6 +7,7 @@ import {
   resolveSandboxScope,
 } from "../agents/sandbox.js";
 import type { OpenClawConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { runCommandWithTimeout, runExec } from "../process/exec.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { note } from "../terminal/note.js";
@@ -40,25 +41,26 @@ function resolveSandboxScript(scriptRel: string): SandboxScriptInfo | null {
 async function runSandboxScript(scriptRel: string, runtime: RuntimeEnv): Promise<boolean> {
   const script = resolveSandboxScript(scriptRel);
   if (!script) {
-    note(`Unable to locate ${scriptRel}. Run it from the repo root.`, "Sandbox");
+    note(t("commands.doctorSandbox.unableToLocateScript", { script: scriptRel }), t("commands.doctorSandbox.title"));
     return false;
   }
 
-  runtime.log(`Running ${scriptRel}...`);
+  runtime.log(t("commands.doctorSandbox.running", { script: scriptRel }));
   const result = await runCommandWithTimeout(["bash", script.scriptPath], {
     timeoutMs: 20 * 60 * 1000,
     cwd: script.cwd,
   });
   if (result.code !== 0) {
     runtime.error(
-      `Failed running ${scriptRel}: ${
-        result.stderr.trim() || result.stdout.trim() || "unknown error"
-      }`,
+      t("commands.doctorSandbox.failedRunning", {
+        script: scriptRel,
+        error: result.stderr.trim() || result.stdout.trim() || "unknown error",
+      }),
     );
     return false;
   }
 
-  runtime.log(`Completed ${scriptRel}.`);
+  runtime.log(t("commands.doctorSandbox.completed", { script: scriptRel }));
   return true;
 }
 
@@ -155,14 +157,14 @@ async function handleMissingSandboxImage(
   }
 
   const buildHint = params.buildScript
-    ? `Build it with ${params.buildScript}.`
-    : "Build or pull it first.";
-  note(`Sandbox ${params.kind} image missing: ${params.image}. ${buildHint}`, "Sandbox");
+    ? t("commands.doctorSandbox.buildHint", { script: params.buildScript })
+    : t("commands.doctorSandbox.buildOrPullHint");
+  note(t("commands.doctorSandbox.imageMissing", { kind: params.kind, image: params.image, hint: buildHint }), t("commands.doctorSandbox.title"));
 
   let built = false;
   if (params.buildScript) {
     const build = await prompter.confirmSkipInNonInteractive({
-      message: `Build ${params.kind} sandbox image now?`,
+      message: t("commands.doctorSandbox.buildImagePrompt", { kind: params.kind }),
       initialValue: true,
     });
     if (build) {
@@ -189,15 +191,15 @@ export async function maybeRepairSandboxImages(
   const dockerAvailable = await isDockerAvailable();
   if (!dockerAvailable) {
     const lines = [
-      `Sandbox mode is enabled (mode: "${mode}") but Docker is not available.`,
-      "Docker is required for sandbox mode to function.",
-      "Isolated sessions (cron jobs, sub-agents) will fail without Docker.",
+      t("commands.doctorSandbox.dockerNotAvailable", { mode }),
+      t("commands.doctorSandbox.dockerRequired"),
+      t("commands.doctorSandbox.isolatedSessionsFail"),
       "",
-      "Options:",
-      "- Install Docker and restart the gateway",
-      "- Disable sandbox mode: openclaw config set agents.defaults.sandbox.mode off",
+      t("commands.doctorSandbox.optionsLabel"),
+      t("commands.doctorSandbox.installDocker"),
+      t("commands.doctorSandbox.disableSandbox", { command: "openclaw config set agents.defaults.sandbox.mode off" }),
     ];
-    note(lines.join("\n"), "Sandbox");
+    note(lines.join("\n"), t("commands.doctorSandbox.title"));
     return cfg;
   }
 
@@ -241,7 +243,7 @@ export async function maybeRepairSandboxImages(
   }
 
   if (changes.length > 0) {
-    note(changes.join("\n"), "Doctor changes");
+    note(changes.join("\n"), t("commands.doctorSandbox.titleDoctorChanges"));
   }
 
   return next;
@@ -284,14 +286,11 @@ export function noteSandboxScopeWarnings(cfg: OpenClawConfig) {
     }
 
     warnings.push(
-      [
-        `- agents.list (id "${agentId}") sandbox ${overrides.join("/")} overrides ignored.`,
-        `  scope resolves to "shared".`,
-      ].join("\n"),
+      t("commands.doctorSandbox.sandboxOverridesIgnored", { agentId, overrides: overrides.join("/") }),
     );
   }
 
   if (warnings.length > 0) {
-    note(warnings.join("\n"), "Sandbox");
+    note(warnings.join("\n"), t("commands.doctorSandbox.title"));
   }
 }

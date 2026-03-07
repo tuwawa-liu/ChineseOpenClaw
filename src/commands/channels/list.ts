@@ -5,6 +5,7 @@ import type { ChannelAccountSnapshot, ChannelPlugin } from "../../channels/plugi
 import { withProgress } from "../../cli/progress.js";
 import { formatUsageReportLines, loadProviderUsageSummary } from "../../infra/provider-usage.js";
 import { defaultRuntime, type RuntimeEnv } from "../../runtime.js";
+import { t } from "../../i18n/index.js";
 import { formatDocsLink } from "../../terminal/links.js";
 import { theme } from "../../terminal/theme.js";
 import { formatChannelAccountLabel, requireValidConfig } from "./shared.js";
@@ -25,11 +26,11 @@ const colorValue = (value: string) => {
 };
 
 function formatEnabled(value: boolean | undefined): string {
-  return value === false ? theme.error("disabled") : theme.success("enabled");
+  return value === false ? theme.error(t("commands.channelsList.disabled")) : theme.success(t("commands.channelsList.enabled"));
 }
 
 function formatConfigured(value: boolean): string {
-  return value ? theme.success("configured") : theme.warn("not configured");
+  return value ? theme.success(t("commands.channelsList.configured")) : theme.warn(t("commands.channelsList.notConfigured"));
 }
 
 function formatTokenSource(source?: string): string {
@@ -43,7 +44,7 @@ function formatSource(label: string, source?: string): string {
 }
 
 function formatLinked(value: boolean): string {
-  return value ? theme.success("linked") : theme.warn("not linked");
+  return value ? theme.success(t("commands.channelsList.linked")) : theme.warn(t("commands.channelsList.notLinked"));
 }
 
 function shouldShowConfigured(channel: ChannelPlugin): boolean {
@@ -131,7 +132,7 @@ export async function channelsListCommand(
   }
 
   const lines: string[] = [];
-  lines.push(theme.heading("Chat channels:"));
+  lines.push(theme.heading(t("commands.channelsList.chatChannels")));
 
   for (const plugin of plugins) {
     const accounts = plugin.config.listAccountIds(cfg);
@@ -154,9 +155,9 @@ export async function channelsListCommand(
   }
 
   lines.push("");
-  lines.push(theme.heading("Auth providers (OAuth + API keys):"));
+  lines.push(theme.heading(t("commands.channelsList.authProviders")));
   if (authProfiles.length === 0) {
-    lines.push(theme.muted("- none"));
+    lines.push(theme.muted(t("commands.channelsList.noAuthProviders")));
   } else {
     for (const profile of authProfiles) {
       const external = profile.isExternal ? theme.muted(" (synced)") : "";

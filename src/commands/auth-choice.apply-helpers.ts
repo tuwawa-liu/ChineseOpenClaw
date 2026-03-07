@@ -1,5 +1,6 @@
 import { resolveEnvApiKey } from "../agents/model-auth.js";
 import type { OpenClawConfig } from "../config/types.js";
+import { t } from "../i18n/index.js";
 import {
   isValidEnvSecretRefId,
   type SecretInput,
@@ -70,13 +71,13 @@ function resolveRefFallbackInput(params: {
   const fallbackEnvVar = params.preferredEnvVar ?? resolveDefaultProviderEnvVar(params.provider);
   if (!fallbackEnvVar) {
     throw new Error(
-      `No default environment variable mapping found for provider "${params.provider}". Set a provider-specific env var, or re-run onboarding in an interactive terminal to configure a ref.`,
+      t("commands.authHelpers.noEnvVarMapping", { provider: params.provider }),
     );
   }
   const value = process.env[fallbackEnvVar]?.trim();
   if (!value) {
     throw new Error(
-      `Environment variable "${fallbackEnvVar}" is required for --secret-input-mode ref in non-interactive onboarding.`,
+      t("commands.authHelpers.envVarRequired", { envVar: fallbackEnvVar }),
     );
   }
   return {
@@ -105,18 +106,18 @@ export async function promptSecretRefForOnboarding(params: {
 
   while (true) {
     const sourceRaw: SecretRefChoice = await params.prompter.select<SecretRefChoice>({
-      message: params.copy?.sourceMessage ?? "Where is this API key stored?",
+      message: params.copy?.sourceMessage ?? t("commands.authHelpers.secretSourceMsg"),
       initialValue: sourceChoice,
       options: [
         {
           value: "env",
-          label: "Environment variable",
-          hint: "Reference a variable from your runtime environment",
+          label: t("commands.authHelpers.envVarLabel"),
+          hint: t("commands.authHelpers.envVarHint"),
         },
         {
           value: "provider",
-          label: "Configured secret provider",
-          hint: "Use a configured file or exec secret provider",
+          label: t("commands.authHelpers.providerLabel"),
+          hint: t("commands.authHelpers.providerHint"),
         },
       ],
     });
@@ -125,7 +126,7 @@ export async function promptSecretRefForOnboarding(params: {
 
     if (source === "env") {
       const envVarRaw = await params.prompter.text({
-        message: params.copy?.envVarMessage ?? "Environment variable name",
+        message: params.copy?.envVarMessage ?? t("commands.authHelpers.envVarNameMsg"),
         initialValue: defaultEnvVar || undefined,
         placeholder: params.copy?.envVarPlaceholder ?? "OPENAI_API_KEY",
         validate: (value) => {
@@ -133,13 +134,13 @@ export async function promptSecretRefForOnboarding(params: {
           if (!isValidEnvSecretRefId(candidate)) {
             return (
               params.copy?.envVarFormatError ??
-              'Use an env var name like "OPENAI_API_KEY" (uppercase letters, numbers, underscores).'
+              t("commands.authHelpers.envVarFormatError")
             );
           }
           if (!process.env[candidate]?.trim()) {
             return (
               params.copy?.envVarMissingError?.(candidate) ??
-              `Environment variable "${candidate}" is missing or empty in this session.`
+              t("commands.authHelpers.envVarMissing", { envVar: candidate })
             );
           }
           return undefined;
@@ -150,7 +151,7 @@ export async function promptSecretRefForOnboarding(params: {
         envCandidate && isValidEnvSecretRefId(envCandidate) ? envCandidate : defaultEnvVar;
       if (!envVar) {
         throw new Error(
-          `No valid environment variable name provided for provider "${params.provider}".`,
+          t("commands.authHelpers.noValidEnvVar", { provider: params.provider }),
         );
       }
       const ref: SecretRef = {
@@ -166,8 +167,8 @@ export async function promptSecretRefForOnboarding(params: {
       });
       await params.prompter.note(
         params.copy?.envValidatedMessage?.(envVar) ??
-          `Validated environment variable ${envVar}. OpenClaw will store a reference, not the key value.`,
-        "Reference validated",
+          t("commands.authHelpers.envValidated", { envVar }),
+        t("commands.authHelpers.refValidated"),
       );
       return { ref, resolvedValue };
     }
@@ -178,8 +179,8 @@ export async function promptSecretRefForOnboarding(params: {
     if (externalProviders.length === 0) {
       await params.prompter.note(
         params.copy?.noProvidersMessage ??
-          "No file/exec secret providers are configured yet. Add one under secrets.providers, or select Environment variable.",
-        "No providers configured",
+          t("commands.authHelpers.noProviders"),
+        t("commands.authHelpers.noProvidersTitle"),
       );
       continue;
     }
@@ -187,28 +188,28 @@ export async function promptSecretRefForOnboarding(params: {
       preferFirstProviderForSource: true,
     });
     const selectedProvider = await params.prompter.select<string>({
-      message: "Select secret provider",
+      message: t("commands.authHelpers.selectProvider"),
       initialValue:
         externalProviders.find(([providerName]) => providerName === defaultProvider)?.[0] ??
         externalProviders[0]?.[0],
       options: externalProviders.map(([providerName, provider]) => ({
         value: providerName,
         label: providerName,
-        hint: provider?.source === "exec" ? "Exec provider" : "File provider",
+        hint: provider?.source === "exec" ? t("commands.authHelpers.execProvider") : t("commands.authHelpers.fileProvider"),
       })),
     });
     const providerEntry = params.config.secrets?.providers?.[selectedProvider];
     if (!providerEntry || (providerEntry.source !== "file" && providerEntry.source !== "exec")) {
       await params.prompter.note(
-        `Provider "${selectedProvider}" is not a file/exec provider.`,
-        "Invalid provider",
+        t("commands.authHelpers.invalidProvider", { provider: selectedProvider }),
+        t("commands.authHelpers.invalidProviderTitle"),
       );
       continue;
     }
     const idPrompt =
       providerEntry.source === "file"
-        ? "Secret id (JSON pointer for json mode, or 'value' for singleValue mode)"
-        : "Secret id for the exec provider";
+        ? t("commands.authHelpers.secretIdFileMsg")
+        : t("commands.authHelpers.secretIdExecMsg");
     const idDefault =
       providerEntry.source === "file"
         ? providerEntry.mode === "singleValue"
@@ -222,21 +223,21 @@ export async function promptSecretRefForOnboarding(params: {
       validate: (value) => {
         const candidate = value.trim();
         if (!candidate) {
-          return "Secret id cannot be empty.";
+          return t("commands.authHelpers.secretIdEmpty");
         }
         if (
           providerEntry.source === "file" &&
           providerEntry.mode !== "singleValue" &&
           !isValidFileSecretRefId(candidate)
         ) {
-          return 'Use an absolute JSON pointer like "/providers/openai/apiKey".';
+          return t("commands.authHelpers.secretIdInvalidPointer");
         }
         if (
           providerEntry.source === "file" &&
           providerEntry.mode === "singleValue" &&
           candidate !== "value"
         ) {
-          return 'singleValue mode expects id "value".';
+          return t("commands.authHelpers.secretIdSingleValue");
         }
         return undefined;
       },
@@ -254,18 +255,18 @@ export async function promptSecretRefForOnboarding(params: {
       });
       await params.prompter.note(
         params.copy?.providerValidatedMessage?.(selectedProvider, id, providerEntry.source) ??
-          `Validated ${providerEntry.source} reference ${selectedProvider}:${id}. OpenClaw will store a reference, not the key value.`,
-        "Reference validated",
+          t("commands.authHelpers.providerValidated", { source: providerEntry.source, provider: selectedProvider, id }),
+        t("commands.authHelpers.refValidated"),
       );
       return { ref, resolvedValue };
     } catch (error) {
       await params.prompter.note(
         [
-          `Could not validate provider reference ${selectedProvider}:${id}.`,
+          t("commands.authHelpers.refCheckFailed", { provider: selectedProvider, id }),
           formatErrorMessage(error),
-          "Check your provider configuration and try again.",
+          t("commands.authHelpers.checkConfigTryAgain"),
         ].join("\n"),
-        "Reference check failed",
+        t("commands.authHelpers.refCheckFailedTitle"),
       );
     }
   }
@@ -279,8 +280,8 @@ export function createAuthChoiceAgentModelNoter(
       return;
     }
     await params.prompter.note(
-      `Default model set to ${model} for agent "${params.agentId}".`,
-      "Model configured",
+      t("commands.authHelpers.modelSetDefault", { model, agentId: params.agentId }),
+      t("commands.authHelpers.modelConfigured"),
     );
   };
 }
@@ -389,20 +390,20 @@ export async function resolveSecretInputModeForEnvSelection(params: {
     return "plaintext";
   }
   const selected = await params.prompter.select<SecretInputMode>({
-    message: params.copy?.modeMessage ?? "How do you want to provide this API key?",
+    message: params.copy?.modeMessage ?? t("commands.authHelpers.modeMsg"),
     initialValue: "plaintext",
     options: [
       {
         value: "plaintext",
-        label: params.copy?.plaintextLabel ?? "Paste API key now",
-        hint: params.copy?.plaintextHint ?? "Stores the key directly in OpenClaw config",
+        label: params.copy?.plaintextLabel ?? t("commands.authHelpers.pasteNow"),
+        hint: params.copy?.plaintextHint ?? t("commands.authHelpers.pasteNowHint"),
       },
       {
         value: "ref",
-        label: params.copy?.refLabel ?? "Use external secret provider",
+        label: params.copy?.refLabel ?? t("commands.authHelpers.useRef"),
         hint:
           params.copy?.refHint ??
-          "Stores a reference to env or configured external secret providers",
+          t("commands.authHelpers.useRefHint"),
       },
     ],
   });
@@ -513,7 +514,7 @@ export async function ensureApiKeyFromEnvOrPrompt(params: {
 
   if (envKey && selectedMode === "plaintext") {
     const useExisting = await params.prompter.confirm({
-      message: `Use existing ${params.envLabel} (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+      message: t("commands.authHelpers.useExisting", { envLabel: params.envLabel, source: envKey.source, preview: formatApiKeyPreview(envKey.apiKey) }),
       initialValue: true,
     });
     if (useExisting) {

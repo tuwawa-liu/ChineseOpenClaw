@@ -1,4 +1,5 @@
 import { formatCliCommand } from "../cli/command-format.js";
+import { t } from "../i18n/index.js";
 import { listRouteBindings } from "../config/bindings.js";
 import type { AgentRouteBinding } from "../config/types.js";
 import { normalizeAgentId } from "../routing/session-key.js";
@@ -21,7 +22,7 @@ type AgentsListOptions = {
 };
 
 function formatSummary(summary: AgentSummary) {
-  const defaultTag = summary.isDefault ? " (default)" : "";
+  const defaultTag = summary.isDefault ? ` ${t("commands.agentsList.defaultTag")}` : "";
   const header =
     summary.name && summary.name !== summary.id
       ? `${summary.id}${defaultTag} (${summary.name})`
@@ -44,27 +45,27 @@ function formatSummary(summary: AgentSummary) {
 
   const lines = [`- ${header}`];
   if (identityLine) {
-    lines.push(`  Identity: ${identityLine}${identitySource ? ` (${identitySource})` : ""}`);
+    lines.push(`  ${t("commands.agentsList.identityLabel")} ${identityLine}${identitySource ? ` (${identitySource})` : ""}`);
   }
-  lines.push(`  Workspace: ${shortenHomePath(summary.workspace)}`);
-  lines.push(`  Agent dir: ${shortenHomePath(summary.agentDir)}`);
+  lines.push(`  ${t("commands.agentsList.workspaceLabel")} ${shortenHomePath(summary.workspace)}`);
+  lines.push(`  ${t("commands.agentsList.agentDirLabel")} ${shortenHomePath(summary.agentDir)}`);
   if (summary.model) {
-    lines.push(`  Model: ${summary.model}`);
+    lines.push(`  ${t("commands.agentsList.modelLabel")} ${summary.model}`);
   }
-  lines.push(`  Routing rules: ${summary.bindings}`);
+  lines.push(`  ${t("commands.agentsList.routingRulesLabel")} ${summary.bindings}`);
 
   if (summary.routes?.length) {
-    lines.push(`  Routing: ${summary.routes.join(", ")}`);
+    lines.push(`  ${t("commands.agentsList.routingLabel")} ${summary.routes.join(", ")}`);
   }
   if (summary.providers?.length) {
-    lines.push("  Providers:");
+    lines.push(`  ${t("commands.agentsList.providersLabel")}`);
     for (const provider of summary.providers) {
       lines.push(`    - ${provider}`);
     }
   }
 
   if (summary.bindingDetails?.length) {
-    lines.push("  Routing rules:");
+    lines.push(`  ${t("commands.agentsList.routingRulesLabel")}`);
     for (const binding of summary.bindingDetails) {
       lines.push(`    - ${binding}`);
     }
@@ -107,7 +108,7 @@ export async function agentsListCommand(
     if (routes.length > 0) {
       summary.routes = routes;
     } else if (summary.isDefault) {
-      summary.routes = ["default (no explicit rules)"];
+      summary.routes = [t("commands.agentsList.defaultRouting")];
     }
 
     const providerLines = listProvidersForAgent({
@@ -126,10 +127,10 @@ export async function agentsListCommand(
     return;
   }
 
-  const lines = ["Agents:", ...summaries.map(formatSummary)];
-  lines.push("Routing rules map channel/account/peer to an agent. Use --bindings for full rules.");
+  const lines = [t("commands.agentsList.agentsTitle"), ...summaries.map(formatSummary)];
+  lines.push(t("commands.agentsList.routingHint"));
   lines.push(
-    `Channel status reflects local config/creds. For live health: ${formatCliCommand("openclaw channels status --probe")}.`,
+    t("commands.agentsList.channelStatusHint", { command: formatCliCommand("openclaw channels status --probe") }),
   );
   runtime.log(lines.join("\n"));
 }

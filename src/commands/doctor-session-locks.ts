@@ -1,6 +1,7 @@
 import { resolveAgentSessionDirs } from "../agents/session-dirs.js";
 import { cleanStaleLockFiles, type SessionLockInspection } from "../agents/session-write-lock.js";
 import { resolveStateDir } from "../config/paths.js";
+import { t } from "../i18n/index.js";
 import { note } from "../terminal/note.js";
 import { shortenHomePath } from "../utils.js";
 
@@ -42,7 +43,7 @@ export async function noteSessionLockHealth(params?: { shouldRepair?: boolean; s
   try {
     sessionDirs = await resolveAgentSessionDirs(resolveStateDir(process.env));
   } catch (err) {
-    note(`- Failed to inspect session lock files: ${String(err)}`, "Session locks");
+    note(t("commands.doctorSessionLocks.failedInspect", { error: String(err) }), t("commands.doctorSessionLocks.title"));
     return;
   }
 
@@ -67,19 +68,19 @@ export async function noteSessionLockHealth(params?: { shouldRepair?: boolean; s
   const staleCount = allLocks.filter((lock) => lock.stale).length;
   const removedCount = allLocks.filter((lock) => lock.removed).length;
   const lines: string[] = [
-    `- Found ${allLocks.length} session lock file${allLocks.length === 1 ? "" : "s"}.`,
+    t("commands.doctorSessionLocks.foundLockFiles", { count: String(allLocks.length) }),
     ...allLocks.toSorted((a, b) => a.lockPath.localeCompare(b.lockPath)).map(formatLockLine),
   ];
 
   if (staleCount > 0 && !shouldRepair) {
-    lines.push(`- ${staleCount} lock file${staleCount === 1 ? " is" : "s are"} stale.`);
-    lines.push('- Run "openclaw doctor --fix" to remove stale lock files automatically.');
+    lines.push(t("commands.doctorSessionLocks.staleLockFiles", { count: String(staleCount) }));
+    lines.push(t("commands.doctorSessionLocks.fixStaleHint"));
   }
   if (shouldRepair && removedCount > 0) {
     lines.push(
-      `- Removed ${removedCount} stale session lock file${removedCount === 1 ? "" : "s"}.`,
+      t("commands.doctorSessionLocks.removedStaleLocks", { count: String(removedCount) }),
     );
   }
 
-  note(lines.join("\n"), "Session locks");
+  note(lines.join("\n"), t("commands.doctorSessionLocks.title"));
 }

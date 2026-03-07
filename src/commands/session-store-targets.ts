@@ -1,4 +1,5 @@
 import { listAgentIds, resolveDefaultAgentId } from "../agents/agent-scope.js";
+import { t } from "../i18n/index.js";
 import { resolveStorePath } from "../config/sessions.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { normalizeAgentId } from "../routing/session-key.js";
@@ -33,10 +34,10 @@ export function resolveSessionStoreTargets(
   const hasAgent = Boolean(opts.agent?.trim());
   const allAgents = opts.allAgents === true;
   if (hasAgent && allAgents) {
-    throw new Error("--agent and --all-agents cannot be used together");
+    throw new Error(t("commands.sessionStoreTargets.agentAndAllConflict"));
   }
   if (opts.store && (hasAgent || allAgents)) {
-    throw new Error("--store cannot be combined with --agent or --all-agents");
+    throw new Error(t("commands.sessionStoreTargets.storeConflict"));
   }
 
   if (opts.store) {
@@ -61,7 +62,7 @@ export function resolveSessionStoreTargets(
     const requested = normalizeAgentId(opts.agent ?? "");
     if (!knownAgents.includes(requested)) {
       throw new Error(
-        `Unknown agent id "${opts.agent}". Use "openclaw agents list" to see configured agents.`,
+        t("commands.sessionStoreTargets.unknownAgent", { id: opts.agent }),
       );
     }
     return [

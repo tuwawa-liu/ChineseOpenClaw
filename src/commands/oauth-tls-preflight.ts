@@ -1,6 +1,7 @@
 import path from "node:path";
 import { formatCliCommand } from "../cli/command-format.js";
 import type { OpenClawConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { note } from "../terminal/note.js";
 
 const TLS_CERT_ERROR_CODES = new Set([
@@ -128,24 +129,24 @@ export function formatOpenAIOAuthTlsPreflightFix(
 ): string {
   if (result.kind !== "tls-cert") {
     return [
-      "OpenAI OAuth prerequisites check failed due to a network error before the browser flow.",
+      t("commands.oauthTlsPreflight.networkError"),
       `Cause: ${result.message}`,
-      "Verify DNS/firewall/proxy access to auth.openai.com and retry.",
+      t("commands.oauthTlsPreflight.verifyDns"),
     ].join("\n");
   }
   const certBundlePath = resolveCertBundlePath();
   const lines = [
-    "OpenAI OAuth prerequisites check failed: Node/OpenSSL cannot validate TLS certificates.",
+    t("commands.oauthTlsPreflight.tlsFailed"),
     `Cause: ${result.code ? `${result.code} (${result.message})` : result.message}`,
     "",
-    "Fix (Homebrew Node/OpenSSL):",
+    t("commands.oauthTlsPreflight.fixHomebrew"),
     `- ${formatCliCommand("brew postinstall ca-certificates")}`,
     `- ${formatCliCommand("brew postinstall openssl@3")}`,
   ];
   if (certBundlePath) {
-    lines.push(`- Verify cert bundle exists: ${certBundlePath}`);
+    lines.push(`- ${t("commands.oauthTlsPreflight.verifyCertBundle", { command: certBundlePath })}`);
   }
-  lines.push("- Retry the OAuth login flow.");
+  lines.push(`- ${t("commands.oauthTlsPreflight.retryOauth")}`);
   return lines.join("\n");
 }
 
@@ -160,5 +161,5 @@ export async function noteOpenAIOAuthTlsPrerequisites(params: {
   if (result.ok || result.kind !== "tls-cert") {
     return;
   }
-  note(formatOpenAIOAuthTlsPreflightFix(result), "OAuth TLS prerequisites");
+  note(formatOpenAIOAuthTlsPreflightFix(result), t("commands.oauthTlsPreflight.oauthTlsTitle"));
 }

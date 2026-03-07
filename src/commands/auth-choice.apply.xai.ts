@@ -1,4 +1,5 @@
 import { normalizeApiKeyInput, validateApiKeyInput } from "./auth-choice.api-key.js";
+import { t } from "../i18n/index.js";
 import {
   createAuthChoiceAgentModelNoter,
   ensureApiKeyFromOptionEnvOrPrompt,
@@ -33,7 +34,7 @@ export async function applyAuthChoiceXAI(
     expectedProviders: ["xai"],
     provider: "xai",
     envLabel: "XAI_API_KEY",
-    promptMessage: "Enter xAI API key",
+    promptMessage: t("commands.authXai.enterApiKey"),
     normalize: normalizeApiKeyInput,
     validate: validateApiKeyInput,
     prompter: params.prompter,

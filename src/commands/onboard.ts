@@ -1,5 +1,6 @@
 import { formatCliCommand } from "../cli/command-format.js";
 import { readConfigFileSnapshot } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { assertSupportedRuntime } from "../infra/runtime-guard.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -18,19 +19,16 @@ export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv =
   const normalizedAuthChoice = normalizeLegacyOnboardAuthChoice(originalAuthChoice);
   if (opts.nonInteractive && isDeprecatedAuthChoice(originalAuthChoice)) {
     runtime.error(
-      [
-        `Auth choice "${String(originalAuthChoice)}" is deprecated.`,
-        'Use "--auth-choice token" (Anthropic setup-token) or "--auth-choice openai-codex".',
-      ].join("\n"),
+      t("commands.onboard.authDeprecated", { choice: String(originalAuthChoice) }),
     );
     runtime.exit(1);
     return;
   }
   if (originalAuthChoice === "claude-cli") {
-    runtime.log('Auth choice "claude-cli" is deprecated; using setup-token flow instead.');
+    runtime.log(t("commands.onboard.claudeCliDeprecated"));
   }
   if (originalAuthChoice === "codex-cli") {
-    runtime.log('Auth choice "codex-cli" is deprecated; using OpenAI Codex OAuth instead.');
+    runtime.log(t("commands.onboard.codexCliDeprecated"));
   }
   const flow = opts.flow === "manual" ? ("advanced" as const) : opts.flow;
   const normalizedOpts =
@@ -42,13 +40,13 @@ export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv =
     normalizedOpts.secretInputMode !== "plaintext" &&
     normalizedOpts.secretInputMode !== "ref"
   ) {
-    runtime.error('Invalid --secret-input-mode. Use "plaintext" or "ref".');
+    runtime.error(t("commands.onboard.invalidSecretMode"));
     runtime.exit(1);
     return;
   }
 
   if (normalizedOpts.resetScope && !VALID_RESET_SCOPES.has(normalizedOpts.resetScope)) {
-    runtime.error('Invalid --reset-scope. Use "config", "config+creds+sessions", or "full".');
+    runtime.error(t("commands.onboard.invalidResetScope"));
     runtime.exit(1);
     return;
   }
@@ -56,8 +54,7 @@ export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv =
   if (normalizedOpts.nonInteractive && normalizedOpts.acceptRisk !== true) {
     runtime.error(
       [
-        "Non-interactive onboarding requires explicit risk acknowledgement.",
-        "Read: https://docs.openclaw.ai/security",
+        t("commands.onboard.nonInteractiveRisk"),
         `Re-run with: ${formatCliCommand("openclaw onboard --non-interactive --accept-risk ...")}`,
       ].join("\n"),
     );
@@ -75,14 +72,7 @@ export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv =
   }
 
   if (process.platform === "win32") {
-    runtime.log(
-      [
-        "Windows detected — OpenClaw runs great on WSL2!",
-        "Native Windows might be trickier.",
-        "Quick setup: wsl --install (one command, one reboot)",
-        "Guide: https://docs.openclaw.ai/windows",
-      ].join("\n"),
-    );
+    runtime.log(t("commands.onboard.windowsDetected"));
   }
 
   if (normalizedOpts.nonInteractive) {

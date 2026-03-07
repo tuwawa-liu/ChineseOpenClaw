@@ -1,5 +1,7 @@
 const DEFAULT_KEY_PREVIEW = { head: 4, tail: 4 };
 
+import { t } from "../i18n/index.js";
+
 export function normalizeApiKeyInput(raw: string): string {
   const trimmed = String(raw ?? "").trim();
   if (!trimmed) {
@@ -24,7 +26,7 @@ export function normalizeApiKeyInput(raw: string): string {
 }
 
 export const validateApiKeyInput = (value: string) =>
-  normalizeApiKeyInput(value).length > 0 ? undefined : "Required";
+  normalizeApiKeyInput(value).length > 0 ? undefined : t("commands.authApiKey.required");
 
 export function formatApiKeyPreview(
   raw: string,

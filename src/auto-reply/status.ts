@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { t } from "../i18n/index.js";
 import { resolveContextTokensForModel } from "../agents/context.js";
 import { DEFAULT_CONTEXT_TOKENS, DEFAULT_MODEL, DEFAULT_PROVIDER } from "../agents/defaults.js";
 import { resolveModelAuthMode } from "../agents/model-auth.js";
@@ -178,7 +179,7 @@ const formatTokens = (total: number | null | undefined, contextTokens: number | 
 export const formatContextUsageShort = (
   total: number | null | undefined,
   contextTokens: number | null | undefined,
-) => `Context ${formatTokens(total, contextTokens ?? null)}`;
+) => t("statusMsg.context", { tokens: formatTokens(total, contextTokens ?? null) });
 
 const formatQueueDetails = (queue?: QueueStatus) => {
   if (!queue) {
@@ -309,7 +310,7 @@ const formatUsagePair = (input?: number | null, output?: number | null) => {
   }
   const inputLabel = typeof input === "number" ? formatTokenCount(input) : "?";
   const outputLabel = typeof output === "number" ? formatTokenCount(output) : "?";
-  return `🧮 Tokens: ${inputLabel} in / ${outputLabel} out`;
+  return t("statusMsg.tokens", { input: inputLabel, output: outputLabel });
 };
 
 const formatCacheLine = (
@@ -339,7 +340,7 @@ const formatCacheLine = (
       ? Math.round((cacheRead / totalInput) * 100)
       : 0;
 
-  return `🗄️ Cache: ${hitRate}% hit · ${cachedLabel} cached, ${newLabel} new`;
+  return t("statusMsg.cache", { hitRate: String(hitRate), cached: cachedLabel, new: newLabel });
 };
 
 const formatMediaUnderstandingLine = (decisions?: ReadonlyArray<MediaUnderstandingDecision>) => {
@@ -382,7 +383,7 @@ const formatMediaUnderstandingLine = (decisions?: ReadonlyArray<MediaUnderstandi
   if (parts.every((part) => part.endsWith(" none"))) {
     return null;
   }
-  return `📎 Media: ${parts.join(" · ")}`;
+  return t("statusMsg.media", { parts: parts.join(" · ") });
 };
 
 const formatVoiceModeLine = (
@@ -405,7 +406,7 @@ const formatVoiceModeLine = (
   const provider = getTtsProvider(ttsConfig, prefsPath);
   const maxLength = getTtsMaxLength(prefsPath);
   const summarize = isSummarizationEnabled(prefsPath) ? "on" : "off";
-  return `🔊 Voice: ${autoMode} · provider=${provider} · limit=${maxLength} · summary=${summarize}`;
+  return t("statusMsg.voice", { mode: autoMode, provider, limit: String(maxLength), summarize });
 };
 
 export function buildStatusMessage(args: StatusArgs): string {
@@ -521,8 +522,8 @@ export function buildStatusMessage(args: StatusArgs): string {
 
   const updatedAt = entry?.updatedAt;
   const sessionLine = [
-    `Session: ${args.sessionKey ?? "unknown"}`,
-    typeof updatedAt === "number" ? `updated ${formatTimeAgo(now - updatedAt)}` : "no activity",
+    t("statusMsg.session", { key: args.sessionKey ?? "unknown" }),
+    typeof updatedAt === "number" ? t("statusMsg.updated", { ago: formatTimeAgo(now - updatedAt) }) : t("statusMsg.noActivity"),
   ]
     .filter(Boolean)
     .join(" • ");
@@ -537,8 +538,8 @@ export function buildStatusMessage(args: StatusArgs): string {
     : undefined;
 
   const contextLine = [
-    `Context: ${formatTokens(totalTokens, contextTokens ?? null)}`,
-    `🧹 Compactions: ${entry?.compactionCount ?? 0}`,
+    t("statusMsg.context", { tokens: formatTokens(totalTokens, contextTokens ?? null) }),
+    t("statusMsg.compactions", { count: String(entry?.compactionCount ?? 0) }),
   ]
     .filter(Boolean)
     .join(" · ");
@@ -546,24 +547,24 @@ export function buildStatusMessage(args: StatusArgs): string {
   const queueMode = args.queue?.mode ?? "unknown";
   const queueDetails = formatQueueDetails(args.queue);
   const verboseLabel =
-    verboseLevel === "full" ? "verbose:full" : verboseLevel === "on" ? "verbose" : null;
+    verboseLevel === "full" ? t("statusMsg.verboseFull") : verboseLevel === "on" ? t("statusMsg.verbose") : null;
   const elevatedLabel =
     elevatedLevel && elevatedLevel !== "off"
       ? elevatedLevel === "on"
-        ? "elevated"
-        : `elevated:${elevatedLevel}`
+        ? t("statusMsg.elevated")
+        : t("statusMsg.elevatedMode", { mode: elevatedLevel })
       : null;
   const optionParts = [
-    `Runtime: ${runtime.label}`,
-    `Think: ${thinkLevel}`,
+    t("statusMsg.runtime", { label: runtime.label }),
+    t("statusMsg.think", { level: thinkLevel }),
     verboseLabel,
-    reasoningLevel !== "off" ? `Reasoning: ${reasoningLevel}` : null,
+    reasoningLevel !== "off" ? t("statusMsg.reasoning", { level: reasoningLevel }) : null,
     elevatedLabel,
   ];
   const optionsLine = optionParts.filter(Boolean).join(" · ");
   const activationParts = [
-    groupActivationValue ? `👥 Activation: ${groupActivationValue}` : null,
-    `🪢 Queue: ${queueMode}${queueDetails}`,
+    groupActivationValue ? t("statusMsg.activation", { mode: groupActivationValue }) : null,
+    t("statusMsg.queue", { mode: queueMode, details: queueDetails }),
   ];
   const activationLine = activationParts.filter(Boolean).join(" · ");
 
@@ -608,7 +609,7 @@ export function buildStatusMessage(args: StatusArgs): string {
       : undefined;
   const costLabel = showCost && hasUsage ? formatUsd(cost) : undefined;
 
-  const selectedAuthLabel = selectedAuthLabelValue ? ` · 🔑 ${selectedAuthLabelValue}` : "";
+  const selectedAuthLabel = selectedAuthLabelValue ? t("statusMsg.authLabel", { mode: selectedAuthLabelValue }) : "";
   const channelModelNote = (() => {
     if (!args.config || !entry) {
       return undefined;
@@ -645,21 +646,23 @@ export function buildStatusMessage(args: StatusArgs): string {
     ) {
       return undefined;
     }
-    return "channel override";
+    return t("statusMsg.channelOverride");
   })();
   const modelNote = channelModelNote ? ` · ${channelModelNote}` : "";
-  const modelLine = `🧠 Model: ${selectedModelLabel}${selectedAuthLabel}${modelNote}`;
+  const modelLine = t("statusMsg.model", { label: selectedModelLabel, auth: selectedAuthLabel, note: modelNote });
   const showFallbackAuth = activeAuthLabelValue && activeAuthLabelValue !== selectedAuthLabelValue;
   const fallbackLine = fallbackState.active
-    ? `↪️ Fallback: ${activeModelLabel}${
-        showFallbackAuth ? ` · 🔑 ${activeAuthLabelValue}` : ""
-      } (${fallbackState.reason ?? "selected model unavailable"})`
+    ? t("statusMsg.fallback", {
+        label: activeModelLabel,
+        auth: showFallbackAuth ? t("statusMsg.authLabel", { mode: activeAuthLabelValue! }) : "",
+        reason: fallbackState.reason ?? t("statusMsg.selectedModelUnavailable"),
+      })
     : null;
   const commit = resolveCommitHash();
-  const versionLine = `🦞 OpenClaw ${VERSION}${commit ? ` (${commit})` : ""}`;
+  const versionLine = t("statusMsg.version", { ver: VERSION, commit: commit ? ` (${commit})` : "" });
   const usagePair = formatUsagePair(inputTokens, outputTokens);
   const cacheLine = formatCacheLine(inputTokens, cacheRead, cacheWrite);
-  const costLine = costLabel ? `💵 Cost: ${costLabel}` : null;
+  const costLine = costLabel ? t("statusMsg.cost", { amount: costLabel }) : null;
   const usageCostLine =
     usagePair && costLine ? `${usagePair} · ${costLine}` : (usagePair ?? costLine);
   const mediaLine = formatMediaUnderstandingLine(args.mediaDecisions);
@@ -672,12 +675,12 @@ export function buildStatusMessage(args: StatusArgs): string {
     fallbackLine,
     usageCostLine,
     cacheLine,
-    `📚 ${contextLine}`,
+    `${t("statusMsg.contextPrefix")}${contextLine}`,
     mediaLine,
     args.usageLine,
-    `🧵 ${sessionLine}`,
+    `${t("statusMsg.sessionPrefix")}${sessionLine}`,
     args.subagentsLine,
-    `⚙️ ${optionsLine}`,
+    `${t("statusMsg.optionsPrefix")}${optionsLine}`,
     voiceLine,
     activationLine,
   ]
@@ -686,13 +689,13 @@ export function buildStatusMessage(args: StatusArgs): string {
 }
 
 const CATEGORY_LABELS: Record<CommandCategory, string> = {
-  session: "Session",
-  options: "Options",
-  status: "Status",
-  management: "Management",
-  media: "Media",
-  tools: "Tools",
-  docks: "Docks",
+  session: t("chatCmd.categories.session"),
+  options: t("chatCmd.categories.options"),
+  status: t("chatCmd.categories.status"),
+  management: t("chatCmd.categories.management"),
+  media: t("chatCmd.categories.media"),
+  tools: t("chatCmd.categories.tools"),
+  docks: t("chatCmd.categories.docks"),
 };
 
 const CATEGORY_ORDER: CommandCategory[] = [
@@ -722,10 +725,10 @@ function groupCommandsByCategory(
 }
 
 export function buildHelpMessage(cfg?: OpenClawConfig): string {
-  const lines = ["ℹ️ Help", ""];
+  const lines = [t("help.title"), ""];
 
-  lines.push("Session");
-  lines.push("  /new  |  /reset  |  /compact [instructions]  |  /stop");
+  lines.push(t("help.sessionSection"));
+  lines.push(t("help.sessionCmds"));
   lines.push("");
 
   const optionParts = ["/think <level>", "/model <id>", "/verbose on|off"];
@@ -735,19 +738,19 @@ export function buildHelpMessage(cfg?: OpenClawConfig): string {
   if (isCommandFlagEnabled(cfg, "debug")) {
     optionParts.push("/debug");
   }
-  lines.push("Options");
+  lines.push(t("help.optionsSection"));
   lines.push(`  ${optionParts.join("  |  ")}`);
   lines.push("");
 
-  lines.push("Status");
-  lines.push("  /status  |  /whoami  |  /context");
+  lines.push(t("help.statusSection"));
+  lines.push(t("help.statusCmds"));
   lines.push("");
 
-  lines.push("Skills");
-  lines.push("  /skill <name> [input]");
+  lines.push(t("help.skillsSection"));
+  lines.push(t("help.skillsCmds"));
 
   lines.push("");
-  lines.push("More: /commands for full list");
+  lines.push(t("help.more"));
 
   return lines.join("\n");
 }
@@ -785,7 +788,7 @@ function formatCommandEntry(command: ChatCommandDefinition): string {
       return true;
     });
   const aliasLabel = aliases.length ? ` (${aliases.join(", ")})` : "";
-  const scopeLabel = command.scope === "text" ? " [text]" : "";
+  const scopeLabel = command.scope === "text" ? t("statusMsg.scopeText") : "";
   return `${primary}${aliasLabel}${scopeLabel} - ${command.description}`;
 }
 
@@ -815,7 +818,7 @@ function buildCommandItems(
   for (const command of pluginCommands) {
     const pluginLabel = command.pluginId ? ` (${command.pluginId})` : "";
     items.push({
-      label: "Plugins",
+      label: t("statusMsg.plugins"),
       text: `/${command.name}${pluginLabel} - ${command.description}`,
     });
   }
@@ -866,7 +869,7 @@ export function buildCommandsMessagePaginated(
   const items = buildCommandItems(commands, pluginCommands);
 
   if (!isTelegram) {
-    const lines = ["ℹ️ Slash commands", ""];
+    const lines = [t("cmdList.title"), ""];
     lines.push(formatCommandList(items));
     return {
       text: lines.join("\n").trim(),
@@ -884,7 +887,7 @@ export function buildCommandsMessagePaginated(
   const endIndex = startIndex + COMMANDS_PER_PAGE;
   const pageItems = items.slice(startIndex, endIndex);
 
-  const lines = [`ℹ️ Commands (${currentPage}/${totalPages})`, ""];
+  const lines = [t("cmdList.titlePaged", { current: String(currentPage), total: String(totalPages) }), ""];
   lines.push(formatCommandList(pageItems));
 
   return {

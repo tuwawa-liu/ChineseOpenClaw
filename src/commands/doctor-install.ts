@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { t } from "../i18n/index.js";
 import { note } from "../terminal/note.js";
 
 export function noteSourceInstallIssues(root: string | null) {
@@ -20,21 +21,21 @@ export function noteSourceInstallIssues(root: string | null) {
 
   if (fs.existsSync(nodeModules) && !fs.existsSync(pnpmStore)) {
     warnings.push(
-      "- node_modules was not installed by pnpm (missing node_modules/.pnpm). Run: pnpm install",
+      t("commands.doctorInstall.notPnpm"),
     );
   }
 
   if (fs.existsSync(path.join(root, "package-lock.json"))) {
     warnings.push(
-      "- package-lock.json present in a pnpm workspace. If you ran npm install, remove it and reinstall with pnpm.",
+      t("commands.doctorInstall.packageLockPresent"),
     );
   }
 
   if (fs.existsSync(srcEntry) && !fs.existsSync(tsxBin)) {
-    warnings.push("- tsx binary is missing for source runs. Run: pnpm install");
+    warnings.push(t("commands.doctorInstall.tsxMissing"));
   }
 
   if (warnings.length > 0) {
-    note(warnings.join("\n"), "Install");
+    note(warnings.join("\n"), t("commands.doctorInstall.title"));
   }
 }

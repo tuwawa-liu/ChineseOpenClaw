@@ -2,6 +2,7 @@ import { installSkill } from "../agents/skills-install.js";
 import { buildWorkspaceSkillStatus } from "../agents/skills-status.js";
 import { formatCliCommand } from "../cli/command-format.js";
 import type { OpenClawConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { normalizeSecretInput } from "../utils/normalize-secret-input.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
@@ -65,16 +66,16 @@ export async function setupSkills(
 
   await prompter.note(
     [
-      `Eligible: ${eligible.length}`,
-      `Missing requirements: ${missing.length}`,
-      `Unsupported on this OS: ${unsupportedOs.length}`,
-      `Blocked by allowlist: ${blocked.length}`,
+      t("commands.onboardSkills.eligible", { count: String(eligible.length) }),
+      t("commands.onboardSkills.missingRequirements", { count: String(missing.length) }),
+      t("commands.onboardSkills.unsupportedOs", { count: String(unsupportedOs.length) }),
+      t("commands.onboardSkills.blockedByAllowlist", { count: String(blocked.length) }),
     ].join("\n"),
-    "Skills status",
+    t("commands.onboardSkills.skillsStatus"),
   );
 
   const shouldConfigure = await prompter.confirm({
-    message: "Configure skills now? (recommended)",
+    message: t("commands.onboardSkills.configureSkills"),
     initialValue: true,
   });
   if (!shouldConfigure) {
@@ -87,12 +88,12 @@ export async function setupSkills(
   let next: OpenClawConfig = cfg;
   if (installable.length > 0) {
     const toInstall = await prompter.multiselect({
-      message: "Install missing skill dependencies",
+      message: t("commands.onboardSkills.installMissing"),
       options: [
         {
           value: "__skip__",
-          label: "Skip for now",
-          hint: "Continue without installing dependencies",
+          label: t("commands.onboardSkills.skipForNow"),
+          hint: t("commands.onboardSkills.skipHint"),
         },
         ...installable.map((skill) => ({
           value: skill.name,
@@ -116,13 +117,12 @@ export async function setupSkills(
     if (needsBrewPrompt) {
       await prompter.note(
         [
-          "Many skill dependencies are shipped via Homebrew.",
-          "Without brew, you'll need to build from source or download releases manually.",
+          t("commands.onboardSkills.brewNote"),
         ].join("\n"),
-        "Homebrew recommended",
+        t("commands.onboardSkills.brewRecommended"),
       );
       const showBrewInstall = await prompter.confirm({
-        message: "Show Homebrew install command?",
+        message: t("commands.onboardSkills.showBrewInstall"),
         initialValue: true,
       });
       if (showBrewInstall) {
@@ -131,7 +131,7 @@ export async function setupSkills(
             "Run:",
             '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
           ].join("\n"),
-          "Homebrew install",
+          t("commands.onboardSkills.brewInstallTitle"),
         );
       }
     }
@@ -141,7 +141,7 @@ export async function setupSkills(
     );
     if (needsNodeManagerPrompt) {
       const nodeManager = (await prompter.select({
-        message: "Preferred node manager for skill installs",
+        message: t("commands.onboardSkills.nodeManagerPrompt"),
         options: resolveNodeManagerOptions(),
       })) as "npm" | "pnpm" | "bun";
       next = {
@@ -165,7 +165,7 @@ export async function setupSkills(
       if (!installId) {
         continue;
       }
-      const spin = prompter.progress(`Installing ${name}…`);
+      const spin = prompter.progress(t("commands.onboardSkills.installing", { name }));
       const result = await installSkill({
         workspaceDir,
         skillName: target.name,
@@ -174,7 +174,7 @@ export async function setupSkills(
       });
       const warnings = result.warnings ?? [];
       if (result.ok) {
-        spin.stop(warnings.length > 0 ? `Installed ${name} (with warnings)` : `Installed ${name}`);
+        spin.stop(warnings.length > 0 ? t("commands.onboardSkills.installedWithWarnings", { name }) : t("commands.onboardSkills.installed", { name }));
         for (const warning of warnings) {
           runtime.log(warning);
         }
@@ -182,7 +182,7 @@ export async function setupSkills(
       }
       const code = result.code == null ? "" : ` (exit ${result.code})`;
       const detail = summarizeInstallFailure(result.message);
-      spin.stop(`Install failed: ${name}${code}${detail ? ` — ${detail}` : ""}`);
+      spin.stop(t("commands.onboardSkills.installFailed", { name, code, detail: detail ? ` — ${detail}` : "" }));
       for (const warning of warnings) {
         runtime.log(warning);
       }
@@ -192,9 +192,9 @@ export async function setupSkills(
         runtime.log(result.stdout.trim());
       }
       runtime.log(
-        `Tip: run \`${formatCliCommand("openclaw doctor")}\` to review skills + requirements.`,
+        t("commands.onboardSkills.doctorTip", { command: formatCliCommand("openclaw doctor") }),
       );
-      runtime.log("Docs: https://docs.openclaw.ai/skills");
+      runtime.log(t("commands.onboardSkills.docsLink"));
     }
   }
 
@@ -203,7 +203,7 @@ export async function setupSkills(
       continue;
     }
     const wantsKey = await prompter.confirm({
-      message: `Set ${skill.primaryEnv} for ${skill.name}?`,
+      message: t("commands.onboardSkills.setEnvConfirm", { env: skill.primaryEnv, name: skill.name }),
       initialValue: false,
     });
     if (!wantsKey) {
@@ -211,8 +211,8 @@ export async function setupSkills(
     }
     const apiKey = String(
       await prompter.text({
-        message: `Enter ${skill.primaryEnv}`,
-        validate: (value) => (value?.trim() ? undefined : "Required"),
+        message: t("commands.onboardSkills.enterEnv", { env: skill.primaryEnv }),
+        validate: (value) => (value?.trim() ? undefined : t("commands.onboardSkills.required")),
       }),
     );
     next = upsertSkillEntry(next, skill.skillKey, { apiKey: normalizeSecretInput(apiKey) });

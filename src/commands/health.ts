@@ -8,6 +8,7 @@ import { loadConfig } from "../config/config.js";
 import { loadSessionStore, resolveStorePath } from "../config/sessions.js";
 import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { info } from "../globals.js";
+import { t } from "../i18n/index.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { formatErrorMessage } from "../infra/errors.js";
 import {
@@ -200,7 +201,7 @@ const formatProbeLine = (probe: unknown, opts: { botUsernames?: string[] } = {})
   }
 
   if (ok) {
-    let label = "ok";
+    let label = t("commands.health.probeOk");
     if (usernames.size > 0) {
       label += ` (@${Array.from(usernames).join(", @")})`;
     }
@@ -208,11 +209,11 @@ const formatProbeLine = (probe: unknown, opts: { botUsernames?: string[] } = {})
       label += ` (${elapsedMs}ms)`;
     }
     if (webhookUrl) {
-      label += ` - webhook ${webhookUrl}`;
+      label += ` - ${t("commands.health.probeWebhook", { url: webhookUrl })}`;
     }
     return label;
   }
-  let label = `failed (${status ?? "unknown"})`;
+  let label = t("commands.health.probeFailed", { status: String(status ?? t("commands.health.probeUnknown")) });
   if (error) {
     label += ` - ${error}`;
   }
@@ -297,16 +298,16 @@ export const formatHealthChannelLines = (
       if (linked) {
         const authAgeMs = typeof baseSummary.authAgeMs === "number" ? baseSummary.authAgeMs : null;
         const authLabel = authAgeMs != null ? ` (auth age ${Math.round(authAgeMs / 60000)}m)` : "";
-        lines.push(`${label}: linked${authLabel}`);
+        lines.push(`${label}: ${t("commands.health.linked")}${authLabel}`);
       } else {
-        lines.push(`${label}: not linked`);
+        lines.push(`${label}: ${t("commands.health.notLinked")}`);
       }
       continue;
     }
 
     const configured = typeof baseSummary.configured === "boolean" ? baseSummary.configured : null;
     if (configured === false) {
-      lines.push(`${label}: not configured`);
+      lines.push(`${label}: ${t("commands.health.notConfigured")}`);
       continue;
     }
 
@@ -337,10 +338,10 @@ export const formatHealthChannelLines = (
     }
 
     if (configured === true) {
-      lines.push(`${label}: configured`);
+      lines.push(`${label}: ${t("commands.health.configured")}`);
       continue;
     }
-    lines.push(`${label}: unknown`);
+    lines.push(`${label}: ${t("commands.health.probeUnknown")}`);
   }
   return lines;
 };
@@ -530,7 +531,7 @@ export async function healthCommand(
   // Always query the running gateway; do not open a direct Baileys socket here.
   const summary = await withProgress(
     {
-      label: "Checking gateway health…",
+      label: t("commands.health.checking"),
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -552,7 +553,7 @@ export async function healthCommand(
     const rich = isRich();
     if (opts.verbose) {
       const details = buildGatewayConnectionDetails({ config: cfg });
-      runtime.log(info("Gateway connection:"));
+      runtime.log(info(t("commands.health.gatewayConnection")));
       for (const line of details.message.split("\n")) {
         runtime.log(`  ${line}`);
       }
@@ -702,28 +703,28 @@ export async function healthCommand(
 
     if (resolvedAgents.length > 0) {
       const agentLabels = resolvedAgents.map((agent) =>
-        agent.isDefault ? `${agent.agentId} (default)` : agent.agentId,
+        agent.isDefault ? `${agent.agentId} ${t("commands.health.defaultMark")}` : agent.agentId,
       );
-      runtime.log(info(`Agents: ${agentLabels.join(", ")}`));
+      runtime.log(info(t("commands.health.agents", { list: agentLabels.join(", ") })));
     }
     const heartbeatParts = displayAgents
       .map((agent) => {
         const everyMs = agent.heartbeat?.everyMs;
-        const label = everyMs ? formatDurationParts(everyMs) : "disabled";
+        const label = everyMs ? formatDurationParts(everyMs) : t("commands.health.heartbeatDisabled");
         return `${label} (${agent.agentId})`;
       })
       .filter(Boolean);
     if (heartbeatParts.length > 0) {
-      runtime.log(info(`Heartbeat interval: ${heartbeatParts.join(", ")}`));
+      runtime.log(info(t("commands.health.heartbeatInterval", { parts: heartbeatParts.join(", ") })));
     }
     if (displayAgents.length === 0) {
       runtime.log(
-        info(`Session store: ${summary.sessions.path} (${summary.sessions.count} entries)`),
+        info(t("commands.health.sessionStore", { path: summary.sessions.path, count: summary.sessions.count })),
       );
       if (summary.sessions.recent.length > 0) {
         for (const r of summary.sessions.recent) {
           runtime.log(
-            `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}m ago` : "no activity"})`,
+            t("commands.health.sessionRecent", { key: r.key, age: r.updatedAt ? t("commands.health.sessionAgo", { minutes: Math.round((Date.now() - r.updatedAt) / 60000) }) : t("commands.health.noActivity") }),
           );
         }
       }
@@ -731,13 +732,13 @@ export async function healthCommand(
       for (const agent of displayAgents) {
         runtime.log(
           info(
-            `Session store (${agent.agentId}): ${agent.sessions.path} (${agent.sessions.count} entries)`,
+            t("commands.health.sessionStoreAgent", { agentId: agent.agentId, path: agent.sessions.path, count: agent.sessions.count }),
           ),
         );
         if (agent.sessions.recent.length > 0) {
           for (const r of agent.sessions.recent) {
             runtime.log(
-              `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}m ago` : "no activity"})`,
+              t("commands.health.sessionRecent", { key: r.key, age: r.updatedAt ? t("commands.health.sessionAgo", { minutes: Math.round((Date.now() - r.updatedAt) / 60000) }) : t("commands.health.noActivity") }),
             );
           }
         }

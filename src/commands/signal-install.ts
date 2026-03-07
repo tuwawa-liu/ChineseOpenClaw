@@ -9,6 +9,7 @@ import { resolveBrewExecutable } from "../infra/brew.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { CONFIG_DIR } from "../utils.js";
+import { t } from "../i18n/index.js";
 
 export type ReleaseAsset = {
   name?: string;
@@ -170,12 +171,11 @@ async function installSignalCliViaBrew(runtime: RuntimeEnv): Promise<SignalInsta
     return {
       ok: false,
       error:
-        `No native signal-cli build is available for ${process.arch}. ` +
-        "Install Homebrew (https://brew.sh) and try again, or install signal-cli manually.",
+        t("commands.signalInstall.noNativeBuild", { arch: process.arch }),
     };
   }
 
-  runtime.log(`Installing signal-cli via Homebrew (${brewExe})…`);
+  runtime.log(t("commands.signalInstall.installingViaBrew", { brew: brewExe }));
   const result = await runCommandWithTimeout([brewExe, "install", "signal-cli"], {
     timeoutMs: 15 * 60_000, // brew builds from source; can take a while
   });
@@ -183,7 +183,7 @@ async function installSignalCliViaBrew(runtime: RuntimeEnv): Promise<SignalInsta
   if (result.code !== 0) {
     return {
       ok: false,
-      error: `brew install signal-cli failed (exit ${result.code}): ${result.stderr.trim().slice(0, 200)}`,
+      error: t("commands.signalInstall.brewInstallFailed", { code: String(result.code), detail: result.stderr.trim().slice(0, 200) }),
     };
   }
 
@@ -191,7 +191,7 @@ async function installSignalCliViaBrew(runtime: RuntimeEnv): Promise<SignalInsta
   if (!cliPath) {
     return {
       ok: false,
-      error: "brew install succeeded but signal-cli binary was not found.",
+      error: t("commands.signalInstall.brewBinaryNotFound"),
     };
   }
 
@@ -226,7 +226,7 @@ async function installSignalCliFromRelease(runtime: RuntimeEnv): Promise<SignalI
   if (!response.ok) {
     return {
       ok: false,
-      error: `Failed to fetch release info (${response.status})`,
+      error: t("commands.signalInstall.fetchFailed", { status: String(response.status) }),
     };
   }
 
@@ -238,21 +238,21 @@ async function installSignalCliFromRelease(runtime: RuntimeEnv): Promise<SignalI
   if (!asset) {
     return {
       ok: false,
-      error: "No compatible release asset found for this platform.",
+      error: t("commands.signalInstall.noCompatibleAsset"),
     };
   }
 
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-signal-"));
   const archivePath = path.join(tmpDir, asset.name);
 
-  runtime.log(`Downloading signal-cli ${version} (${asset.name})…`);
+  runtime.log(t("commands.signalInstall.downloading", { version, asset: asset.name }));
   await downloadToFile(asset.browser_download_url, archivePath);
 
   const installRoot = path.join(CONFIG_DIR, "tools", "signal-cli", version);
   await fs.mkdir(installRoot, { recursive: true });
 
   if (!looksLikeArchive(asset.name.toLowerCase())) {
-    return { ok: false, error: `Unsupported archive type: ${asset.name}` };
+    return { ok: false, error: t("commands.signalInstall.unsupportedArchive", { name: asset.name }) };
   }
   try {
     await extractSignalCliArchive(archivePath, installRoot, 60_000);
@@ -260,7 +260,7 @@ async function installSignalCliFromRelease(runtime: RuntimeEnv): Promise<SignalI
     const message = err instanceof Error ? err.message : String(err);
     return {
       ok: false,
-      error: `Failed to extract ${asset.name}: ${message}`,
+      error: t("commands.signalInstall.extractFailed", { name: asset.name, message }),
     };
   }
 
@@ -268,7 +268,7 @@ async function installSignalCliFromRelease(runtime: RuntimeEnv): Promise<SignalI
   if (!cliPath) {
     return {
       ok: false,
-      error: `signal-cli binary not found after extracting ${asset.name}`,
+      error: t("commands.signalInstall.binaryNotFound", { name: asset.name }),
     };
   }
 
@@ -285,7 +285,7 @@ export async function installSignalCli(runtime: RuntimeEnv): Promise<SignalInsta
   if (process.platform === "win32") {
     return {
       ok: false,
-      error: "Signal CLI auto-install is not supported on Windows yet.",
+      error: t("commands.signalInstall.windowsNotSupported"),
     };
   }
 

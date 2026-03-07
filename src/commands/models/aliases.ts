@@ -1,4 +1,5 @@
 import { logConfigUpdated } from "../../config/logging.js";
+import { t } from "../../i18n/index.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { loadModelsConfig } from "./load-config.js";
 import {
@@ -37,9 +38,9 @@ export async function modelsAliasesListCommand(
     return;
   }
 
-  runtime.log(`Aliases (${Object.keys(aliases).length}):`);
+  runtime.log(t("commands.modelsAliases.aliases", { source: Object.keys(aliases).length }));
   if (Object.keys(aliases).length === 0) {
-    runtime.log("- none");
+    runtime.log(t("commands.modelsAliases.noAliases"));
     return;
   }
   for (const [alias, target] of Object.entries(aliases)) {
@@ -61,7 +62,7 @@ export async function modelsAliasesAddCommand(
     for (const [key, entry] of Object.entries(nextModels)) {
       const existing = entry?.alias?.trim();
       if (existing && existing === alias && key !== modelKey) {
-        throw new Error(`Alias ${alias} already points to ${key}.`);
+        throw new Error(t("commands.modelsAliases.alreadyExists", { alias, key }));
       }
     }
     const existing = nextModels[modelKey] ?? {};
@@ -79,7 +80,7 @@ export async function modelsAliasesAddCommand(
   });
 
   logConfigUpdated(runtime);
-  runtime.log(`Alias ${alias} -> ${resolved.provider}/${resolved.model}`);
+  runtime.log(t("commands.modelsAliases.aliasSet", { alias, target: `${resolved.provider}/${resolved.model}` }));
 }
 
 export async function modelsAliasesRemoveCommand(aliasRaw: string, runtime: RuntimeEnv) {
@@ -95,7 +96,7 @@ export async function modelsAliasesRemoveCommand(aliasRaw: string, runtime: Runt
       }
     }
     if (!found) {
-      throw new Error(`Alias not found: ${alias}`);
+      throw new Error(t("commands.modelsAliases.notFound", { alias }));
     }
     return {
       ...cfg,
@@ -114,6 +115,6 @@ export async function modelsAliasesRemoveCommand(aliasRaw: string, runtime: Runt
     !updated.agents?.defaults?.models ||
     Object.values(updated.agents.defaults.models).every((entry) => !entry?.alias?.trim())
   ) {
-    runtime.log("No aliases configured.");
+    runtime.log(t("commands.modelsAliases.noAliasesConfigured"));
   }
 }

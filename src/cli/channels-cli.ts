@@ -9,6 +9,7 @@ import {
   channelsStatusCommand,
 } from "../commands/channels.js";
 import { danger } from "../globals.js";
+import { t } from "../i18n/index.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
 import { theme } from "../terminal/theme.js";
@@ -71,19 +72,19 @@ export function registerChannelsCli(program: Command) {
   const channelNames = formatCliChannelOptions();
   const channels = program
     .command("channels")
-    .description("Manage connected chat channels and accounts")
+    .description(t("cli.channels.desc"))
     .addHelpText(
       "after",
       () =>
-        `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["openclaw channels list", "List configured channels and auth profiles."],
-          ["openclaw channels status --probe", "Run channel status checks and probes."],
+        `\n${theme.heading(t("cli.update.helpExamples"))}\n${formatHelpExamples([
+          ["openclaw channels list", t("cli.channels.exList")],
+          ["openclaw channels status --probe", t("cli.channels.exStatus")],
           [
             "openclaw channels add --channel telegram --token <token>",
-            "Add or update a channel account non-interactively.",
+            t("cli.channels.exAdd"),
           ],
-          ["openclaw channels login --channel whatsapp", "Link a WhatsApp Web account."],
-        ])}\n\n${theme.muted("Docs:")} ${formatDocsLink(
+          ["openclaw channels login --channel whatsapp", t("cli.channels.exLogin")],
+        ])}\n\n${theme.muted(t("helpDocs"))} ${formatDocsLink(
           "/cli/channels",
           "docs.openclaw.ai/cli/channels",
         )}\n`,
@@ -91,9 +92,9 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("list")
-    .description("List configured channels + auth profiles")
-    .option("--no-usage", "Skip model provider usage/quota snapshots")
-    .option("--json", "Output JSON", false)
+    .description(t("cli.channels.list.desc"))
+    .option("--no-usage", t("cli.channels.list.optNoUsage"))
+    .option("--json", t("cli.channels.list.optJson"), false)
     .action(async (opts) => {
       await runChannelsCommand(async () => {
         await channelsListCommand(opts, defaultRuntime);
@@ -102,10 +103,10 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("status")
-    .description("Show gateway channel status (use status --deep for local)")
-    .option("--probe", "Probe channel credentials", false)
-    .option("--timeout <ms>", "Timeout in ms", "10000")
-    .option("--json", "Output JSON", false)
+    .description(t("cli.channels.status.desc"))
+    .option("--probe", t("cli.channels.status.optProbe"), false)
+    .option("--timeout <ms>", t("cli.channels.status.optTimeout"), "10000")
+    .option("--json", t("cli.channels.status.optJson"), false)
     .action(async (opts) => {
       await runChannelsCommand(async () => {
         await channelsStatusCommand(opts, defaultRuntime);
@@ -114,12 +115,12 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("capabilities")
-    .description("Show provider capabilities (intents/scopes + supported features)")
-    .option("--channel <name>", `Channel (${formatCliChannelOptions(["all"])})`)
-    .option("--account <id>", "Account id (only with --channel)")
-    .option("--target <dest>", "Channel target for permission audit (Discord channel:<id>)")
-    .option("--timeout <ms>", "Timeout in ms", "10000")
-    .option("--json", "Output JSON", false)
+    .description(t("cli.channels.capabilities.desc"))
+    .option("--channel <name>", `${t("cli.channels.capabilities.optChannel")} (${formatCliChannelOptions(["all"])})`)
+    .option("--account <id>", t("cli.channels.capabilities.optAccount"))
+    .option("--target <dest>", t("cli.channels.capabilities.optTarget"))
+    .option("--timeout <ms>", t("cli.channels.capabilities.optTimeout"), "10000")
+    .option("--json", t("cli.channels.capabilities.optJson"), false)
     .action(async (opts) => {
       await runChannelsCommand(async () => {
         await channelsCapabilitiesCommand(opts, defaultRuntime);
@@ -128,12 +129,12 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("resolve")
-    .description("Resolve channel/user names to IDs")
+    .description(t("cli.channels.resolve.desc"))
     .argument("<entries...>", "Entries to resolve (names or ids)")
-    .option("--channel <name>", `Channel (${channelNames})`)
-    .option("--account <id>", "Account id (accountId)")
-    .option("--kind <kind>", "Target kind (auto|user|group)", "auto")
-    .option("--json", "Output JSON", false)
+    .option("--channel <name>", `${t("cli.channels.resolve.optChannel")} (${channelNames})`)
+    .option("--account <id>", t("cli.channels.resolve.optAccount"))
+    .option("--kind <kind>", t("cli.channels.resolve.optKind"), "auto")
+    .option("--json", t("cli.channels.resolve.optJson"), false)
     .action(async (entries, opts) => {
       await runChannelsCommand(async () => {
         await channelsResolveCommand(
@@ -151,10 +152,10 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("logs")
-    .description("Show recent channel logs from the gateway log file")
-    .option("--channel <name>", `Channel (${formatCliChannelOptions(["all"])})`, "all")
-    .option("--lines <n>", "Number of lines (default: 200)", "200")
-    .option("--json", "Output JSON", false)
+    .description(t("cli.channels.logs.desc"))
+    .option("--channel <name>", `${t("cli.channels.logs.optChannel")} (${formatCliChannelOptions(["all"])})`, "all")
+    .option("--lines <n>", t("cli.channels.logs.optLines"), "200")
+    .option("--json", t("cli.channels.logs.optJson"), false)
     .action(async (opts) => {
       await runChannelsCommand(async () => {
         await channelsLogsCommand(opts, defaultRuntime);
@@ -163,41 +164,41 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("add")
-    .description("Add or update a channel account")
-    .option("--channel <name>", `Channel (${channelNames})`)
-    .option("--account <id>", "Account id (default when omitted)")
-    .option("--name <name>", "Display name for this account")
-    .option("--token <token>", "Bot token (Telegram/Discord)")
-    .option("--token-file <path>", "Bot token file (Telegram)")
-    .option("--bot-token <token>", "Slack bot token (xoxb-...)")
-    .option("--app-token <token>", "Slack app token (xapp-...)")
-    .option("--signal-number <e164>", "Signal account number (E.164)")
-    .option("--cli-path <path>", "CLI path (signal-cli or imsg)")
-    .option("--db-path <path>", "iMessage database path")
-    .option("--service <service>", "iMessage service (imessage|sms|auto)")
-    .option("--region <region>", "iMessage region (for SMS)")
-    .option("--auth-dir <path>", "WhatsApp auth directory override")
-    .option("--http-url <url>", "Signal HTTP daemon base URL")
-    .option("--http-host <host>", "Signal HTTP host")
-    .option("--http-port <port>", "Signal HTTP port")
-    .option("--webhook-path <path>", "Webhook path (Google Chat/BlueBubbles)")
-    .option("--webhook-url <url>", "Google Chat webhook URL")
-    .option("--audience-type <type>", "Google Chat audience type (app-url|project-number)")
-    .option("--audience <value>", "Google Chat audience value (app URL or project number)")
-    .option("--homeserver <url>", "Matrix homeserver URL")
-    .option("--user-id <id>", "Matrix user ID")
-    .option("--access-token <token>", "Matrix access token")
-    .option("--password <password>", "Matrix password")
-    .option("--device-name <name>", "Matrix device name")
-    .option("--initial-sync-limit <n>", "Matrix initial sync limit")
-    .option("--ship <ship>", "Tlon ship name (~sampel-palnet)")
-    .option("--url <url>", "Tlon ship URL")
-    .option("--code <code>", "Tlon login code")
-    .option("--group-channels <list>", "Tlon group channels (comma-separated)")
-    .option("--dm-allowlist <list>", "Tlon DM allowlist (comma-separated ships)")
-    .option("--auto-discover-channels", "Tlon auto-discover group channels")
-    .option("--no-auto-discover-channels", "Disable Tlon auto-discovery")
-    .option("--use-env", "Use env token (default account only)", false)
+    .description(t("cli.channels.add.desc"))
+    .option("--channel <name>", `${t("cli.channels.add.optChannel")} (${channelNames})`)
+    .option("--account <id>", t("cli.channels.add.optAccount"))
+    .option("--name <name>", t("cli.channels.add.optName"))
+    .option("--token <token>", t("cli.channels.add.optToken"))
+    .option("--token-file <path>", t("cli.channels.add.optTokenFile"))
+    .option("--bot-token <token>", t("cli.channels.add.optBotToken"))
+    .option("--app-token <token>", t("cli.channels.add.optAppToken"))
+    .option("--signal-number <e164>", t("cli.channels.add.optSignalNumber"))
+    .option("--cli-path <path>", t("cli.channels.add.optCliPath"))
+    .option("--db-path <path>", t("cli.channels.add.optDbPath"))
+    .option("--service <service>", t("cli.channels.add.optService"))
+    .option("--region <region>", t("cli.channels.add.optRegion"))
+    .option("--auth-dir <path>", t("cli.channels.add.optAuthDir"))
+    .option("--http-url <url>", t("cli.channels.add.optHttpUrl"))
+    .option("--http-host <host>", t("cli.channels.add.optHttpHost"))
+    .option("--http-port <port>", t("cli.channels.add.optHttpPort"))
+    .option("--webhook-path <path>", t("cli.channels.add.optWebhookPath"))
+    .option("--webhook-url <url>", t("cli.channels.add.optWebhookUrl"))
+    .option("--audience-type <type>", t("cli.channels.add.optAudienceType"))
+    .option("--audience <value>", t("cli.channels.add.optAudience"))
+    .option("--homeserver <url>", t("cli.channels.add.optHomeserver"))
+    .option("--user-id <id>", t("cli.channels.add.optUserId"))
+    .option("--access-token <token>", t("cli.channels.add.optAccessToken"))
+    .option("--password <password>", t("cli.channels.add.optPassword"))
+    .option("--device-name <name>", t("cli.channels.add.optDeviceName"))
+    .option("--initial-sync-limit <n>", t("cli.channels.add.optInitialSyncLimit"))
+    .option("--ship <ship>", t("cli.channels.add.optShip"))
+    .option("--url <url>", t("cli.channels.add.optUrl"))
+    .option("--code <code>", t("cli.channels.add.optCode"))
+    .option("--group-channels <list>", t("cli.channels.add.optGroupChannels"))
+    .option("--dm-allowlist <list>", t("cli.channels.add.optDmAllowlist"))
+    .option("--auto-discover-channels", t("cli.channels.add.optAutoDiscoverChannels"))
+    .option("--no-auto-discover-channels", t("cli.channels.add.optNoAutoDiscoverChannels"))
+    .option("--use-env", t("cli.channels.add.optUseEnv"), false)
     .action(async (opts, command) => {
       await runChannelsCommand(async () => {
         const hasFlags = hasExplicitOptions(command, optionNamesAdd);
@@ -207,10 +208,10 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("remove")
-    .description("Disable or delete a channel account")
-    .option("--channel <name>", `Channel (${channelNames})`)
-    .option("--account <id>", "Account id (default when omitted)")
-    .option("--delete", "Delete config entries (no prompt)", false)
+    .description(t("cli.channels.remove.desc"))
+    .option("--channel <name>", `${t("cli.channels.remove.optChannel")} (${channelNames})`)
+    .option("--account <id>", t("cli.channels.remove.optAccount"))
+    .option("--delete", t("cli.channels.remove.optDelete"), false)
     .action(async (opts, command) => {
       await runChannelsCommand(async () => {
         const hasFlags = hasExplicitOptions(command, optionNamesRemove);
@@ -220,10 +221,10 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("login")
-    .description("Link a channel account (if supported)")
-    .option("--channel <channel>", "Channel alias (auto when only one is configured)")
-    .option("--account <id>", "Account id (accountId)")
-    .option("--verbose", "Verbose connection logs", false)
+    .description(t("cli.channels.login.desc"))
+    .option("--channel <channel>", t("cli.channels.login.optChannel"))
+    .option("--account <id>", t("cli.channels.login.optAccount"))
+    .option("--verbose", t("cli.channels.login.optVerbose"), false)
     .action(async (opts) => {
       await runChannelsCommandWithDanger(async () => {
         await runChannelLogin(
@@ -239,9 +240,9 @@ export function registerChannelsCli(program: Command) {
 
   channels
     .command("logout")
-    .description("Log out of a channel session (if supported)")
-    .option("--channel <channel>", "Channel alias (auto when only one is configured)")
-    .option("--account <id>", "Account id (accountId)")
+    .description(t("cli.channels.logout.desc"))
+    .option("--channel <channel>", t("cli.channels.logout.optChannel"))
+    .option("--account <id>", t("cli.channels.logout.optAccount"))
     .action(async (opts) => {
       await runChannelsCommandWithDanger(async () => {
         await runChannelLogout(

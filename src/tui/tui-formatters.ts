@@ -1,5 +1,6 @@
 import { formatRawAssistantErrorForUi } from "../agents/pi-embedded-helpers.js";
 import { stripLeadingInboundMetadata } from "../auto-reply/reply/strip-inbound-meta.js";
+import { t } from "../i18n/index.js";
 import { stripAnsi } from "../terminal/ansi.js";
 import { formatTokenCount } from "../utils/usage-format.js";
 
@@ -90,7 +91,7 @@ function redactBinaryLikeLine(line: string): string {
     replacementCount >= BINARY_LINE_REPLACEMENT_THRESHOLD &&
     replacementCount * 2 >= line.length
   ) {
-    return "[binary data omitted]";
+    return t("tuiFmt.binaryOmitted");
   }
   return line;
 }
@@ -156,7 +157,7 @@ export function resolveFinalAssistantText(params: {
   if (errorMessage.trim()) {
     return formatRawAssistantErrorForUi(errorMessage);
   }
-  return "(no output)";
+  return t("tuiFmt.noOutput");
 }
 
 export function composeThinkingAndContent(params: {
@@ -169,7 +170,7 @@ export function composeThinkingAndContent(params: {
   const parts: string[] = [];
 
   if (params.showThinking && thinkingText) {
-    parts.push(`[thinking]\n${thinkingText}`);
+    parts.push(`${t("tuiFmt.thinking")}\n${thinkingText}`);
   }
   if (contentText) {
     parts.push(contentText);
@@ -333,17 +334,19 @@ export function isCommandMessage(message: unknown): boolean {
 
 export function formatTokens(total?: number | null, context?: number | null) {
   if (total == null && context == null) {
-    return "tokens ?";
+    return t("tuiFmt.tokensUnknown");
   }
   const totalLabel = total == null ? "?" : formatTokenCount(total);
   if (context == null) {
-    return `tokens ${totalLabel}`;
+    return t("tuiFmt.tokens", { total: totalLabel });
   }
   const pct =
     typeof total === "number" && context > 0
       ? Math.min(999, Math.round((total / context) * 100))
       : null;
-  return `tokens ${totalLabel}/${formatTokenCount(context)}${pct !== null ? ` (${pct}%)` : ""}`;
+  return pct !== null
+    ? t("tuiFmt.tokensCtxPct", { total: totalLabel, ctx: formatTokenCount(context), pct: String(pct) })
+    : t("tuiFmt.tokensCtx", { total: totalLabel, ctx: formatTokenCount(context) });
 }
 
 export function formatContextUsageLine(params: {
@@ -356,10 +359,10 @@ export function formatContextUsageLine(params: {
   const ctxLabel = typeof params.context === "number" ? formatTokenCount(params.context) : "?";
   const pct = typeof params.percent === "number" ? Math.min(999, Math.round(params.percent)) : null;
   const remainingLabel =
-    typeof params.remaining === "number" ? `${formatTokenCount(params.remaining)} left` : null;
+    typeof params.remaining === "number" ? t("tuiFmt.tokensLeft", { left: formatTokenCount(params.remaining) }) : null;
   const pctLabel = pct !== null ? `${pct}%` : null;
   const extra = [remainingLabel, pctLabel].filter(Boolean).join(", ");
-  return `tokens ${totalLabel}/${ctxLabel}${extra ? ` (${extra})` : ""}`;
+  return `${t("tuiFmt.tokensCtx", { total: totalLabel, ctx: ctxLabel })}${extra ? ` (${extra})` : ""}`;
 }
 
 export function asString(value: unknown, fallback = ""): string {

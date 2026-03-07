@@ -1,4 +1,5 @@
 import { ensureAuthProfileStore, resolveAuthProfileOrder } from "../agents/auth-profiles.js";
+import { t } from "../i18n/index.js";
 import { normalizeApiKeyInput, validateApiKeyInput } from "./auth-choice.api-key.js";
 import {
   createAuthChoiceAgentModelNoter,
@@ -58,7 +59,7 @@ export async function applyAuthChoiceOpenRouter(
       expectedProviders: ["openrouter"],
       provider: "openrouter",
       envLabel: "OPENROUTER_API_KEY",
-      promptMessage: "Enter OpenRouter API key",
+      promptMessage: t("commands.authOpenrouter.enterApiKey"),
       normalize: normalizeApiKeyInput,
       validate: validateApiKeyInput,
       prompter: params.prompter,

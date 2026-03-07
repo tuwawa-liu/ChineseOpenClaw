@@ -1,5 +1,6 @@
 import { formatCliCommand } from "../cli/command-format.js";
 import type { OpenClawConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { resolveGatewayPort } from "../config/config.js";
 import {
   resolveGatewayLaunchAgentLabel,
@@ -57,32 +58,32 @@ async function maybeRepairLaunchAgentBootstrap(params: {
     return false;
   }
 
-  note("LaunchAgent is listed but not loaded in launchd.", `${params.title} LaunchAgent`);
+  note(t("commands.doctorGatewayDaemon.launchAgentNotLoaded"), t("commands.doctorGatewayDaemon.titleLaunchAgent", { title: params.title }));
 
   const shouldFix = await params.prompter.confirmSkipInNonInteractive({
-    message: `Repair ${params.title} LaunchAgent bootstrap now?`,
+    message: t("commands.doctorGatewayDaemon.repairLaunchAgentPrompt", { title: params.title }),
     initialValue: true,
   });
   if (!shouldFix) {
     return false;
   }
 
-  params.runtime.log(`Bootstrapping ${params.title} LaunchAgent...`);
+  params.runtime.log(t("commands.doctorGatewayDaemon.bootstrappingLaunchAgent", { title: params.title }));
   const repair = await repairLaunchAgentBootstrap({ env: params.env });
   if (!repair.ok) {
     params.runtime.error(
-      `${params.title} LaunchAgent bootstrap failed: ${repair.detail ?? "unknown error"}`,
+      t("commands.doctorGatewayDaemon.launchAgentBootstrapFailed", { title: params.title, error: repair.detail ?? "unknown error" }),
     );
     return false;
   }
 
   const verified = await isLaunchAgentLoaded({ env: params.env });
   if (!verified) {
-    params.runtime.error(`${params.title} LaunchAgent still not loaded after repair.`);
+    params.runtime.error(t("commands.doctorGatewayDaemon.launchAgentStillNotLoaded", { title: params.title }));
     return false;
   }
 
-  note(`${params.title} LaunchAgent repaired.`, `${params.title} LaunchAgent`);
+  note(t("commands.doctorGatewayDaemon.launchAgentRepaired", { title: params.title }), t("commands.doctorGatewayDaemon.titleLaunchAgent", { title: params.title }));
   return true;
 }
 
@@ -139,11 +140,11 @@ export async function maybeRepairGatewayDaemon(params: {
     const port = resolveGatewayPort(params.cfg, process.env);
     const diagnostics = await inspectPortUsage(port);
     if (diagnostics.status === "busy") {
-      note(formatPortDiagnostics(diagnostics).join("\n"), "Gateway port");
+      note(formatPortDiagnostics(diagnostics).join("\n"), t("commands.doctorGatewayDaemon.titleGatewayPort"));
     } else if (loaded && serviceRuntime?.status === "running") {
       const lastError = await readLastGatewayErrorLine(process.env);
       if (lastError) {
-        note(`Last gateway error: ${lastError}`, "Gateway");
+        note(t("commands.doctorGatewayDaemon.lastGatewayError", { error: lastError }), t("commands.doctorGatewayDaemon.titleGateway"));
       }
     }
   }
@@ -153,20 +154,20 @@ export async function maybeRepairGatewayDaemon(params: {
       const systemdAvailable = await isSystemdUserServiceAvailable().catch(() => false);
       if (!systemdAvailable) {
         const wsl = await isWSL();
-        note(renderSystemdUnavailableHints({ wsl }).join("\n"), "Gateway");
+        note(renderSystemdUnavailableHints({ wsl }).join("\n"), t("commands.doctorGatewayDaemon.titleGateway"));
         return;
       }
     }
-    note("Gateway service not installed.", "Gateway");
+    note(t("commands.doctorGatewayDaemon.serviceNotInstalled"), t("commands.doctorGatewayDaemon.titleGateway"));
     if (params.cfg.gateway?.mode !== "remote") {
       const install = await params.prompter.confirmSkipInNonInteractive({
-        message: "Install gateway service now?",
+        message: t("commands.doctorGatewayDaemon.installServicePrompt"),
         initialValue: true,
       });
       if (install) {
         const daemonRuntime = await params.prompter.select<GatewayDaemonRuntime>(
           {
-            message: "Gateway service runtime",
+            message: t("commands.doctorGatewayDaemon.serviceRuntimeLabel"),
             options: GATEWAY_DAEMON_RUNTIME_OPTIONS,
             initialValue: DEFAULT_GATEWAY_DAEMON_RUNTIME,
           },
@@ -177,16 +178,16 @@ export async function maybeRepairGatewayDaemon(params: {
           env: process.env,
         });
         for (const warning of tokenResolution.warnings) {
-          note(warning, "Gateway");
+          note(warning, t("commands.doctorGatewayDaemon.titleGateway"));
         }
         if (tokenResolution.unavailableReason) {
           note(
             [
-              "Gateway service install aborted.",
+              t("commands.doctorGatewayDaemon.installAborted"),
               tokenResolution.unavailableReason,
-              "Fix gateway auth config/token input and rerun doctor.",
+              t("commands.doctorGatewayDaemon.fixAuthConfigHint"),
             ].join("\n"),
-            "Gateway",
+            t("commands.doctorGatewayDaemon.titleGateway"),
           );
           return;
         }
@@ -208,8 +209,8 @@ export async function maybeRepairGatewayDaemon(params: {
             environment,
           });
         } catch (err) {
-          note(`Gateway service install failed: ${String(err)}`, "Gateway");
-          note(gatewayInstallErrorHint(), "Gateway");
+          note(t("commands.doctorGatewayDaemon.installFailed", { error: String(err) }), t("commands.doctorGatewayDaemon.titleGateway"));
+          note(gatewayInstallErrorHint(), t("commands.doctorGatewayDaemon.titleGateway"));
         }
       }
     }
@@ -224,15 +225,15 @@ export async function maybeRepairGatewayDaemon(params: {
   if (summary || hints.length > 0) {
     const lines: string[] = [];
     if (summary) {
-      lines.push(`Runtime: ${summary}`);
+      lines.push(t("commands.doctorGatewayDaemon.runtimeSummary", { summary }));
     }
     lines.push(...hints);
-    note(lines.join("\n"), "Gateway");
+    note(lines.join("\n"), t("commands.doctorGatewayDaemon.titleGateway"));
   }
 
   if (serviceRuntime?.status !== "running") {
     const start = await params.prompter.confirmSkipInNonInteractive({
-      message: "Start gateway service now?",
+      message: t("commands.doctorGatewayDaemon.startServicePrompt"),
       initialValue: true,
     });
     if (start) {
@@ -247,14 +248,14 @@ export async function maybeRepairGatewayDaemon(params: {
   if (process.platform === "darwin") {
     const label = resolveGatewayLaunchAgentLabel(process.env.OPENCLAW_PROFILE);
     note(
-      `LaunchAgent loaded; stopping requires "${formatCliCommand("openclaw gateway stop")}" or launchctl bootout gui/$UID/${label}.`,
-      "Gateway",
+      t("commands.doctorGatewayDaemon.launchAgentLoadedStopHint", { command: formatCliCommand("openclaw gateway stop"), label }),
+      t("commands.doctorGatewayDaemon.titleGateway"),
     );
   }
 
   if (serviceRuntime?.status === "running") {
     const restart = await params.prompter.confirmSkipInNonInteractive({
-      message: "Restart gateway service now?",
+      message: t("commands.doctorGatewayDaemon.restartServicePrompt"),
       initialValue: true,
     });
     if (restart) {
@@ -268,8 +269,8 @@ export async function maybeRepairGatewayDaemon(params: {
       } catch (err) {
         const message = String(err);
         if (message.includes("gateway closed")) {
-          note("Gateway not running.", "Gateway");
-          note(params.gatewayDetailsMessage, "Gateway connection");
+          note(t("commands.doctorGatewayDaemon.gatewayNotRunning"), t("commands.doctorGatewayDaemon.titleGateway"));
+          note(params.gatewayDetailsMessage, t("commands.doctorGatewayDaemon.titleGatewayConnection"));
         } else {
           params.runtime.error(formatHealthCheckFailure(err));
         }

@@ -1,6 +1,7 @@
 import { formatCliCommand } from "../cli/command-format.js";
 import type { OpenClawConfig } from "../config/config.js";
 import { readConfigFileSnapshot } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
 import { runNonInteractiveOnboardingLocal } from "./onboard-non-interactive/local.js";
@@ -14,7 +15,7 @@ export async function runNonInteractiveOnboarding(
   const snapshot = await readConfigFileSnapshot();
   if (snapshot.exists && !snapshot.valid) {
     runtime.error(
-      `Config invalid. Run \`${formatCliCommand("openclaw doctor")}\` to repair it, then re-run onboarding.`,
+      t("commands.onboardNonInteractive.configInvalid", { command: formatCliCommand("openclaw doctor") }),
     );
     runtime.exit(1);
     return;
@@ -23,7 +24,7 @@ export async function runNonInteractiveOnboarding(
   const baseConfig: OpenClawConfig = snapshot.valid ? snapshot.config : {};
   const mode = opts.mode ?? "local";
   if (mode !== "local" && mode !== "remote") {
-    runtime.error(`Invalid --mode "${String(mode)}" (use local|remote).`);
+    runtime.error(t("commands.onboardNonInteractive.invalidMode", { mode: String(mode) }));
     runtime.exit(1);
     return;
   }

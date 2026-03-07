@@ -11,6 +11,7 @@ import {
   isSystemdUnavailableDetail,
   renderSystemdUnavailableHints,
 } from "../daemon/systemd-hints.js";
+import { t } from "../i18n/index.js";
 import { isWSLEnv } from "../infra/wsl.js";
 import { getResolvedLoggerSettings } from "../logging.js";
 
@@ -45,39 +46,39 @@ export function buildGatewayRuntimeHints(
   if (platform === "linux" && isSystemdUnavailableDetail(runtime.detail)) {
     hints.push(...renderSystemdUnavailableHints({ wsl: isWSLEnv() }));
     if (fileLog) {
-      hints.push(`File logs: ${fileLog}`);
+      hints.push(t("commands.doctorFormat.fileLogs", { path: fileLog }));
     }
     return hints;
   }
   if (runtime.cachedLabel && platform === "darwin") {
     const label = resolveGatewayLaunchAgentLabel(env.OPENCLAW_PROFILE);
     hints.push(
-      `LaunchAgent label cached but plist missing. Clear with: launchctl bootout gui/$UID/${label}`,
+      t("commands.doctorFormat.launchAgentCachedPlistMissing", { label }),
     );
-    hints.push(`Then reinstall: ${formatCliCommand("openclaw gateway install", env)}`);
+    hints.push(t("commands.doctorFormat.thenReinstall", { command: formatCliCommand("openclaw gateway install", env) }));
   }
   if (runtime.missingUnit) {
-    hints.push(`Service not installed. Run: ${formatCliCommand("openclaw gateway install", env)}`);
+    hints.push(t("commands.doctorFormat.serviceNotInstalled", { command: formatCliCommand("openclaw gateway install", env) }));
     if (fileLog) {
-      hints.push(`File logs: ${fileLog}`);
+      hints.push(t("commands.doctorFormat.fileLogs", { path: fileLog }));
     }
     return hints;
   }
   if (runtime.status === "stopped") {
-    hints.push("Service is loaded but not running (likely exited immediately).");
+    hints.push(t("commands.doctorFormat.serviceLoadedNotRunning"));
     if (fileLog) {
-      hints.push(`File logs: ${fileLog}`);
+      hints.push(t("commands.doctorFormat.fileLogs", { path: fileLog }));
     }
     if (platform === "darwin") {
       const logs = resolveGatewayLogPaths(env);
-      hints.push(`Launchd stdout (if installed): ${logs.stdoutPath}`);
-      hints.push(`Launchd stderr (if installed): ${logs.stderrPath}`);
+      hints.push(t("commands.doctorFormat.launchdStdout", { path: logs.stdoutPath }));
+      hints.push(t("commands.doctorFormat.launchdStderr", { path: logs.stderrPath }));
     } else if (platform === "linux") {
       const unit = resolveGatewaySystemdServiceName(env.OPENCLAW_PROFILE);
-      hints.push(`Logs: journalctl --user -u ${unit}.service -n 200 --no-pager`);
+      hints.push(t("commands.doctorFormat.journalctlLogs", { unit }));
     } else if (platform === "win32") {
       const task = resolveGatewayWindowsTaskName(env.OPENCLAW_PROFILE);
-      hints.push(`Logs: schtasks /Query /TN "${task}" /V /FO LIST`);
+      hints.push(t("commands.doctorFormat.schtasksLogs", { task }));
     }
   }
   return hints;

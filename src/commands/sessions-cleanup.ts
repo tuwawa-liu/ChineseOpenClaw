@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { loadConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import {
   capEntryCount,
   enforceSessionDiskBudget,
@@ -249,32 +250,32 @@ function renderStoreDryRunPlan(params: {
 }) {
   const rich = isRich();
   if (params.showAgentHeader) {
-    params.runtime.log(`Agent: ${params.summary.agentId}`);
+    params.runtime.log(t("commands.sessionsCleanup.agentLabel", { agentId: params.summary.agentId }));
   }
-  params.runtime.log(`Session store: ${params.summary.storePath}`);
-  params.runtime.log(`Maintenance mode: ${params.summary.mode}`);
+  params.runtime.log(t("commands.sessionsCleanup.sessionStoreLabel", { path: params.summary.storePath }));
+  params.runtime.log(t("commands.sessionsCleanup.maintenanceMode", { mode: params.summary.mode }));
   params.runtime.log(
-    `Entries: ${params.summary.beforeCount} -> ${params.summary.afterCount} (remove ${params.summary.beforeCount - params.summary.afterCount})`,
+    t("commands.sessionsCleanup.entries", { before: String(params.summary.beforeCount), after: String(params.summary.afterCount), removed: String(params.summary.beforeCount - params.summary.afterCount) }),
   );
-  params.runtime.log(`Would prune missing transcripts: ${params.summary.missing}`);
-  params.runtime.log(`Would prune stale: ${params.summary.pruned}`);
-  params.runtime.log(`Would cap overflow: ${params.summary.capped}`);
+  params.runtime.log(t("commands.sessionsCleanup.wouldPruneMissing", { count: String(params.summary.missing) }));
+  params.runtime.log(t("commands.sessionsCleanup.wouldPruneStale", { count: String(params.summary.pruned) }));
+  params.runtime.log(t("commands.sessionsCleanup.wouldCapOverflow", { count: String(params.summary.capped) }));
   if (params.summary.diskBudget) {
     params.runtime.log(
-      `Would enforce disk budget: ${params.summary.diskBudget.totalBytesBefore} -> ${params.summary.diskBudget.totalBytesAfter} bytes (files ${params.summary.diskBudget.removedFiles}, entries ${params.summary.diskBudget.removedEntries})`,
+      t("commands.sessionsCleanup.wouldEnforceBudget", { before: String(params.summary.diskBudget.totalBytesBefore), after: String(params.summary.diskBudget.totalBytesAfter), files: String(params.summary.diskBudget.removedFiles), entries: String(params.summary.diskBudget.removedEntries) }),
     );
   }
   if (params.actionRows.length === 0) {
     return;
   }
   params.runtime.log("");
-  params.runtime.log("Planned session actions:");
+  params.runtime.log(t("commands.sessionsCleanup.plannedActions"));
   const header = [
-    "Action".padEnd(ACTION_PAD),
-    "Key".padEnd(SESSION_KEY_PAD),
-    "Age".padEnd(SESSION_AGE_PAD),
-    "Model".padEnd(SESSION_MODEL_PAD),
-    "Flags",
+    t("commands.sessionsCleanup.headerAction").padEnd(ACTION_PAD),
+    t("commands.sessionsCleanup.headerKey").padEnd(SESSION_KEY_PAD),
+    t("commands.sessionsCleanup.headerAge").padEnd(SESSION_AGE_PAD),
+    t("commands.sessionsCleanup.headerModel").padEnd(SESSION_MODEL_PAD),
+    t("commands.sessionsCleanup.headerFlags"),
   ].join(" ");
   params.runtime.log(rich ? theme.heading(header) : header);
   for (const actionRow of params.actionRows) {
@@ -460,9 +461,9 @@ export async function sessionsCleanupCommand(opts: SessionsCleanupOptions, runti
       runtime.log("");
     }
     if (appliedSummaries.length > 1) {
-      runtime.log(`Agent: ${summary.agentId}`);
+      runtime.log(t("commands.sessionsCleanup.agentLabel", { agentId: summary.agentId }));
     }
-    runtime.log(`Session store: ${summary.storePath}`);
-    runtime.log(`Applied maintenance. Current entries: ${summary.appliedCount ?? 0}`);
+    runtime.log(t("commands.sessionsCleanup.sessionStoreLabel", { path: summary.storePath }));
+    runtime.log(t("commands.sessionsCleanup.appliedMaintenance", { count: String(summary.appliedCount ?? 0) }));
   }
 }

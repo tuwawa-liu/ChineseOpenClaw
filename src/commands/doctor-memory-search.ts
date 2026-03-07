@@ -7,6 +7,7 @@ import type { OpenClawConfig } from "../config/config.js";
 import { resolveMemoryBackendConfig } from "../memory/backend-config.js";
 import { DEFAULT_LOCAL_MODEL } from "../memory/embeddings.js";
 import { hasConfiguredMemorySecretInput } from "../memory/secret-input.js";
+import { t } from "../i18n/index.js";
 import { note } from "../terminal/note.js";
 import { resolveUserPath } from "../utils.js";
 
@@ -30,7 +31,7 @@ export async function noteMemorySearchHealth(
   const hasRemoteApiKey = hasConfiguredMemorySecretInput(resolved?.remote?.apiKey);
 
   if (!resolved) {
-    note("Memory search is explicitly disabled (enabled: false).", "Memory search");
+    note(t("commands.doctorMemorySearch.disabled"), t("commands.doctorMemorySearch.title"));
     return;
   }
 
@@ -52,30 +53,29 @@ export async function noteMemorySearchHealth(
           const detail = opts.gatewayMemoryProbe.error?.trim();
           note(
             [
-              'Memory search provider is set to "local" and a model path is configured,',
-              "but the gateway reports local embeddings are not ready.",
-              detail ? `Gateway probe: ${detail}` : null,
+              t("commands.doctorMemorySearch.localNotReady"),
+              detail ? t("commands.doctorMemorySearch.gatewayProbeDetail", { detail }) : null,
               "",
-              `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+              t("commands.doctorMemorySearch.verifyCommand", { command: formatCliCommand("openclaw memory status --deep") }),
             ]
               .filter(Boolean)
               .join("\n"),
-            "Memory search",
+            t("commands.doctorMemorySearch.title"),
           );
         }
         return;
       }
       note(
         [
-          'Memory search provider is set to "local" but no local model file was found.',
+          t("commands.doctorMemorySearch.localNoModel"),
           "",
-          "Fix (pick one):",
-          `- Install node-llama-cpp and set a local model path in config`,
-          `- Switch to a remote provider: ${formatCliCommand("openclaw config set agents.defaults.memorySearch.provider openai")}`,
+          t("commands.doctorMemorySearch.fixPickOne"),
+          t("commands.doctorMemorySearch.installLlama"),
+          t("commands.doctorMemorySearch.switchRemoteProvider", { command: formatCliCommand("openclaw config set agents.defaults.memorySearch.provider openai") }),
           "",
-          `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+          t("commands.doctorMemorySearch.verifyCommand", { command: formatCliCommand("openclaw memory status --deep") }),
         ].join("\n"),
-        "Memory search",
+        t("commands.doctorMemorySearch.title"),
       );
       return;
     }
@@ -86,11 +86,11 @@ export async function noteMemorySearchHealth(
     if (opts?.gatewayMemoryProbe?.checked && opts.gatewayMemoryProbe.ready) {
       note(
         [
-          `Memory search provider is set to "${resolved.provider}" but the API key was not found in the CLI environment.`,
-          "The running gateway reports memory embeddings are ready for the default agent.",
-          `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+          t("commands.doctorMemorySearch.apiKeyNotFoundCli", { provider: resolved.provider }),
+          t("commands.doctorMemorySearch.gatewayReportsReady"),
+          t("commands.doctorMemorySearch.verifyCommand", { command: formatCliCommand("openclaw memory status --deep") }),
         ].join("\n"),
-        "Memory search",
+        t("commands.doctorMemorySearch.title"),
       );
       return;
     }
@@ -98,18 +98,18 @@ export async function noteMemorySearchHealth(
     const envVar = providerEnvVar(resolved.provider);
     note(
       [
-        `Memory search provider is set to "${resolved.provider}" but no API key was found.`,
-        `Semantic recall will not work without a valid API key.`,
+        t("commands.doctorMemorySearch.noApiKeyFound", { provider: resolved.provider }),
+        t("commands.doctorMemorySearch.semanticRecallWontWork"),
         gatewayProbeWarning ? gatewayProbeWarning : null,
         "",
-        "Fix (pick one):",
-        `- Set ${envVar} in your environment`,
-        `- Configure credentials: ${formatCliCommand("openclaw configure --section model")}`,
-        `- To disable: ${formatCliCommand("openclaw config set agents.defaults.memorySearch.enabled false")}`,
+        t("commands.doctorMemorySearch.fixPickOne"),
+        t("commands.doctorMemorySearch.setEnvVar", { envVar }),
+        t("commands.doctorMemorySearch.configureCreds", { command: formatCliCommand("openclaw configure --section model") }),
+        t("commands.doctorMemorySearch.toDisable", { command: formatCliCommand("openclaw config set agents.defaults.memorySearch.enabled false") }),
         "",
-        `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+        t("commands.doctorMemorySearch.verifyCommand", { command: formatCliCommand("openclaw memory status --deep") }),
       ].join("\n"),
-      "Memory search",
+      t("commands.doctorMemorySearch.title"),
     );
     return;
   }
@@ -127,11 +127,11 @@ export async function noteMemorySearchHealth(
   if (opts?.gatewayMemoryProbe?.checked && opts.gatewayMemoryProbe.ready) {
     note(
       [
-        'Memory search provider is set to "auto" but the API key was not found in the CLI environment.',
-        "The running gateway reports memory embeddings are ready for the default agent.",
-        `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+        t("commands.doctorMemorySearch.autoNoApiKeyCli"),
+        t("commands.doctorMemorySearch.gatewayReportsReady"),
+        t("commands.doctorMemorySearch.verifyCommand", { command: formatCliCommand("openclaw memory status --deep") }),
       ].join("\n"),
-      "Memory search",
+      t("commands.doctorMemorySearch.title"),
     );
     return;
   }
@@ -139,19 +139,19 @@ export async function noteMemorySearchHealth(
 
   note(
     [
-      "Memory search is enabled but no embedding provider is configured.",
-      "Semantic recall will not work without an embedding provider.",
+      t("commands.doctorMemorySearch.noProviderConfigured"),
+      t("commands.doctorMemorySearch.semanticRecallNoProvider"),
       gatewayProbeWarning ? gatewayProbeWarning : null,
       "",
-      "Fix (pick one):",
-      "- Set OPENAI_API_KEY, GEMINI_API_KEY, VOYAGE_API_KEY, or MISTRAL_API_KEY in your environment",
-      `- Configure credentials: ${formatCliCommand("openclaw configure --section model")}`,
-      `- For local embeddings: configure agents.defaults.memorySearch.provider and local model path`,
-      `- To disable: ${formatCliCommand("openclaw config set agents.defaults.memorySearch.enabled false")}`,
+      t("commands.doctorMemorySearch.fixPickOne"),
+      t("commands.doctorMemorySearch.setAnyApiKey"),
+      t("commands.doctorMemorySearch.configureCreds", { command: formatCliCommand("openclaw configure --section model") }),
+      t("commands.doctorMemorySearch.forLocalEmbeddings"),
+      t("commands.doctorMemorySearch.toDisable", { command: formatCliCommand("openclaw config set agents.defaults.memorySearch.enabled false") }),
       "",
-      `Verify: ${formatCliCommand("openclaw memory status --deep")}`,
+      t("commands.doctorMemorySearch.verifyCommand", { command: formatCliCommand("openclaw memory status --deep") }),
     ].join("\n"),
-    "Memory search",
+    t("commands.doctorMemorySearch.title"),
   );
 }
 
@@ -228,6 +228,6 @@ function buildGatewayProbeWarning(
   }
   const detail = probe.error?.trim();
   return detail
-    ? `Gateway memory probe for default agent is not ready: ${detail}`
-    : "Gateway memory probe for default agent is not ready.";
+    ? t("commands.doctorMemorySearch.gatewayProbeNotReady", { detail })
+    : t("commands.doctorMemorySearch.gatewayProbeNotReadyShort");
 }

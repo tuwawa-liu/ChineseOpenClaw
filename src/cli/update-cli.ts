@@ -1,4 +1,5 @@
 import type { Command } from "commander";
+import { t } from "../i18n/index.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
 import { theme } from "../terminal/theme.js";
@@ -34,55 +35,55 @@ function inheritedUpdateTimeout(
 export function registerUpdateCli(program: Command) {
   const update = program
     .command("update")
-    .description("Update OpenClaw and inspect update channel status")
-    .option("--json", "Output result as JSON", false)
-    .option("--no-restart", "Skip restarting the gateway service after a successful update")
-    .option("--dry-run", "Preview update actions without making changes", false)
-    .option("--channel <stable|beta|dev>", "Persist update channel (git + npm)")
-    .option("--tag <dist-tag|version>", "Override npm dist-tag or version for this update")
-    .option("--timeout <seconds>", "Timeout for each update step in seconds (default: 1200)")
-    .option("--yes", "Skip confirmation prompts (non-interactive)", false)
+    .description(t("cli.update.desc"))
+    .option("--json", t("cli.update.optJson"), false)
+    .option("--no-restart", t("cli.update.optNoRestart"))
+    .option("--dry-run", t("cli.update.optDryRun"), false)
+    .option("--channel <stable|beta|dev>", t("cli.update.optChannel"))
+    .option("--tag <dist-tag|version>", t("cli.update.optTag"))
+    .option("--timeout <seconds>", t("cli.update.optTimeout"))
+    .option("--yes", t("cli.update.optYes"), false)
     .addHelpText("after", () => {
       const examples = [
-        ["openclaw update", "Update a source checkout (git)"],
-        ["openclaw update --channel beta", "Switch to beta channel (git + npm)"],
-        ["openclaw update --channel dev", "Switch to dev channel (git + npm)"],
-        ["openclaw update --tag beta", "One-off update to a dist-tag or version"],
-        ["openclaw update --dry-run", "Preview actions without changing anything"],
-        ["openclaw update --no-restart", "Update without restarting the service"],
-        ["openclaw update --json", "Output result as JSON"],
-        ["openclaw update --yes", "Non-interactive (accept downgrade prompts)"],
-        ["openclaw update wizard", "Interactive update wizard"],
-        ["openclaw --update", "Shorthand for openclaw update"],
+        ["openclaw update", t("cli.update.exUpdate")],
+        ["openclaw update --channel beta", t("cli.update.exBeta")],
+        ["openclaw update --channel dev", t("cli.update.exDev")],
+        ["openclaw update --tag beta", t("cli.update.exTag")],
+        ["openclaw update --dry-run", t("cli.update.exDryRun")],
+        ["openclaw update --no-restart", t("cli.update.exNoRestart")],
+        ["openclaw update --json", t("cli.update.exJson")],
+        ["openclaw update --yes", t("cli.update.exYes")],
+        ["openclaw update wizard", t("cli.update.exWizard")],
+        ["openclaw --update", t("cli.update.exShorthand")],
       ] as const;
       const fmtExamples = examples
         .map(([cmd, desc]) => `  ${theme.command(cmd)} ${theme.muted(`# ${desc}`)}`)
         .join("\n");
       return `
-${theme.heading("What this does:")}
-  - Git checkouts: fetches, rebases, installs deps, builds, and runs doctor
-  - npm installs: updates via detected package manager
+${theme.heading(t("cli.update.helpWhatThisDoes"))}
+  ${t("cli.update.helpGit")}
+  ${t("cli.update.helpNpm")}
 
-${theme.heading("Switch channels:")}
-  - Use --channel stable|beta|dev to persist the update channel in config
-  - Run openclaw update status to see the active channel and source
-  - Use --tag <dist-tag|version> for a one-off npm update without persisting
+${theme.heading(t("cli.update.helpSwitchChannels"))}
+  ${t("cli.update.helpChannelPersist")}
+  ${t("cli.update.helpChannelStatus")}
+  ${t("cli.update.helpChannelTag")}
 
-${theme.heading("Non-interactive:")}
-  - Use --yes to accept downgrade prompts
-  - Combine with --channel/--tag/--restart/--json/--timeout as needed
-  - Use --dry-run to preview actions without writing config/installing/restarting
+${theme.heading(t("cli.update.helpNonInteractive"))}
+  ${t("cli.update.helpNonInteractiveYes")}
+  ${t("cli.update.helpNonInteractiveCombine")}
+  ${t("cli.update.helpNonInteractiveDry")}
 
-${theme.heading("Examples:")}
+${theme.heading(t("cli.update.helpExamples"))}
 ${fmtExamples}
 
-${theme.heading("Notes:")}
-  - Switch channels with --channel stable|beta|dev
-  - For global installs: auto-updates via detected package manager when possible (see docs/install/updating.md)
-  - Downgrades require confirmation (can break configuration)
-  - Skips update if the working directory has uncommitted changes
+${theme.heading(t("cli.update.helpNotes"))}
+  ${t("cli.update.helpNoteSwitchChannels")}
+  ${t("cli.update.helpNoteGlobal")}
+  ${t("cli.update.helpNoteDowngrade")}
+  ${t("cli.update.helpNoteUncommitted")}
 
-${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.openclaw.ai/cli/update")}`;
+${theme.muted(t("helpDocs"))} ${formatDocsLink("/cli/update", "docs.openclaw.ai/cli/update")}`;
     })
     .action(async (opts) => {
       try {
@@ -103,11 +104,11 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.openclaw.ai/cli/up
 
   update
     .command("wizard")
-    .description("Interactive update wizard")
-    .option("--timeout <seconds>", "Timeout for each update step in seconds (default: 1200)")
+    .description(t("cli.update.wizard.desc"))
+    .option("--timeout <seconds>", t("cli.update.wizard.optTimeout"))
     .addHelpText(
       "after",
-      `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.openclaw.ai/cli/update")}\n`,
+      `\n${theme.muted(t("helpDocs"))} ${formatDocsLink("/cli/update", "docs.openclaw.ai/cli/update")}\n`,
     )
     .action(async (opts, command) => {
       try {
@@ -122,20 +123,20 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.openclaw.ai/cli/up
 
   update
     .command("status")
-    .description("Show update channel and version status")
-    .option("--json", "Output result as JSON", false)
-    .option("--timeout <seconds>", "Timeout for update checks in seconds (default: 3)")
+    .description(t("cli.update.status.desc"))
+    .option("--json", t("cli.update.status.optJson"), false)
+    .option("--timeout <seconds>", t("cli.update.status.optTimeout"))
     .addHelpText(
       "after",
       () =>
-        `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["openclaw update status", "Show channel + version status."],
-          ["openclaw update status --json", "JSON output."],
-          ["openclaw update status --timeout 10", "Custom timeout."],
-        ])}\n\n${theme.heading("Notes:")}\n${theme.muted(
-          "- Shows current update channel (stable/beta/dev) and source",
-        )}\n${theme.muted("- Includes git tag/branch/SHA for source checkouts")}\n\n${theme.muted(
-          "Docs:",
+        `\n${theme.heading(t("cli.update.helpExamples"))}\n${formatHelpExamples([
+          ["openclaw update status", t("cli.update.status.exStatus")],
+          ["openclaw update status --json", t("cli.update.status.exJson")],
+          ["openclaw update status --timeout 10", t("cli.update.status.exTimeout")],
+        ])}\n\n${theme.heading(t("cli.update.helpNotes"))}\n${theme.muted(
+          t("cli.update.status.noteChannel"),
+        )}\n${theme.muted(t("cli.update.status.noteGit"))}\n\n${theme.muted(
+          t("helpDocs"),
         )} ${formatDocsLink("/cli/update", "docs.openclaw.ai/cli/update")}`,
     )
     .action(async (opts, command) => {

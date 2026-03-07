@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -30,7 +31,7 @@ import type { NodeManagerChoice, OnboardMode, ResetScope } from "./onboard-types
 
 export function guardCancel<T>(value: T | symbol, runtime: RuntimeEnv): T {
   if (isCancel(value)) {
-    cancel(stylePromptTitle("Setup cancelled.") ?? "Setup cancelled.");
+    cancel(stylePromptTitle(t("onboardHelpers.setupCancelled")) ?? t("onboardHelpers.setupCancelled"));
     runtime.exit(0);
     throw new Error("unreachable");
   }
@@ -41,30 +42,30 @@ export function summarizeExistingConfig(config: OpenClawConfig): string {
   const rows: string[] = [];
   const defaults = config.agents?.defaults;
   if (defaults?.workspace) {
-    rows.push(shortenHomeInString(`workspace: ${defaults.workspace}`));
+    rows.push(shortenHomeInString(t("onboardHelpers.workspaceLabel", { value: defaults.workspace })));
   }
   if (defaults?.model) {
     const model = resolveAgentModelPrimaryValue(defaults.model);
     if (model) {
-      rows.push(shortenHomeInString(`model: ${model}`));
+      rows.push(shortenHomeInString(t("onboardHelpers.modelLabel", { value: model })));
     }
   }
   if (config.gateway?.mode) {
-    rows.push(shortenHomeInString(`gateway.mode: ${config.gateway.mode}`));
+    rows.push(shortenHomeInString(t("onboardHelpers.gatewayModeLabel", { value: config.gateway.mode })));
   }
   if (typeof config.gateway?.port === "number") {
-    rows.push(shortenHomeInString(`gateway.port: ${config.gateway.port}`));
+    rows.push(shortenHomeInString(t("onboardHelpers.gatewayPortLabel", { value: String(config.gateway.port) })));
   }
   if (config.gateway?.bind) {
-    rows.push(shortenHomeInString(`gateway.bind: ${config.gateway.bind}`));
+    rows.push(shortenHomeInString(t("onboardHelpers.gatewayBindLabel", { value: config.gateway.bind })));
   }
   if (config.gateway?.remote?.url) {
-    rows.push(shortenHomeInString(`gateway.remote.url: ${config.gateway.remote.url}`));
+    rows.push(shortenHomeInString(t("onboardHelpers.gatewayRemoteUrlLabel", { value: config.gateway.remote.url })));
   }
   if (config.skills?.install?.nodeManager) {
-    rows.push(shortenHomeInString(`skills.nodeManager: ${config.skills.install.nodeManager}`));
+    rows.push(shortenHomeInString(t("onboardHelpers.skillsNodeManagerLabel", { value: config.skills.install.nodeManager })));
   }
-  return rows.length ? rows.join("\n") : "No key settings detected.";
+  return rows.length ? rows.join("\n") : t("onboardHelpers.noKeySettings");
 }
 
 export function randomToken(): string {
@@ -86,14 +87,14 @@ export function normalizeGatewayTokenInput(value: unknown): string {
 
 export function validateGatewayPasswordInput(value: unknown): string | undefined {
   if (typeof value !== "string") {
-    return "Required";
+    return t("onboardHelpers.validationRequired");
   }
   const trimmed = value.trim();
   if (!trimmed) {
-    return "Required";
+    return t("onboardHelpers.validationRequired");
   }
   if (trimmed === "undefined" || trimmed === "null") {
-    return 'Cannot be the literal string "undefined" or "null"';
+    return t("onboardHelpers.validationUndefinedNull");
   }
   return undefined;
 }
@@ -215,12 +216,12 @@ export function formatControlUiSshHint(params: {
     : undefined;
   const sshTarget = resolveSshTargetHint();
   return [
-    "No GUI detected. Open from your computer:",
+    t("onboardHelpers.noGuiDetected"),
     `ssh -N -L ${params.port}:127.0.0.1:${params.port} ${sshTarget}`,
-    "Then open:",
+    t("onboardHelpers.thenOpen"),
     localUrl,
     authedUrl,
-    "Docs:",
+    t("onboardHelpers.docsLabel"),
     "https://docs.openclaw.ai/gateway/remote",
     "https://docs.openclaw.ai/web/control-ui",
   ]
@@ -295,10 +296,10 @@ export async function ensureWorkspaceAndSessions(
     dir: workspaceDir,
     ensureBootstrapFiles: !options?.skipBootstrap,
   });
-  runtime.log(`Workspace OK: ${shortenHomePath(ws.dir)}`);
+  runtime.log(t("onboardHelpers.workspaceOk", { path: shortenHomePath(ws.dir) }));
   const sessionsDir = resolveSessionTranscriptsDirForAgent(options?.agentId);
   await fs.mkdir(sessionsDir, { recursive: true });
-  runtime.log(`Sessions OK: ${shortenHomePath(sessionsDir)}`);
+  runtime.log(t("onboardHelpers.sessionsOk", { path: shortenHomePath(sessionsDir) }));
 }
 
 export function resolveNodeManagerOptions(): Array<{
@@ -323,9 +324,9 @@ export async function moveToTrash(pathname: string, runtime: RuntimeEnv): Promis
   }
   try {
     await runCommandWithTimeout(["trash", pathname], { timeoutMs: 5000 });
-    runtime.log(`Moved to Trash: ${shortenHomePath(pathname)}`);
+    runtime.log(t("onboardHelpers.movedToTrash", { path: shortenHomePath(pathname) }));
   } catch {
-    runtime.log(`Failed to move to Trash (manual delete): ${shortenHomePath(pathname)}`);
+    runtime.log(t("onboardHelpers.failedToTrash", { path: shortenHomePath(pathname) }));
   }
 }
 

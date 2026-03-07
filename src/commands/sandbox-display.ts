@@ -4,6 +4,7 @@
 
 import type { SandboxBrowserInfo, SandboxContainerInfo } from "../agents/sandbox.js";
 import { formatCliCommand } from "../cli/command-format.js";
+import { t } from "../i18n/index.js";
 import { formatDurationCompact } from "../infra/format-time/format-duration.ts";
 import type { RuntimeEnv } from "../runtime.js";
 import { formatImageMatch, formatSimpleStatus, formatStatus } from "./sandbox-formatters.js";
@@ -30,19 +31,19 @@ export function displayContainers(containers: SandboxContainerInfo[], runtime: R
   displayItems(
     containers,
     {
-      emptyMessage: "No sandbox containers found.",
-      title: "📦 Sandbox Containers:",
+      emptyMessage: t("commands.sandboxDisplay.noContainers"),
+      title: t("commands.sandboxDisplay.containersTitle"),
       renderItem: (container, rt) => {
         rt.log(`  ${container.containerName}`);
-        rt.log(`    Status:  ${formatStatus(container.running)}`);
-        rt.log(`    Image:   ${container.image} ${formatImageMatch(container.imageMatch)}`);
+        rt.log(`    ${t("commands.sandboxDisplay.statusLabel")}  ${formatStatus(container.running)}`);
+        rt.log(`    ${t("commands.sandboxDisplay.imageLabel")}   ${container.image} ${formatImageMatch(container.imageMatch)}`);
         rt.log(
-          `    Age:     ${formatDurationCompact(Date.now() - container.createdAtMs, { spaced: true }) ?? "0s"}`,
+          `    ${t("commands.sandboxDisplay.ageLabel")}     ${formatDurationCompact(Date.now() - container.createdAtMs, { spaced: true }) ?? "0s"}`,
         );
         rt.log(
-          `    Idle:    ${formatDurationCompact(Date.now() - container.lastUsedAtMs, { spaced: true }) ?? "0s"}`,
+          `    ${t("commands.sandboxDisplay.idleLabel")}    ${formatDurationCompact(Date.now() - container.lastUsedAtMs, { spaced: true }) ?? "0s"}`,
         );
-        rt.log(`    Session: ${container.sessionKey}`);
+        rt.log(`    ${t("commands.sandboxDisplay.sessionLabel")} ${container.sessionKey}`);
         rt.log("");
       },
     },
@@ -54,23 +55,23 @@ export function displayBrowsers(browsers: SandboxBrowserInfo[], runtime: Runtime
   displayItems(
     browsers,
     {
-      emptyMessage: "No sandbox browser containers found.",
-      title: "🌐 Sandbox Browser Containers:",
+      emptyMessage: t("commands.sandboxDisplay.noBrowsers"),
+      title: t("commands.sandboxDisplay.browsersTitle"),
       renderItem: (browser, rt) => {
         rt.log(`  ${browser.containerName}`);
-        rt.log(`    Status:  ${formatStatus(browser.running)}`);
-        rt.log(`    Image:   ${browser.image} ${formatImageMatch(browser.imageMatch)}`);
-        rt.log(`    CDP:     ${browser.cdpPort}`);
+        rt.log(`    ${t("commands.sandboxDisplay.statusLabel")}  ${formatStatus(browser.running)}`);
+        rt.log(`    ${t("commands.sandboxDisplay.imageLabel")}   ${browser.image} ${formatImageMatch(browser.imageMatch)}`);
+        rt.log(`    ${t("commands.sandboxDisplay.cdpLabel")}     ${browser.cdpPort}`);
         if (browser.noVncPort) {
-          rt.log(`    noVNC:   ${browser.noVncPort}`);
+          rt.log(`    ${t("commands.sandboxDisplay.noVncLabel")}   ${browser.noVncPort}`);
         }
         rt.log(
-          `    Age:     ${formatDurationCompact(Date.now() - browser.createdAtMs, { spaced: true }) ?? "0s"}`,
+          `    ${t("commands.sandboxDisplay.ageLabel")}     ${formatDurationCompact(Date.now() - browser.createdAtMs, { spaced: true }) ?? "0s"}`,
         );
         rt.log(
-          `    Idle:    ${formatDurationCompact(Date.now() - browser.lastUsedAtMs, { spaced: true }) ?? "0s"}`,
+          `    ${t("commands.sandboxDisplay.idleLabel")}    ${formatDurationCompact(Date.now() - browser.lastUsedAtMs, { spaced: true }) ?? "0s"}`,
         );
-        rt.log(`    Session: ${browser.sessionKey}`);
+        rt.log(`    ${t("commands.sandboxDisplay.sessionLabel")} ${browser.sessionKey}`);
         rt.log("");
       },
     },
@@ -89,12 +90,12 @@ export function displaySummary(
   const mismatchCount =
     containers.filter((c) => !c.imageMatch).length + browsers.filter((b) => !b.imageMatch).length;
 
-  runtime.log(`Total: ${totalCount} (${runningCount} running)`);
+  runtime.log(t("commands.sandboxDisplay.totalSummary", { total: String(totalCount), running: String(runningCount) }));
 
   if (mismatchCount > 0) {
-    runtime.log(`\n⚠️  ${mismatchCount} container(s) with image mismatch detected.`);
+    runtime.log(`\n${t("commands.sandboxDisplay.imageMismatch", { count: String(mismatchCount) })}`);
     runtime.log(
-      `   Run '${formatCliCommand("openclaw sandbox recreate --all")}' to update all containers.`,
+      `   ${t("commands.sandboxDisplay.recreateHint", { command: formatCliCommand("openclaw sandbox recreate --all") })}`,
     );
   }
 }
@@ -104,33 +105,33 @@ export function displayRecreatePreview(
   browsers: SandboxBrowserInfo[],
   runtime: RuntimeEnv,
 ): void {
-  runtime.log("\nContainers to be recreated:\n");
+  runtime.log(`\n${t("commands.sandboxDisplay.recreatePreview")}\n`);
 
   if (containers.length > 0) {
-    runtime.log("📦 Sandbox Containers:");
+    runtime.log(t("commands.sandboxDisplay.sandboxContainersLabel"));
     for (const container of containers) {
       runtime.log(`  - ${container.containerName} (${formatSimpleStatus(container.running)})`);
     }
   }
 
   if (browsers.length > 0) {
-    runtime.log("\n🌐 Browser Containers:");
+    runtime.log(`\n${t("commands.sandboxDisplay.browserContainersLabel")}`);
     for (const browser of browsers) {
       runtime.log(`  - ${browser.containerName} (${formatSimpleStatus(browser.running)})`);
     }
   }
 
   const total = containers.length + browsers.length;
-  runtime.log(`\nTotal: ${total} container(s)`);
+  runtime.log(`\n${t("commands.sandboxDisplay.totalContainers", { total: String(total) })}`);
 }
 
 export function displayRecreateResult(
   result: { successCount: number; failCount: number },
   runtime: RuntimeEnv,
 ): void {
-  runtime.log(`\nDone: ${result.successCount} removed, ${result.failCount} failed`);
+  runtime.log(`\n${t("commands.sandboxDisplay.recreateDone", { success: String(result.successCount), fail: String(result.failCount) })}`);
 
   if (result.successCount > 0) {
-    runtime.log("\nContainers will be automatically recreated when the agent is next used.");
+    runtime.log(`\n${t("commands.sandboxDisplay.autoRecreate")}`);
   }
 }

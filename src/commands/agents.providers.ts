@@ -1,4 +1,5 @@
 import { resolveChannelDefaultAccountId } from "../channels/plugins/helpers.js";
+import { t } from "../i18n/index.js";
 import {
   getChannelPlugin,
   listChannelPlugins,
@@ -14,6 +15,7 @@ type ProviderAccountStatus = {
   accountId: string;
   name?: string;
   state: "linked" | "not linked" | "configured" | "not configured" | "enabled" | "disabled";
+  stateLabel?: string;
   enabled?: boolean;
   configured?: boolean;
 };
@@ -35,9 +37,17 @@ function formatChannelAccountLabel(params: {
 }
 
 function formatProviderState(entry: ProviderAccountStatus): string {
-  const parts = [entry.state];
+  const stateLabels: Record<string, string> = {
+    linked: t("commands.agentsProviders.linked"),
+    "not linked": t("commands.agentsProviders.notLinked"),
+    configured: t("commands.agentsProviders.configured"),
+    "not configured": t("commands.agentsProviders.notConfigured"),
+    enabled: t("commands.agentsProviders.enabled"),
+    disabled: t("commands.agentsProviders.disabled"),
+  };
+  const parts = [stateLabels[entry.state] ?? entry.state];
   if (entry.enabled === false && entry.state !== "disabled") {
-    parts.push("disabled");
+    parts.push(t("commands.agentsProviders.disabled"));
   }
   return parts.join(", ");
 }
@@ -169,7 +179,7 @@ export function listProvidersForAgent(params: {
         providerLines.push(formatProviderEntry(status));
       } else {
         providerLines.push(
-          `${formatChannelAccountLabel({ provider: channel, accountId })}: unknown`,
+          `${formatChannelAccountLabel({ provider: channel, accountId })}: ${t("commands.agentsProviders.unknown")}`,
         );
       }
     }

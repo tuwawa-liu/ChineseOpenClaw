@@ -1,4 +1,5 @@
 import type { AuthProfileStore } from "../agents/auth-profiles.js";
+import { t } from "../i18n/index.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 import { buildAuthChoiceGroups } from "./auth-choice-options.js";
 import type { AuthChoice } from "./onboard-types.js";
@@ -24,7 +25,7 @@ export async function promptAuthChoiceGrouped(params: {
     ];
 
     const providerSelection = (await params.prompter.select({
-      message: "Model/auth provider",
+      message: t("commands.authPrompt.providerMsg"),
       options: providerOptions,
     })) as string;
 
@@ -36,8 +37,8 @@ export async function promptAuthChoiceGrouped(params: {
 
     if (!group || group.options.length === 0) {
       await params.prompter.note(
-        "No auth methods available for that provider.",
-        "Model/auth choice",
+        t("commands.authPrompt.noMethods"),
+        t("commands.authPrompt.noMethodsTitle"),
       );
       continue;
     }
@@ -47,8 +48,8 @@ export async function promptAuthChoiceGrouped(params: {
     }
 
     const methodSelection = await params.prompter.select({
-      message: `${group.label} auth method`,
-      options: [...group.options, { value: BACK_VALUE, label: "Back" }],
+      message: t("commands.authPrompt.authMethod", { label: group.label }),
+      options: [...group.options, { value: BACK_VALUE, label: t("commands.authPrompt.back") }],
     });
 
     if (methodSelection === BACK_VALUE) {

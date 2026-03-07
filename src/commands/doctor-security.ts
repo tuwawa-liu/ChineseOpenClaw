@@ -4,6 +4,7 @@ import { formatCliCommand } from "../cli/command-format.js";
 import type { OpenClawConfig, GatewayBindMode } from "../config/config.js";
 import { hasConfiguredSecretInput } from "../config/types.secrets.js";
 import { resolveGatewayAuth } from "../gateway/auth.js";
+import { t } from "../i18n/index.js";
 import { isLoopbackHost, resolveGatewayBindHost } from "../gateway/net.js";
 import { resolveDmAllowState } from "../security/dm-policy-shared.js";
 import { note } from "../terminal/note.js";
@@ -11,13 +12,13 @@ import { resolveDefaultChannelAccountContext } from "./channel-account-context.j
 
 export async function noteSecurityWarnings(cfg: OpenClawConfig) {
   const warnings: string[] = [];
-  const auditHint = `- Run: ${formatCliCommand("openclaw security audit --deep")}`;
+  const auditHint = t("commands.doctorSecurity.auditHint", { command: formatCliCommand("openclaw security audit --deep") });
 
   if (cfg.approvals?.exec?.enabled === false) {
     warnings.push(
-      "- Note: approvals.exec.enabled=false disables approval forwarding only.",
-      "  Host exec gating still comes from ~/.openclaw/exec-approvals.json.",
-      `  Check local policy with: ${formatCliCommand("openclaw approvals get --gateway")}`,
+      t("commands.doctorSecurity.approvalsNote"),
+      t("commands.doctorSecurity.hostExecGating"),
+      t("commands.doctorSecurity.checkLocalPolicy", { command: formatCliCommand("openclaw approvals get --gateway") }),
     );
   }
 
@@ -56,9 +57,9 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
     (resolvedAuth.mode === "password" && hasPassword);
   const bindDescriptor = `"${gatewayBind}" (${resolvedBindHost})`;
   const saferRemoteAccessLines = [
-    "  Safer remote access: keep bind loopback and use Tailscale Serve/Funnel or an SSH tunnel.",
-    "  Example tunnel: ssh -N -L 18789:127.0.0.1:18789 user@gateway-host",
-    "  Docs: https://docs.openclaw.ai/gateway/remote",
+    t("commands.doctorSecurity.saferRemoteAccess"),
+    t("commands.doctorSecurity.exampleTunnel"),
+    t("commands.doctorSecurity.docsLink"),
   ];
 
   if (isExposed) {
@@ -76,17 +77,17 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
               )}`,
             ];
       warnings.push(
-        `- CRITICAL: Gateway bound to ${bindDescriptor} without authentication.`,
-        `  Anyone on your network (or internet if port-forwarded) can fully control your agent.`,
-        `  Fix: ${formatCliCommand("openclaw config set gateway.bind loopback")}`,
+        t("commands.doctorSecurity.criticalNoAuth", { bind: bindDescriptor }),
+        t("commands.doctorSecurity.anyoneCanControl"),
+        t("commands.doctorSecurity.fixBindLoopback", { command: formatCliCommand("openclaw config set gateway.bind loopback") }),
         ...saferRemoteAccessLines,
         ...authFixLines,
       );
     } else {
       // Auth is configured, but still warn about network exposure
       warnings.push(
-        `- WARNING: Gateway bound to ${bindDescriptor} (network-accessible).`,
-        `  Ensure your auth credentials are strong and not exposed.`,
+        t("commands.doctorSecurity.warningNetworkAccessible", { bind: bindDescriptor }),
+        t("commands.doctorSecurity.ensureStrongAuth"),
         ...saferRemoteAccessLines,
       );
     }
@@ -115,31 +116,32 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
 
     if (dmPolicy === "open") {
       const allowFromPath = `${params.allowFromPath}allowFrom`;
-      warnings.push(`- ${params.label} DMs: OPEN (${policyPath}="open"). Anyone can DM it.`);
+      warnings.push(t("commands.doctorSecurity.dmOpen", { label: params.label, policyPath }));
       if (!hasWildcard) {
         warnings.push(
-          `- ${params.label} DMs: config invalid — "open" requires ${allowFromPath} to include "*".`,
+          t("commands.doctorSecurity.dmOpenInvalid", { label: params.label, allowFromPath }),
         );
       }
     }
 
     if (dmPolicy === "disabled") {
-      warnings.push(`- ${params.label} DMs: disabled (${policyPath}="disabled").`);
+      warnings.push(t("commands.doctorSecurity.dmDisabled", { label: params.label, policyPath }));
       return;
     }
 
     if (dmPolicy !== "open" && allowCount === 0) {
       warnings.push(
-        `- ${params.label} DMs: locked (${policyPath}="${dmPolicy}") with no allowlist; unknown senders will be blocked / get a pairing code.`,
+        t("commands.doctorSecurity.dmLocked", { label: params.label, policyPath, dmPolicy }),
       );
       warnings.push(`  ${params.approveHint}`);
     }
 
     if (dmScope === "main" && isMultiUserDm) {
       warnings.push(
-        `- ${params.label} DMs: multiple senders share the main session; run: ` +
-          formatCliCommand('openclaw config set session.dmScope "per-channel-peer"') +
-          ' (or "per-account-channel-peer" for multi-account channels) to isolate sessions.',
+        t("commands.doctorSecurity.dmMultipleSenders", {
+          label: params.label,
+          command: formatCliCommand('openclaw config set session.dmScope "per-channel-peer"'),
+        }),
       );
     }
   };
@@ -186,7 +188,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
     }
   }
 
-  const lines = warnings.length > 0 ? warnings : ["- No channel security warnings detected."];
+  const lines = warnings.length > 0 ? warnings : [t("commands.doctorSecurity.noWarnings")];
   lines.push(auditHint);
-  note(lines.join("\n"), "Security");
+  note(lines.join("\n"), t("commands.doctorSecurity.title"));
 }

@@ -9,6 +9,7 @@ import {
   resolveShellFromEnv,
   usesSlowDynamicCompletion,
 } from "../cli/completion-cli.js";
+import { t } from "../i18n/index.js";
 import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { note } from "../terminal/note.js";
@@ -83,11 +84,14 @@ export async function doctorShellCompletion(
   const cliName = resolveCliName();
   const status = await checkShellCompletionStatus(cliName);
 
+  const title = t("commands.doctorCompletion.title");
+  const resolveProfile = (shell: CompletionShell) => shell === "zsh" ? "zshrc" : shell === "bash" ? "bashrc" : "config/fish/config.fish";
+
   // Profile uses slow dynamic pattern - upgrade to cached version
   if (status.usesSlowPattern) {
     note(
-      `Your ${status.shell} profile uses slow dynamic completion (source <(...)).\nUpgrading to cached completion for faster shell startup...`,
-      "Shell completion",
+      t("commands.doctorCompletion.slowDynamicCompletion", { shell: status.shell }),
+      title,
     );
 
     // Ensure cache exists first
@@ -95,8 +99,8 @@ export async function doctorShellCompletion(
       const generated = await generateCompletionCache();
       if (!generated) {
         note(
-          `Failed to generate completion cache. Run \`${cliName} completion --write-state\` manually.`,
-          "Shell completion",
+          t("commands.doctorCompletion.failedGenerateCache", { cliName }),
+          title,
         );
         return;
       }
@@ -105,8 +109,8 @@ export async function doctorShellCompletion(
     // Upgrade profile to use cached file
     await installCompletion(status.shell, true, cliName);
     note(
-      `Shell completion upgraded. Restart your shell or run: source ~/.${status.shell === "zsh" ? "zshrc" : status.shell === "bash" ? "bashrc" : "config/fish/config.fish"}`,
-      "Shell completion",
+      t("commands.doctorCompletion.upgraded", { profile: resolveProfile(status.shell) }),
+      title,
     );
     return;
   }
@@ -114,16 +118,16 @@ export async function doctorShellCompletion(
   // Profile has completion but no cache - auto-fix
   if (status.profileInstalled && !status.cacheExists) {
     note(
-      `Shell completion is configured in your ${status.shell} profile but the cache is missing.\nRegenerating cache...`,
-      "Shell completion",
+      t("commands.doctorCompletion.cacheMissing", { shell: status.shell }),
+      title,
     );
     const generated = await generateCompletionCache();
     if (generated) {
-      note(`Completion cache regenerated at ${status.cachePath}`, "Shell completion");
+      note(t("commands.doctorCompletion.cacheRegenerated", { path: status.cachePath }), title);
     } else {
       note(
-        `Failed to regenerate completion cache. Run \`${cliName} completion --write-state\` manually.`,
-        "Shell completion",
+        t("commands.doctorCompletion.failedGenerateCache", { cliName }),
+        title,
       );
     }
     return;
@@ -137,7 +141,7 @@ export async function doctorShellCompletion(
     }
 
     const shouldInstall = await prompter.confirm({
-      message: `Enable ${status.shell} shell completion for ${cliName}?`,
+      message: t("commands.doctorCompletion.enablePrompt", { shell: status.shell, cliName }),
       initialValue: true,
     });
 
@@ -146,8 +150,8 @@ export async function doctorShellCompletion(
       const generated = await generateCompletionCache();
       if (!generated) {
         note(
-          `Failed to generate completion cache. Run \`${cliName} completion --write-state\` manually.`,
-          "Shell completion",
+          t("commands.doctorCompletion.failedGenerateCache", { cliName }),
+          title,
         );
         return;
       }
@@ -155,8 +159,8 @@ export async function doctorShellCompletion(
       // Then install to profile
       await installCompletion(status.shell, true, cliName);
       note(
-        `Shell completion installed. Restart your shell or run: source ~/.${status.shell === "zsh" ? "zshrc" : status.shell === "bash" ? "bashrc" : "config/fish/config.fish"}`,
-        "Shell completion",
+        t("commands.doctorCompletion.installed", { profile: resolveProfile(status.shell) }),
+        title,
       );
     }
   }

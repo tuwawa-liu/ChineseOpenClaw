@@ -2,6 +2,7 @@ import path from "node:path";
 import { cancel, confirm, isCancel, multiselect } from "@clack/prompts";
 import { isNixMode } from "../config/config.js";
 import { resolveGatewayService } from "../daemon/service.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { stylePromptHint, stylePromptMessage, stylePromptTitle } from "../terminal/prompt-style.js";
 import { resolveHomeDir } from "../utils.js";
@@ -53,7 +54,7 @@ function buildScopeSelection(opts: UninstallOptions): {
 
 async function stopAndUninstallService(runtime: RuntimeEnv): Promise<boolean> {
   if (isNixMode) {
-    runtime.error("Nix mode detected; service uninstall is disabled.");
+    runtime.error(t("commands.uninstall.nixDetected"));
     return false;
   }
   const service = resolveGatewayService();
@@ -61,23 +62,23 @@ async function stopAndUninstallService(runtime: RuntimeEnv): Promise<boolean> {
   try {
     loaded = await service.isLoaded({ env: process.env });
   } catch (err) {
-    runtime.error(`Gateway service check failed: ${String(err)}`);
+    runtime.error(t("commands.uninstall.serviceCheckFailed", { error: String(err) }));
     return false;
   }
   if (!loaded) {
-    runtime.log(`Gateway service ${service.notLoadedText}.`);
+    runtime.log(t("commands.uninstall.serviceNotLoaded", { text: service.notLoadedText }));
     return true;
   }
   try {
     await service.stop({ env: process.env, stdout: process.stdout });
   } catch (err) {
-    runtime.error(`Gateway stop failed: ${String(err)}`);
+    runtime.error(t("commands.uninstall.stopFailed", { error: String(err) }));
   }
   try {
     await service.uninstall({ env: process.env, stdout: process.stdout });
     return true;
   } catch (err) {
-    runtime.error(`Gateway uninstall failed: ${String(err)}`);
+    runtime.error(t("commands.uninstall.uninstallFailed", { error: String(err) }));
     return false;
   }
 }
@@ -96,37 +97,37 @@ export async function uninstallCommand(runtime: RuntimeEnv, opts: UninstallOptio
   const { scopes, hadExplicit } = buildScopeSelection(opts);
   const interactive = !opts.nonInteractive;
   if (!interactive && !opts.yes) {
-    runtime.error("Non-interactive mode requires --yes.");
+    runtime.error(t("commands.uninstall.nonInteractiveYes"));
     runtime.exit(1);
     return;
   }
 
   if (!hadExplicit) {
     if (!interactive) {
-      runtime.error("Non-interactive mode requires explicit scopes (use --all).");
+      runtime.error(t("commands.uninstall.nonInteractiveScope"));
       runtime.exit(1);
       return;
     }
     const selection = await multiselectStyled<UninstallScope>({
-      message: "Uninstall which components?",
+      message: t("commands.uninstall.selectComponents"),
       options: [
         {
           value: "service",
-          label: "Gateway service",
-          hint: "launchd / systemd / schtasks",
+          label: t("commands.uninstall.serviceLabel"),
+          hint: t("commands.uninstall.serviceHint"),
         },
-        { value: "state", label: "State + config", hint: "~/.openclaw" },
-        { value: "workspace", label: "Workspace", hint: "agent files" },
+        { value: "state", label: t("commands.uninstall.stateLabel"), hint: t("commands.uninstall.stateHint") },
+        { value: "workspace", label: t("commands.uninstall.workspaceLabel"), hint: t("commands.uninstall.workspaceHint") },
         {
           value: "app",
-          label: "macOS app",
-          hint: "/Applications/OpenClaw.app",
+          label: t("commands.uninstall.macAppLabel"),
+          hint: t("commands.uninstall.macAppHint"),
         },
       ],
       initialValues: ["service", "state", "workspace"],
     });
     if (isCancel(selection)) {
-      cancel(stylePromptTitle("Uninstall cancelled.") ?? "Uninstall cancelled.");
+      cancel(stylePromptTitle(t("commands.uninstall.cancelled")) ?? t("commands.uninstall.cancelled"));
       runtime.exit(0);
       return;
     }
@@ -136,16 +137,16 @@ export async function uninstallCommand(runtime: RuntimeEnv, opts: UninstallOptio
   }
 
   if (scopes.size === 0) {
-    runtime.log("Nothing selected.");
+    runtime.log(t("commands.uninstall.nothingSelected"));
     return;
   }
 
   if (interactive && !opts.yes) {
     const ok = await confirm({
-      message: stylePromptMessage("Proceed with uninstall?"),
+      message: stylePromptMessage(t("commands.uninstall.confirmMsg")),
     });
     if (isCancel(ok) || !ok) {
-      cancel(stylePromptTitle("Uninstall cancelled.") ?? "Uninstall cancelled.");
+      cancel(stylePromptTitle(t("commands.uninstall.cancelled")) ?? t("commands.uninstall.cancelled"));
       runtime.exit(0);
       return;
     }
@@ -157,7 +158,7 @@ export async function uninstallCommand(runtime: RuntimeEnv, opts: UninstallOptio
 
   if (scopes.has("service")) {
     if (dryRun) {
-      runtime.log("[dry-run] remove gateway service");
+      runtime.log(t("commands.uninstall.dryRunService"));
     } else {
       await stopAndUninstallService(runtime);
     }
@@ -179,12 +180,12 @@ export async function uninstallCommand(runtime: RuntimeEnv, opts: UninstallOptio
     await removeMacApp(runtime, dryRun);
   }
 
-  runtime.log("CLI still installed. Remove via npm/pnpm if desired.");
+  runtime.log(t("commands.uninstall.cliHint"));
 
   if (scopes.has("state") && !scopes.has("workspace")) {
     const home = resolveHomeDir();
     if (home && workspaceDirs.some((dir) => dir.startsWith(path.resolve(home)))) {
-      runtime.log("Tip: workspaces were preserved. Re-run with --workspace to remove them.");
+      runtime.log(t("commands.uninstall.workspacePreserved"));
     }
   }
 }

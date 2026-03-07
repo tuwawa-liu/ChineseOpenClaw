@@ -1,6 +1,7 @@
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../../agents/agent-scope.js";
 import { listChannelPluginCatalogEntries } from "../../channels/plugins/catalog.js";
 import { getChannelPlugin, normalizeChannelId } from "../../channels/plugins/index.js";
+import { t } from "../../i18n/index.js";
 import { moveSingleAccountChannelSectionToDefaultAccount } from "../../channels/plugins/setup-helpers.js";
 import type { ChannelId, ChannelSetupInput } from "../../channels/plugins/types.js";
 import { writeConfigFile, type OpenClawConfig } from "../../config/config.js";
@@ -69,7 +70,7 @@ export async function channelsAddCommand(
     const prompter = createClackPrompter();
     let selection: ChannelChoice[] = [];
     const accountIds: Partial<Record<ChannelChoice, string>> = {};
-    await prompter.intro("Channel setup");
+    await prompter.intro(t("commands.channelsAdd.channelSetup"));
     let nextConfig = await setupChannels(cfg, runtime, prompter, {
       allowDisable: false,
       allowSignalInstall: true,
@@ -82,12 +83,12 @@ export async function channelsAddCommand(
       },
     });
     if (selection.length === 0) {
-      await prompter.outro("No channels selected.");
+      await prompter.outro(t("commands.channelsAdd.noChannelsSelected"));
       return;
     }
 
     const wantsNames = await prompter.confirm({
-      message: "Add display names for these accounts? (optional)",
+      message: t("commands.channelsAdd.addDisplayNames"),
       initialValue: false,
     });
     if (wantsNames) {
@@ -100,7 +101,7 @@ export async function channelsAddCommand(
         const snapshot = plugin?.config.describeAccount?.(account, nextConfig);
         const existingName = snapshot?.name ?? account?.name;
         const name = await prompter.text({
-          message: `${channel} account name (${accountId})`,
+          message: t("commands.channelsAdd.accountName", { channel, accountId }),
           initialValue: existingName,
         });
         if (name?.trim()) {
@@ -129,7 +130,7 @@ export async function channelsAddCommand(
       );
     if (bindTargets.length > 0) {
       const bindNow = await prompter.confirm({
-        message: "Bind configured channel accounts to agents now?",
+        message: t("commands.channelsAdd.bindNow"),
         initialValue: true,
       });
       if (bindNow) {
@@ -137,7 +138,7 @@ export async function channelsAddCommand(
         const defaultAgentId = resolveDefaultAgentId(nextConfig);
         for (const target of bindTargets) {
           const targetAgentId = await prompter.select({
-            message: `Route ${target.channel} account "${target.accountId}" to agent`,
+            message: t("commands.channelsAdd.routeToAgent", { channel: target.channel, accountId: target.accountId }),
             options: agentSummaries.map((agent) => ({
               value: agent.id,
               label: agent.isDefault ? `${agent.id} (default)` : agent.id,
@@ -154,22 +155,22 @@ export async function channelsAddCommand(
           if (bindingResult.added.length > 0 || bindingResult.updated.length > 0) {
             await prompter.note(
               [
-                ...bindingResult.added.map((binding) => `Added: ${describeBinding(binding)}`),
-                ...bindingResult.updated.map((binding) => `Updated: ${describeBinding(binding)}`),
+                ...bindingResult.added.map((binding) => t("commands.channelsAdd.added", { binding: describeBinding(binding) })),
+                ...bindingResult.updated.map((binding) => t("commands.channelsAdd.updated", { binding: describeBinding(binding) })),
               ].join("\n"),
-              "Routing bindings",
+              t("commands.channelsAdd.routingBindings"),
             );
           }
           if (bindingResult.conflicts.length > 0) {
             await prompter.note(
               [
-                "Skipped bindings already claimed by another agent:",
+                t("commands.channelsAdd.skippedBindings"),
                 ...bindingResult.conflicts.map(
                   (conflict) =>
                     `- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`,
                 ),
               ].join("\n"),
-              "Routing bindings",
+              t("commands.channelsAdd.routingBindings"),
             );
           }
         }
@@ -177,7 +178,7 @@ export async function channelsAddCommand(
     }
 
     await writeConfigFile(nextConfig);
-    await prompter.outro("Channels updated.");
+    await prompter.outro(t("commands.channelsAdd.channelsUpdated"));
     return;
   }
 
@@ -205,8 +206,8 @@ export async function channelsAddCommand(
 
   if (!channel) {
     const hint = catalogEntry
-      ? `Plugin ${catalogEntry.meta.label} could not be loaded after install.`
-      : `Unknown channel: ${String(opts.channel ?? "")}`;
+      ? t("commands.channelsAdd.pluginLoadFailed", { label: catalogEntry.meta.label })
+      : t("commands.channelsAdd.unknownChannel", { channel: String(opts.channel ?? "") });
     runtime.error(hint);
     runtime.exit(1);
     return;
@@ -214,7 +215,7 @@ export async function channelsAddCommand(
 
   const plugin = getChannelPlugin(channel);
   if (!plugin?.setup?.applyAccountConfig) {
-    runtime.error(`Channel ${channel} does not support add.`);
+    runtime.error(t("commands.channelsAdd.noSupportAdd", { channel }));
     runtime.exit(1);
     return;
   }
@@ -307,5 +308,5 @@ export async function channelsAddCommand(
   }
 
   await writeConfigFile(nextConfig);
-  runtime.log(`Added ${channelLabel(channel)} account "${accountId}".`);
+  runtime.log(t("commands.channelsAdd.addedAccount", { label: channelLabel(channel), accountId }));
 }

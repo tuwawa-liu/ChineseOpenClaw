@@ -12,6 +12,7 @@ import {
   text,
 } from "@clack/prompts";
 import { createCliProgress } from "../cli/progress.js";
+import { t } from "../i18n/index.js";
 import { stripAnsi } from "../terminal/ansi.js";
 import { note as emitNote } from "../terminal/note.js";
 import { stylePromptHint, stylePromptMessage, stylePromptTitle } from "../terminal/prompt-style.js";
@@ -21,7 +22,7 @@ import { WizardCancelledError } from "./prompts.js";
 
 function guardCancel<T>(value: T | symbol): T {
   if (isCancel(value)) {
-    cancel(stylePromptTitle("Setup cancelled.") ?? "Setup cancelled.");
+    cancel(stylePromptTitle(t("wizard.setupCancelled")) ?? t("wizard.setupCancelled"));
     throw new WizardCancelledError();
   }
   return value;

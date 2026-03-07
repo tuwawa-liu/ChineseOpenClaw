@@ -1,6 +1,7 @@
 import type { Command } from "commander";
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../agents/agent-scope.js";
 import { loadConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
 import { theme } from "../terminal/theme.js";
@@ -40,36 +41,36 @@ async function runSkillsAction(render: (report: SkillStatusReport) => string): P
 export function registerSkillsCli(program: Command) {
   const skills = program
     .command("skills")
-    .description("List and inspect available skills")
+    .description(t("cli.skills.desc"))
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/skills", "docs.openclaw.ai/cli/skills")}\n`,
+        `\n${theme.muted(t("helpDocs"))} ${formatDocsLink("/cli/skills", "docs.openclaw.ai/cli/skills")}\n`,
     );
 
   skills
     .command("list")
-    .description("List all available skills")
-    .option("--json", "Output as JSON", false)
-    .option("--eligible", "Show only eligible (ready to use) skills", false)
-    .option("-v, --verbose", "Show more details including missing requirements", false)
+    .description(t("cli.skills.list.desc"))
+    .option("--json", t("cli.skills.list.optJson"), false)
+    .option("--eligible", t("cli.skills.list.optEligible"), false)
+    .option("-v, --verbose", t("cli.skills.list.optVerbose"), false)
     .action(async (opts) => {
       await runSkillsAction((report) => formatSkillsList(report, opts));
     });
 
   skills
     .command("info")
-    .description("Show detailed information about a skill")
+    .description(t("cli.skills.info.desc"))
     .argument("<name>", "Skill name")
-    .option("--json", "Output as JSON", false)
+    .option("--json", t("cli.skills.info.optJson"), false)
     .action(async (name, opts) => {
       await runSkillsAction((report) => formatSkillInfo(report, name, opts));
     });
 
   skills
     .command("check")
-    .description("Check which skills are ready vs missing requirements")
-    .option("--json", "Output as JSON", false)
+    .description(t("cli.skills.check.desc"))
+    .option("--json", t("cli.skills.check.optJson"), false)
     .action(async (opts) => {
       await runSkillsAction((report) => formatSkillsCheck(report, opts));
     });

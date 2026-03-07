@@ -1,5 +1,6 @@
 import { ensureAuthProfileStore, resolveAuthProfileOrder } from "../agents/auth-profiles.js";
 import type { SecretInput } from "../config/types.secrets.js";
+import { t } from "../i18n/index.js";
 import { normalizeApiKeyInput, validateApiKeyInput } from "./auth-choice.api-key.js";
 import {
   normalizeSecretInputModeInput,
@@ -488,15 +489,15 @@ export async function applyAuthChoiceApiProviders(
     const ensureAccountGateway = async () => {
       if (!accountId) {
         const value = await params.prompter.text({
-          message: "Enter Cloudflare Account ID",
-          validate: (val) => (String(val ?? "").trim() ? undefined : "Account ID is required"),
+          message: t("commands.authProviders.cfAccountIdMsg"),
+          validate: (val) => (String(val ?? "").trim() ? undefined : t("commands.authProviders.cfAccountIdRequired")),
         });
         accountId = String(value ?? "").trim();
       }
       if (!gatewayId) {
         const value = await params.prompter.text({
-          message: "Enter Cloudflare AI Gateway ID",
-          validate: (val) => (String(val ?? "").trim() ? undefined : "Gateway ID is required"),
+          message: t("commands.authProviders.cfGatewayIdMsg"),
+          validate: (val) => (String(val ?? "").trim() ? undefined : t("commands.authProviders.cfGatewayIdRequired")),
         });
         gatewayId = String(value ?? "").trim();
       }
@@ -571,7 +572,7 @@ export async function applyAuthChoiceApiProviders(
       if (applied.changed) {
         await params.prompter.note(
           `Default model set to ${GOOGLE_GEMINI_DEFAULT_MODEL}`,
-          "Model configured",
+          t("commands.authProviders.modelConfigured"),
         );
       }
     } else {
@@ -616,7 +617,7 @@ export async function applyAuthChoiceApiProviders(
         await params.prompter.note(detected.note, "Z.AI endpoint");
       } else {
         endpoint = await params.prompter.select({
-          message: "Select Z.AI endpoint",
+          message: t("commands.authProviders.zaiEndpointMsg"),
           options: [
             {
               value: "coding-global",

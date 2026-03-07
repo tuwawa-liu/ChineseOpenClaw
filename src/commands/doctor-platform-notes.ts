@@ -5,6 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import type { OpenClawConfig } from "../config/config.js";
 import { hasConfiguredSecretInput } from "../config/types.secrets.js";
+import { t } from "../i18n/index.js";
 import { note } from "../terminal/note.js";
 import { shortenHomePath } from "../utils.js";
 
@@ -27,11 +28,11 @@ export async function noteMacLaunchAgentOverrides() {
 
   const displayMarkerPath = shortenHomePath(markerPath);
   const lines = [
-    `- LaunchAgent writes are disabled via ${displayMarkerPath}.`,
-    "- To restore default behavior:",
-    `  rm ${displayMarkerPath}`,
+    t("commands.doctorPlatformNotes.launchAgentDisabled", { path: displayMarkerPath }),
+    t("commands.doctorPlatformNotes.restoreDefault"),
+    t("commands.doctorPlatformNotes.rmMarker", { path: displayMarkerPath }),
   ].filter((line): line is string => Boolean(line));
-  note(lines.join("\n"), "Gateway (macOS)");
+  note(lines.join("\n"), t("commands.doctorPlatformNotes.titleGatewayMac"));
 }
 
 async function launchctlGetenv(name: string): Promise<string | undefined> {
@@ -79,13 +80,13 @@ export async function noteMacLaunchctlGatewayEnvOverrides(
   ].filter((entry): entry is [string, string] => Boolean(entry[1]?.trim()));
   if (deprecatedLaunchctlEntries.length > 0) {
     const lines = [
-      "- Deprecated launchctl environment variables detected (ignored).",
+      t("commands.doctorPlatformNotes.deprecatedLaunchctlVars"),
       ...deprecatedLaunchctlEntries.map(
         ([key]) =>
-          `- \`${key}\` is set; use \`OPENCLAW_${key.slice(key.indexOf("_") + 1)}\` instead.`,
+          t("commands.doctorPlatformNotes.launchctlVarHint", { key, suffix: key.slice(key.indexOf("_") + 1) }),
       ),
     ];
-    (deps?.noteFn ?? note)(lines.join("\n"), "Gateway (macOS)");
+    (deps?.noteFn ?? note)(lines.join("\n"), t("commands.doctorPlatformNotes.titleGatewayMac"));
   }
 
   const tokenEntries = [
@@ -105,19 +106,19 @@ export async function noteMacLaunchctlGatewayEnvOverrides(
   }
 
   const lines = [
-    "- launchctl environment overrides detected (can cause confusing unauthorized errors).",
+    t("commands.doctorPlatformNotes.launchctlOverrides"),
     envToken && envTokenKey
-      ? `- \`${envTokenKey}\` is set; it overrides config tokens.`
+      ? t("commands.doctorPlatformNotes.tokenOverrides", { key: envTokenKey })
       : undefined,
     envPassword
-      ? `- \`${envPasswordKey ?? "OPENCLAW_GATEWAY_PASSWORD"}\` is set; it overrides config passwords.`
+      ? t("commands.doctorPlatformNotes.passwordOverrides", { key: envPasswordKey ?? "OPENCLAW_GATEWAY_PASSWORD" })
       : undefined,
-    "- Clear overrides and restart the app/gateway:",
+    t("commands.doctorPlatformNotes.clearOverrides"),
     envTokenKey ? `  launchctl unsetenv ${envTokenKey}` : undefined,
     envPasswordKey ? `  launchctl unsetenv ${envPasswordKey}` : undefined,
   ].filter((line): line is string => Boolean(line));
 
-  (deps?.noteFn ?? note)(lines.join("\n"), "Gateway (macOS)");
+  (deps?.noteFn ?? note)(lines.join("\n"), t("commands.doctorPlatformNotes.titleGatewayMac"));
 }
 
 export function noteDeprecatedLegacyEnvVars(
@@ -132,14 +133,14 @@ export function noteDeprecatedLegacyEnvVars(
   }
 
   const lines = [
-    "- Deprecated legacy environment variables detected (ignored).",
-    "- Use OPENCLAW_* equivalents instead:",
+    t("commands.doctorPlatformNotes.deprecatedLegacyVars"),
+    t("commands.doctorPlatformNotes.useOpenclaw"),
     ...entries.map((key) => {
       const suffix = key.slice(key.indexOf("_") + 1);
       return `  ${key} -> OPENCLAW_${suffix}`;
     }),
   ];
-  (deps?.noteFn ?? note)(lines.join("\n"), "Environment");
+  (deps?.noteFn ?? note)(lines.join("\n"), t("commands.doctorPlatformNotes.titleEnvironment"));
 }
 
 function isTruthyEnvValue(value: string | undefined): boolean {
@@ -187,21 +188,21 @@ export function noteStartupOptimizationHints(
 
   if (!compileCache) {
     lines.push(
-      "- NODE_COMPILE_CACHE is not set; repeated CLI runs can be slower on small hosts (Pi/VM).",
+      t("commands.doctorPlatformNotes.nodeCompileCacheNotSet"),
     );
   } else if (isTmpCompileCachePath(compileCache)) {
     lines.push(
-      "- NODE_COMPILE_CACHE points to /tmp; use /var/tmp so cache survives reboots and warms startup reliably.",
+      t("commands.doctorPlatformNotes.nodeCompileCacheTmp"),
     );
   }
 
   if (isTruthyEnvValue(disableCompileCache)) {
-    lines.push("- NODE_DISABLE_COMPILE_CACHE is set; startup compile cache is disabled.");
+    lines.push(t("commands.doctorPlatformNotes.nodeCompileCacheDisabled"));
   }
 
   if (noRespawn !== "1") {
     lines.push(
-      "- OPENCLAW_NO_RESPAWN is not set to 1; set it to avoid extra startup overhead from self-respawn.",
+      t("commands.doctorPlatformNotes.noRespawnNotSet"),
     );
   }
 
@@ -210,12 +211,12 @@ export function noteStartupOptimizationHints(
   }
 
   const suggestions = [
-    "- Suggested env for low-power hosts:",
+    t("commands.doctorPlatformNotes.suggestedEnv"),
     "  export NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache",
     "  mkdir -p /var/tmp/openclaw-compile-cache",
     "  export OPENCLAW_NO_RESPAWN=1",
     isTruthyEnvValue(disableCompileCache) ? "  unset NODE_DISABLE_COMPILE_CACHE" : undefined,
   ].filter((line): line is string => Boolean(line));
 
-  noteFn([...lines, ...suggestions].join("\n"), "Startup optimization");
+  noteFn([...lines, ...suggestions].join("\n"), t("commands.doctorPlatformNotes.titleStartupOpt"));
 }

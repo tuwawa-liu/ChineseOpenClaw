@@ -2,6 +2,7 @@ import { resolveDefaultAgentId } from "../agents/agent-scope.js";
 import { isRouteBinding, listRouteBindings } from "../config/bindings.js";
 import { writeConfigFile } from "../config/config.js";
 import { logConfigUpdated } from "../config/logging.js";
+import { t } from "../i18n/index.js";
 import type { AgentRouteBinding } from "../config/types.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import type { RuntimeEnv } from "../runtime.js";
@@ -70,12 +71,12 @@ function resolveTargetAgentIdOrExit(params: {
     fallbackToDefault: true,
   });
   if (!agentId) {
-    params.runtime.error("Unable to resolve agent id.");
+    params.runtime.error(t("commands.agentsBind.unableResolve"));
     params.runtime.exit(1);
     return null;
   }
   if (!hasAgent(params.cfg, agentId)) {
-    params.runtime.error(`Agent "${agentId}" not found.`);
+    params.runtime.error(t("commands.agentsBind.agentNotFound", { agentId }));
     params.runtime.exit(1);
     return null;
   }
@@ -162,12 +163,12 @@ export async function agentsBindingsCommand(
 
   const filterAgentId = resolveAgentId(cfg, opts.agent?.trim());
   if (opts.agent && !filterAgentId) {
-    runtime.error("Agent id is required.");
+    runtime.error(t("commands.agentsBind.agentIdRequired"));
     runtime.exit(1);
     return;
   }
   if (filterAgentId && !hasAgent(cfg, filterAgentId)) {
-    runtime.error(`Agent "${filterAgentId}" not found.`);
+    runtime.error(t("commands.agentsBind.agentNotFound", { agentId: filterAgentId }));
     runtime.exit(1);
     return;
   }
@@ -192,14 +193,14 @@ export async function agentsBindingsCommand(
 
   if (filtered.length === 0) {
     runtime.log(
-      filterAgentId ? `No routing bindings for agent "${filterAgentId}".` : "No routing bindings.",
+      filterAgentId ? t("commands.agentsBind.noBindingsAgent", { agentId: filterAgentId }) : t("commands.agentsBind.noBindings"),
     );
     return;
   }
 
   runtime.log(
     [
-      "Routing bindings:",
+      t("commands.agentsBind.routingBindings"),
       ...filtered.map((binding) => `- ${formatBindingOwnerLine(binding)}`),
     ].join("\n"),
   );
@@ -223,7 +224,7 @@ export async function agentsBindCommand(
     cfg,
     agentId,
     bindValues: opts.bind,
-    emptyMessage: "Provide at least one --bind <channel[:accountId]>.",
+    emptyMessage: t("commands.agentsBind.provideBindArg"),
   });
   if (!parsed) {
     return;
@@ -251,30 +252,30 @@ export async function agentsBindCommand(
   }
 
   if (result.added.length > 0) {
-    runtime.log("Added bindings:");
+    runtime.log(t("commands.agentsBind.addedBindings"));
     for (const binding of result.added) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   } else if (result.updated.length === 0) {
-    runtime.log("No new bindings added.");
+    runtime.log(t("commands.agentsBind.noNewBindings"));
   }
 
   if (result.updated.length > 0) {
-    runtime.log("Updated bindings:");
+    runtime.log(t("commands.agentsBind.updatedBindings"));
     for (const binding of result.updated) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   }
 
   if (result.skipped.length > 0) {
-    runtime.log("Already present:");
+    runtime.log(t("commands.agentsBind.alreadyPresent"));
     for (const binding of result.skipped) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   }
 
   if (result.conflicts.length > 0) {
-    runtime.error("Skipped bindings already claimed by another agent:");
+    runtime.error(t("commands.agentsBind.skippedConflicts"));
     for (const conflict of result.conflicts) {
       runtime.error(`- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`);
     }
@@ -295,7 +296,7 @@ export async function agentsUnbindCommand(
   }
   const { cfg, agentId } = resolved;
   if (opts.all && (opts.bind?.length ?? 0) > 0) {
-    runtime.error("Use either --all or --bind, not both.");
+    runtime.error(t("commands.agentsBind.useAllOrBind"));
     runtime.exit(1);
     return;
   }
@@ -306,7 +307,7 @@ export async function agentsUnbindCommand(
     const keptRoutes = existing.filter((binding) => normalizeAgentId(binding.agentId) !== agentId);
     const nonRoutes = (cfg.bindings ?? []).filter((binding) => !isRouteBinding(binding));
     if (removed.length === 0) {
-      runtime.log(`No bindings to remove for agent "${agentId}".`);
+      runtime.log(t("commands.agentsBind.noBindingsToRemove", { agentId }));
       return;
     }
     const next = {
@@ -327,7 +328,7 @@ export async function agentsUnbindCommand(
     if (emitJsonPayload({ runtime, json: opts.json, payload })) {
       return;
     }
-    runtime.log(`Removed ${removed.length} binding(s) for "${agentId}".`);
+    runtime.log(t("commands.agentsBind.removedCount", { count: String(removed.length), agentId }));
     return;
   }
 
@@ -336,7 +337,7 @@ export async function agentsUnbindCommand(
     cfg,
     agentId,
     bindValues: opts.bind,
-    emptyMessage: "Provide at least one --bind <channel[:accountId]> or use --all.",
+    emptyMessage: t("commands.agentsBind.provideBindOrAll"),
   });
   if (!parsed) {
     return;
@@ -363,21 +364,21 @@ export async function agentsUnbindCommand(
   }
 
   if (result.removed.length > 0) {
-    runtime.log("Removed bindings:");
+    runtime.log(t("commands.agentsBind.removedBindings"));
     for (const binding of result.removed) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   } else {
-    runtime.log("No bindings removed.");
+    runtime.log(t("commands.agentsBind.noBindingsRemoved"));
   }
   if (result.missing.length > 0) {
-    runtime.log("Not found:");
+    runtime.log(t("commands.agentsBind.notFound"));
     for (const binding of result.missing) {
       runtime.log(`- ${describeBinding(binding)}`);
     }
   }
   if (result.conflicts.length > 0) {
-    runtime.error("Bindings are owned by another agent:");
+    runtime.error(t("commands.agentsBind.ownedByAnother"));
     for (const conflict of result.conflicts) {
       runtime.error(`- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`);
     }

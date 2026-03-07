@@ -1,6 +1,7 @@
 import { withProgress } from "../cli/progress.js";
 import { loadConfig, resolveGatewayPort } from "../config/config.js";
 import { probeGateway } from "../gateway/probe.js";
+import { t } from "../i18n/index.js";
 import { discoverGatewayBeacons } from "../infra/bonjour-discovery.js";
 import { resolveSshConfig } from "../infra/ssh-config.js";
 import { parseSshTarget, startSshPortForward } from "../infra/ssh-tunnel.js";
@@ -75,7 +76,7 @@ export async function gatewayStatusCommand(
 
   const { discovery, probed } = await withProgress(
     {
-      label: "Inspecting gateways…",
+      label: t("commands.gatewayStatus.inspecting"),
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -212,15 +213,14 @@ export async function gatewayStatusCommand(
     warnings.push({
       code: "ssh_tunnel_failed",
       message: sshTunnelError
-        ? `SSH tunnel failed: ${String(sshTunnelError)}`
-        : "SSH tunnel failed to start; falling back to direct probes.",
+        ? t("commands.gatewayStatus.sshTunnelFailed", { error: String(sshTunnelError) })
+        : t("commands.gatewayStatus.sshTunnelFallback"),
     });
   }
   if (multipleGateways) {
     warnings.push({
       code: "multiple_gateways",
-      message:
-        "Unconventional setup: multiple reachable gateways detected. Usually one gateway per network is recommended unless you intentionally run isolated profiles, like a rescue bot (see docs: /gateway#multiple-gateways-same-host).",
+      message: t("commands.gatewayStatus.multipleGateways"),
       targetIds: reachable.map((p) => p.target.id),
     });
   }
@@ -296,42 +296,42 @@ export async function gatewayStatusCommand(
     return;
   }
 
-  runtime.log(colorize(rich, theme.heading, "Gateway Status"));
+  runtime.log(colorize(rich, theme.heading, t("commands.gatewayStatus.headingGatewayStatus")));
   runtime.log(
     ok
-      ? `${colorize(rich, theme.success, "Reachable")}: yes`
-      : `${colorize(rich, theme.error, "Reachable")}: no`,
+      ? `${colorize(rich, theme.success, t("commands.gatewayStatus.reachable"))}: yes`
+      : `${colorize(rich, theme.error, t("commands.gatewayStatus.reachable"))}: no`,
   );
-  runtime.log(colorize(rich, theme.muted, `Probe budget: ${overallTimeoutMs}ms`));
+  runtime.log(colorize(rich, theme.muted, t("commands.gatewayStatus.probeBudget", { ms: overallTimeoutMs })));
 
   if (warnings.length > 0) {
     runtime.log("");
-    runtime.log(colorize(rich, theme.warn, "Warning:"));
+    runtime.log(colorize(rich, theme.warn, t("commands.gatewayStatus.warning")));
     for (const w of warnings) {
       runtime.log(`- ${w.message}`);
     }
   }
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "Discovery (this machine)"));
+  runtime.log(colorize(rich, theme.heading, t("commands.gatewayStatus.headingDiscovery")));
   const discoveryDomains = wideAreaDomain ? `local. + ${wideAreaDomain}` : "local.";
   runtime.log(
     discovery.length > 0
-      ? `Found ${discovery.length} gateway(s) via Bonjour (${discoveryDomains})`
-      : `Found 0 gateways via Bonjour (${discoveryDomains})`,
+      ? t("commands.gatewayStatus.foundGateways", { count: discovery.length, domains: discoveryDomains })
+      : t("commands.gatewayStatus.foundZeroGateways", { domains: discoveryDomains }),
   );
   if (discovery.length === 0) {
     runtime.log(
       colorize(
         rich,
         theme.muted,
-        "Tip: if the gateway is remote, mDNS won’t cross networks; use Wide-Area Bonjour (split DNS) or SSH tunnels.",
+        t("commands.gatewayStatus.tipRemoteMdns"),
       ),
     );
   }
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "Targets"));
+  runtime.log(colorize(rich, theme.heading, t("commands.gatewayStatus.headingTargets")));
   for (const p of probed) {
     runtime.log(renderTargetHeader(p.target, rich));
     runtime.log(`  ${renderProbeSummaryLine(p.probe, rich)}`);
@@ -345,17 +345,17 @@ export async function gatewayStatusCommand(
       const ip = p.self.ip ? ` (${p.self.ip})` : "";
       const platform = p.self.platform ? ` · ${p.self.platform}` : "";
       const version = p.self.version ? ` · app ${p.self.version}` : "";
-      runtime.log(`  ${colorize(rich, theme.info, "Gateway")}: ${host}${ip}${platform}${version}`);
+      runtime.log(`  ${colorize(rich, theme.info, t("commands.gatewayStatus.gateway"))}: ${host}${ip}${platform}${version}`);
     }
     if (p.configSummary) {
       const c = p.configSummary;
       const wideArea =
         c.discovery.wideAreaEnabled === true
-          ? "enabled"
+          ? t("commands.gatewayStatus.enabled")
           : c.discovery.wideAreaEnabled === false
-            ? "disabled"
-            : "unknown";
-      runtime.log(`  ${colorize(rich, theme.info, "Wide-area discovery")}: ${wideArea}`);
+            ? t("commands.gatewayStatus.disabled")
+            : t("commands.gatewayStatus.unknown");
+      runtime.log(`  ${colorize(rich, theme.info, t("commands.gatewayStatus.wideAreaDiscovery"))}: ${wideArea}`);
     }
     runtime.log("");
   }

@@ -4,6 +4,7 @@ import { buildModelAliasIndex, modelKey } from "../agents/model-selection.js";
 import type { OpenClawConfig } from "../config/config.js";
 import type { ModelProviderConfig } from "../config/types.models.js";
 import { isSecretRef, type SecretInput } from "../config/types.secrets.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
 import {
@@ -132,18 +133,18 @@ const COMPATIBILITY_OPTIONS: Array<{
 }> = [
   {
     value: "openai",
-    label: "OpenAI-compatible",
-    hint: "Uses /chat/completions",
+    label: t("commands.custom.openaiCompat"),
+    hint: t("commands.custom.openaiCompatHint"),
   },
   {
     value: "anthropic",
-    label: "Anthropic-compatible",
-    hint: "Uses /messages",
+    label: t("commands.custom.anthropicCompat"),
+    hint: t("commands.custom.anthropicCompatHint"),
   },
   {
     value: "unknown",
-    label: "Unknown (detect automatically)",
-    hint: "Probes OpenAI then Anthropic endpoints",
+    label: t("commands.custom.unknownCompat"),
+    hint: t("commands.custom.unknownCompatHint"),
   },
 ];
 
@@ -388,15 +389,15 @@ async function promptBaseUrlAndKey(params: {
   initialBaseUrl?: string;
 }): Promise<{ baseUrl: string; apiKey?: SecretInput; resolvedApiKey: string }> {
   const baseUrlInput = await params.prompter.text({
-    message: "API Base URL",
+    message: t("commands.custom.baseUrlMsg"),
     initialValue: params.initialBaseUrl ?? DEFAULT_OLLAMA_BASE_URL,
-    placeholder: "https://api.example.com/v1",
+    placeholder: t("commands.custom.baseUrlPlaceholder"),
     validate: (val) => {
       try {
         new URL(val);
         return undefined;
       } catch {
-        return "Please enter a valid URL (e.g. http://...)";
+        return t("commands.custom.baseUrlValidate");
       }
     },
   });
@@ -407,7 +408,7 @@ async function promptBaseUrlAndKey(params: {
     config: params.config,
     provider: providerHint,
     envLabel: "CUSTOM_API_KEY",
-    promptMessage: "API Key (leave blank if not required)",
+    promptMessage: t("commands.custom.apiKeyMsg"),
     normalize: normalizeSecretInput,
     validate: () => undefined,
     prompter: params.prompter,
@@ -427,11 +428,11 @@ type CustomApiRetryChoice = "baseUrl" | "model" | "both";
 
 async function promptCustomApiRetryChoice(prompter: WizardPrompter): Promise<CustomApiRetryChoice> {
   return await prompter.select({
-    message: "What would you like to change?",
+    message: t("commands.custom.changeMsg"),
     options: [
-      { value: "baseUrl", label: "Change base URL" },
-      { value: "model", label: "Change model" },
-      { value: "both", label: "Change base URL and model" },
+      { value: "baseUrl", label: t("commands.custom.changeUrl") },
+      { value: "model", label: t("commands.custom.changeModel") },
+      { value: "both", label: t("commands.custom.changeUrlModel") },
     ],
   });
 }
@@ -439,9 +440,9 @@ async function promptCustomApiRetryChoice(prompter: WizardPrompter): Promise<Cus
 async function promptCustomApiModelId(prompter: WizardPrompter): Promise<string> {
   return (
     await prompter.text({
-      message: "Model ID",
-      placeholder: "e.g. llama3, claude-3-7-sonnet",
-      validate: (val) => (val.trim() ? undefined : "Model ID is required"),
+      message: t("commands.custom.modelIdMsg"),
+      placeholder: t("commands.custom.modelIdPlaceholder"),
+      validate: (val) => (val.trim() ? undefined : t("commands.custom.modelIdRequired")),
     })
   ).trim();
 }
@@ -687,7 +688,7 @@ export async function promptCustomApiConfig(params: {
   let resolvedApiKey = baseInput.resolvedApiKey;
 
   const compatibilityChoice = await prompter.select({
-    message: "Endpoint compatibility",
+    message: t("commands.custom.compatMsg"),
     options: COMPATIBILITY_OPTIONS.map((option) => ({
       value: option.value,
       label: option.label,
@@ -703,14 +704,14 @@ export async function promptCustomApiConfig(params: {
   while (true) {
     let verifiedFromProbe = false;
     if (!compatibility) {
-      const probeSpinner = prompter.progress("Detecting endpoint type...");
+      const probeSpinner = prompter.progress(t("commands.custom.detecting"));
       const openaiProbe = await requestOpenAiVerification({
         baseUrl,
         apiKey: resolvedApiKey,
         modelId,
       });
       if (openaiProbe.ok) {
-        probeSpinner.stop("Detected OpenAI-compatible endpoint.");
+        probeSpinner.stop(t("commands.custom.detectedOpenai"));
         compatibility = "openai";
         verifiedFromProbe = true;
       } else {
@@ -720,14 +721,14 @@ export async function promptCustomApiConfig(params: {
           modelId,
         });
         if (anthropicProbe.ok) {
-          probeSpinner.stop("Detected Anthropic-compatible endpoint.");
+          probeSpinner.stop(t("commands.custom.detectedAnthropic"));
           compatibility = "anthropic";
           verifiedFromProbe = true;
         } else {
-          probeSpinner.stop("Could not detect endpoint type.");
+          probeSpinner.stop(t("commands.custom.detectFailed"));
           await prompter.note(
-            "This endpoint did not respond to OpenAI or Anthropic style requests.",
-            "Endpoint detection",
+            t("commands.custom.detectFailedNote"),
+            t("commands.custom.detectFailedTitle"),
           );
           const retryChoice = await promptCustomApiRetryChoice(prompter);
           ({ baseUrl, apiKey, resolvedApiKey, modelId } = await applyCustomApiRetryChoice({
@@ -746,19 +747,19 @@ export async function promptCustomApiConfig(params: {
       break;
     }
 
-    const verifySpinner = prompter.progress("Verifying...");
+    const verifySpinner = prompter.progress(t("commands.custom.verifying"));
     const result =
       compatibility === "anthropic"
         ? await requestAnthropicVerification({ baseUrl, apiKey: resolvedApiKey, modelId })
         : await requestOpenAiVerification({ baseUrl, apiKey: resolvedApiKey, modelId });
     if (result.ok) {
-      verifySpinner.stop("Verification successful.");
+      verifySpinner.stop(t("commands.custom.verifySuccess"));
       break;
     }
     if (result.status !== undefined) {
-      verifySpinner.stop(`Verification failed: status ${result.status}`);
+      verifySpinner.stop(t("commands.custom.verifyFailedStatus", { status: String(result.status) }));
     } else {
-      verifySpinner.stop(`Verification failed: ${formatVerificationError(result.error)}`);
+      verifySpinner.stop(t("commands.custom.verifyFailedError", { error: formatVerificationError(result.error) }));
     }
     const retryChoice = await promptCustomApiRetryChoice(prompter);
     ({ baseUrl, apiKey, resolvedApiKey, modelId } = await applyCustomApiRetryChoice({
@@ -776,20 +777,20 @@ export async function promptCustomApiConfig(params: {
   const providers = config.models?.providers ?? {};
   const suggestedId = buildEndpointIdFromUrl(baseUrl);
   const providerIdInput = await prompter.text({
-    message: "Endpoint ID",
+    message: t("commands.custom.endpointIdMsg"),
     initialValue: suggestedId,
     placeholder: "custom",
     validate: (value) => {
       const normalized = normalizeEndpointId(value);
       if (!normalized) {
-        return "Endpoint ID is required.";
+        return t("commands.custom.endpointIdRequired");
       }
       return undefined;
     },
   });
   const aliasInput = await prompter.text({
-    message: "Model alias (optional)",
-    placeholder: "e.g. local, ollama",
+    message: t("commands.custom.modelAliasMsg"),
+    placeholder: t("commands.custom.modelAliasPlaceholder"),
     initialValue: "",
     validate: (value) => {
       const requestedId = normalizeEndpointId(providerIdInput) || "custom";
@@ -815,11 +816,11 @@ export async function promptCustomApiConfig(params: {
 
   if (result.providerIdRenamedFrom && result.providerId) {
     await prompter.note(
-      `Endpoint ID "${result.providerIdRenamedFrom}" already exists for a different base URL. Using "${result.providerId}".`,
-      "Endpoint ID",
+      t("commands.custom.endpointRenamedNote", { from: result.providerIdRenamedFrom, to: result.providerId }),
+      t("commands.custom.endpointRenamedTitle"),
     );
   }
 
-  runtime.log(`Configured custom provider: ${result.providerId}/${result.modelId}`);
+  runtime.log(t("commands.custom.configuredLog", { provider: result.providerId, model: result.modelId }));
   return result;
 }

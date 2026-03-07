@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index.js";
 import { confirm as clackConfirm, select as clackSelect, text as clackText } from "@clack/prompts";
 import {
   resolveAgentDir,
@@ -77,16 +78,16 @@ export async function modelsAuthSetupTokenCommand(
 ) {
   const provider = resolveTokenProvider(opts.provider ?? "anthropic");
   if (provider !== "anthropic") {
-    throw new Error("Only --provider anthropic is supported for setup-token.");
+    throw new Error(t("modelsAuth.setupTokenProviderOnly"));
   }
 
   if (!process.stdin.isTTY) {
-    throw new Error("setup-token requires an interactive TTY.");
+    throw new Error(t("modelsAuth.setupTokenTtyRequired"));
   }
 
   if (!opts.yes) {
     const proceed = await confirm({
-      message: "Have you run `claude setup-token` and copied the token?",
+      message: t("modelsAuth.confirmSetupToken"),
       initialValue: true,
     });
     if (!proceed) {
@@ -95,7 +96,7 @@ export async function modelsAuthSetupTokenCommand(
   }
 
   const tokenInput = await text({
-    message: "Paste Anthropic setup-token",
+    message: t("modelsAuth.pasteSetupToken"),
     validate: (value) => validateAnthropicSetupToken(String(value ?? "")),
   });
   const token = String(tokenInput ?? "").trim();
@@ -132,14 +133,14 @@ export async function modelsAuthPasteTokenCommand(
 ) {
   const rawProvider = opts.provider?.trim();
   if (!rawProvider) {
-    throw new Error("Missing --provider.");
+    throw new Error(t("modelsAuth.missingProvider"));
   }
   const provider = normalizeProviderId(rawProvider);
   const profileId = opts.profileId?.trim() || resolveDefaultTokenProfileId(provider);
 
   const tokenInput = await text({
-    message: `Paste token for ${provider}`,
-    validate: (value) => (value?.trim() ? undefined : "Required"),
+    message: t("modelsAuth.pasteTokenFor", { provider }),
+    validate: (value) => (value?.trim() ? undefined : t("modelsAuth.required")),
   });
   const token = String(tokenInput ?? "").trim();
 
@@ -166,10 +167,10 @@ export async function modelsAuthPasteTokenCommand(
 
 export async function modelsAuthAddCommand(_opts: Record<string, never>, runtime: RuntimeEnv) {
   const provider = (await select({
-    message: "Token provider",
+    message: t("modelsAuth.tokenProvider"),
     options: [
-      { value: "anthropic", label: "anthropic" },
-      { value: "custom", label: "custom (type provider id)" },
+      { value: "anthropic", label: t("modelsAuth.anthropicLabel") },
+      { value: "custom", label: t("modelsAuth.customLabel") },
     ],
   })) as TokenProvider | "custom";
 
@@ -178,26 +179,26 @@ export async function modelsAuthAddCommand(_opts: Record<string, never>, runtime
       ? normalizeProviderId(
           String(
             await text({
-              message: "Provider id",
-              validate: (value) => (value?.trim() ? undefined : "Required"),
+              message: t("modelsAuth.providerId"),
+              validate: (value) => (value?.trim() ? undefined : t("modelsAuth.required")),
             }),
           ),
         )
       : provider;
 
   const method = (await select({
-    message: "Token method",
+    message: t("modelsAuth.tokenMethod"),
     options: [
       ...(providerId === "anthropic"
         ? [
             {
               value: "setup-token",
-              label: "setup-token (claude)",
-              hint: "Paste a setup-token from `claude setup-token`",
+              label: t("modelsAuth.setupTokenClaude"),
+              hint: t("modelsAuth.setupTokenHint"),
             },
           ]
         : []),
-      { value: "paste", label: "paste token" },
+      { value: "paste", label: t("modelsAuth.pasteToken") },
     ],
   })) as "setup-token" | "paste";
 
@@ -209,27 +210,27 @@ export async function modelsAuthAddCommand(_opts: Record<string, never>, runtime
   const profileIdDefault = resolveDefaultTokenProfileId(providerId);
   const profileId = String(
     await text({
-      message: "Profile id",
+      message: t("modelsAuth.profileId"),
       initialValue: profileIdDefault,
-      validate: (value) => (value?.trim() ? undefined : "Required"),
+      validate: (value) => (value?.trim() ? undefined : t("modelsAuth.required")),
     }),
   ).trim();
 
   const wantsExpiry = await confirm({
-    message: "Does this token expire?",
+    message: t("modelsAuth.doesTokenExpire"),
     initialValue: false,
   });
   const expiresIn = wantsExpiry
     ? String(
         await text({
-          message: "Expires in (duration)",
+          message: t("modelsAuth.expiresIn"),
           initialValue: "365d",
           validate: (value) => {
             try {
               parseDurationMs(String(value ?? ""), { defaultUnit: "d" });
               return undefined;
             } catch {
-              return "Invalid duration (e.g. 365d, 12h, 30m)";
+              return t("modelsAuth.invalidDuration");
             }
           },
         }),
@@ -263,7 +264,7 @@ export function resolveRequestedLoginProviderOrThrow(
     .toSorted((a, b) => a.localeCompare(b));
   const availableText = available.length > 0 ? available.join(", ") : "(none)";
   throw new Error(
-    `Unknown provider "${requested}". Loaded providers: ${availableText}. Verify plugins via \`${formatCliCommand("openclaw plugins list --json")}\`.`,
+    t("modelsAuth.unknownProvider", { provider: requested, available: availableText, command: formatCliCommand("openclaw plugins list --json") }),
   );
 }
 
@@ -290,10 +291,10 @@ async function runBuiltInOpenAICodexLogin(params: {
     openUrl: async (url) => {
       await openUrl(url);
     },
-    localBrowserMessage: "Complete sign-in in browser…",
+    localBrowserMessage: t("modelsAuth.completeBrowserSignIn"),
   });
   if (!creds) {
-    throw new Error("OpenAI Codex OAuth did not return credentials.");
+    throw new Error(t("modelsAuth.oauthNoCredentials"));
   }
 
   const profileId = await writeOAuthCredentials("openai-codex", creds, params.agentDir, {
@@ -314,17 +315,17 @@ async function runBuiltInOpenAICodexLogin(params: {
   logConfigUpdated(params.runtime);
   params.runtime.log(`Auth profile: ${profileId} (openai-codex/oauth)`);
   if (params.opts.setDefault) {
-    params.runtime.log(`Default model set to ${OPENAI_CODEX_DEFAULT_MODEL}`);
+    params.runtime.log(t("modelsAuth.defaultModelSet", { model: OPENAI_CODEX_DEFAULT_MODEL }));
   } else {
     params.runtime.log(
-      `Default model available: ${OPENAI_CODEX_DEFAULT_MODEL} (use --set-default to apply)`,
+      t("modelsAuth.defaultModelAvailable", { model: OPENAI_CODEX_DEFAULT_MODEL }),
     );
   }
 }
 
 export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: RuntimeEnv) {
   if (!process.stdin.isTTY) {
-    throw new Error("models auth login requires an interactive TTY.");
+    throw new Error(t("modelsAuth.loginTtyRequired"));
   }
 
   const config = await loadValidConfigOrThrow();
@@ -348,7 +349,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
   const providers = resolvePluginProviders({ config, workspaceDir });
   if (providers.length === 0) {
     throw new Error(
-      `No provider plugins found. Install one via \`${formatCliCommand("openclaw plugins install")}\`.`,
+      t("modelsAuth.noProviderPlugins", { command: formatCliCommand("openclaw plugins install") }),
     );
   }
 
@@ -357,7 +358,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
     requestedProvider ??
     (await prompter
       .select({
-        message: "Select a provider",
+        message: t("modelsAuth.selectProvider"),
         options: providers.map((provider) => ({
           value: provider.id,
           label: provider.label,
@@ -367,7 +368,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
       .then((id) => resolveProviderMatch(providers, String(id))));
 
   if (!selectedProvider) {
-    throw new Error("Unknown provider. Use --provider <id> to pick a provider plugin.");
+    throw new Error(t("modelsAuth.unknownProviderGeneric"));
   }
 
   const chosenMethod =
@@ -376,7 +377,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
       ? selectedProvider.auth[0]
       : await prompter
           .select({
-            message: `Auth method for ${selectedProvider.label}`,
+            message: t("modelsAuth.authMethodFor", { label: selectedProvider.label }),
             options: selectedProvider.auth.map((method) => ({
               value: method.id,
               label: method.label,
@@ -386,7 +387,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
           .then((id) => selectedProvider.auth.find((method) => method.id === String(id))));
 
   if (!chosenMethod) {
-    throw new Error("Unknown auth method. Use --method <id> to select one.");
+    throw new Error(t("modelsAuth.unknownAuthMethod"));
   }
 
   const isRemote = isRemoteEnvironment();
@@ -440,11 +441,11 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
   if (result.defaultModel) {
     runtime.log(
       opts.setDefault
-        ? `Default model set to ${result.defaultModel}`
-        : `Default model available: ${result.defaultModel} (use --set-default to apply)`,
+        ? t("modelsAuth.defaultModelSet", { model: result.defaultModel })
+        : t("modelsAuth.defaultModelAvailable", { model: result.defaultModel }),
     );
   }
   if (result.notes && result.notes.length > 0) {
-    await prompter.note(result.notes.join("\n"), "Provider notes");
+    await prompter.note(result.notes.join("\n"), t("modelsAuth.providerNotes"));
   }
 }

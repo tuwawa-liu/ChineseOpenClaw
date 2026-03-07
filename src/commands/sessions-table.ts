@@ -3,6 +3,7 @@ import { resolveConfiguredModelRef } from "../agents/model-selection.js";
 import type { SessionEntry } from "../config/sessions.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { resolveSessionModelRef } from "../gateway/session-utils.js";
+import { t } from "../i18n/index.js";
 import { formatTimeAgo } from "../infra/format-time/format-relative.ts";
 import { parseAgentSessionKey } from "../routing/session-key.js";
 import { theme } from "../terminal/theme.js";
@@ -107,13 +108,13 @@ export function formatSessionKeyCell(key: string, rich: boolean): string {
 }
 
 export function formatSessionAgeCell(updatedAt: number | null | undefined, rich: boolean): string {
-  const ageLabel = updatedAt ? formatTimeAgo(Date.now() - updatedAt) : "unknown";
+  const ageLabel = updatedAt ? formatTimeAgo(Date.now() - updatedAt) : t("commands.sessionsTable.unknown");
   const padded = ageLabel.padEnd(SESSION_AGE_PAD);
   return rich ? theme.muted(padded) : padded;
 }
 
 export function formatSessionModelCell(model: string | null | undefined, rich: boolean): string {
-  const label = (model ?? "unknown").padEnd(SESSION_MODEL_PAD);
+  const label = (model ?? t("commands.sessionsTable.unknown")).padEnd(SESSION_MODEL_PAD);
   return rich ? theme.info(label) : label;
 }
 
@@ -133,14 +134,14 @@ export function formatSessionFlagsCell(
   rich: boolean,
 ): string {
   const flags = [
-    row.thinkingLevel ? `think:${row.thinkingLevel}` : null,
-    row.verboseLevel ? `verbose:${row.verboseLevel}` : null,
-    row.reasoningLevel ? `reasoning:${row.reasoningLevel}` : null,
-    row.elevatedLevel ? `elev:${row.elevatedLevel}` : null,
-    row.responseUsage ? `usage:${row.responseUsage}` : null,
-    row.groupActivation ? `activation:${row.groupActivation}` : null,
-    row.systemSent ? "system" : null,
-    row.abortedLastRun ? "aborted" : null,
+    row.thinkingLevel ? t("commands.sessionsTable.flagThink", { level: row.thinkingLevel }) : null,
+    row.verboseLevel ? t("commands.sessionsTable.flagVerbose", { level: row.verboseLevel }) : null,
+    row.reasoningLevel ? t("commands.sessionsTable.flagReasoning", { level: row.reasoningLevel }) : null,
+    row.elevatedLevel ? t("commands.sessionsTable.flagElev", { level: row.elevatedLevel }) : null,
+    row.responseUsage ? t("commands.sessionsTable.flagUsage", { level: row.responseUsage }) : null,
+    row.groupActivation ? t("commands.sessionsTable.flagActivation", { level: row.groupActivation }) : null,
+    row.systemSent ? t("commands.sessionsTable.flagSystem") : null,
+    row.abortedLastRun ? t("commands.sessionsTable.flagAborted") : null,
     row.sessionId ? `id:${row.sessionId}` : null,
   ].filter(Boolean);
   const label = flags.join(" ");

@@ -5,6 +5,7 @@ import {
   select as clackSelect,
   text as clackText,
 } from "@clack/prompts";
+import { t } from "../i18n/index.js";
 import { stylePromptHint, stylePromptMessage, stylePromptTitle } from "../terminal/prompt-style.js";
 
 export const CONFIGURE_WIZARD_SECTIONS = [
@@ -50,25 +51,25 @@ export const CONFIGURE_SECTION_OPTIONS: Array<{
   label: string;
   hint: string;
 }> = [
-  { value: "workspace", label: "Workspace", hint: "Set workspace + sessions" },
-  { value: "model", label: "Model", hint: "Pick provider + credentials" },
-  { value: "web", label: "Web tools", hint: "Configure web search (Perplexity/Brave) + fetch" },
-  { value: "gateway", label: "Gateway", hint: "Port, bind, auth, tailscale" },
+  { value: "workspace", label: t("commands.configShared.workspaceLabel"), hint: t("commands.configShared.workspaceHint") },
+  { value: "model", label: t("commands.configShared.modelLabel"), hint: t("commands.configShared.modelHint") },
+  { value: "web", label: t("commands.configShared.webLabel"), hint: t("commands.configShared.webHint") },
+  { value: "gateway", label: t("commands.configShared.gatewayLabel"), hint: t("commands.configShared.gatewayHint") },
   {
     value: "daemon",
-    label: "Daemon",
-    hint: "Install/manage the background service",
+    label: t("commands.configShared.daemonLabel"),
+    hint: t("commands.configShared.daemonHint"),
   },
   {
     value: "channels",
-    label: "Channels",
-    hint: "Link WhatsApp/Telegram/etc and defaults",
+    label: t("commands.configShared.channelsLabel"),
+    hint: t("commands.configShared.channelsHint"),
   },
-  { value: "skills", label: "Skills", hint: "Install/enable workspace skills" },
+  { value: "skills", label: t("commands.configShared.skillsLabel"), hint: t("commands.configShared.skillsHint") },
   {
     value: "health",
-    label: "Health check",
-    hint: "Run gateway + channel checks",
+    label: t("commands.configShared.healthLabel"),
+    hint: t("commands.configShared.healthHint"),
   },
 ];
 

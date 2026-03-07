@@ -3,6 +3,7 @@ import type { OpenClawConfig, GatewayAuthConfig } from "../config/config.js";
 import { isSecretRef, type SecretInput } from "../config/types.secrets.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
+import { t } from "../i18n/index.js";
 import { promptAuthChoiceGrouped } from "./auth-choice-prompt.js";
 import { applyAuthChoice, resolvePreferredProviderForAuthChoice } from "./auth-choice.js";
 import {
@@ -68,7 +69,7 @@ export function buildGatewayAuthConfig(params: {
   }
   if (params.mode === "trusted-proxy") {
     if (!params.trustedProxy) {
-      throw new Error("trustedProxy config is required when mode is trusted-proxy");
+      throw new Error(t("commands.configureGatewayAuth.trustedProxyRequired"));
     }
     return { ...base, mode: "trusted-proxy", trustedProxy: params.trustedProxy };
   }

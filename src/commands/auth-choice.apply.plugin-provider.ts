@@ -1,4 +1,5 @@
 import { resolveOpenClawAgentDir } from "../agents/agent-paths.js";
+import { t } from "../i18n/index.js";
 import {
   resolveDefaultAgentId,
   resolveAgentDir,
@@ -40,7 +41,7 @@ export async function applyAuthChoicePluginProvider(
   let nextConfig = enableResult.config;
   if (!enableResult.enabled) {
     await params.prompter.note(
-      `${options.label} plugin is disabled (${enableResult.reason ?? "blocked"}).`,
+      t("commands.authPluginProvider.pluginDisabled", { label: options.label, reason: enableResult.reason ?? "blocked" }),
       options.label,
     );
     return { config: nextConfig };
@@ -58,7 +59,7 @@ export async function applyAuthChoicePluginProvider(
   const provider = resolveProviderMatch(providers, options.providerId);
   if (!provider) {
     await params.prompter.note(
-      `${options.label} auth plugin is not available. Enable it and re-run the wizard.`,
+      t("commands.authPluginProvider.pluginNotAvailable", { label: options.label }),
       options.label,
     );
     return { config: nextConfig };
@@ -66,7 +67,7 @@ export async function applyAuthChoicePluginProvider(
 
   const method = pickAuthMethod(provider, options.methodId) ?? provider.auth[0];
   if (!method) {
-    await params.prompter.note(`${options.label} auth method missing.`, options.label);
+    await params.prompter.note(t("commands.authPluginProvider.authMethodMissing", { label: options.label }), options.label);
     return { config: nextConfig };
   }
 
@@ -111,18 +112,18 @@ export async function applyAuthChoicePluginProvider(
   if (result.defaultModel) {
     if (params.setDefaultModel) {
       nextConfig = applyDefaultModel(nextConfig, result.defaultModel);
-      await params.prompter.note(`Default model set to ${result.defaultModel}`, "Model configured");
+      await params.prompter.note(t("commands.authDefaultModel.modelSet", { model: result.defaultModel }), t("commands.authDefaultModel.modelConfigured"));
     } else if (params.agentId) {
       agentModelOverride = result.defaultModel;
       await params.prompter.note(
-        `Default model set to ${result.defaultModel} for agent "${params.agentId}".`,
-        "Model configured",
+        t("commands.authHelpers.modelSetDefault", { model: result.defaultModel, agentId: params.agentId }),
+        t("commands.authDefaultModel.modelConfigured"),
       );
     }
   }
 
   if (result.notes && result.notes.length > 0) {
-    await params.prompter.note(result.notes.join("\n"), "Provider notes");
+    await params.prompter.note(result.notes.join("\n"), t("commands.authPluginProvider.providerNotes"));
   }
 
   return { config: nextConfig, agentModelOverride };

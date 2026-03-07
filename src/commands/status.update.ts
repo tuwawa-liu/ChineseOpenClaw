@@ -1,4 +1,5 @@
 import { formatCliCommand } from "../cli/command-format.js";
+import { t } from "../i18n/index.js";
 import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
 import {
   checkUpdateStatus,
@@ -60,13 +61,13 @@ export function formatUpdateAvailableHint(update: UpdateCheckResult): string | n
 
   const details: string[] = [];
   if (availability.hasGitUpdate && availability.gitBehind != null) {
-    details.push(`git behind ${availability.gitBehind}`);
+    details.push(t("commands.statusUpdate.gitBehindDetail", { count: String(availability.gitBehind) }));
   }
   if (availability.hasRegistryUpdate && availability.latestVersion) {
-    details.push(`npm ${availability.latestVersion}`);
+    details.push(t("commands.statusUpdate.npmDetail", { version: availability.latestVersion }));
   }
   const suffix = details.length > 0 ? ` (${details.join(" · ")})` : "";
-  return `Update available${suffix}. Run: ${formatCliCommand("openclaw update")}`;
+  return t("commands.statusUpdate.updateAvailable", { suffix, command: formatCliCommand("openclaw update") });
 }
 
 export function formatUpdateOneLiner(update: UpdateCheckResult): string {
@@ -76,16 +77,16 @@ export function formatUpdateOneLiner(update: UpdateCheckResult): string {
     if (update.registry?.latestVersion) {
       const cmp = compareSemverStrings(VERSION, update.registry.latestVersion);
       if (cmp === 0) {
-        parts.push(`npm latest ${update.registry.latestVersion}`);
+        parts.push(t("commands.statusUpdate.npmLatest", { version: update.registry.latestVersion }));
       } else if (cmp != null && cmp < 0) {
-        parts.push(`npm update ${update.registry.latestVersion}`);
+        parts.push(t("commands.statusUpdate.npmUpdate", { version: update.registry.latestVersion }));
       } else {
-        parts.push(`npm latest ${update.registry.latestVersion} (local newer)`);
+        parts.push(t("commands.statusUpdate.npmLocalNewer", { version: update.registry.latestVersion }));
       }
       return;
     }
     if (update.registry?.error) {
-      parts.push("npm latest unknown");
+      parts.push(t("commands.statusUpdate.npmLatestUnknown"));
     }
   };
 
@@ -96,21 +97,21 @@ export function formatUpdateOneLiner(update: UpdateCheckResult): string {
       parts.push(`↔ ${update.git.upstream}`);
     }
     if (update.git.dirty === true) {
-      parts.push("dirty");
+      parts.push(t("commands.statusUpdate.dirty"));
     }
     if (update.git.behind != null && update.git.ahead != null) {
       if (update.git.behind === 0 && update.git.ahead === 0) {
-        parts.push("up to date");
+        parts.push(t("commands.statusUpdate.upToDate"));
       } else if (update.git.behind > 0 && update.git.ahead === 0) {
-        parts.push(`behind ${update.git.behind}`);
+        parts.push(t("commands.statusUpdate.behind", { count: String(update.git.behind) }));
       } else if (update.git.behind === 0 && update.git.ahead > 0) {
-        parts.push(`ahead ${update.git.ahead}`);
+        parts.push(t("commands.statusUpdate.ahead", { count: String(update.git.ahead) }));
       } else if (update.git.behind > 0 && update.git.ahead > 0) {
-        parts.push(`diverged (ahead ${update.git.ahead}, behind ${update.git.behind})`);
+        parts.push(t("commands.statusUpdate.diverged", { ahead: String(update.git.ahead), behind: String(update.git.behind) }));
       }
     }
     if (update.git.fetchOk === false) {
-      parts.push("fetch failed");
+      parts.push(t("commands.statusUpdate.fetchFailed"));
     }
     appendRegistryUpdateSummary();
   } else {
@@ -120,14 +121,14 @@ export function formatUpdateOneLiner(update: UpdateCheckResult): string {
 
   if (update.deps) {
     if (update.deps.status === "ok") {
-      parts.push("deps ok");
+      parts.push(t("commands.statusUpdate.depsOk"));
     }
     if (update.deps.status === "missing") {
-      parts.push("deps missing");
+      parts.push(t("commands.statusUpdate.depsMissing"));
     }
     if (update.deps.status === "stale") {
-      parts.push("deps stale");
+      parts.push(t("commands.statusUpdate.depsStale"));
     }
   }
-  return `Update: ${parts.join(" · ")}`;
+  return `${t("commands.statusUpdate.updatePrefix")}${parts.join(" · ")}`;
 }

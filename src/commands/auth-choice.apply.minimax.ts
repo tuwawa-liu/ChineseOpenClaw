@@ -1,4 +1,5 @@
 import { normalizeApiKeyInput, validateApiKeyInput } from "./auth-choice.api-key.js";
+import { t } from "../i18n/index.js";
 import {
   createAuthChoiceDefaultModelApplierForMutableState,
   ensureApiKeyFromOptionEnvOrPrompt,
@@ -85,10 +86,10 @@ export async function applyAuthChoiceMiniMax(
   if (params.authChoice === "minimax-portal") {
     // Let user choose between Global/CN endpoints
     const endpoint = await params.prompter.select({
-      message: "Select MiniMax endpoint",
+      message: t("commands.authMinimax.selectEndpoint"),
       options: [
-        { value: "oauth", label: "Global", hint: "OAuth for international users" },
-        { value: "oauth-cn", label: "CN", hint: "OAuth for users in China" },
+        { value: "oauth", label: t("commands.authMinimax.globalLabel"), hint: t("commands.authMinimax.globalHint") },
+        { value: "oauth-cn", label: t("commands.authMinimax.cnLabel"), hint: t("commands.authMinimax.cnHint") },
       ],
     });
 
@@ -109,7 +110,7 @@ export async function applyAuthChoiceMiniMax(
     return await applyMinimaxApiVariant({
       profileId: "minimax:default",
       provider: "minimax",
-      promptMessage: "Enter MiniMax API key",
+      promptMessage: t("commands.authMinimax.enterApiKey"),
       modelRefPrefix: "minimax",
       modelId:
         params.authChoice === "minimax-api-lightning" ? "MiniMax-M2.5-highspeed" : "MiniMax-M2.5",
@@ -122,7 +123,7 @@ export async function applyAuthChoiceMiniMax(
     return await applyMinimaxApiVariant({
       profileId: "minimax-cn:default",
       provider: "minimax-cn",
-      promptMessage: "Enter MiniMax China API key",
+      promptMessage: t("commands.authMinimax.enterCnApiKey"),
       modelRefPrefix: "minimax-cn",
       modelId: "MiniMax-M2.5",
       applyDefaultConfig: applyMinimaxApiConfigCn,

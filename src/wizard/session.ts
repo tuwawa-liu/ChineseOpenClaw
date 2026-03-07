@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { t } from "../i18n/index.js";
 import { WizardCancelledError, type WizardProgress, type WizardPrompter } from "./prompts.js";
 
 export type WizardStepOption = {
@@ -59,7 +60,7 @@ class WizardSessionPrompter implements WizardPrompter {
   async outro(message: string): Promise<void> {
     await this.prompt({
       type: "note",
-      title: "Done",
+      title: t("wizard.session.doneTitle"),
       message,
       executor: "client",
     });

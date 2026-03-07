@@ -1,5 +1,6 @@
 import { listAgentIds } from "../agents/agent-scope.js";
 import { formatCliCommand } from "../cli/command-format.js";
+import { t } from "../i18n/index.js";
 import type { CliDeps } from "../cli/deps.js";
 import { withProgress } from "../cli/progress.js";
 import { loadConfig } from "../config/config.js";
@@ -59,7 +60,7 @@ function parseTimeoutSeconds(opts: { cfg: ReturnType<typeof loadConfig>; timeout
       ? Number.parseInt(String(opts.timeout), 10)
       : (opts.cfg.agents?.defaults?.timeoutSeconds ?? 600);
   if (Number.isNaN(raw) || raw < 0) {
-    throw new Error("--timeout must be a non-negative integer (seconds; 0 means no timeout)");
+    throw new Error(t("commands.agentViaGateway.timeoutError"));
   }
   return raw;
 }
@@ -87,10 +88,10 @@ function formatPayloadForLog(payload: {
 export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: RuntimeEnv) {
   const body = (opts.message ?? "").trim();
   if (!body) {
-    throw new Error("Message (--message) is required");
+    throw new Error(t("commands.agentViaGateway.messageRequired"));
   }
   if (!opts.to && !opts.sessionId && !opts.agent) {
-    throw new Error("Pass --to <E.164>, --session-id, or --agent to choose a session");
+    throw new Error(t("commands.agentViaGateway.sessionRequired"));
   }
 
   const cfg = loadConfig();
@@ -100,7 +101,7 @@ export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: Runtim
     const knownAgents = listAgentIds(cfg);
     if (!knownAgents.includes(agentId)) {
       throw new Error(
-        `Unknown agent id "${agentIdRaw}". Use "${formatCliCommand("openclaw agents list")}" to see configured agents.`,
+        t("commands.agentViaGateway.unknownAgent", { id: agentIdRaw, cmd: formatCliCommand("openclaw agents list") }),
       );
     }
   }
@@ -122,7 +123,7 @@ export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: Runtim
 
   const response = await withProgress(
     {
-      label: "Waiting for agent reply…",
+      label: t("commands.agentViaGateway.waitingReply"),
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -163,7 +164,7 @@ export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: Runtim
   const payloads = result?.payloads ?? [];
 
   if (payloads.length === 0) {
-    runtime.log(response?.summary ? String(response.summary) : "No reply from agent.");
+    runtime.log(response?.summary ? String(response.summary) : t("commands.agentViaGateway.noReply"));
     return response;
   }
 
@@ -190,7 +191,7 @@ export async function agentCliCommand(opts: AgentCliOpts, runtime: RuntimeEnv, d
   try {
     return await agentViaGatewayCommand(opts, runtime);
   } catch (err) {
-    runtime.error?.(`Gateway agent failed; falling back to embedded: ${String(err)}`);
+    runtime.error?.(t("commands.agentViaGateway.gatewayFailed", { error: String(err) }));
     return await agentCommand(localOpts, runtime, deps);
   }
 }

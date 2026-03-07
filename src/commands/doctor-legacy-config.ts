@@ -1,5 +1,6 @@
 import { shouldMoveSingleAccountChannelKey } from "../channels/plugins/setup-helpers.js";
 import type { OpenClawConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import {
   formatSlackStreamingBooleanMigrationMessage,
   formatSlackStreamModeMigrationMessage,
@@ -52,13 +53,13 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
         delete dm.policy;
         dmChanged = true;
       }
-      changes.push(`Moved ${params.pathPrefix}.dm.policy → ${params.pathPrefix}.dmPolicy.`);
+      changes.push(t("commands.doctorLegacyConfig.movedDmPolicy", { prefix: params.pathPrefix }));
     } else if (topDmPolicy !== undefined && legacyDmPolicy !== undefined) {
       if (topDmPolicy === legacyDmPolicy) {
         if (dm) {
           delete dm.policy;
           dmChanged = true;
-          changes.push(`Removed ${params.pathPrefix}.dm.policy (dmPolicy already set).`);
+          changes.push(t("commands.doctorLegacyConfig.removedDmPolicy", { prefix: params.pathPrefix }));
         }
       }
     }
@@ -72,13 +73,13 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
         delete dm.allowFrom;
         dmChanged = true;
       }
-      changes.push(`Moved ${params.pathPrefix}.dm.allowFrom → ${params.pathPrefix}.allowFrom.`);
+      changes.push(t("commands.doctorLegacyConfig.movedDmAllowFrom", { prefix: params.pathPrefix }));
     } else if (topAllowFrom !== undefined && legacyAllowFrom !== undefined) {
       if (allowFromEqual(topAllowFrom, legacyAllowFrom)) {
         if (dm) {
           delete dm.allowFrom;
           dmChanged = true;
-          changes.push(`Removed ${params.pathPrefix}.dm.allowFrom (allowFrom already set).`);
+          changes.push(t("commands.doctorLegacyConfig.removedDmAllowFrom", { prefix: params.pathPrefix }));
         }
       }
     }
@@ -90,7 +91,7 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
           const { dm: _ignored, ...rest } = updated;
           updated = rest;
           changed = true;
-          changes.push(`Removed empty ${params.pathPrefix}.dm after migration.`);
+          changes.push(t("commands.doctorLegacyConfig.removedEmptyDm", { prefix: params.pathPrefix }));
         }
       } else {
         updated = { ...updated, dm };
@@ -128,14 +129,14 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
       updated = rest;
       changed = true;
       changes.push(
-        `Moved ${params.pathPrefix}.streamMode → ${params.pathPrefix}.streaming (${resolved}).`,
+        t("commands.doctorLegacyConfig.movedStreamMode", { prefix: params.pathPrefix, resolved }),
       );
     }
     if (typeof beforeStreaming === "boolean") {
-      changes.push(`Normalized ${params.pathPrefix}.streaming boolean → enum (${resolved}).`);
+      changes.push(t("commands.doctorLegacyConfig.normalizedStreamingBool", { prefix: params.pathPrefix, resolved }));
     } else if (typeof beforeStreaming === "string" && beforeStreaming !== resolved) {
       changes.push(
-        `Normalized ${params.pathPrefix}.streaming (${beforeStreaming}) → (${resolved}).`,
+        t("commands.doctorLegacyConfig.normalizedStreamingEnum", { prefix: params.pathPrefix, before: beforeStreaming, resolved }),
       );
     }
 
@@ -185,7 +186,7 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
       );
     } else if (typeof legacyStreaming === "string" && legacyStreaming !== resolvedStreaming) {
       changes.push(
-        `Normalized ${params.pathPrefix}.streaming (${legacyStreaming}) → (${resolvedStreaming}).`,
+        t("commands.doctorLegacyConfig.normalizedStreamingEnum", { prefix: params.pathPrefix, before: legacyStreaming, resolved: resolvedStreaming }),
       );
     }
 
@@ -348,7 +349,7 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
       nextChannels[channelId] = nextChannel;
       channelsChanged = true;
       changes.push(
-        `Moved channels.${channelId} single-account top-level values into channels.${channelId}.accounts.default.`,
+        t("commands.doctorLegacyConfig.movedSingleAccount", { channel: channelId }),
       );
     }
 
@@ -405,7 +406,7 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
       browser: migratedBrowser as OpenClawConfig["browser"],
     };
     changes.push(
-      `Moved browser.ssrfPolicy.allowPrivateNetwork → browser.ssrfPolicy.dangerouslyAllowPrivateNetwork (${String(resolvedDangerousAllowPrivateNetwork)}).`,
+      t("commands.doctorLegacyConfig.movedSsrfPolicy", { value: String(resolvedDangerousAllowPrivateNetwork) }),
     );
   };
 
@@ -443,7 +444,7 @@ export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
         },
       };
       changes.push(
-        `Copied messages.ackReaction → channels.whatsapp.ackReaction (scope: ${legacyScope}).`,
+        t("commands.doctorLegacyConfig.copiedAckReaction", { scope: legacyScope }),
       );
     }
   }

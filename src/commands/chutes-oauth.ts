@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { createServer } from "node:http";
+import { t } from "../i18n/index.js";
 import type { OAuthCredentials } from "@mariozechner/pi-ai";
 import type { ChutesOAuthAppConfig } from "../agents/chutes-oauth.js";
 import {
@@ -21,7 +22,7 @@ function parseManualOAuthInput(
 ): { code: string; state: string } {
   const trimmed = String(input ?? "").trim();
   if (!trimmed) {
-    throw new Error("Missing OAuth redirect URL or authorization code.");
+    throw new Error(t("commands.chutesOAuth.missingRedirect"));
   }
 
   // Support pasting either:
@@ -38,7 +39,7 @@ function parseManualOAuthInput(
     throw new Error(parsed.error);
   }
   if (parsed.state !== expectedState) {
-    throw new Error("Invalid OAuth state");
+    throw new Error(t("commands.chutesOAuth.invalidState"));
   }
   return parsed;
 }
@@ -116,7 +117,7 @@ async function waitForLocalCallback(params: {
             "<!doctype html>",
             "<html><head><meta charset='utf-8' /></head>",
             "<body><h2>Chutes OAuth complete</h2>",
-            "<p>You can close this window and return to OpenClaw.</p></body></html>",
+            `<p>${t("commands.chutesOAuth.closeWindow")}</p></body></html>`,
           ].join(""),
         );
         if (timeout) {
@@ -141,14 +142,14 @@ async function waitForLocalCallback(params: {
       reject(err);
     });
     server.listen(port, hostname, () => {
-      params.onProgress?.(`Waiting for OAuth callback on ${redirectUrl.origin}${expectedPath}…`);
+      params.onProgress?.(`${t("commands.chutesOAuth.waitingCallback", { origin: redirectUrl.origin, path: expectedPath })}`);
     });
 
     timeout = setTimeout(() => {
       try {
         server.close();
       } catch {}
-      reject(new Error("OAuth callback timeout"));
+      reject(new Error(t("commands.chutesOAuth.callbackTimeout")));
     }, params.timeoutMs);
   });
 }
@@ -182,9 +183,9 @@ export async function loginChutes(params: {
   let codeAndState: { code: string; state: string };
   if (params.manual) {
     await params.onAuth({ url });
-    params.onProgress?.("Waiting for redirect URL…");
+    params.onProgress?.(t("commands.chutesOAuth.waitingRedirect"));
     const input = await params.onPrompt({
-      message: "Paste the redirect URL (or authorization code)",
+      message: t("commands.chutesOAuth.pasteRedirect"),
       placeholder: `${params.app.redirectUri}?code=...&state=...`,
     });
     codeAndState = parseManualOAuthInput(input, state);
@@ -195,9 +196,9 @@ export async function loginChutes(params: {
       timeoutMs,
       onProgress: params.onProgress,
     }).catch(async () => {
-      params.onProgress?.("OAuth callback not detected; paste redirect URL…");
+      params.onProgress?.(t("commands.chutesOAuth.callbackNotDetected"));
       const input = await params.onPrompt({
-        message: "Paste the redirect URL (or authorization code)",
+        message: t("commands.chutesOAuth.pasteRedirect"),
         placeholder: `${params.app.redirectUri}?code=...&state=...`,
       });
       return parseManualOAuthInput(input, state);
@@ -207,7 +208,7 @@ export async function loginChutes(params: {
     codeAndState = await callback;
   }
 
-  params.onProgress?.("Exchanging code for tokens…");
+  params.onProgress?.(t("commands.chutesOAuth.exchangingCode"));
   return await exchangeChutesCodeForTokens({
     app: params.app,
     code: codeAndState.code,

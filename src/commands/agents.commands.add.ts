@@ -9,6 +9,7 @@ import { ensureAuthProfileStore } from "../agents/auth-profiles.js";
 import { resolveAuthStorePath } from "../agents/auth-profiles/paths.js";
 import { writeConfigFile } from "../config/config.js";
 import { logConfigUpdated } from "../config/logging.js";
+import { t } from "../i18n/index.js";
 import { DEFAULT_AGENT_ID, normalizeAgentId } from "../routing/session-key.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -65,7 +66,7 @@ export async function agentsAddCommand(
 
   if (nonInteractive && !workspaceFlag) {
     runtime.error(
-      "Non-interactive mode requires --workspace. Re-run without flags to use the wizard.",
+      t("commands.agents.nonInteractiveWorkspace"),
     );
     runtime.exit(1);
     return;
@@ -73,28 +74,28 @@ export async function agentsAddCommand(
 
   if (nonInteractive) {
     if (!nameInput) {
-      runtime.error("Agent name is required in non-interactive mode.");
+      runtime.error(t("commands.agents.nameRequired"));
       runtime.exit(1);
       return;
     }
     if (!workspaceFlag) {
       runtime.error(
-        "Non-interactive mode requires --workspace. Re-run without flags to use the wizard.",
+        t("commands.agents.nonInteractiveWorkspace"),
       );
       runtime.exit(1);
       return;
     }
     const agentId = normalizeAgentId(nameInput);
     if (agentId === DEFAULT_AGENT_ID) {
-      runtime.error(`"${DEFAULT_AGENT_ID}" is reserved. Choose another name.`);
+      runtime.error(t("commands.agents.nameReserved", { name: DEFAULT_AGENT_ID }));
       runtime.exit(1);
       return;
     }
     if (agentId !== nameInput) {
-      runtime.log(`Normalized agent id to "${agentId}".`);
+      runtime.log(t("commands.agents.normalizedId", { id: agentId }));
     }
     if (findAgentEntryIndex(listAgentEntries(cfg), agentId) >= 0) {
-      runtime.error(`Agent "${agentId}" already exists.`);
+      runtime.error(t("commands.agents.alreadyExists", { id: agentId }));
       runtime.exit(1);
       return;
     }
@@ -155,16 +156,16 @@ export async function agentsAddCommand(
     if (opts.json) {
       runtime.log(JSON.stringify(payload, null, 2));
     } else {
-      runtime.log(`Agent: ${agentId}`);
-      runtime.log(`Workspace: ${shortenHomePath(workspaceDir)}`);
-      runtime.log(`Agent dir: ${shortenHomePath(agentDir)}`);
+      runtime.log(t("commands.agents.agentLine", { id: agentId }));
+      runtime.log(t("commands.agents.workspaceLine", { dir: shortenHomePath(workspaceDir) }));
+      runtime.log(t("commands.agents.agentDirLine", { dir: shortenHomePath(agentDir) }));
       if (model) {
-        runtime.log(`Model: ${model}`);
+        runtime.log(t("commands.agents.modelLine", { model }));
       }
       if (bindingResult.conflicts.length > 0) {
         runtime.error(
           [
-            "Skipped bindings already claimed by another agent:",
+            t("commands.agents.skippedBindings"),
             ...bindingResult.conflicts.map(
               (conflict) =>
                 `- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`,
@@ -178,18 +179,18 @@ export async function agentsAddCommand(
 
   const prompter = createClackPrompter();
   try {
-    await prompter.intro("Add OpenClaw agent");
+    await prompter.intro(t("commands.agents.introTitle"));
     const name =
       nameInput ??
       (await prompter.text({
-        message: "Agent name",
+        message: t("commands.agents.nameMsg"),
         validate: (value) => {
           if (!value?.trim()) {
-            return "Required";
+            return t("commands.agents.required");
           }
           const normalized = normalizeAgentId(value);
           if (normalized === DEFAULT_AGENT_ID) {
-            return `"${DEFAULT_AGENT_ID}" is reserved. Choose another name.`;
+            return t("commands.agents.nameReserved", { name: DEFAULT_AGENT_ID });
           }
           return undefined;
         },
@@ -198,7 +199,7 @@ export async function agentsAddCommand(
     const agentName = String(name ?? "").trim();
     const agentId = normalizeAgentId(agentName);
     if (agentName !== agentId) {
-      await prompter.note(`Normalized id to "${agentId}".`, "Agent id");
+      await prompter.note(t("commands.agents.normalizedNote", { id: agentId }), t("commands.agents.agentIdTitle"));
     }
 
     const existingAgent = listAgentEntries(cfg).find(
@@ -206,20 +207,20 @@ export async function agentsAddCommand(
     );
     if (existingAgent) {
       const shouldUpdate = await prompter.confirm({
-        message: `Agent "${agentId}" already exists. Update it?`,
+        message: t("commands.agents.updateConfirm", { id: agentId }),
         initialValue: false,
       });
       if (!shouldUpdate) {
-        await prompter.outro("No changes made.");
+        await prompter.outro(t("commands.agents.noChanges"));
         return;
       }
     }
 
     const workspaceDefault = resolveAgentWorkspaceDir(cfg, agentId);
     const workspaceInput = await prompter.text({
-      message: "Workspace directory",
+      message: t("commands.agents.workspaceMsg"),
       initialValue: workspaceDefault,
-      validate: (value) => (value?.trim() ? undefined : "Required"),
+      validate: (value) => (value?.trim() ? undefined : t("commands.agents.required")),
     });
     const workspaceDir = resolveUserPath(String(workspaceInput ?? "").trim() || workspaceDefault);
     const agentDir = resolveAgentDir(cfg, agentId);
@@ -243,19 +244,19 @@ export async function agentsAddCommand(
         !(await fileExists(destAuthPath))
       ) {
         const shouldCopy = await prompter.confirm({
-          message: `Copy auth profiles from "${defaultAgentId}"?`,
+          message: t("commands.agents.copyAuthConfirm", { id: defaultAgentId }),
           initialValue: false,
         });
         if (shouldCopy) {
           await fs.mkdir(path.dirname(destAuthPath), { recursive: true });
           await fs.copyFile(sourceAuthPath, destAuthPath);
-          await prompter.note(`Copied auth profiles from "${defaultAgentId}".`, "Auth profiles");
+          await prompter.note(t("commands.agents.authCopied", { id: defaultAgentId }), t("commands.agents.authProfilesTitle"));
         }
       }
     }
 
     const wantsAuth = await prompter.confirm({
-      message: "Configure model/auth for this agent now?",
+      message: t("commands.agents.configureAuthConfirm"),
       initialValue: false,
     });
     if (wantsAuth) {
@@ -306,7 +307,7 @@ export async function agentsAddCommand(
 
     if (selection.length > 0) {
       const wantsBindings = await prompter.confirm({
-        message: "Route selected channels to this agent now? (bindings)",
+        message: t("commands.agents.routeBindingsConfirm"),
         initialValue: false,
       });
       if (wantsBindings) {
@@ -321,22 +322,22 @@ export async function agentsAddCommand(
         if (result.conflicts.length > 0) {
           await prompter.note(
             [
-              "Skipped bindings already claimed by another agent:",
+              t("commands.agents.skippedBindings"),
               ...result.conflicts.map(
                 (conflict) =>
                   `- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`,
               ),
             ].join("\n"),
-            "Routing bindings",
+            t("commands.agents.routeBindingsTitle"),
           );
         }
       } else {
         await prompter.note(
           [
-            "Routing unchanged. Add bindings when you're ready.",
+            t("commands.agents.routeUnchangedNote"),
             "Docs: https://docs.openclaw.ai/concepts/multi-agent",
           ].join("\n"),
-          "Routing",
+          t("commands.agents.routeUnchangedTitle"),
         );
       }
     }
@@ -357,7 +358,7 @@ export async function agentsAddCommand(
     if (opts.json) {
       runtime.log(JSON.stringify(payload, null, 2));
     }
-    await prompter.outro(`Agent "${agentId}" ready.`);
+    await prompter.outro(t("commands.agents.agentReady", { id: agentId }));
   } catch (err) {
     if (err instanceof WizardCancelledError) {
       runtime.exit(1);

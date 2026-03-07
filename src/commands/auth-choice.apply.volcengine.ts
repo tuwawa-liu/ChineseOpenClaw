@@ -1,4 +1,5 @@
 import { normalizeApiKeyInput, validateApiKeyInput } from "./auth-choice.api-key.js";
+import { t } from "../i18n/index.js";
 import {
   ensureApiKeyFromOptionEnvOrPrompt,
   normalizeSecretInputModeInput,
@@ -26,7 +27,7 @@ export async function applyAuthChoiceVolcengine(
     expectedProviders: ["volcengine"],
     provider: "volcengine",
     envLabel: "VOLCANO_ENGINE_API_KEY",
-    promptMessage: "Enter Volcano Engine API key",
+    promptMessage: t("commands.authVolcengine.enterApiKey"),
     normalize: normalizeApiKeyInput,
     validate: validateApiKeyInput,
     prompter: params.prompter,

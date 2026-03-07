@@ -1,4 +1,5 @@
 import { resolveAgentDir, resolveAgentWorkspaceDir } from "../agents/agent-scope.js";
+import { t } from "../i18n/index.js";
 import { writeConfigFile } from "../config/config.js";
 import { logConfigUpdated } from "../config/logging.js";
 import { resolveSessionTranscriptsDirForAgent } from "../config/sessions.js";
@@ -27,40 +28,40 @@ export async function agentsDeleteCommand(
 
   const input = opts.id?.trim();
   if (!input) {
-    runtime.error("Agent id is required.");
+    runtime.error(t("commands.agentsDelete.agentIdRequired"));
     runtime.exit(1);
     return;
   }
 
   const agentId = normalizeAgentId(input);
   if (agentId !== input) {
-    runtime.log(`Normalized agent id to "${agentId}".`);
+    runtime.log(t("commands.agentsDelete.normalizedId", { agentId }));
   }
   if (agentId === DEFAULT_AGENT_ID) {
-    runtime.error(`"${DEFAULT_AGENT_ID}" cannot be deleted.`);
+    runtime.error(t("commands.agentsDelete.cannotDelete", { agentId: DEFAULT_AGENT_ID }));
     runtime.exit(1);
     return;
   }
 
   if (findAgentEntryIndex(listAgentEntries(cfg), agentId) < 0) {
-    runtime.error(`Agent "${agentId}" not found.`);
+    runtime.error(t("commands.agentsDelete.agentNotFound", { agentId }));
     runtime.exit(1);
     return;
   }
 
   if (!opts.force) {
     if (!process.stdin.isTTY) {
-      runtime.error("Non-interactive session. Re-run with --force.");
+      runtime.error(t("commands.agentsDelete.nonInteractive"));
       runtime.exit(1);
       return;
     }
     const prompter = createClackPrompter();
     const confirmed = await prompter.confirm({
-      message: `Delete agent "${agentId}" and prune workspace/state?`,
+      message: t("commands.agentsDelete.deleteConfirm", { agentId }),
       initialValue: false,
     });
     if (!confirmed) {
-      runtime.log("Cancelled.");
+      runtime.log(t("commands.agentsDelete.cancelled"));
       return;
     }
   }
@@ -96,6 +97,6 @@ export async function agentsDeleteCommand(
       ),
     );
   } else {
-    runtime.log(`Deleted agent: ${agentId}`);
+    runtime.log(t("commands.agentsDelete.deleted", { agentId }));
   }
 }

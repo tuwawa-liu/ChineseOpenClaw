@@ -1,4 +1,5 @@
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
+import { t } from "../i18n/index.js";
 import {
   ZAI_CN_BASE_URL,
   ZAI_CODING_CN_BASE_URL,
@@ -116,7 +117,7 @@ export async function detectZaiEndpoint(params: {
         endpoint: candidate.endpoint,
         baseUrl: candidate.baseUrl,
         modelId: "glm-5",
-        note: `Verified GLM-5 on ${candidate.endpoint} endpoint.`,
+        note: t("commands.authZai.verifiedGlm5", { endpoint: candidate.endpoint }),
       };
     }
   }
@@ -139,7 +140,7 @@ export async function detectZaiEndpoint(params: {
         endpoint: candidate.endpoint,
         baseUrl: candidate.baseUrl,
         modelId: "glm-4.7",
-        note: "Coding Plan endpoint detected; GLM-5 is not available there. Defaulting to GLM-4.7.",
+        note: t("commands.authZai.codingPlanDetected"),
       };
     }
   }

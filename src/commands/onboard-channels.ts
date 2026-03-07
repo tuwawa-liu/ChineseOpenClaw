@@ -12,6 +12,7 @@ import { formatCliCommand } from "../cli/command-format.js";
 import type { OpenClawConfig } from "../config/config.js";
 import { isChannelConfigured } from "../config/plugin-auto-enable.js";
 import type { DmPolicy } from "../config/types.js";
+import { t } from "../i18n/index.js";
 import { enablePluginInConfig } from "../plugins/enable.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
 import type { RuntimeEnv } from "../runtime.js";
@@ -44,7 +45,7 @@ type ChannelStatusSummary = {
 };
 
 function formatAccountLabel(accountId: string): string {
-  return accountId === DEFAULT_ACCOUNT_ID ? "default (primary)" : accountId;
+  return accountId === DEFAULT_ACCOUNT_ID ? t("commands.channels.defaultAccount") : accountId;
 }
 
 async function promptConfiguredAction(params: {
@@ -56,19 +57,19 @@ async function promptConfiguredAction(params: {
   const { prompter, label, supportsDisable, supportsDelete } = params;
   const updateOption: WizardSelectOption<ConfiguredChannelAction> = {
     value: "update",
-    label: "Modify settings",
+    label: t("commands.channels.modifyLabel"),
   };
   const disableOption: WizardSelectOption<ConfiguredChannelAction> = {
     value: "disable",
-    label: "Disable (keeps config)",
+    label: t("commands.channels.disableLabel"),
   };
   const deleteOption: WizardSelectOption<ConfiguredChannelAction> = {
     value: "delete",
-    label: "Delete config",
+    label: t("commands.channels.deleteLabel"),
   };
   const skipOption: WizardSelectOption<ConfiguredChannelAction> = {
     value: "skip",
-    label: "Skip (leave as-is)",
+    label: t("commands.channels.skipLabel"),
   };
   const options: Array<WizardSelectOption<ConfiguredChannelAction>> = [
     updateOption,
@@ -77,7 +78,7 @@ async function promptConfiguredAction(params: {
     skipOption,
   ];
   return await prompter.select({
-    message: `${label} already configured. What do you want to do?`,
+    message: t("commands.channels.alreadyConfigured", { label }),
     options,
     initialValue: "update",
   });
@@ -100,7 +101,7 @@ async function promptRemovalAccountId(params: {
     return defaultAccountId;
   }
   const selected = await prompter.select({
-    message: `${label} account`,
+    message: t("commands.channels.accountSelect", { label }),
     options: accountIds.map((accountId) => ({
       value: accountId,
       label: formatAccountLabel(accountId),
@@ -135,20 +136,20 @@ async function collectChannelStatus(params: {
     .filter((meta) => !statusByChannel.has(meta.id))
     .map((meta) => {
       const configured = isChannelConfigured(params.cfg, meta.id);
-      const statusLabel = configured ? "configured (plugin disabled)" : "not configured";
+      const statusLabel = configured ? t("onboardChannels.configuredPluginDisabled") : t("onboardChannels.notConfigured");
       return {
         channel: meta.id,
         configured,
         statusLines: [`${meta.label}: ${statusLabel}`],
-        selectionHint: configured ? "configured · plugin disabled" : "not configured",
+        selectionHint: configured ? t("onboardChannels.configuredPluginDisabledHint") : t("onboardChannels.notConfigured"),
         quickstartScore: 0,
       };
     });
   const catalogStatuses = catalogEntries.map((entry) => ({
     channel: entry.id,
     configured: false,
-    statusLines: [`${entry.meta.label}: install plugin to enable`],
-    selectionHint: "plugin · install",
+    statusLines: [`${entry.meta.label}: ${t("onboardChannels.installPluginToEnable")}`],
+    selectionHint: t("onboardChannels.pluginInstallHint"),
     quickstartScore: 0,
   }));
   const combinedStatuses = [...statusEntries, ...fallbackStatuses, ...catalogStatuses];
@@ -174,7 +175,7 @@ export async function noteChannelStatus(params: {
     accountOverrides: params.accountOverrides ?? {},
   });
   if (statusLines.length > 0) {
-    await params.prompter.note(statusLines.join("\n"), "Channel status");
+    await params.prompter.note(statusLines.join("\n"), t("commands.channels.channelStatusTitle"));
   }
 }
 
@@ -193,17 +194,16 @@ async function noteChannelPrimer(
   );
   await prompter.note(
     [
-      "DM security: default is pairing; unknown DMs get a pairing code.",
-      `Approve with: ${formatCliCommand("openclaw pairing approve <channel> <code>")}`,
-      'Public DMs require dmPolicy="open" + allowFrom=["*"].',
-      "Multi-user DMs: run: " +
-        formatCliCommand('openclaw config set session.dmScope "per-channel-peer"') +
-        ' (or "per-account-channel-peer" for multi-account channels) to isolate sessions.',
-      `Docs: ${formatDocsLink("/channels/pairing", "channels/pairing")}`,
+      t("onboardChannels.dmSecurityDefault"),
+      t("onboardChannels.dmSecurityApprove", { cmd: formatCliCommand("openclaw pairing approve <channel> <code>") }),
+      t("onboardChannels.dmSecurityPublic"),
+      t("onboardChannels.dmSecurityMultiUser", { cmd: formatCliCommand('openclaw config set session.dmScope "per-channel-peer"') }) +
+        t("onboardChannels.dmSecurityMultiUserSuffix"),
+      t("onboardChannels.dmSecurityDocs", { link: formatDocsLink("/channels/pairing", "channels/pairing") }),
       "",
       ...channelLines,
     ].join("\n"),
-    "How channels work",
+    t("commands.channels.dmSecurityTitle"),
   );
 }
 
@@ -237,7 +237,7 @@ async function maybeConfigureDmPolicies(params: {
   }
 
   const wants = await prompter.confirm({
-    message: "Configure DM access policies now? (default: pairing)",
+    message: t("commands.channels.configureDmConfirm"),
     initialValue: false,
   });
   if (!wants) {
@@ -248,24 +248,23 @@ async function maybeConfigureDmPolicies(params: {
   const selectPolicy = async (policy: ChannelOnboardingDmPolicy) => {
     await prompter.note(
       [
-        "Default: pairing (unknown DMs get a pairing code).",
-        `Approve: ${formatCliCommand(`openclaw pairing approve ${policy.channel} <code>`)}`,
-        `Allowlist DMs: ${policy.policyKey}="allowlist" + ${policy.allowFromKey} entries.`,
-        `Public DMs: ${policy.policyKey}="open" + ${policy.allowFromKey} includes "*".`,
-        "Multi-user DMs: run: " +
-          formatCliCommand('openclaw config set session.dmScope "per-channel-peer"') +
-          ' (or "per-account-channel-peer" for multi-account channels) to isolate sessions.',
-        `Docs: ${formatDocsLink("/channels/pairing", "channels/pairing")}`,
+        t("onboardChannels.dmPolicyDefault"),
+        t("onboardChannels.dmPolicyApprove", { cmd: formatCliCommand(`openclaw pairing approve ${policy.channel} <code>`) }),
+        t("onboardChannels.dmPolicyAllowlist", { policyKey: policy.policyKey, allowFromKey: policy.allowFromKey }),
+        t("onboardChannels.dmPolicyPublic", { policyKey: policy.policyKey, allowFromKey: policy.allowFromKey }),
+        t("onboardChannels.dmPolicyMultiUser", { cmd: formatCliCommand('openclaw config set session.dmScope "per-channel-peer"') }) +
+          t("onboardChannels.dmPolicyMultiUserSuffix"),
+        t("onboardChannels.dmPolicyDocs", { link: formatDocsLink("/channels/pairing", "channels/pairing") }),
       ].join("\n"),
-      `${policy.label} DM access`,
+      t("onboardChannels.dmAccessTitle", { label: policy.label }),
     );
     return (await prompter.select({
-      message: `${policy.label} DM policy`,
+      message: t("commands.channels.dmPolicyMsg", { label: policy.label }),
       options: [
-        { value: "pairing", label: "Pairing (recommended)" },
-        { value: "allowlist", label: "Allowlist (specific users only)" },
-        { value: "open", label: "Open (public inbound DMs)" },
-        { value: "disabled", label: "Disabled (ignore DMs)" },
+        { value: "pairing", label: t("commands.channels.pairingLabel") },
+        { value: "allowlist", label: t("commands.channels.allowlistLabel") },
+        { value: "open", label: t("commands.channels.openLabel") },
+        { value: "disabled", label: t("commands.channels.disabledLabel") },
       ],
     })) as DmPolicy;
   };
@@ -308,13 +307,13 @@ export async function setupChannels(
   const { installedPlugins, catalogEntries, statusByChannel, statusLines } =
     await collectChannelStatus({ cfg: next, options, accountOverrides });
   if (!options?.skipStatusNote && statusLines.length > 0) {
-    await prompter.note(statusLines.join("\n"), "Channel status");
+    await prompter.note(statusLines.join("\n"), t("commands.channels.channelStatusTitle"));
   }
 
   const shouldConfigure = options?.skipConfirm
     ? true
     : await prompter.confirm({
-        message: "Configure chat channels now?",
+        message: t("commands.channels.configureChatsConfirm"),
         initialValue: true,
       });
   if (!shouldConfigure) {
@@ -369,10 +368,10 @@ export async function setupChannels(
     const plugin = getChannelPlugin(channel);
     if (!plugin) {
       if (next.plugins?.entries?.[channel]?.enabled === false) {
-        return "plugin disabled";
+        return t("onboardChannels.pluginDisabled");
       }
       if (next.plugins?.enabled === false) {
-        return "plugins disabled";
+        return t("onboardChannels.pluginsDisabled");
       }
       return undefined;
     }
@@ -389,7 +388,7 @@ export async function setupChannels(
     ) {
       enabled = (next.channels as Record<string, { enabled?: boolean }>)[channel]?.enabled;
     }
-    return enabled === false ? "disabled" : undefined;
+    return enabled === false ? t("onboardChannels.disabledHint") : undefined;
   };
 
   const buildSelectionOptions = (
@@ -457,8 +456,8 @@ export async function setupChannels(
     next = result.config;
     if (!result.enabled) {
       await prompter.note(
-        `Cannot enable ${channel}: ${result.reason ?? "plugin disabled"}.`,
-        "Channel setup",
+        t("commands.channels.cannotEnable", { channel, reason: result.reason ?? t("onboardChannels.pluginDisabled") }),
+        t("commands.channels.channelSetupTitle"),
       );
       return false;
     }
@@ -475,15 +474,15 @@ export async function setupChannels(
       const adapter = getChannelOnboardingAdapter(channel);
       if (adapter) {
         await prompter.note(
-          `${channel} plugin not available (continuing with onboarding). If the channel still doesn't work after setup, run \`${formatCliCommand(
+          t("commands.channels.pluginNotAvailableContinue", { channel }) + ` ${formatCliCommand(
             "openclaw plugins list",
-          )}\` and \`${formatCliCommand("openclaw plugins enable " + channel)}\`, then restart the gateway.`,
-          "Channel setup",
+          )} / ${formatCliCommand("openclaw plugins enable " + channel)}`,
+          t("commands.channels.channelSetupTitle"),
         );
         await refreshStatus(channel);
         return true;
       }
-      await prompter.note(`${channel} plugin not available.`, "Channel setup");
+      await prompter.note(t("commands.channels.pluginNotAvailable", { channel }), t("commands.channels.channelSetupTitle"));
       return false;
     }
     await refreshStatus(channel);
@@ -513,7 +512,7 @@ export async function setupChannels(
   const configureChannel = async (channel: ChannelChoice) => {
     const adapter = getChannelOnboardingAdapter(channel);
     if (!adapter) {
-      await prompter.note(`${channel} does not support onboarding yet.`, "Channel setup");
+      await prompter.note(t("commands.channels.noOnboarding", { channel }), t("commands.channels.channelSetupTitle"));
       return;
     }
     const result = await adapter.configure({
@@ -571,7 +570,7 @@ export async function setupChannels(
     }
 
     if (action === "delete" && !supportsDelete) {
-      await prompter.note(`${label} does not support deleting config entries.`, "Remove channel");
+      await prompter.note(t("commands.channels.removeNotSupported", { label }), t("commands.channels.removeTitle"));
       return;
     }
 
@@ -594,7 +593,7 @@ export async function setupChannels(
 
     if (action === "delete") {
       const confirmed = await prompter.confirm({
-        message: `Delete ${label} account "${accountLabel}"?`,
+        message: t("commands.channels.deleteConfirm", { label, account: accountLabel }),
         initialValue: false,
       });
       if (!confirmed) {
@@ -680,13 +679,13 @@ export async function setupChannels(
   if (options?.quickstartDefaults) {
     const { entries } = getChannelEntries();
     const choice = (await prompter.select({
-      message: "Select channel (QuickStart)",
+      message: t("commands.channels.selectQuickstart"),
       options: [
         ...buildSelectionOptions(entries),
         {
           value: "__skip__",
-          label: "Skip for now",
-          hint: `You can add channels later via \`${formatCliCommand("openclaw channels add")}\``,
+          label: t("onboardChannels.skipForNow"),
+          hint: t("onboardChannels.skipHint", { cmd: formatCliCommand("openclaw channels add") }),
         },
       ],
       initialValue: quickstartDefault,
@@ -700,13 +699,13 @@ export async function setupChannels(
     while (true) {
       const { entries } = getChannelEntries();
       const choice = (await prompter.select({
-        message: "Select a channel",
+        message: t("commands.channels.selectChannel"),
         options: [
           ...buildSelectionOptions(entries),
           {
             value: doneValue,
-            label: "Finished",
-            hint: selection.length > 0 ? "Done" : "Skip for now",
+            label: t("commands.channels.finishedLabel"),
+            hint: selection.length > 0 ? t("onboardChannels.doneHint") : t("onboardChannels.skipForNow"),
           },
         ],
         initialValue,
@@ -729,7 +728,7 @@ export async function setupChannels(
     .map((channel) => selectionNotes.get(channel))
     .filter((line): line is string => Boolean(line));
   if (selectedLines.length > 0) {
-    await prompter.note(selectedLines.join("\n"), "Selected channels");
+    await prompter.note(selectedLines.join("\n"), t("commands.channels.selectedTitle"));
   }
 
   if (!options?.skipDmPolicyPrompt) {

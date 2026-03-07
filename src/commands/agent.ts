@@ -63,6 +63,7 @@ import {
   type SessionEntry,
   updateSessionStore,
 } from "../config/sessions.js";
+import { t } from "../i18n/index.js";
 import {
   clearAgentRunContext,
   emitAgentEvent,
@@ -131,7 +132,7 @@ function resolveFallbackRetryPrompt(params: { body: string; isFallbackRetry: boo
   if (!params.isFallbackRetry) {
     return params.body;
   }
-  return "Continue where you left off. The previous model attempt failed or timed out.";
+  return t("commands.agent.continueAfterFail");
 }
 
 function prependInternalEventContext(
@@ -337,11 +338,11 @@ async function agentCommandInternal(
 ) {
   const message = (opts.message ?? "").trim();
   if (!message) {
-    throw new Error("Message (--message) is required");
+    throw new Error(t("commands.agent.messageRequired"));
   }
   const body = prependInternalEventContext(message, opts.internalEvents);
   if (!opts.to && !opts.sessionId && !opts.sessionKey && !opts.agentId) {
-    throw new Error("Pass --to <E.164>, --session-id, or --agent to choose a session");
+    throw new Error(t("commands.agent.sessionRequired"));
   }
 
   const loadedRaw = loadConfig();
@@ -359,7 +360,7 @@ async function agentCommandInternal(
     const knownAgents = listAgentIds(cfg);
     if (!knownAgents.includes(agentIdOverride)) {
       throw new Error(
-        `Unknown agent id "${agentIdOverrideRaw}". Use "${formatCliCommand("openclaw agents list")}" to see configured agents.`,
+        t("commands.agent.unknownAgentId", { agentId: agentIdOverrideRaw }),
       );
     }
   }
@@ -367,7 +368,7 @@ async function agentCommandInternal(
     const sessionAgentId = resolveAgentIdFromSessionKey(opts.sessionKey);
     if (sessionAgentId !== agentIdOverride) {
       throw new Error(
-        `Agent id "${agentIdOverrideRaw}" does not match session key agent "${sessionAgentId}".`,
+        t("commands.agent.agentMismatch", { agentId: agentIdOverrideRaw, sessionAgent: sessionAgentId }),
       );
     }
   }
@@ -382,15 +383,15 @@ async function agentCommandInternal(
   const thinkOverride = normalizeThinkLevel(opts.thinking);
   const thinkOnce = normalizeThinkLevel(opts.thinkingOnce);
   if (opts.thinking && !thinkOverride) {
-    throw new Error(`Invalid thinking level. Use one of: ${thinkingLevelsHint}.`);
+    throw new Error(t("commands.agent.invalidThinking", { levels: thinkingLevelsHint }));
   }
   if (opts.thinkingOnce && !thinkOnce) {
-    throw new Error(`Invalid one-shot thinking level. Use one of: ${thinkingLevelsHint}.`);
+    throw new Error(t("commands.agent.invalidOneShotThinking", { levels: thinkingLevelsHint }));
   }
 
   const verboseOverride = normalizeVerboseLevel(opts.verbose);
   if (opts.verbose && !verboseOverride) {
-    throw new Error('Invalid verbose level. Use "on", "full", or "off".');
+    throw new Error(t("commands.agent.invalidVerbose"));
   }
 
   const laneRaw = typeof opts.lane === "string" ? opts.lane.trim() : "";
@@ -405,7 +406,7 @@ async function agentCommandInternal(
     timeoutSecondsRaw !== undefined &&
     (Number.isNaN(timeoutSecondsRaw) || timeoutSecondsRaw < 0)
   ) {
-    throw new Error("--timeout must be a non-negative integer (seconds; 0 means no timeout)");
+    throw new Error(t("commands.agent.invalidTimeout"));
   }
   const timeoutMs = resolveAgentTimeoutMs({
     cfg,
@@ -468,7 +469,7 @@ async function agentCommandInternal(
         chatType: sessionEntry?.chatType,
       });
       if (sendPolicy === "deny") {
-        throw new Error("send blocked by session policy");
+        throw new Error(t("commands.agent.sendBlocked"));
       }
     }
 
@@ -765,7 +766,7 @@ async function agentCommandInternal(
     if (resolvedThinkLevel === "xhigh" && !supportsXHighThinking(provider, model)) {
       const explicitThink = Boolean(thinkOnce || thinkOverride);
       if (explicitThink) {
-        throw new Error(`Thinking level "xhigh" is only supported for ${formatXHighModelHint()}.`);
+        throw new Error(t("commands.agent.thinkingXhighUnsupported", { models: formatXHighModelHint() }));
       }
       resolvedThinkLevel = "high";
       if (sessionEntry && sessionStore && sessionKey && sessionEntry.thinkingLevel === "xhigh") {
@@ -969,7 +970,7 @@ export async function agentCommandFromIngress(
   deps: CliDeps = createDefaultDeps(),
 ) {
   if (typeof opts.senderIsOwner !== "boolean") {
-    throw new Error("senderIsOwner must be explicitly set for ingress agent runs.");
+    throw new Error(t("commands.agent.senderIsOwnerRequired"));
   }
   return await agentCommandInternal(
     {

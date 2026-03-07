@@ -1,4 +1,5 @@
 import { loadConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { resolveCommitHash } from "../infra/git-commit.js";
 import { visibleWidth } from "../terminal/ansi.js";
 import { isRich, theme } from "../terminal/theme.js";
@@ -61,7 +62,7 @@ export function formatCliBannerLine(version: string, options: BannerOptions = {}
   const commitLabel = commit ?? "unknown";
   const tagline = pickTagline({ ...options, mode: resolveTaglineMode(options) });
   const rich = options.richTty ?? isRich();
-  const title = "🦞 OpenClaw";
+  const title = t("banner.title");
   const prefix = "🦞 ";
   const columns = options.columns ?? process.stdout.columns ?? 120;
   const plainBaseLine = `${title} ${version} (${commitLabel})`;

@@ -5,6 +5,7 @@ import { loadConfig } from "../config/config.js";
 import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { normalizeControlUiBasePath } from "../gateway/control-ui-shared.js";
 import { probeGateway } from "../gateway/probe.js";
+import { t } from "../i18n/index.js";
 import { collectChannelStatusIssues } from "../infra/channels-status-issues.js";
 import { resolveOsSummary } from "../infra/os-summary.js";
 import { getTailnetHostname } from "../infra/tailscale.js";
@@ -62,11 +63,11 @@ function unwrapDeferredResult<T>(result: DeferredResult<T>): T {
 function resolveMemoryPluginStatus(cfg: ReturnType<typeof loadConfig>): MemoryPluginStatus {
   const pluginsEnabled = cfg.plugins?.enabled !== false;
   if (!pluginsEnabled) {
-    return { enabled: false, slot: null, reason: "plugins disabled" };
+    return { enabled: false, slot: null, reason: t("commands.statusScan.pluginsDisabled") };
   }
   const raw = typeof cfg.plugins?.slots?.memory === "string" ? cfg.plugins.slots.memory.trim() : "";
   if (raw && raw.toLowerCase() === "none") {
-    return { enabled: false, slot: null, reason: 'plugins.slots.memory="none"' };
+    return { enabled: false, slot: null, reason: t("commands.statusScan.memoryNone") };
   }
   return { enabled: true, slot: raw || "memory-core" };
 }
@@ -271,12 +272,12 @@ export async function scanStatus(
   }
   return await withProgress(
     {
-      label: "Scanning status…",
+      label: t("commands.statusScan.scanning"),
       total: 10,
       enabled: true,
     },
     async (progress) => {
-      progress.setLabel("Loading config…");
+      progress.setLabel(t("commands.statusScan.loadingConfig"));
       const loadedRaw = loadConfig();
       const { resolvedConfig: cfg } = await resolveCommandSecretRefsViaGateway({
         config: loadedRaw,
@@ -303,7 +304,7 @@ export async function scanStatus(
       const summaryPromise = deferResult(getStatusSummary({ config: cfg }));
       progress.tick();
 
-      progress.setLabel("Checking Tailscale…");
+      progress.setLabel(t("commands.statusScan.checkingTailscale"));
       const tailscaleDns = await tailscaleDnsPromise;
       const tailscaleHttpsUrl =
         tailscaleMode !== "off" && tailscaleDns
@@ -311,15 +312,15 @@ export async function scanStatus(
           : null;
       progress.tick();
 
-      progress.setLabel("Checking for updates…");
+      progress.setLabel(t("commands.statusScan.checkingUpdates"));
       const update = unwrapDeferredResult(await updatePromise);
       progress.tick();
 
-      progress.setLabel("Resolving agents…");
+      progress.setLabel(t("commands.statusScan.resolvingAgents"));
       const agentStatus = unwrapDeferredResult(await agentStatusPromise);
       progress.tick();
 
-      progress.setLabel("Probing gateway…");
+      progress.setLabel(t("commands.statusScan.probingGateway"));
       const {
         gatewayConnection,
         remoteUrlMissing,
@@ -334,12 +335,12 @@ export async function scanStatus(
         : null;
       progress.tick();
 
-      progress.setLabel("Querying channel status…");
+      progress.setLabel(t("commands.statusScan.queryingChannels"));
       const channelsStatus = await resolveChannelsStatus({ gatewayReachable, opts });
       const channelIssues = channelsStatus ? collectChannelStatusIssues(channelsStatus) : [];
       progress.tick();
 
-      progress.setLabel("Summarizing channels…");
+      progress.setLabel(t("commands.statusScan.summarizingChannels"));
       const channels = await buildChannelsTable(cfg, {
         // Show token previews in regular status; keep `status --all` redacted.
         // Set `CLAWDBOT_SHOW_SECRETS=0` to force redaction.
@@ -347,16 +348,16 @@ export async function scanStatus(
       });
       progress.tick();
 
-      progress.setLabel("Checking memory…");
+      progress.setLabel(t("commands.statusScan.checkingMemory"));
       const memoryPlugin = resolveMemoryPluginStatus(cfg);
       const memory = await resolveMemoryStatusSnapshot({ cfg, agentStatus, memoryPlugin });
       progress.tick();
 
-      progress.setLabel("Reading sessions…");
+      progress.setLabel(t("commands.statusScan.readingSessions"));
       const summary = unwrapDeferredResult(await summaryPromise);
       progress.tick();
 
-      progress.setLabel("Rendering…");
+      progress.setLabel(t("commands.statusScan.rendering"));
       progress.tick();
 
       return {

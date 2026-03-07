@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TAGLINE, pickTagline } from "./tagline.js";
+import { getTaglines } from "../i18n/index.js";
+import { pickTagline } from "./tagline.js";
 
 describe("pickTagline", () => {
   it("returns empty string when mode is off", () => {
@@ -7,7 +8,7 @@ describe("pickTagline", () => {
   });
 
   it("returns default tagline when mode is default", () => {
-    expect(pickTagline({ mode: "default" })).toBe(DEFAULT_TAGLINE);
+    expect(pickTagline({ mode: "default" })).toBe(getTaglines().default);
   });
 
   it("keeps OPENCLAW_TAGLINE_INDEX behavior in random mode", () => {
@@ -16,6 +17,6 @@ describe("pickTagline", () => {
       env: { OPENCLAW_TAGLINE_INDEX: "0" } as NodeJS.ProcessEnv,
     });
     expect(value.length).toBeGreaterThan(0);
-    expect(value).not.toBe(DEFAULT_TAGLINE);
+    expect(value).not.toBe(getTaglines().default);
   });
 });

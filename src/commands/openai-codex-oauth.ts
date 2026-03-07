@@ -1,5 +1,6 @@
 import type { OAuthCredentials } from "@mariozechner/pi-ai";
 import { loginOpenAICodex } from "@mariozechner/pi-ai";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 import { createVpsAwareOAuthHandlers } from "./oauth-flow.js";
@@ -95,26 +96,18 @@ export async function loginOpenAICodexOAuth(params: {
   if (!preflight.ok && preflight.kind === "tls-cert") {
     const hint = formatOpenAIOAuthTlsPreflightFix(preflight);
     runtime.error(hint);
-    await prompter.note(hint, "OAuth prerequisites");
+    await prompter.note(hint, t("commands.openaiCodexOAuth.prerequisites"));
     throw new Error(preflight.message);
   }
 
   await prompter.note(
     isRemote
-      ? [
-          "You are running in a remote/VPS environment.",
-          "A URL will be shown for you to open in your LOCAL browser.",
-          "After signing in, paste the redirect URL back here.",
-        ].join("\n")
-      : [
-          "Browser will open for OpenAI authentication.",
-          "If the callback doesn't auto-complete, paste the redirect URL.",
-          "OpenAI OAuth uses localhost:1455 for the callback.",
-        ].join("\n"),
-    "OpenAI Codex OAuth",
+      ? t("commands.openaiCodexOAuth.remoteNote")
+      : t("commands.openaiCodexOAuth.localNote"),
+    t("commands.openaiCodexOAuth.openaiOAuthTitle"),
   );
 
-  const spin = prompter.progress("Starting OAuth flow…");
+  const spin = prompter.progress(t("commands.openaiCodexOAuth.startingOAuth"));
   try {
     const { onAuth: baseOnAuth, onPrompt } = createVpsAwareOAuthHandlers({
       isRemote,
@@ -122,7 +115,7 @@ export async function loginOpenAICodexOAuth(params: {
       runtime,
       spin,
       openUrl,
-      localBrowserMessage: localBrowserMessage ?? "Complete sign-in in browser…",
+      localBrowserMessage: localBrowserMessage ?? t("commands.authOpenai.browserSignIn"),
     });
     const onAuth = async (event: { url: string }) => {
       await baseOnAuth({
@@ -141,19 +134,19 @@ export async function loginOpenAICodexOAuth(params: {
       if (scopeError) {
         throw new Error(
           [
-            `OpenAI OAuth token is missing required scope: ${OPENAI_RESPONSES_WRITE_SCOPE}.`,
+            t("commands.openaiCodexOAuth.missingScopeError", { scope: OPENAI_RESPONSES_WRITE_SCOPE }),
             `Provider response: ${scopeError}`,
             "Re-authenticate with OpenAI Codex OAuth or use OPENAI_API_KEY with openai/* models.",
           ].join(" "),
         );
       }
     }
-    spin.stop("OpenAI OAuth complete");
+    spin.stop(t("commands.openaiCodexOAuth.oauthComplete"));
     return creds ?? null;
   } catch (err) {
-    spin.stop("OpenAI OAuth failed");
+    spin.stop(t("commands.openaiCodexOAuth.oauthFailed"));
     runtime.error(String(err));
-    await prompter.note("Trouble with OAuth? See https://docs.openclaw.ai/start/faq", "OAuth help");
+    await prompter.note(t("commands.openaiCodexOAuth.troubleOAuth"), t("commands.openaiCodexOAuth.oauthHelp"));
     throw err;
   }
 }

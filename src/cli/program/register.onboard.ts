@@ -12,6 +12,7 @@ import type {
   TailscaleMode,
 } from "../../commands/onboard-types.js";
 import { onboardCommand } from "../../commands/onboard.js";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { formatDocsLink } from "../../terminal/links.js";
 import { theme } from "../../terminal/theme.js";
@@ -49,80 +50,80 @@ const AUTH_CHOICE_HELP = formatAuthChoiceChoicesForCli({
 export function registerOnboardCommand(program: Command) {
   const command = program
     .command("onboard")
-    .description("Interactive wizard to set up the gateway, workspace, and skills")
+    .description(t("cli.onboard.desc"))
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/onboard", "docs.openclaw.ai/cli/onboard")}\n`,
+        `\n${theme.muted(t("helpDocs"))} ${formatDocsLink("/cli/onboard", "docs.openclaw.ai/cli/onboard")}\n`,
     )
-    .option("--workspace <dir>", "Agent workspace directory (default: ~/.openclaw/workspace)")
+    .option("--workspace <dir>", t("cli.onboard.optWorkspace"))
     .option(
       "--reset",
-      "Reset config + credentials + sessions before running wizard (workspace only with --reset-scope full)",
+      t("cli.onboard.optReset"),
     )
-    .option("--reset-scope <scope>", "Reset scope: config|config+creds+sessions|full")
-    .option("--non-interactive", "Run without prompts", false)
+    .option("--reset-scope <scope>", t("cli.onboard.optResetScope"))
+    .option("--non-interactive", t("cli.onboard.optNonInteractive"), false)
     .option(
       "--accept-risk",
-      "Acknowledge that agents are powerful and full system access is risky (required for --non-interactive)",
+      t("cli.onboard.optAcceptRisk"),
       false,
     )
-    .option("--flow <flow>", "Wizard flow: quickstart|advanced|manual")
-    .option("--mode <mode>", "Wizard mode: local|remote")
+    .option("--flow <flow>", t("cli.onboard.optFlow"))
+    .option("--mode <mode>", t("cli.onboard.optMode"))
     .option("--auth-choice <choice>", `Auth: ${AUTH_CHOICE_HELP}`)
     .option(
       "--token-provider <id>",
-      "Token provider id (non-interactive; used with --auth-choice token)",
+      t("cli.onboard.optTokenProvider"),
     )
-    .option("--token <token>", "Token value (non-interactive; used with --auth-choice token)")
+    .option("--token <token>", t("cli.onboard.optToken"))
     .option(
       "--token-profile-id <id>",
-      "Auth profile id (non-interactive; default: <provider>:manual)",
+      t("cli.onboard.optTokenProfileId"),
     )
-    .option("--token-expires-in <duration>", "Optional token expiry duration (e.g. 365d, 12h)")
+    .option("--token-expires-in <duration>", t("cli.onboard.optTokenExpiresIn"))
     .option(
       "--secret-input-mode <mode>",
-      "API key persistence mode: plaintext|ref (default: plaintext)",
+      t("cli.onboard.optSecretInputMode"),
     )
-    .option("--cloudflare-ai-gateway-account-id <id>", "Cloudflare Account ID")
-    .option("--cloudflare-ai-gateway-gateway-id <id>", "Cloudflare AI Gateway ID");
+    .option("--cloudflare-ai-gateway-account-id <id>", t("cli.onboard.optCfAccountId"))
+    .option("--cloudflare-ai-gateway-gateway-id <id>", t("cli.onboard.optCfGatewayId"));
 
   for (const providerFlag of ONBOARD_PROVIDER_AUTH_FLAGS) {
     command.option(providerFlag.cliOption, providerFlag.description);
   }
 
   command
-    .option("--custom-base-url <url>", "Custom provider base URL")
-    .option("--custom-api-key <key>", "Custom provider API key (optional)")
-    .option("--custom-model-id <id>", "Custom provider model ID")
-    .option("--custom-provider-id <id>", "Custom provider ID (optional; auto-derived by default)")
+    .option("--custom-base-url <url>", t("cli.onboard.optCustomBaseUrl"))
+    .option("--custom-api-key <key>", t("cli.onboard.optCustomApiKey"))
+    .option("--custom-model-id <id>", t("cli.onboard.optCustomModelId"))
+    .option("--custom-provider-id <id>", t("cli.onboard.optCustomProviderId"))
     .option(
       "--custom-compatibility <mode>",
-      "Custom provider API compatibility: openai|anthropic (default: openai)",
+      t("cli.onboard.optCustomCompatibility"),
     )
-    .option("--gateway-port <port>", "Gateway port")
-    .option("--gateway-bind <mode>", "Gateway bind: loopback|tailnet|lan|auto|custom")
-    .option("--gateway-auth <mode>", "Gateway auth: token|password")
-    .option("--gateway-token <token>", "Gateway token (token auth)")
+    .option("--gateway-port <port>", t("cli.onboard.optGatewayPort"))
+    .option("--gateway-bind <mode>", t("cli.onboard.optGatewayBind"))
+    .option("--gateway-auth <mode>", t("cli.onboard.optGatewayAuth"))
+    .option("--gateway-token <token>", t("cli.onboard.optGatewayToken"))
     .option(
       "--gateway-token-ref-env <name>",
-      "Gateway token SecretRef env var name (token auth; e.g. OPENCLAW_GATEWAY_TOKEN)",
+      t("cli.onboard.optGatewayTokenRefEnv"),
     )
-    .option("--gateway-password <password>", "Gateway password (password auth)")
-    .option("--remote-url <url>", "Remote Gateway WebSocket URL")
-    .option("--remote-token <token>", "Remote Gateway token (optional)")
-    .option("--tailscale <mode>", "Tailscale: off|serve|funnel")
-    .option("--tailscale-reset-on-exit", "Reset tailscale serve/funnel on exit")
-    .option("--install-daemon", "Install gateway service")
-    .option("--no-install-daemon", "Skip gateway service install")
-    .option("--skip-daemon", "Skip gateway service install")
-    .option("--daemon-runtime <runtime>", "Daemon runtime: node|bun")
-    .option("--skip-channels", "Skip channel setup")
-    .option("--skip-skills", "Skip skills setup")
-    .option("--skip-health", "Skip health check")
-    .option("--skip-ui", "Skip Control UI/TUI prompts")
-    .option("--node-manager <name>", "Node manager for skills: npm|pnpm|bun")
-    .option("--json", "Output JSON summary", false);
+    .option("--gateway-password <password>", t("cli.onboard.optGatewayPassword"))
+    .option("--remote-url <url>", t("cli.onboard.optRemoteUrl"))
+    .option("--remote-token <token>", t("cli.onboard.optRemoteToken"))
+    .option("--tailscale <mode>", t("cli.onboard.optTailscale"))
+    .option("--tailscale-reset-on-exit", t("cli.onboard.optTailscaleReset"))
+    .option("--install-daemon", t("cli.onboard.optInstallDaemon"))
+    .option("--no-install-daemon", t("cli.onboard.optNoInstallDaemon"))
+    .option("--skip-daemon", t("cli.onboard.optSkipDaemon"))
+    .option("--daemon-runtime <runtime>", t("cli.onboard.optDaemonRuntime"))
+    .option("--skip-channels", t("cli.onboard.optSkipChannels"))
+    .option("--skip-skills", t("cli.onboard.optSkipSkills"))
+    .option("--skip-health", t("cli.onboard.optSkipHealth"))
+    .option("--skip-ui", t("cli.onboard.optSkipUi"))
+    .option("--node-manager <name>", t("cli.onboard.optNodeManager"))
+    .option("--json", t("cli.onboard.optJson"), false);
 
   command.action(async (opts, commandRuntime) => {
     await runCommandWithRuntime(defaultRuntime, async () => {

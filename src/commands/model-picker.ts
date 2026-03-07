@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js";
 import { ensureAuthProfileStore, listProfilesForProvider } from "../agents/auth-profiles.js";
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from "../agents/defaults.js";
 import { getCustomProviderApiKey, resolveEnvApiKey } from "../agents/model-auth.js";
@@ -131,14 +132,14 @@ function addModelSelectOption(params: {
     hints.push(`ctx ${formatTokenK(params.entry.contextWindow)}`);
   }
   if (params.entry.reasoning) {
-    hints.push("reasoning");
+    hints.push(t("modelPicker.reasoning"));
   }
   const aliases = params.aliasIndex.byKey.get(key);
   if (aliases?.length) {
     hints.push(`alias: ${aliases.join(", ")}`);
   }
   if (!params.hasAuth(params.entry.provider)) {
-    hints.push("auth missing");
+    hints.push(t("modelPicker.authMissing"));
   }
   params.options.push({
     value: key,
@@ -162,10 +163,10 @@ async function promptManualModel(params: {
   initialValue?: string;
 }): Promise<PromptDefaultModelResult> {
   const modelInput = await params.prompter.text({
-    message: params.allowBlank ? "Default model (blank to keep)" : "Default model",
+    message: params.allowBlank ? t("modelPicker.defaultModelBlank") : t("modelPicker.defaultModel"),
     initialValue: params.initialValue,
-    placeholder: "provider/model",
-    validate: params.allowBlank ? undefined : (value) => (value?.trim() ? undefined : "Required"),
+    placeholder: t("modelPicker.placeholderModel"),
+    validate: params.allowBlank ? undefined : (value) => (value?.trim() ? undefined : t("modelPicker.required")),
   });
   const model = String(modelInput ?? "").trim();
   if (!model) {
@@ -236,9 +237,9 @@ export async function promptDefaultModel(
     !hasPreferredProvider && providers.length > 1 && models.length > PROVIDER_FILTER_THRESHOLD;
   if (shouldPromptProvider) {
     const selection = await params.prompter.select({
-      message: "Filter models by provider",
+      message: t("modelPicker.filterByProvider"),
       options: [
-        { value: "*", label: "All providers" },
+        { value: "*", label: t("modelPicker.allProviders") },
         ...providers.map((provider) => {
           const count = models.filter((entry) => entry.provider === provider).length;
           return {
@@ -277,20 +278,20 @@ export async function promptDefaultModel(
     options.push({
       value: KEEP_VALUE,
       label: configuredRaw
-        ? `Keep current (${configuredRaw})`
-        : `Keep current (default: ${resolvedKey})`,
+        ? t("modelPicker.keepCurrent", { model: configuredRaw })
+        : t("modelPicker.keepCurrentDefault", { model: resolvedKey }),
       hint:
-        configuredRaw && configuredRaw !== resolvedKey ? `resolves to ${resolvedKey}` : undefined,
+        configuredRaw && configuredRaw !== resolvedKey ? t("modelPicker.resolvesTo", { model: resolvedKey }) : undefined,
     });
   }
   if (includeManual) {
-    options.push({ value: MANUAL_VALUE, label: "Enter model manually" });
+    options.push({ value: MANUAL_VALUE, label: t("modelPicker.enterManually") });
   }
   if (includeVllm && agentDir) {
     options.push({
       value: VLLM_VALUE,
-      label: "vLLM (custom)",
-      hint: "Enter vLLM URL + API key + model",
+      label: t("modelPicker.vllmCustom"),
+      hint: t("modelPicker.vllmHint"),
     });
   }
 
@@ -304,7 +305,7 @@ export async function promptDefaultModel(
     options.push({
       value: configuredKey,
       label: configuredKey,
-      hint: "current (not in catalog)",
+      hint: t("modelPicker.currentNotInCatalog"),
     });
   }
 
@@ -322,7 +323,7 @@ export async function promptDefaultModel(
   }
 
   const selection = await params.prompter.select({
-    message: params.message ?? "Default model",
+    message: params.message ?? t("modelPicker.defaultModel"),
     options,
     initialValue,
   });
@@ -340,8 +341,8 @@ export async function promptDefaultModel(
   if (selection === VLLM_VALUE) {
     if (!agentDir) {
       await params.prompter.note(
-        "vLLM setup requires an agent directory context.",
-        "vLLM not available",
+        t("modelPicker.vllmRequiresAgent"),
+        t("modelPicker.vllmNotAvailable"),
       );
       return {};
     }
@@ -388,7 +389,7 @@ export async function promptModelAllowlist(params: {
     const raw = await params.prompter.text({
       message:
         params.message ??
-        "Allowlist models (comma-separated provider/model; blank to keep current)",
+        t("modelPicker.allowlistMessage"),
       initialValue: existingKeys.join(", "),
       placeholder: `${OPENAI_CODEX_DEFAULT_MODEL}, anthropic/claude-opus-4-6`,
     });
@@ -427,7 +428,7 @@ export async function promptModelAllowlist(params: {
     options.push({
       value: key,
       label: key,
-      hint: allowedKeySet ? "allowed (not in catalog)" : "configured (not in catalog)",
+      hint: allowedKeySet ? t("modelPicker.allowedNotInCatalog") : t("modelPicker.configuredNotInCatalog"),
     });
     seen.add(key);
   }
@@ -437,7 +438,7 @@ export async function promptModelAllowlist(params: {
   }
 
   const selection = await params.prompter.multiselect({
-    message: params.message ?? "Models in /model picker (multi-select)",
+    message: params.message ?? t("modelPicker.modelsMultiselect"),
     options,
     initialValues: initialKeys.length > 0 ? initialKeys : undefined,
     searchable: true,
@@ -450,7 +451,7 @@ export async function promptModelAllowlist(params: {
     return { models: [] };
   }
   const confirmClear = await params.prompter.confirm({
-    message: "Clear the model allowlist? (shows all models)",
+    message: t("modelPicker.clearAllowlist"),
     initialValue: false,
   });
   if (!confirmClear) {

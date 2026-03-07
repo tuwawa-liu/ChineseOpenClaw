@@ -10,6 +10,7 @@ import {
 } from "@mariozechner/pi-tui";
 import { resolveDefaultAgentId } from "../agents/agent-scope.js";
 import { loadConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import {
   buildAgentMainSessionKey,
   normalizeAgentId,
@@ -216,15 +217,14 @@ export function resolveGatewayDisconnectState(reason?: string): {
   const reasonLabel = reason?.trim() ? reason.trim() : "closed";
   if (/pairing required/i.test(reasonLabel)) {
     return {
-      connectionStatus: `gateway disconnected: ${reasonLabel}`,
-      activityStatus: "pairing required: run openclaw devices list",
-      pairingHint:
-        "Pairing required. Run `openclaw devices list`, approve your request ID, then reconnect.",
+      connectionStatus: t("tuiMain.disconnected", { reason: reasonLabel }),
+      activityStatus: t("tuiMain.pairingActivity"),
+      pairingHint: t("tuiMain.pairingHint"),
     };
   }
   return {
-    connectionStatus: `gateway disconnected: ${reasonLabel}`,
-    activityStatus: "idle",
+    connectionStatus: t("tuiMain.disconnected", { reason: reasonLabel }),
+    activityStatus: t("tuiMain.idle"),
   };
 }
 
@@ -325,7 +325,7 @@ export async function runTui(opts: TuiOptions) {
   let lastCtrlCAt = 0;
   let exitRequested = false;
   let activityStatus = "idle";
-  let connectionStatus = "connecting";
+  let connectionStatus = t("tuiMain.connecting");
   let statusTimeout: NodeJS.Timeout | null = null;
   let statusTimer: NodeJS.Timeout | null = null;
   let statusStartedAt: number | null = null;
@@ -543,7 +543,7 @@ export async function runTui(opts: TuiOptions) {
     const agentLabel = formatAgentLabel(currentAgentId);
     header.setText(
       theme.header(
-        `openclaw tui - ${client.connection.url} - agent ${agentLabel} - session ${sessionLabel}`,
+        t("tuiMain.headerTemplate", { url: client.connection.url, agent: agentLabel, session: sessionLabel }),
       ),
     );
   };
@@ -612,7 +612,7 @@ export async function runTui(opts: TuiOptions) {
       return;
     }
 
-    statusLoader.setMessage(`${activityStatus} • ${elapsed} | ${connectionStatus}`);
+    statusLoader.setMessage(t("tuiMain.statusFormat", { activity: activityStatus, elapsed, connection: connectionStatus }));
   };
 
   const startStatusTimer = () => {
@@ -643,7 +643,7 @@ export async function runTui(opts: TuiOptions) {
     // Pick a phrase once per waiting session.
     if (!waitingPhrase) {
       const idx = Math.floor(Math.random() * defaultWaitingPhrases.length);
-      waitingPhrase = defaultWaitingPhrases[idx] ?? defaultWaitingPhrases[0] ?? "waiting";
+      waitingPhrase = defaultWaitingPhrases[idx] ?? defaultWaitingPhrases[0] ?? t("tuiWait.fallback");
     }
 
     waitingTick = 0;
@@ -701,7 +701,7 @@ export async function runTui(opts: TuiOptions) {
     }
     if (ttlMs && ttlMs > 0) {
       statusTimeout = setTimeout(() => {
-        connectionStatus = isConnected ? "connected" : "disconnected";
+        connectionStatus = isConnected ? t("tuiMain.connected") : t("tuiMain.disconnectedLabel");
         renderStatus();
       }, ttlMs);
     }
@@ -722,19 +722,19 @@ export async function runTui(opts: TuiOptions) {
       ? sessionInfo.modelProvider
         ? `${sessionInfo.modelProvider}/${sessionInfo.model}`
         : sessionInfo.model
-      : "unknown";
+      : t("tuiMain.unknown");
     const tokens = formatTokens(sessionInfo.totalTokens ?? null, sessionInfo.contextTokens ?? null);
     const think = sessionInfo.thinkingLevel ?? "off";
     const verbose = sessionInfo.verboseLevel ?? "off";
     const reasoning = sessionInfo.reasoningLevel ?? "off";
     const reasoningLabel =
-      reasoning === "on" ? "reasoning" : reasoning === "stream" ? "reasoning:stream" : null;
+      reasoning === "on" ? t("tuiMain.reasoning") : reasoning === "stream" ? t("tuiMain.reasoningStream") : null;
     const footerParts = [
-      `agent ${agentLabel}`,
-      `session ${sessionLabel}`,
+      t("tuiMain.footerAgent", { label: agentLabel }),
+      t("tuiMain.footerSession", { label: sessionLabel }),
       modelLabel,
-      think !== "off" ? `think ${think}` : null,
-      verbose !== "off" ? `verbose ${verbose}` : null,
+      think !== "off" ? t("tuiMain.footerThink", { level: think }) : null,
+      verbose !== "off" ? t("tuiMain.footerVerbose", { level: verbose }) : null,
       reasoningLabel,
       tokens,
     ].filter(Boolean);
@@ -852,7 +852,7 @@ export async function runTui(opts: TuiOptions) {
     lastCtrlCAt = decision.nextLastCtrlCAt;
     if (decision.action === "clear") {
       editor.setText("");
-      setActivityStatus("cleared input; press ctrl+c again to exit");
+      setActivityStatus(t("tuiMain.clearInput"));
       tui.requestRender();
       return;
     }
@@ -860,7 +860,7 @@ export async function runTui(opts: TuiOptions) {
       requestExit();
       return;
     }
-    setActivityStatus("press ctrl+c again to exit");
+    setActivityStatus(t("tuiMain.pressCtrlC"));
     tui.requestRender();
   };
   editor.onCtrlC = () => {
@@ -872,7 +872,7 @@ export async function runTui(opts: TuiOptions) {
   editor.onCtrlO = () => {
     toolsExpanded = !toolsExpanded;
     chatLog.setToolsExpanded(toolsExpanded);
-    setActivityStatus(toolsExpanded ? "tools expanded" : "tools collapsed");
+    setActivityStatus(toolsExpanded ? t("tuiMain.toolsExpanded") : t("tuiMain.toolsCollapsed"));
     tui.requestRender();
   };
   editor.onCtrlL = () => {
@@ -903,12 +903,12 @@ export async function runTui(opts: TuiOptions) {
     pairingHintShown = false;
     const reconnected = wasDisconnected;
     wasDisconnected = false;
-    setConnectionStatus("connected");
+    setConnectionStatus(t("tuiMain.connected"));
     void (async () => {
       await refreshAgents();
       updateHeader();
       await loadHistory();
-      setConnectionStatus(reconnected ? "gateway reconnected" : "gateway connected", 4000);
+      setConnectionStatus(reconnected ? t("tuiMain.gtwReconnected") : t("tuiMain.gtwConnected"), 4000);
       tui.requestRender();
       if (!autoMessageSent && autoMessage) {
         autoMessageSent = true;
@@ -935,12 +935,12 @@ export async function runTui(opts: TuiOptions) {
   };
 
   client.onGap = (info) => {
-    setConnectionStatus(`event gap: expected ${info.expected}, got ${info.received}`, 5000);
+    setConnectionStatus(t("tuiMain.eventGap", { expected: String(info.expected), received: String(info.received) }), 5000);
     tui.requestRender();
   };
 
   updateHeader();
-  setConnectionStatus("connecting");
+  setConnectionStatus(t("tuiMain.connecting"));
   updateFooter();
   const sigintHandler = () => {
     handleCtrlC();

@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { t } from "../i18n/index.js";
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../agents/agent-scope.js";
 import { identityHasValues, parseIdentityMarkdown } from "../agents/identity-file.js";
 import { DEFAULT_IDENTITY_FILENAME } from "../agents/workspace.js";
@@ -100,21 +101,21 @@ export async function agentsSetIdentityCommand(
   let agentId = agentRaw ? normalizeAgentId(agentRaw) : undefined;
   if (!agentId) {
     if (!workspaceDir) {
-      runtime.error("Select an agent with --agent or provide a workspace via --workspace.");
+      runtime.error(t("commands.agentsIdentity.selectAgent"));
       runtime.exit(1);
       return;
     }
     const matches = resolveAgentIdByWorkspace(cfg, workspaceDir);
     if (matches.length === 0) {
       runtime.error(
-        `No agent workspace matches ${shortenHomePath(workspaceDir)}. Pass --agent to target a specific agent.`,
+        t("commands.agentsIdentity.noMatch", { workspace: shortenHomePath(workspaceDir) }),
       );
       runtime.exit(1);
       return;
     }
     if (matches.length > 1) {
       runtime.error(
-        `Multiple agents match ${shortenHomePath(workspaceDir)}: ${matches.join(", ")}. Pass --agent to choose one.`,
+        t("commands.agentsIdentity.multipleMatch", { workspace: shortenHomePath(workspaceDir), agents: matches.join(", ") }),
       );
       runtime.exit(1);
       return;
@@ -133,7 +134,7 @@ export async function agentsSetIdentityCommand(
       const targetPath =
         identityFilePath ??
         (workspaceDir ? path.join(workspaceDir, DEFAULT_IDENTITY_FILENAME) : "IDENTITY.md");
-      runtime.error(`No identity data found in ${shortenHomePath(targetPath)}.`);
+      runtime.error(t("commands.agentsIdentity.noIdentityData", { path: shortenHomePath(targetPath) }));
       runtime.exit(1);
       return;
     }
@@ -157,7 +158,7 @@ export async function agentsSetIdentityCommand(
     !incomingIdentity.avatar
   ) {
     runtime.error(
-      "No identity fields provided. Use --name/--emoji/--theme/--avatar or --from-identity.",
+      t("commands.agentsIdentity.noIdentityFields"),
     );
     runtime.exit(1);
     return;
@@ -214,20 +215,20 @@ export async function agentsSetIdentityCommand(
   }
 
   logConfigUpdated(runtime);
-  runtime.log(`Agent: ${agentId}`);
+  runtime.log(`${t("commands.agentsIdentity.agentLabel")} ${agentId}`);
   if (nextIdentity.name) {
-    runtime.log(`Name: ${nextIdentity.name}`);
+    runtime.log(`${t("commands.agentsIdentity.nameLabel")} ${nextIdentity.name}`);
   }
   if (nextIdentity.theme) {
-    runtime.log(`Theme: ${nextIdentity.theme}`);
+    runtime.log(`${t("commands.agentsIdentity.themeLabel")} ${nextIdentity.theme}`);
   }
   if (nextIdentity.emoji) {
-    runtime.log(`Emoji: ${nextIdentity.emoji}`);
+    runtime.log(`${t("commands.agentsIdentity.emojiLabel")} ${nextIdentity.emoji}`);
   }
   if (nextIdentity.avatar) {
-    runtime.log(`Avatar: ${nextIdentity.avatar}`);
+    runtime.log(`${t("commands.agentsIdentity.avatarLabel")} ${nextIdentity.avatar}`);
   }
   if (workspaceDir) {
-    runtime.log(`Workspace: ${shortenHomePath(workspaceDir)}`);
+    runtime.log(`${t("commands.agentsIdentity.workspaceLabel")} ${shortenHomePath(workspaceDir)}`);
   }
 }

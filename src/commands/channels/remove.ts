@@ -5,6 +5,7 @@ import {
   normalizeChannelId,
 } from "../../channels/plugins/index.js";
 import { type OpenClawConfig, writeConfigFile } from "../../config/config.js";
+import { t } from "../../i18n/index.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../../routing/session-key.js";
 import { defaultRuntime, type RuntimeEnv } from "../../runtime.js";
 import { deleteTelegramUpdateOffset } from "../../telegram/update-offset-store.js";
@@ -42,9 +43,9 @@ export async function channelsRemoveCommand(
   const deleteConfig = Boolean(opts.delete);
 
   if (useWizard && prompter) {
-    await prompter.intro("Remove channel account");
+    await prompter.intro(t("commands.channelsRemove.removeChannelAccount"));
     const selectedChannel = await prompter.select({
-      message: "Channel",
+      message: t("commands.channelsRemove.channel"),
       options: listChannelPlugins().map((plugin) => ({
         value: plugin.id,
         label: plugin.meta.label,
@@ -55,10 +56,10 @@ export async function channelsRemoveCommand(
     accountId = await (async () => {
       const ids = listAccountIds(cfg, selectedChannel);
       const choice = await prompter.select({
-        message: "Account",
+        message: t("commands.channelsRemove.account"),
         options: ids.map((id) => ({
           value: id,
-          label: id === DEFAULT_ACCOUNT_ID ? "default (primary)" : id,
+          label: id === DEFAULT_ACCOUNT_ID ? t("commands.channelsRemove.defaultPrimary") : id,
         })),
         initialValue: ids[0] ?? DEFAULT_ACCOUNT_ID,
       });
@@ -66,23 +67,23 @@ export async function channelsRemoveCommand(
     })();
 
     const wantsDisable = await prompter.confirm({
-      message: `Disable ${channelLabel(selectedChannel)} account "${accountId}"? (keeps config)`,
+      message: t("commands.channelsRemove.disableConfirm", { label: channelLabel(selectedChannel), accountId }),
       initialValue: true,
     });
     if (!wantsDisable) {
-      await prompter.outro("Cancelled.");
+      await prompter.outro(t("commands.channelsRemove.cancelled"));
       return;
     }
   } else {
     if (!channel) {
-      runtime.error("Channel is required. Use --channel <name>.");
+      runtime.error(t("commands.channelsRemove.channelRequired"));
       runtime.exit(1);
       return;
     }
     if (!deleteConfig) {
       const confirm = createClackPrompter();
       const ok = await confirm.confirm({
-        message: `Disable ${channelLabel(channel)} account "${accountId}"? (keeps config)`,
+        message: t("commands.channelsRemove.disableConfirm", { label: channelLabel(channel), accountId }),
         initialValue: true,
       });
       if (!ok) {
@@ -93,7 +94,7 @@ export async function channelsRemoveCommand(
 
   const plugin = getChannelPlugin(channel);
   if (!plugin) {
-    runtime.error(`Unknown channel: ${channel}`);
+    runtime.error(t("commands.channelsRemove.unknownChannel", { channel }));
     runtime.exit(1);
     return;
   }
@@ -105,7 +106,7 @@ export async function channelsRemoveCommand(
   let next = { ...cfg };
   if (deleteConfig) {
     if (!plugin.config.deleteAccount) {
-      runtime.error(`Channel ${channel} does not support delete.`);
+      runtime.error(t("commands.channelsRemove.noSupportDelete", { channel }));
       runtime.exit(1);
       return;
     }
@@ -120,7 +121,7 @@ export async function channelsRemoveCommand(
     }
   } else {
     if (!plugin.config.setAccountEnabled) {
-      runtime.error(`Channel ${channel} does not support disable.`);
+      runtime.error(t("commands.channelsRemove.noSupportDisable", { channel }));
       runtime.exit(1);
       return;
     }
@@ -135,14 +136,14 @@ export async function channelsRemoveCommand(
   if (useWizard && prompter) {
     await prompter.outro(
       deleteConfig
-        ? `Deleted ${channelLabel(channel)} account "${accountKey}".`
-        : `Disabled ${channelLabel(channel)} account "${accountKey}".`,
+        ? t("commands.channelsRemove.deleted", { label: channelLabel(channel), accountKey })
+        : t("commands.channelsRemove.disabled", { label: channelLabel(channel), accountKey }),
     );
   } else {
     runtime.log(
       deleteConfig
-        ? `Deleted ${channelLabel(channel)} account "${accountKey}".`
-        : `Disabled ${channelLabel(channel)} account "${accountKey}".`,
+        ? t("commands.channelsRemove.deleted", { label: channelLabel(channel), accountKey })
+        : t("commands.channelsRemove.disabled", { label: channelLabel(channel), accountKey }),
     );
   }
 }

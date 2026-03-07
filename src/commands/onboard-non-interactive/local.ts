@@ -18,6 +18,7 @@ import { applyNonInteractiveGatewayConfig } from "./local/gateway-config.js";
 import { logNonInteractiveOnboardingJson } from "./local/output.js";
 import { applyNonInteractiveSkillsConfig } from "./local/skills-config.js";
 import { resolveNonInteractiveWorkspaceDir } from "./local/workspace.js";
+import { t } from "../../i18n/index.js";
 
 export async function runNonInteractiveOnboardingLocal(params: {
   opts: OnboardOptions;
@@ -39,8 +40,8 @@ export async function runNonInteractiveOnboardingLocal(params: {
   if (!opts.authChoice && inferredAuthChoice.matches.length > 1) {
     runtime.error(
       [
-        "Multiple API key flags were provided for non-interactive onboarding.",
-        "Use a single provider flag or pass --auth-choice explicitly.",
+        t("commands.onboardNonInteractiveLocal.multipleApiKeys"),
+        t("commands.onboardNonInteractiveLocal.useSingleFlag"),
         `Flags: ${inferredAuthChoice.matches.map((match) => match.label).join(", ")}`,
       ].join("\n"),
     );
@@ -132,7 +133,7 @@ export async function runNonInteractiveOnboardingLocal(params: {
 
   if (!opts.json) {
     runtime.log(
-      `Tip: run \`${formatCliCommand("openclaw configure --section web")}\` to store your Brave API key for web_search. Docs: https://docs.openclaw.ai/tools/web`,
+      t("commands.onboardNonInteractiveLocal.tipWebSearch", { command: formatCliCommand("openclaw configure --section web") }),
     );
   }
 }

@@ -3,6 +3,7 @@ import {
   CONFIGURE_WIZARD_SECTIONS,
   configureCommandFromSectionsArg,
 } from "../../commands/configure.js";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { formatDocsLink } from "../../terminal/links.js";
 import { theme } from "../../terminal/theme.js";
@@ -11,15 +12,15 @@ import { runCommandWithRuntime } from "../cli-utils.js";
 export function registerConfigureCommand(program: Command) {
   program
     .command("configure")
-    .description("Interactive setup wizard for credentials, channels, gateway, and agent defaults")
+    .description(t("cli.configure.desc"))
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/configure", "docs.openclaw.ai/cli/configure")}\n`,
+        `\n${theme.muted(t("helpDocs"))} ${formatDocsLink("/cli/configure", "docs.openclaw.ai/cli/configure")}\n`,
     )
     .option(
       "--section <section>",
-      `Configuration sections (repeatable). Options: ${CONFIGURE_WIZARD_SECTIONS.join(", ")}`,
+      `${t("cli.configure.optSection")} ${CONFIGURE_WIZARD_SECTIONS.join(", ")}`,
       (value: string, previous: string[]) => [...previous, value],
       [] as string[],
     )

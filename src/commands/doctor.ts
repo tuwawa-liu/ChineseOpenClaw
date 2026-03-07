@@ -17,6 +17,7 @@ import { resolveGatewayService } from "../daemon/service.js";
 import { hasAmbiguousGatewayAuthModeConfig } from "../gateway/auth-mode-policy.js";
 import { resolveGatewayAuth } from "../gateway/auth.js";
 import { buildGatewayConnectionDetails } from "../gateway/call.js";
+import { t } from "../i18n/index.js";
 import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -75,7 +76,7 @@ export async function doctorCommand(
 ) {
   const prompter = createDoctorPrompter({ runtime, options });
   printWizardHeader(runtime);
-  intro("OpenClaw doctor");
+  intro(t("commands.doctor.intro"));
 
   const root = await resolveOpenClawPackageRoot({
     moduleUrl: import.meta.url,
@@ -110,24 +111,24 @@ export async function doctorCommand(
   const configPath = configResult.path ?? CONFIG_PATH;
   if (!cfg.gateway?.mode) {
     const lines = [
-      "gateway.mode is unset; gateway start will be blocked.",
-      `Fix: run ${formatCliCommand("openclaw configure")} and set Gateway mode (local/remote).`,
-      `Or set directly: ${formatCliCommand("openclaw config set gateway.mode local")}`,
+      t("commands.doctor.gatewayModeUnset"),
+      t("commands.doctor.gatewayModeFixRun", { cmd: formatCliCommand("openclaw configure") }),
+      t("commands.doctor.gatewayModeFixSet", { example: formatCliCommand("openclaw config set gateway.mode local") }),
     ];
     if (!fs.existsSync(configPath)) {
-      lines.push(`Missing config: run ${formatCliCommand("openclaw setup")} first.`);
+      lines.push(t("commands.doctor.gatewayMissingConfig", { cmd: formatCliCommand("openclaw setup") }));
     }
-    note(lines.join("\n"), "Gateway");
+    note(lines.join("\n"), t("commands.doctor.gatewayTitle"));
   }
   if (resolveMode(cfg) === "local" && hasAmbiguousGatewayAuthModeConfig(cfg)) {
     note(
       [
-        "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
-        "Set an explicit mode to avoid ambiguous auth selection and startup/runtime failures.",
+        t("commands.doctor.authConflict"),
+        t("commands.doctor.authConflictFix"),
         `Set token mode: ${formatCliCommand("openclaw config set gateway.auth.mode token")}`,
         `Set password mode: ${formatCliCommand("openclaw config set gateway.auth.mode password")}`,
       ].join("\n"),
-      "Gateway auth",
+      t("commands.doctor.gatewayAuthTitle"),
     );
   }
 
@@ -140,7 +141,7 @@ export async function doctorCommand(
   });
   const gatewayDetails = buildGatewayConnectionDetails({ config: cfg });
   if (gatewayDetails.remoteFallbackNote) {
-    note(gatewayDetails.remoteFallbackNote, "Gateway");
+    note(gatewayDetails.remoteFallbackNote, t("commands.doctor.gatewayTitle"));
   }
   if (resolveMode(cfg) === "local" && sourceConfigValid) {
     const gatewayTokenRef = resolveSecretInputRef({
@@ -156,16 +157,16 @@ export async function doctorCommand(
       if (gatewayTokenRef) {
         note(
           [
-            "Gateway token is managed via SecretRef and is currently unavailable.",
+            t("commands.doctor.tokenUnavailable"),
             "Doctor will not overwrite gateway.auth.token with a plaintext value.",
-            "Resolve/rotate the external secret source, then rerun doctor.",
+            t("commands.doctor.tokenUnavailableFix"),
           ].join("\n"),
-          "Gateway auth",
+          t("commands.doctor.gatewayAuthTitle"),
         );
       } else {
         note(
-          "Gateway auth is off or missing a token. Token auth is now the recommended default (including loopback).",
-          "Gateway auth",
+          t("commands.doctor.authMissing"),
+          t("commands.doctor.gatewayAuthTitle"),
         );
         const shouldSetToken =
           options.generateGatewayToken === true
@@ -173,7 +174,7 @@ export async function doctorCommand(
             : options.nonInteractive === true
               ? false
               : await prompter.confirmRepair({
-                  message: "Generate and configure a gateway token now?",
+                  message: t("commands.doctor.generateTokenConfirm"),
                   initialValue: true,
                 });
         if (shouldSetToken) {
@@ -189,7 +190,7 @@ export async function doctorCommand(
               },
             },
           };
-          note("Gateway token configured.", "Gateway auth");
+          note(t("commands.doctor.tokenConfigured"), t("commands.doctor.gatewayAuthTitle"));
         }
       }
     }
@@ -197,12 +198,12 @@ export async function doctorCommand(
 
   const legacyState = await detectLegacyStateMigrations({ cfg });
   if (legacyState.preview.length > 0) {
-    note(legacyState.preview.join("\n"), "Legacy state detected");
+    note(legacyState.preview.join("\n"), t("commands.doctor.legacyTitle"));
     const migrate =
       options.nonInteractive === true
         ? true
         : await prompter.confirm({
-            message: "Migrate legacy state (sessions/agent/WhatsApp auth) now?",
+            message: t("commands.doctor.migrateConfirm"),
             initialValue: true,
           });
     if (migrate) {
@@ -210,10 +211,10 @@ export async function doctorCommand(
         detected: legacyState,
       });
       if (migrated.changes.length > 0) {
-        note(migrated.changes.join("\n"), "Doctor changes");
+        note(migrated.changes.join("\n"), t("commands.doctor.changesTitle"));
       }
       if (migrated.warnings.length > 0) {
-        note(migrated.warnings.join("\n"), "Doctor warnings");
+        note(migrated.warnings.join("\n"), t("commands.doctor.warningsTitle"));
       }
     }
   }
@@ -241,7 +242,7 @@ export async function doctorCommand(
       defaultProvider: DEFAULT_PROVIDER,
     });
     if (!hooksModelRef) {
-      note(`- hooks.gmail.model "${cfg.hooks.gmail.model}" could not be resolved`, "Hooks");
+      note(`- hooks.gmail.model "${cfg.hooks.gmail.model}" could not be resolved`, t("commands.doctor.hooksTitle"));
     } else {
       const { provider: defaultProvider, model: defaultModel } = resolveConfiguredModelRef({
         cfg,
@@ -268,7 +269,7 @@ export async function doctorCommand(
         );
       }
       if (warnings.length > 0) {
-        note(warnings.join("\n"), "Hooks");
+        note(warnings.join("\n"), t("commands.doctor.hooksTitle"));
       }
     }
   }
@@ -293,7 +294,7 @@ export async function doctorCommand(
           note,
         },
         reason:
-          "Gateway runs as a systemd user service. Without lingering, systemd stops the user session on logout/idle and kills the Gateway.",
+          t("commands.doctor.systemdNote"),
         requireConfirm: true,
       });
     }
@@ -339,25 +340,25 @@ export async function doctorCommand(
       runtime.log(`Backup: ${shortenHomePath(backupPath)}`);
     }
   } else if (!prompter.shouldRepair) {
-    runtime.log(`Run "${formatCliCommand("openclaw doctor --fix")}" to apply changes.`);
+    runtime.log(t("commands.doctor.fixHint", { cmd: formatCliCommand("openclaw doctor --fix") }));
   }
 
   if (options.workspaceSuggestions !== false) {
     const workspaceDir = resolveAgentWorkspaceDir(cfg, resolveDefaultAgentId(cfg));
     noteWorkspaceBackupTip(workspaceDir);
     if (await shouldSuggestMemorySystem(workspaceDir)) {
-      note(MEMORY_SYSTEM_PROMPT, "Workspace");
+      note(MEMORY_SYSTEM_PROMPT, t("commands.doctor.workspaceTitle"));
     }
   }
 
   const finalSnapshot = await readConfigFileSnapshot();
   if (finalSnapshot.exists && !finalSnapshot.valid) {
-    runtime.error("Invalid config:");
+    runtime.error(t("commands.doctor.invalidConfigLabel"));
     for (const issue of finalSnapshot.issues) {
       const path = issue.path || "<root>";
-      runtime.error(`- ${path}: ${issue.message}`);
+      runtime.error(t("commands.doctor.invalidConfigItem", { path, message: issue.message }));
     }
   }
 
-  outro("Doctor complete.");
+  outro(t("commands.doctor.complete"));
 }

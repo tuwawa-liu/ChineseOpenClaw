@@ -4,6 +4,7 @@ import { loadConfig } from "../config/config.js";
 import { loadSessionStore, resolveFreshSessionTotalTokens } from "../config/sessions.js";
 import { classifySessionKey } from "../gateway/session-utils.js";
 import { info } from "../globals.js";
+import { t } from "../i18n/index.js";
 import { parseAgentSessionKey } from "../routing/session-key.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { isRich, theme } from "../terminal/theme.js";
@@ -112,7 +113,7 @@ export async function sessionsCommand(
   if (opts.active !== undefined) {
     const parsed = Number.parseInt(String(opts.active), 10);
     if (Number.isNaN(parsed) || parsed <= 0) {
-      runtime.error("--active must be a positive integer (minutes)");
+      runtime.error(t("commands.sessions.activeError"));
       runtime.exit(1);
       return;
     }
@@ -176,31 +177,31 @@ export async function sessionsCommand(
   }
 
   if (targets.length === 1 && !aggregateAgents) {
-    runtime.log(info(`Session store: ${targets[0]?.storePath}`));
+    runtime.log(info(t("commands.sessions.sessionStore", { path: targets[0]?.storePath })));
   } else {
     runtime.log(
-      info(`Session stores: ${targets.length} (${targets.map((t) => t.agentId).join(", ")})`),
+      info(t("commands.sessions.sessionStores", { count: String(targets.length), agents: targets.map((t) => t.agentId).join(", ") })),
     );
   }
-  runtime.log(info(`Sessions listed: ${rows.length}`));
+  runtime.log(info(t("commands.sessions.sessionsListed", { count: String(rows.length) })));
   if (activeMinutes) {
-    runtime.log(info(`Filtered to last ${activeMinutes} minute(s)`));
+    runtime.log(info(t("commands.sessions.filteredMinutes", { minutes: String(activeMinutes) })));
   }
   if (rows.length === 0) {
-    runtime.log("No sessions found.");
+    runtime.log(t("commands.sessions.noSessions"));
     return;
   }
 
   const rich = isRich();
   const showAgentColumn = aggregateAgents || targets.length > 1;
   const header = [
-    ...(showAgentColumn ? ["Agent".padEnd(AGENT_PAD)] : []),
-    "Kind".padEnd(KIND_PAD),
-    "Key".padEnd(SESSION_KEY_PAD),
-    "Age".padEnd(SESSION_AGE_PAD),
-    "Model".padEnd(SESSION_MODEL_PAD),
-    "Tokens (ctx %)".padEnd(TOKENS_PAD),
-    "Flags",
+    ...(showAgentColumn ? [t("commands.sessions.headerAgent").padEnd(AGENT_PAD)] : []),
+    t("commands.sessions.headerKind").padEnd(KIND_PAD),
+    t("commands.sessions.headerKey").padEnd(SESSION_KEY_PAD),
+    t("commands.sessions.headerAge").padEnd(SESSION_AGE_PAD),
+    t("commands.sessions.headerModel").padEnd(SESSION_MODEL_PAD),
+    t("commands.sessions.headerTokens").padEnd(TOKENS_PAD),
+    t("commands.sessions.headerFlags"),
   ].join(" ");
 
   runtime.log(rich ? theme.heading(header) : header);

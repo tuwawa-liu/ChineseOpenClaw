@@ -1,5 +1,6 @@
 import { formatDurationPrecise } from "../infra/format-time/format-duration.ts";
 import { formatRuntimeStatusWithDetails } from "../infra/runtime-status.ts";
+import { t } from "../i18n/index.js";
 import type { SessionStatus } from "./status.types.js";
 export { shortenText } from "./text-format.js";
 
@@ -8,7 +9,7 @@ export const formatKTokens = (value: number) =>
 
 export const formatDuration = (ms: number | null | undefined) => {
   if (ms == null || !Number.isFinite(ms)) {
-    return "unknown";
+    return t("commands.statusFormat.unknown");
   }
   return formatDurationPrecise(ms, { decimals: 1 });
 };
@@ -26,9 +27,9 @@ export const formatTokensCompact = (
 
   let result = "";
   if (used == null) {
-    result = ctx ? `unknown/${formatKTokens(ctx)} (?%)` : "unknown used";
+    result = ctx ? `${t("commands.statusFormat.unknown")}/${formatKTokens(ctx)} (?%)` : t("commands.statusFormat.unknownUsed");
   } else if (!ctx) {
-    result = `${formatKTokens(used)} used`;
+    result = `${formatKTokens(used)} ${t("commands.statusFormat.used")}`;
   } else {
     const pctLabel = sess.percentUsed != null ? `${sess.percentUsed}%` : "?%";
     result = `${formatKTokens(used)}/${formatKTokens(ctx)} (${pctLabel})`;
@@ -41,7 +42,7 @@ export const formatTokensCompact = (
         ? used
         : cacheRead + (typeof cacheWrite === "number" ? cacheWrite : 0);
     const hitRate = Math.round((cacheRead / total) * 100);
-    result += ` · 🗄️ ${hitRate}% cached`;
+    result += ` · 🗄️ ${hitRate}% ${t("commands.statusFormat.cached")}`;
   }
 
   return result;

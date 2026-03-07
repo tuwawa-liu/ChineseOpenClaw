@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js";
 import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
 import { applyAuthChoicePluginProvider } from "./auth-choice.apply.plugin-provider.js";
 
@@ -9,21 +10,17 @@ export async function applyAuthChoiceGoogleGeminiCli(
   }
 
   await params.prompter.note(
-    [
-      "This is an unofficial integration and is not endorsed by Google.",
-      "Some users have reported account restrictions or suspensions after using third-party Gemini CLI and Antigravity OAuth clients.",
-      "Proceed only if you understand and accept this risk.",
-    ].join("\n"),
-    "Google Gemini CLI caution",
+    t("commands.authGeminiCli.cautionNote"),
+    t("commands.authGeminiCli.cautionTitle"),
   );
 
   const proceed = await params.prompter.confirm({
-    message: "Continue with Google Gemini CLI OAuth?",
+    message: t("commands.authGeminiCli.continueConfirm"),
     initialValue: false,
   });
 
   if (!proceed) {
-    await params.prompter.note("Skipped Google Gemini CLI OAuth setup.", "Setup skipped");
+    await params.prompter.note(t("commands.authGeminiCli.skipNote"), t("commands.authGeminiCli.skipTitle"));
     return { config: params.config };
   }
 

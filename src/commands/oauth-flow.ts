@@ -1,9 +1,10 @@
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 
 type OAuthPrompt = { message: string; placeholder?: string };
 
-const validateRequiredInput = (value: string) => (value.trim().length > 0 ? undefined : "Required");
+const validateRequiredInput = (value: string) => (value.trim().length > 0 ? undefined : t("commands.oauthFlow.required"));
 
 export function createVpsAwareOAuthHandlers(params: {
   isRemote: boolean;
@@ -17,14 +18,14 @@ export function createVpsAwareOAuthHandlers(params: {
   onAuth: (event: { url: string }) => Promise<void>;
   onPrompt: (prompt: OAuthPrompt) => Promise<string>;
 } {
-  const manualPromptMessage = params.manualPromptMessage ?? "Paste the redirect URL";
+  const manualPromptMessage = params.manualPromptMessage ?? t("commands.oauthFlow.pasteRedirectUrl");
   let manualCodePromise: Promise<string> | undefined;
 
   return {
     onAuth: async ({ url }) => {
       if (params.isRemote) {
-        params.spin.stop("OAuth URL ready");
-        params.runtime.log(`\nOpen this URL in your LOCAL browser:\n\n${url}\n`);
+        params.spin.stop(t("commands.oauthFlow.oauthUrlReady"));
+        params.runtime.log(t("commands.oauthFlow.openBrowserUrl", { url }));
         manualCodePromise = params.prompter
           .text({
             message: manualPromptMessage,
@@ -36,7 +37,7 @@ export function createVpsAwareOAuthHandlers(params: {
 
       params.spin.update(params.localBrowserMessage);
       await params.openUrl(url);
-      params.runtime.log(`Open: ${url}`);
+      params.runtime.log(t("commands.oauthFlow.openUrl", { url }));
     },
     onPrompt: async (prompt) => {
       if (manualCodePromise) {

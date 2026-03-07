@@ -1,4 +1,5 @@
 import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
+import { t } from "../i18n/index.js";
 import { loginChutes } from "./chutes-oauth.js";
 import { isRemoteEnvironment } from "./oauth-env.js";
 import { createVpsAwareOAuthHandlers } from "./oauth-flow.js";
@@ -20,30 +21,19 @@ export async function applyAuthChoiceOAuth(
         await params.prompter.text({
           message: "Enter Chutes OAuth client id",
           placeholder: "cid_xxx",
-          validate: (value) => (value?.trim() ? undefined : "Required"),
+          validate: (value) => (value?.trim() ? undefined : t("commands.authApiKey.required")),
         }),
       ).trim();
     const clientSecret = process.env.CHUTES_CLIENT_SECRET?.trim() || undefined;
 
     await params.prompter.note(
       isRemote
-        ? [
-            "You are running in a remote/VPS environment.",
-            "A URL will be shown for you to open in your LOCAL browser.",
-            "After signing in, paste the redirect URL back here.",
-            "",
-            `Redirect URI: ${redirectUri}`,
-          ].join("\n")
-        : [
-            "Browser will open for Chutes authentication.",
-            "If the callback doesn't auto-complete, paste the redirect URL.",
-            "",
-            `Redirect URI: ${redirectUri}`,
-          ].join("\n"),
-      "Chutes OAuth",
+        ? t("commands.authOauth.remoteNote", { redirectUri })
+        : t("commands.authOauth.localNote", { redirectUri }),
+      t("commands.authOauth.chutesOAuth"),
     );
 
-    const spin = params.prompter.progress("Starting OAuth flow…");
+    const spin = params.prompter.progress(t("commands.authOauth.startingOAuth"));
     try {
       const { onAuth, onPrompt } = createVpsAwareOAuthHandlers({
         isRemote,
@@ -51,7 +41,7 @@ export async function applyAuthChoiceOAuth(
         runtime: params.runtime,
         spin,
         openUrl,
-        localBrowserMessage: "Complete sign-in in browser…",
+        localBrowserMessage: t("commands.authOauth.browserSignIn"),
       });
 
       const creds = await loginChutes({
@@ -67,7 +57,7 @@ export async function applyAuthChoiceOAuth(
         onProgress: (msg) => spin.update(msg),
       });
 
-      spin.stop("Chutes OAuth complete");
+      spin.stop(t("commands.authOauth.oauthComplete"));
       const profileId = await writeOAuthCredentials("chutes", creds, params.agentDir);
       nextConfig = applyAuthProfileConfig(nextConfig, {
         profileId,
@@ -75,16 +65,11 @@ export async function applyAuthChoiceOAuth(
         mode: "oauth",
       });
     } catch (err) {
-      spin.stop("Chutes OAuth failed");
+      spin.stop(t("commands.authOauth.oauthFailed"));
       params.runtime.error(String(err));
       await params.prompter.note(
-        [
-          "Trouble with OAuth?",
-          "Verify CHUTES_CLIENT_ID (and CHUTES_CLIENT_SECRET if required).",
-          `Verify the OAuth app redirect URI includes: ${redirectUri}`,
-          "Chutes docs: https://chutes.ai/docs/sign-in-with-chutes/overview",
-        ].join("\n"),
-        "OAuth help",
+        t("commands.authOauth.oauthHelp", { redirectUri }),
+        t("commands.authOauth.oauthHelpTitle"),
       );
     }
     return { config: nextConfig };

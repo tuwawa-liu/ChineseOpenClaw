@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index.js";
 import { resolveChannelDefaultAccountId } from "../../channels/plugins/helpers.js";
 import { getChannelPlugin, listChannelPlugins } from "../../channels/plugins/index.js";
 import type { ChannelCapabilities, ChannelPlugin } from "../../channels/plugins/types.js";
@@ -55,14 +56,14 @@ type ChannelCapabilitiesReport = {
 
 const REQUIRED_DISCORD_PERMISSIONS = ["ViewChannel", "SendMessages"] as const;
 
-const TEAMS_GRAPH_PERMISSION_HINTS: Record<string, string> = {
-  "ChannelMessage.Read.All": "channel history",
-  "Chat.Read.All": "chat history",
-  "Channel.ReadBasic.All": "channel list",
-  "Team.ReadBasic.All": "team list",
-  "TeamsActivity.Read.All": "teams activity",
-  "Sites.Read.All": "files (SharePoint)",
-  "Files.Read.All": "files (OneDrive)",
+const TEAMS_GRAPH_PERMISSION_HINTS: Record<string, () => string> = {
+  "ChannelMessage.Read.All": () => t("channelsCapabilities.hintChannelHistory"),
+  "Chat.Read.All": () => t("channelsCapabilities.hintChatHistory"),
+  "Channel.ReadBasic.All": () => t("channelsCapabilities.hintChannelList"),
+  "Team.ReadBasic.All": () => t("channelsCapabilities.hintTeamList"),
+  "TeamsActivity.Read.All": () => t("channelsCapabilities.hintTeamsActivity"),
+  "Sites.Read.All": () => t("channelsCapabilities.hintFilesSharePoint"),
+  "Files.Read.All": () => t("channelsCapabilities.hintFilesOneDrive"),
 };
 
 function normalizeTimeout(raw: unknown, fallback = 10_000) {
@@ -75,7 +76,7 @@ function normalizeTimeout(raw: unknown, fallback = 10_000) {
 
 function formatSupport(capabilities?: ChannelCapabilities) {
   if (!capabilities) {
-    return "unknown";
+    return t("channelsCapabilities.unknown");
   }
   const bits: string[] = [];
   if (capabilities.chatTypes?.length) {
@@ -114,7 +115,7 @@ function formatSupport(capabilities?: ChannelCapabilities) {
   if (capabilities.blockStreaming) {
     bits.push("blockStreaming");
   }
-  return bits.length ? bits.join(" ") : "none";
+  return bits.length ? bits.join(" ") : t("channelsCapabilities.none");
 }
 
 function summarizeDiscordTarget(raw?: string): DiscordTargetSummary | undefined {
@@ -169,11 +170,11 @@ function formatProbeLines(channelId: string, probe: unknown): string[] {
     const bot = probeObj.bot as { id?: string | null; username?: string | null } | undefined;
     if (bot?.username) {
       const botId = bot.id ? ` (${bot.id})` : "";
-      lines.push(`Bot: ${theme.accent(`@${bot.username}`)}${botId}`);
+      lines.push(t("channelsCapabilities.botPrefix", { bot: `${theme.accent(`@${bot.username}`)}${botId}` }));
     }
     const app = probeObj.application as { intents?: Record<string, unknown> } | undefined;
     if (app?.intents) {
-      lines.push(`Intents: ${formatDiscordIntents(app.intents)}`);
+      lines.push(t("channelsCapabilities.intentsPrefix", { intents: formatDiscordIntents(app.intents) }));
     }
   }
 
@@ -181,7 +182,7 @@ function formatProbeLines(channelId: string, probe: unknown): string[] {
     const bot = probeObj.bot as { username?: string | null; id?: number | null } | undefined;
     if (bot?.username) {
       const botId = bot.id ? ` (${bot.id})` : "";
-      lines.push(`Bot: ${theme.accent(`@${bot.username}`)}${botId}`);
+      lines.push(t("channelsCapabilities.botPrefix", { bot: `${theme.accent(`@${bot.username}`)}${botId}` }));
     }
     const flags: string[] = [];
     const canJoinGroups = (bot as { canJoinGroups?: boolean | null })?.canJoinGroups;
@@ -199,11 +200,11 @@ function formatProbeLines(channelId: string, probe: unknown): string[] {
       flags.push(`inlineQueries=${inlineQueries}`);
     }
     if (flags.length > 0) {
-      lines.push(`Flags: ${flags.join(" ")}`);
+      lines.push(t("channelsCapabilities.flagsPrefix", { flags: flags.join(" ") }));
     }
     const webhook = probeObj.webhook as { url?: string | null } | undefined;
     if (webhook?.url !== undefined) {
-      lines.push(`Webhook: ${webhook.url || "none"}`);
+      lines.push(t("channelsCapabilities.webhookPrefix", { url: webhook.url || t("channelsCapabilities.none") }));
     }
   }
 
@@ -211,25 +212,25 @@ function formatProbeLines(channelId: string, probe: unknown): string[] {
     const bot = probeObj.bot as { name?: string } | undefined;
     const team = probeObj.team as { name?: string; id?: string } | undefined;
     if (bot?.name) {
-      lines.push(`Bot: ${theme.accent(`@${bot.name}`)}`);
+      lines.push(t("channelsCapabilities.botPrefix", { bot: theme.accent(`@${bot.name}`) }));
     }
     if (team?.name || team?.id) {
       const id = team?.id ? ` (${team.id})` : "";
-      lines.push(`Team: ${team?.name ?? "unknown"}${id}`);
+      lines.push(t("channelsCapabilities.teamPrefix", { team: `${team?.name ?? t("channelsCapabilities.unknown")}${id}` }));
     }
   }
 
   if (channelId === "signal") {
     const version = probeObj.version as string | null | undefined;
     if (version) {
-      lines.push(`Signal daemon: ${version}`);
+      lines.push(t("channelsCapabilities.signalDaemon", { version }));
     }
   }
 
   if (channelId === "msteams") {
     const appId = typeof probeObj.appId === "string" ? probeObj.appId.trim() : "";
     if (appId) {
-      lines.push(`App: ${theme.accent(appId)}`);
+      lines.push(t("channelsCapabilities.appPrefix", { app: theme.accent(appId) }));
     }
     const graph = probeObj.graph as
       | { ok?: boolean; roles?: unknown; scopes?: unknown; error?: string }
@@ -248,32 +249,32 @@ function formatProbeLines(channelId: string, probe: unknown): string[] {
             ? graph.scopes.map((scope) => String(scope).trim()).filter(Boolean)
             : [];
       if (graph.ok === false) {
-        lines.push(`Graph: ${theme.error(graph.error ?? "failed")}`);
+        lines.push(`Graph: ${theme.error(graph.error ?? t("channelsCapabilities.graphFailed"))}`);
       } else if (roles.length > 0 || scopes.length > 0) {
         const formatPermission = (permission: string) => {
-          const hint = TEAMS_GRAPH_PERMISSION_HINTS[permission];
-          return hint ? `${permission} (${hint})` : permission;
+          const hintFn = TEAMS_GRAPH_PERMISSION_HINTS[permission];
+          return hintFn ? `${permission} (${hintFn()})` : permission;
         };
         if (roles.length > 0) {
-          lines.push(`Graph roles: ${roles.map(formatPermission).join(", ")}`);
+          lines.push(t("channelsCapabilities.graphRoles", { roles: roles.map(formatPermission).join(", ") }));
         }
         if (scopes.length > 0) {
-          lines.push(`Graph scopes: ${scopes.map(formatPermission).join(", ")}`);
+          lines.push(t("channelsCapabilities.graphScopes", { scopes: scopes.map(formatPermission).join(", ") }));
         }
       } else if (graph.ok === true) {
-        lines.push("Graph: ok");
+        lines.push(t("channelsCapabilities.graphOk"));
       }
     }
   }
 
   const ok = typeof probeObj.ok === "boolean" ? probeObj.ok : undefined;
   if (ok === true && lines.length === 0) {
-    lines.push("Probe: ok");
+    lines.push(t("channelsCapabilities.probeOk"));
   }
   if (ok === false) {
     const error =
       typeof probeObj.error === "string" && probeObj.error ? ` (${probeObj.error})` : "";
-    lines.push(`Probe: ${theme.error(`failed${error}`)}`);
+    lines.push(t("channelsCapabilities.probeFailed", { error: theme.error(`failed${error}`) }));
   }
   return lines;
 }
@@ -290,7 +291,7 @@ async function buildDiscordPermissions(params: {
     return {
       target,
       report: {
-        error: "Target looks like a DM user; pass channel:<id> to audit channel permissions.",
+        error: t("channelsCapabilities.dmTargetError"),
       },
     };
   }
@@ -300,7 +301,7 @@ async function buildDiscordPermissions(params: {
       target,
       report: {
         channelId: target.channelId,
-        error: "Discord bot token missing for permission audit.",
+        error: t("channelsCapabilities.discordTokenMissing"),
       },
     };
   }
@@ -391,7 +392,7 @@ async function resolveChannelReports(params: {
       } else {
         scopeReports.push({
           tokenType: "bot",
-          result: { ok: false, error: "Slack bot token missing." },
+          result: { ok: false, error: t("channelsCapabilities.slackBotTokenMissing") },
         });
       }
       if (userToken) {
@@ -447,12 +448,12 @@ export async function channelsCapabilitiesCommand(
   const rawTarget = typeof opts.target === "string" ? opts.target.trim() : "";
 
   if (opts.account && (!rawChannel || rawChannel === "all")) {
-    runtime.error(danger("--account requires a specific --channel."));
+    runtime.error(danger(t("channelsCapabilities.accountRequiresChannel")));
     runtime.exit(1);
     return;
   }
   if (rawTarget && rawChannel !== "discord") {
-    runtime.error(danger("--target requires --channel discord."));
+    runtime.error(danger(t("channelsCapabilities.targetRequiresDiscord")));
     runtime.exit(1);
     return;
   }
@@ -470,7 +471,7 @@ export async function channelsCapabilitiesCommand(
         })();
 
   if (!selected || selected.length === 0) {
-    runtime.error(danger(`Unknown channel "${rawChannel}".`));
+    runtime.error(danger(t("channelsCapabilities.unknownChannel", { channel: rawChannel })));
     runtime.exit(1);
     return;
   }
@@ -504,25 +505,25 @@ export async function channelsCapabilitiesCommand(
       accountStyle: theme.heading,
     });
     lines.push(theme.heading(label));
-    lines.push(`Support: ${formatSupport(report.support)}`);
+    lines.push(t("channelsCapabilities.supportPrefix", { support: formatSupport(report.support) }));
     if (report.actions && report.actions.length > 0) {
-      lines.push(`Actions: ${report.actions.join(", ")}`);
+      lines.push(t("channelsCapabilities.actionsPrefix", { actions: report.actions.join(", ") }));
     }
     if (report.configured === false || report.enabled === false) {
-      const configuredLabel = report.configured === false ? "not configured" : "configured";
-      const enabledLabel = report.enabled === false ? "disabled" : "enabled";
-      lines.push(`Status: ${configuredLabel}, ${enabledLabel}`);
+      const configuredLabel = report.configured === false ? t("channelsCapabilities.notConfigured") : t("channelsCapabilities.configured");
+      const enabledLabel = report.enabled === false ? t("channelsCapabilities.disabled") : t("channelsCapabilities.enabled");
+      lines.push(t("channelsCapabilities.statusPrefix", { configured: configuredLabel, enabled: enabledLabel }));
     }
     const probeLines = formatProbeLines(report.channel, report.probe);
     if (probeLines.length > 0) {
       lines.push(...probeLines);
     } else if (report.configured && report.enabled) {
-      lines.push(theme.muted("Probe: unavailable"));
+      lines.push(theme.muted(t("channelsCapabilities.probeUnavailable")));
     }
     if (report.channel === "slack" && report.slackScopes) {
       for (const entry of report.slackScopes) {
         const source = entry.result.source ? ` (${entry.result.source})` : "";
-        const label = entry.tokenType === "user" ? "User scopes" : "Bot scopes";
+        const label = entry.tokenType === "user" ? t("channelsCapabilities.userScopes") : t("channelsCapabilities.botScopes");
         if (entry.result.ok && entry.result.scopes?.length) {
           lines.push(`${label}${source}: ${entry.result.scopes.join(", ")}`);
         } else if (entry.result.error) {
@@ -533,19 +534,19 @@ export async function channelsCapabilitiesCommand(
     if (report.channel === "discord" && report.channelPermissions) {
       const perms = report.channelPermissions;
       if (perms.error) {
-        lines.push(`Permissions: ${theme.error(perms.error)}`);
+        lines.push(t("channelsCapabilities.permissionsError", { error: theme.error(perms.error) }));
       } else {
         const list = perms.permissions?.length ? perms.permissions.join(", ") : "none";
         const label = perms.channelId ? ` (${perms.channelId})` : "";
-        lines.push(`Permissions${label}: ${list}`);
+        lines.push(t("channelsCapabilities.permissionsList", { label, list }));
         if (perms.missingRequired && perms.missingRequired.length > 0) {
-          lines.push(`${theme.warn("Missing required:")} ${perms.missingRequired.join(", ")}`);
+          lines.push(theme.warn(t("channelsCapabilities.missingRequired", { permissions: perms.missingRequired.join(", ") })));
         } else {
-          lines.push(theme.success("Missing required: none"));
+          lines.push(theme.success(t("channelsCapabilities.missingRequiredNone")));
         }
       }
     } else if (report.channel === "discord" && rawTarget && !report.channelPermissions) {
-      lines.push(theme.muted("Permissions: skipped (no target)."));
+      lines.push(theme.muted(t("channelsCapabilities.permissionsSkipped")));
     }
     lines.push("");
   }

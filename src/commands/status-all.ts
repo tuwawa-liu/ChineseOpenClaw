@@ -12,6 +12,7 @@ import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { normalizeControlUiBasePath } from "../gateway/control-ui-shared.js";
 import { resolveGatewayProbeAuthSafe } from "../gateway/probe-auth.js";
 import { probeGateway } from "../gateway/probe.js";
+import { t } from "../i18n/index.js";
 import { collectChannelStatusIssues } from "../infra/channels-status-issues.js";
 import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
 import { resolveOsSummary } from "../infra/os-summary.js";
@@ -36,8 +37,8 @@ export async function statusAllCommand(
   runtime: RuntimeEnv,
   opts?: { timeoutMs?: number },
 ): Promise<void> {
-  await withProgress({ label: "Scanning status --all…", total: 11 }, async (progress) => {
-    progress.setLabel("Loading config…");
+  await withProgress({ label: t("commands.statusAll.scanning"), total: 11 }, async (progress) => {
+    progress.setLabel(t("commands.statusAll.loadingConfig"));
     const loadedRaw = loadConfig();
     const { resolvedConfig: cfg } = await resolveCommandSecretRefsViaGateway({
       config: loadedRaw,
@@ -48,7 +49,7 @@ export async function statusAllCommand(
     const snap = await readConfigFileSnapshot().catch(() => null);
     progress.tick();
 
-    progress.setLabel("Checking Tailscale…");
+    progress.setLabel(t("commands.statusAll.checkingTailscale"));
     const tailscaleMode = cfg.gateway?.tailscale?.mode ?? "off";
     const tailscale = await (async () => {
       try {
@@ -85,7 +86,7 @@ export async function statusAllCommand(
         : null;
     progress.tick();
 
-    progress.setLabel("Checking for updates…");
+    progress.setLabel(t("commands.statusAll.checkingUpdates"));
     const root = await resolveOpenClawPackageRoot({
       moduleUrl: import.meta.url,
       argv1: process.argv[1],
@@ -108,7 +109,7 @@ export async function statusAllCommand(
     const gitLabel = formatGitInstallLabel(update);
     progress.tick();
 
-    progress.setLabel("Probing gateway…");
+    progress.setLabel(t("commands.statusAll.probingGateway"));
     const connection = buildGatewayConnectionDetails({ config: cfg });
     const isRemoteMode = cfg.gateway?.mode === "remote";
     const remoteUrlRaw =
@@ -131,7 +132,7 @@ export async function statusAllCommand(
     const gatewaySelf = pickGatewaySelfPresence(gatewayProbe?.presence ?? null);
     progress.tick();
 
-    progress.setLabel("Checking services…");
+    progress.setLabel(t("commands.statusAll.checkingServices"));
     const readServiceSummary = async (service: GatewayService) => {
       try {
         const [loaded, runtimeInfo, command] = await Promise.all([
@@ -155,10 +156,10 @@ export async function statusAllCommand(
     const nodeService = await readServiceSummary(resolveNodeService());
     progress.tick();
 
-    progress.setLabel("Scanning agents…");
+    progress.setLabel(t("commands.statusAll.scanningAgents"));
     const agentStatus = await getAgentLocalStatuses(cfg);
     progress.tick();
-    progress.setLabel("Summarizing channels…");
+    progress.setLabel(t("commands.statusAll.summarizingChannels"));
     const channels = await buildChannelsTable(cfg, { showSecrets: false });
     progress.tick();
 
@@ -167,14 +168,14 @@ export async function statusAllCommand(
         return connection.message;
       }
       const bindMode = cfg.gateway?.bind ?? "loopback";
-      const configPath = snap?.path?.trim() ? snap.path.trim() : "(unknown config path)";
+      const configPath = snap?.path?.trim() ? snap.path.trim() : t("commands.statusAll.unknownConfigPath");
       return [
-        "Gateway mode: remote",
-        "Gateway target: (missing gateway.remote.url)",
-        `Config: ${configPath}`,
-        `Bind: ${bindMode}`,
-        `Local fallback (used for probes): ${connection.url}`,
-        "Fix: set gateway.remote.url, or set gateway.mode=local.",
+        t("commands.statusAll.gatewayModeRemote"),
+        t("commands.statusAll.gatewayTargetMissing"),
+        t("commands.statusAll.gatewayConfig", { path: configPath }),
+        t("commands.statusAll.gatewayBind", { bind: bindMode }),
+        t("commands.statusAll.localFallback", { url: connection.url }),
+        t("commands.statusAll.fixRemoteUrl"),
       ].join("\n");
     })();
 
@@ -186,7 +187,7 @@ export async function statusAllCommand(
         }
       : {};
 
-    progress.setLabel("Querying gateway…");
+    progress.setLabel(t("commands.statusAll.queryingGateway"));
     const health = gatewayReachable
       ? await callGateway({
           method: "health",
@@ -206,7 +207,7 @@ export async function statusAllCommand(
     const channelIssues = channelsStatus ? collectChannelStatusIssues(channelsStatus) : [];
     progress.tick();
 
-    progress.setLabel("Checking local state…");
+    progress.setLabel(t("commands.statusAll.checkingLocalState"));
     const sentinel = await readRestartSentinel().catch(() => null);
     const lastErr = await readLastGatewayErrorLine(process.env).catch(() => null);
     const port = resolveGatewayPort(cfg);
@@ -243,12 +244,12 @@ export async function statusAllCommand(
 
     const updateLine = formatUpdateOneLiner(update).replace(/^Update:\s*/i, "");
 
-    const gatewayTarget = remoteUrlMissing ? `fallback ${connection.url}` : connection.url;
+    const gatewayTarget = remoteUrlMissing ? t("commands.statusAll.fallback", { url: connection.url }) : connection.url;
     const gatewayStatus = gatewayReachable
-      ? `reachable ${formatDurationPrecise(gatewayProbe?.connectLatencyMs ?? 0)}`
+      ? t("commands.statusAll.reachable", { latency: formatDurationPrecise(gatewayProbe?.connectLatencyMs ?? 0) })
       : gatewayProbe?.error
-        ? `unreachable (${gatewayProbe.error})`
-        : "unreachable";
+        ? t("commands.statusAll.unreachableReason", { reason: gatewayProbe.error })
+        : t("commands.statusAll.unreachable");
     const gatewayAuth = gatewayReachable ? ` · auth ${formatGatewayAuthUsed(probeAuth)}` : "";
     const gatewaySelfLine =
       gatewaySelf?.host || gatewaySelf?.ip || gatewaySelf?.version || gatewaySelf?.platform
@@ -268,58 +269,58 @@ export async function statusAllCommand(
     ).length;
 
     const overviewRows = [
-      { Item: "Version", Value: VERSION },
-      { Item: "OS", Value: osSummary.label },
-      { Item: "Node", Value: process.versions.node },
+      { Item: t("commands.statusAll.version"), Value: VERSION },
+      { Item: t("commands.statusAll.os"), Value: osSummary.label },
+      { Item: t("commands.statusAll.node"), Value: process.versions.node },
       {
-        Item: "Config",
-        Value: snap?.path?.trim() ? snap.path.trim() : "(unknown config path)",
+        Item: t("commands.statusAll.config"),
+        Value: snap?.path?.trim() ? snap.path.trim() : t("commands.statusAll.unknownConfigPath"),
       },
       dashboard
-        ? { Item: "Dashboard", Value: dashboard }
-        : { Item: "Dashboard", Value: "disabled" },
+        ? { Item: t("commands.statusAll.dashboard"), Value: dashboard }
+        : { Item: t("commands.statusAll.dashboard"), Value: t("commands.statusAll.disabled") },
       {
-        Item: "Tailscale",
+        Item: t("commands.statusAll.tailscale"),
         Value:
           tailscaleMode === "off"
             ? `off${tailscale.backendState ? ` · ${tailscale.backendState}` : ""}${tailscale.dnsName ? ` · ${tailscale.dnsName}` : ""}`
             : tailscale.dnsName && tailscaleHttpsUrl
-              ? `${tailscaleMode} · ${tailscale.backendState ?? "unknown"} · ${tailscale.dnsName} · ${tailscaleHttpsUrl}`
-              : `${tailscaleMode} · ${tailscale.backendState ?? "unknown"} · magicdns unknown`,
+              ? `${tailscaleMode} · ${tailscale.backendState ?? t("commands.statusAll.unknown")} · ${tailscale.dnsName} · ${tailscaleHttpsUrl}`
+              : `${tailscaleMode} · ${tailscale.backendState ?? t("commands.statusAll.unknown")} · magicdns ${t("commands.statusAll.unknown")}`,
       },
-      { Item: "Channel", Value: channelLabel },
-      ...(gitLabel ? [{ Item: "Git", Value: gitLabel }] : []),
-      { Item: "Update", Value: updateLine },
+      { Item: t("commands.statusAll.channel"), Value: channelLabel },
+      ...(gitLabel ? [{ Item: t("commands.statusAll.git"), Value: gitLabel }] : []),
+      { Item: t("commands.statusAll.update"), Value: updateLine },
       {
-        Item: "Gateway",
-        Value: `${gatewayMode}${remoteUrlMissing ? " (remote.url missing)" : ""} · ${gatewayTarget} (${connection.urlSource}) · ${gatewayStatus}${gatewayAuth}`,
+        Item: t("commands.statusAll.gateway"),
+        Value: `${gatewayMode}${remoteUrlMissing ? ` ${t("commands.statusAll.remoteUrlMissing")}` : ""} · ${gatewayTarget} (${connection.urlSource}) · ${gatewayStatus}${gatewayAuth}`,
       },
       ...(probeAuthResolution.warning
-        ? [{ Item: "Gateway auth warning", Value: probeAuthResolution.warning }]
+        ? [{ Item: t("commands.statusAll.gatewayAuthWarning"), Value: probeAuthResolution.warning }]
         : []),
-      { Item: "Security", Value: `Run: ${formatCliCommand("openclaw security audit --deep")}` },
+      { Item: t("commands.statusAll.security"), Value: t("commands.statusAll.securityRun", { command: formatCliCommand("openclaw security audit --deep") }) },
       gatewaySelfLine
-        ? { Item: "Gateway self", Value: gatewaySelfLine }
-        : { Item: "Gateway self", Value: "unknown" },
+        ? { Item: t("commands.statusAll.gatewaySelf"), Value: gatewaySelfLine }
+        : { Item: t("commands.statusAll.gatewaySelf"), Value: t("commands.statusAll.unknown") },
       daemon
         ? {
-            Item: "Gateway service",
+            Item: t("commands.statusAll.gatewayService"),
             Value: !daemon.installed
-              ? `${daemon.label} not installed`
-              : `${daemon.label} ${daemon.installed ? "installed · " : ""}${daemon.loadedText}${daemon.runtime?.status ? ` · ${daemon.runtime.status}` : ""}${daemon.runtime?.pid ? ` (pid ${daemon.runtime.pid})` : ""}`,
+              ? t("commands.statusAll.notInstalled", { label: daemon.label })
+              : `${daemon.label} ${daemon.installed ? `${t("commands.statusAll.installed")} · ` : ""}${daemon.loadedText}${daemon.runtime?.status ? ` · ${daemon.runtime.status}` : ""}${daemon.runtime?.pid ? ` (pid ${daemon.runtime.pid})` : ""}`,
           }
-        : { Item: "Gateway service", Value: "unknown" },
+        : { Item: t("commands.statusAll.gatewayService"), Value: t("commands.statusAll.unknown") },
       nodeService
         ? {
-            Item: "Node service",
+            Item: t("commands.statusAll.nodeService"),
             Value: !nodeService.installed
-              ? `${nodeService.label} not installed`
-              : `${nodeService.label} ${nodeService.installed ? "installed · " : ""}${nodeService.loadedText}${nodeService.runtime?.status ? ` · ${nodeService.runtime.status}` : ""}${nodeService.runtime?.pid ? ` (pid ${nodeService.runtime.pid})` : ""}`,
+              ? t("commands.statusAll.notInstalled", { label: nodeService.label })
+              : `${nodeService.label} ${nodeService.installed ? `${t("commands.statusAll.installed")} · ` : ""}${nodeService.loadedText}${nodeService.runtime?.status ? ` · ${nodeService.runtime.status}` : ""}${nodeService.runtime?.pid ? ` (pid ${nodeService.runtime.pid})` : ""}`,
           }
-        : { Item: "Node service", Value: "unknown" },
+        : { Item: t("commands.statusAll.nodeService"), Value: t("commands.statusAll.unknown") },
       {
-        Item: "Agents",
-        Value: `${agentStatus.agents.length} total · ${agentStatus.bootstrapPendingCount} bootstrapping · ${aliveAgents} active · ${agentStatus.totalSessions} sessions`,
+        Item: t("commands.statusAll.agents"),
+        Value: t("commands.statusAll.agentsSummary", { total: String(agentStatus.agents.length), bootstrapping: String(agentStatus.bootstrapPendingCount), active: String(aliveAgents), sessions: String(agentStatus.totalSessions) }),
       },
     ];
 
@@ -351,7 +352,7 @@ export async function statusAllCommand(
       },
     });
 
-    progress.setLabel("Rendering…");
+    progress.setLabel(t("commands.statusAll.rendering"));
     runtime.log(lines.join("\n"));
     progress.tick();
   });

@@ -1,4 +1,5 @@
 import { normalizeApiKeyInput, validateApiKeyInput } from "./auth-choice.api-key.js";
+import { t } from "../i18n/index.js";
 import {
   createAuthChoiceAgentModelNoter,
   ensureApiKeyFromOptionEnvOrPrompt,
@@ -58,7 +59,7 @@ export async function applyAuthChoiceOpenAI(
       expectedProviders: ["openai"],
       provider: "openai",
       envLabel: "OPENAI_API_KEY",
-      promptMessage: "Enter OpenAI API key",
+      promptMessage: t("commands.authOpenai.enterApiKey"),
       normalize: normalizeApiKeyInput,
       validate: validateApiKeyInput,
       prompter: params.prompter,
@@ -86,7 +87,7 @@ export async function applyAuthChoiceOpenAI(
         openUrl: async (url) => {
           await openUrl(url);
         },
-        localBrowserMessage: "Complete sign-in in browser…",
+        localBrowserMessage: t("commands.authOpenai.browserSignIn"),
       });
     } catch {
       // The helper already surfaces the error to the user.
@@ -107,8 +108,8 @@ export async function applyAuthChoiceOpenAI(
         nextConfig = applied.next;
         if (applied.changed) {
           await params.prompter.note(
-            `Default model set to ${OPENAI_CODEX_DEFAULT_MODEL}`,
-            "Model configured",
+              t("commands.authDefaultModel.modelSet", { model: OPENAI_CODEX_DEFAULT_MODEL }),
+              t("commands.authDefaultModel.modelConfigured"),
           );
         }
       } else {

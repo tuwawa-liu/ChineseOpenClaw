@@ -9,6 +9,7 @@ import {
   resolveBootstrapTotalMaxChars,
 } from "../agents/pi-embedded-helpers.js";
 import type { OpenClawConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { note } from "../terminal/note.js";
 
 function formatInt(value: number): string {
@@ -53,7 +54,7 @@ export async function noteBootstrapFileSize(cfg: OpenClawConfig) {
 
   const lines: string[] = [];
   if (analysis.hasTruncation) {
-    lines.push("Workspace bootstrap files exceed limits and will be truncated:");
+    lines.push(t("commands.doctorBootstrapSize.exceedLimits"));
     for (const file of analysis.truncatedFiles) {
       const truncatedChars = Math.max(0, file.rawChars - file.injectedChars);
       lines.push(
@@ -61,7 +62,7 @@ export async function noteBootstrapFileSize(cfg: OpenClawConfig) {
       );
     }
   } else {
-    lines.push("Workspace bootstrap files are near configured limits:");
+    lines.push(t("commands.doctorBootstrapSize.nearLimits"));
   }
 
   const nonTruncatedNearLimit = analysis.nearLimitFiles.filter((file) => !file.truncated);
@@ -74,10 +75,10 @@ export async function noteBootstrapFileSize(cfg: OpenClawConfig) {
   }
 
   lines.push(
-    `Total bootstrap injected chars: ${formatInt(analysis.totals.injectedChars)} (${formatPercent(analysis.totals.injectedChars, bootstrapTotalMaxChars)} of max/total ${formatInt(bootstrapTotalMaxChars)}).`,
+    t("commands.doctorBootstrapSize.totalInjectedChars", { injected: formatInt(analysis.totals.injectedChars), percent: formatPercent(analysis.totals.injectedChars, bootstrapTotalMaxChars), max: formatInt(bootstrapTotalMaxChars) }),
   );
   lines.push(
-    `Total bootstrap raw chars (before truncation): ${formatInt(analysis.totals.rawChars)}.`,
+    t("commands.doctorBootstrapSize.totalRawChars", { raw: formatInt(analysis.totals.rawChars) }),
   );
 
   const needsPerFileTip =
@@ -90,12 +91,12 @@ export async function noteBootstrapFileSize(cfg: OpenClawConfig) {
     lines.push("");
   }
   if (needsPerFileTip) {
-    lines.push("- Tip: tune `agents.defaults.bootstrapMaxChars` for per-file limits.");
+    lines.push(t("commands.doctorBootstrapSize.tipPerFile"));
   }
   if (needsTotalTip) {
-    lines.push("- Tip: tune `agents.defaults.bootstrapTotalMaxChars` for total-budget limits.");
+    lines.push(t("commands.doctorBootstrapSize.tipTotal"));
   }
 
-  note(lines.join("\n"), "Bootstrap file size");
+  note(lines.join("\n"), t("commands.doctorBootstrapSize.title"));
   return analysis;
 }

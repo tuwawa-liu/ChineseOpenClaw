@@ -7,6 +7,7 @@ import {
   checkShellCompletionStatus,
   ensureCompletionCacheExists,
 } from "../commands/doctor-completion.js";
+import { t } from "../i18n/index.js";
 import { pathExists } from "../utils.js";
 import type { WizardFlow } from "./onboarding.types.js";
 import type { WizardPrompter } from "./prompts.js";
@@ -36,9 +37,9 @@ async function resolveProfileHint(shell: ShellCompletionStatus["shell"]): Promis
 
 function formatReloadHint(shell: ShellCompletionStatus["shell"], profileHint: string): string {
   if (shell === "powershell") {
-    return "Restart your shell (or reload your PowerShell profile).";
+    return t("wizard.completion.restartPowershell");
   }
-  return `Restart your shell or run: source ${profileHint}`;
+  return t("wizard.completion.restartShell", { profile: profileHint });
 }
 
 export async function setupOnboardingShellCompletion(params: {
@@ -78,7 +79,7 @@ export async function setupOnboardingShellCompletion(params: {
       params.flow === "quickstart"
         ? true
         : await params.prompter.confirm({
-            message: `Enable ${completionStatus.shell} shell completion for ${cliName}?`,
+            message: t("wizard.completion.enableConfirm", { shell: completionStatus.shell, cli: cliName }),
             initialValue: true,
           });
 
@@ -90,8 +91,8 @@ export async function setupOnboardingShellCompletion(params: {
     const cacheGenerated = await deps.ensureCompletionCacheExists(cliName);
     if (!cacheGenerated) {
       await params.prompter.note(
-        `Failed to generate completion cache. Run \`${cliName} completion --install\` later.`,
-        "Shell completion",
+        t("wizard.completion.cacheFailed", { cli: cliName }),
+        t("wizard.completion.noteTitle"),
       );
       return;
     }
@@ -101,8 +102,8 @@ export async function setupOnboardingShellCompletion(params: {
 
     const profileHint = await resolveProfileHint(completionStatus.shell);
     await params.prompter.note(
-      `Shell completion installed. ${formatReloadHint(completionStatus.shell, profileHint)}`,
-      "Shell completion",
+      t("wizard.completion.installed", { hint: formatReloadHint(completionStatus.shell, profileHint) }),
+      t("wizard.completion.noteTitle"),
     );
   }
   // Case 4: Both profile and cache exist (using cached version) - all good, nothing to do
