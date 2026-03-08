@@ -58,7 +58,10 @@ export function resolveNavigatorLocale(navLang: string): Locale {
   if (navLang.startsWith("es")) {
     return "es";
   }
-  return DEFAULT_LOCALE;
+  if (navLang.startsWith("en")) {
+    return "en";
+  }
+  return "zh-CN";
 }
 
 export async function loadLazyLocaleTranslation(locale: Locale): Promise<TranslationMap | null> {

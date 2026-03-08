@@ -3,7 +3,7 @@ import { en, enTaglines } from "./locales/en.js";
 
 const SUPPORTED: readonly CliLocale[] = ["en", "zh-CN"];
 
-let currentLocale: CliLocale = "en";
+let currentLocale: CliLocale = "zh-CN";
 const translations: Partial<Record<CliLocale, TranslationMap>> = { en };
 let taglines: TaglineSet = enTaglines;
 let localeReady: Promise<void> | undefined;
@@ -16,10 +16,10 @@ function resolveEnvLocale(): CliLocale {
     process.env.LANGUAGE ??
     "";
   const normalized = raw.replace(/_/g, "-").split(".")[0];
-  if (normalized.startsWith("zh")) {
-    return "zh-CN";
+  if (normalized.startsWith("en")) {
+    return "en";
   }
-  return "en";
+  return "zh-CN";
 }
 
 async function loadLocale(locale: CliLocale) {
