@@ -31,7 +31,7 @@ async function loadLocale(locale: CliLocale) {
       taglines = mod.zhCNTaglines;
     }
   } catch {
-    // Fallback to English silently.
+    // 回退到英文。
   }
 }
 
