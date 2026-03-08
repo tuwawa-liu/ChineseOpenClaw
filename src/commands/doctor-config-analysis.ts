@@ -3,6 +3,7 @@ import type { ZodIssue } from "zod";
 import type { OpenClawConfig } from "../config/config.js";
 import { CONFIG_PATH } from "../config/config.js";
 import { OpenClawSchema } from "../config/zod-schema.js";
+import { t } from "../i18n/index.js";
 import { note } from "../terminal/note.js";
 import { isRecord } from "../utils.js";
 
@@ -116,15 +117,15 @@ export function noteOpencodeProviderOverrides(cfg: OpenClawConfig): void {
         ? providerEntry.api
         : undefined;
     return [
-      `- models.providers.${id} is set; this overrides the built-in OpenCode Zen catalog.`,
+      `- ${t("doctorConfigAnalysis.providerOverride", { id })}`,
       api ? `- models.providers.${id}.api=${api}` : null,
     ].filter((line): line is string => Boolean(line));
   });
 
   lines.push(
-    "- Remove these entries to restore per-model API routing + costs (then re-run onboarding if needed).",
+    `- ${t("doctorConfigAnalysis.removeEntries")}`,
   );
-  note(lines.join("\n"), "OpenCode Zen");
+  note(lines.join("\n"), t("doctorConfigAnalysis.openCodeZen"));
 }
 
 export function noteIncludeConfinementWarning(snapshot: {
@@ -143,10 +144,10 @@ export function noteIncludeConfinementWarning(snapshot: {
   const configRoot = path.dirname(snapshot.path ?? CONFIG_PATH);
   note(
     [
-      `- $include paths must stay under: ${configRoot}`,
-      '- Move shared include files under that directory and update to relative paths like "./shared/common.json".',
-      `- Error: ${includeIssue.message}`,
+      `- ${t("doctorConfigAnalysis.includePathsMust", { configRoot })}`,
+      `- ${t("doctorConfigAnalysis.moveSharedFiles")}`,
+      `- ${t("doctorConfigAnalysis.errorLabel")}: ${includeIssue.message}`,
     ].join("\n"),
-    "Doctor warnings",
+    t("doctorConfigAnalysis.doctorWarnings"),
   );
 }

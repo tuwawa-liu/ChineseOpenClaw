@@ -1,5 +1,6 @@
 import type { Command } from "commander";
 import { getPrimaryCommand, hasHelpOrVersion } from "../argv.js";
+import { t } from "../../i18n/index.js";
 import { reparseProgramFromActionArgs } from "./action-reparse.js";
 import { removeCommandByName } from "./command-tree.js";
 import type { ProgramContext } from "./context.js";
@@ -42,7 +43,7 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "setup",
-        description: "Initialize local config and agent workspace",
+        description: t("commandRegistry.setup"),
         hasSubcommands: false,
       },
     ],
@@ -55,7 +56,7 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "onboard",
-        description: "Interactive onboarding wizard for gateway, workspace, and skills",
+        description: t("commandRegistry.onboard"),
         hasSubcommands: false,
       },
     ],
@@ -69,7 +70,7 @@ const coreEntries: CoreCliEntry[] = [
       {
         name: "configure",
         description:
-          "Interactive setup wizard for credentials, channels, gateway, and agent defaults",
+          t("commandRegistry.configure"),
         hasSubcommands: false,
       },
     ],
@@ -83,7 +84,7 @@ const coreEntries: CoreCliEntry[] = [
       {
         name: "config",
         description:
-          "Non-interactive config helpers (get/set/unset/file/validate). Default: starts setup wizard.",
+          t("commandRegistry.config"),
         hasSubcommands: true,
       },
     ],
@@ -96,7 +97,7 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "backup",
-        description: "Create and verify local backup archives for OpenClaw state",
+        description: t("commandRegistry.backup"),
         hasSubcommands: true,
       },
     ],
@@ -109,22 +110,22 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "doctor",
-        description: "Health checks + quick fixes for the gateway and channels",
+        description: t("commandRegistry.doctor"),
         hasSubcommands: false,
       },
       {
         name: "dashboard",
-        description: "Open the Control UI with your current token",
+        description: t("commandRegistry.dashboard"),
         hasSubcommands: false,
       },
       {
         name: "reset",
-        description: "Reset local config/state (keeps the CLI installed)",
+        description: t("commandRegistry.reset"),
         hasSubcommands: false,
       },
       {
         name: "uninstall",
-        description: "Uninstall the gateway service + local data (CLI remains)",
+        description: t("commandRegistry.uninstall"),
         hasSubcommands: false,
       },
     ],
@@ -137,7 +138,7 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "message",
-        description: "Send, read, and manage messages",
+        description: t("commandRegistry.message"),
         hasSubcommands: true,
       },
     ],
@@ -150,7 +151,7 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "memory",
-        description: "Search and reindex memory files",
+        description: t("commandRegistry.memory"),
         hasSubcommands: true,
       },
     ],
@@ -163,12 +164,12 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "agent",
-        description: "Run one agent turn via the Gateway",
+        description: t("commandRegistry.agent"),
         hasSubcommands: false,
       },
       {
         name: "agents",
-        description: "Manage isolated agents (workspaces, auth, routing)",
+        description: t("commandRegistry.agents"),
         hasSubcommands: true,
       },
     ],
@@ -183,17 +184,17 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "status",
-        description: "Show channel health and recent session recipients",
+        description: t("commandRegistry.status"),
         hasSubcommands: false,
       },
       {
         name: "health",
-        description: "Fetch health from the running gateway",
+        description: t("commandRegistry.health"),
         hasSubcommands: false,
       },
       {
         name: "sessions",
-        description: "List stored conversation sessions",
+        description: t("commandRegistry.sessions"),
         hasSubcommands: true,
       },
     ],
@@ -206,7 +207,7 @@ const coreEntries: CoreCliEntry[] = [
     commands: [
       {
         name: "browser",
-        description: "Manage OpenClaw's dedicated browser (Chrome/Chromium)",
+        description: t("commandRegistry.browser"),
         hasSubcommands: true,
       },
     ],

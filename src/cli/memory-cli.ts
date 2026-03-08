@@ -8,6 +8,7 @@ import { loadConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import { resolveSessionTranscriptsDirForAgent } from "../config/sessions/paths.js";
 import { setVerbose } from "../globals.js";
+import { t } from "../i18n/index.js";
 import { getMemorySearchManager, type MemorySearchManagerResult } from "../memory/index.js";
 import { listMemoryFiles, normalizeExtraMemoryPaths } from "../memory/internal.js";
 import { defaultRuntime } from "../runtime.js";
@@ -135,7 +136,7 @@ async function withMemoryManagerForAgent(params: {
   }
   await withManager<MemoryManager>({
     getManager: () => getMemorySearchManager(managerParams),
-    onMissing: (error) => defaultRuntime.log(error ?? "Memory search disabled."),
+    onMissing: (error) => defaultRuntime.log(error ?? t("memoryCli.searchDisabled")),
     onCloseError: (err) =>
       defaultRuntime.error(`Memory manager close failed: ${formatErrorMessage(err)}`),
     close: async (manager) => {
@@ -359,18 +360,18 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
         let indexError: string | undefined;
         const syncFn = manager.sync ? manager.sync.bind(manager) : undefined;
         if (deep) {
-          await withProgress({ label: "Checking memory…", total: 2 }, async (progress) => {
-            progress.setLabel("Probing vector…");
+          await withProgress({ label: t("memoryCli.checkingMemory"), total: 2 }, async (progress) => {
+            progress.setLabel(t("memoryCli.probingVector"));
             await manager.probeVectorAvailability();
             progress.tick();
-            progress.setLabel("Probing embeddings…");
+            progress.setLabel(t("memoryCli.probingEmbeddings"));
             embeddingProbe = await manager.probeEmbeddingAvailability();
             progress.tick();
           });
           if (opts.index && syncFn) {
             await withProgressTotals(
               {
-                label: "Indexing memory…",
+                label: t("memoryCli.indexingMemory"),
                 total: 0,
                 fallback: opts.verbose ? "line" : undefined,
               },
@@ -392,7 +393,7 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
                   });
                 } catch (err) {
                   indexError = formatErrorMessage(err);
-                  defaultRuntime.error(`Memory index failed: ${indexError}`);
+                  defaultRuntime.error(t("memoryCli.indexFailed", { error: indexError }));
                   process.exitCode = 1;
                 }
               },
@@ -445,7 +446,7 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
         ? `${filesIndexed}/? files · ${chunksIndexed} chunks`
         : `${filesIndexed}/${totalFiles} files · ${chunksIndexed} chunks`;
     if (opts.index) {
-      const line = indexError ? `Memory index failed: ${indexError}` : "Memory index complete.";
+      const line = indexError ? t("memoryCli.indexFailed", { error: indexError }) : t("memoryCli.indexComplete");
       defaultRuntime.log(line);
     }
     const requestedProvider = status.requestedProvider ?? status.provider;
@@ -576,41 +577,41 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
 export function registerMemoryCli(program: Command) {
   const memory = program
     .command("memory")
-    .description("Search, inspect, and reindex memory files")
+    .description(t("memoryCli.description"))
     .addHelpText(
       "after",
       () =>
-        `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["openclaw memory status", "Show index and provider status."],
-          ["openclaw memory status --deep", "Probe embedding provider readiness."],
-          ["openclaw memory index --force", "Force a full reindex."],
-          ['openclaw memory search "meeting notes"', "Quick search using positional query."],
+        `\n${theme.heading(t("memoryCli.examplesHeading"))}\n${formatHelpExamples([
+          ["openclaw memory status", t("memoryCli.exStatus")],
+          ["openclaw memory status --deep", t("memoryCli.exDeep")],
+          ["openclaw memory index --force", t("memoryCli.exForce")],
+          ['openclaw memory search "meeting notes"', t("memoryCli.exSearch")],
           [
             'openclaw memory search --query "deployment" --max-results 20',
-            "Limit results for focused troubleshooting.",
+            t("memoryCli.exSearchLimit"),
           ],
-          ["openclaw memory status --json", "Output machine-readable JSON (good for scripts)."],
-        ])}\n\n${theme.muted("Docs:")} ${formatDocsLink("/cli/memory", "docs.openclaw.ai/cli/memory")}\n`,
+          ["openclaw memory status --json", t("memoryCli.exJson")],
+        ])}\n\n${theme.muted(t("memoryCli.docsLabel"))} ${formatDocsLink("/cli/memory", "docs.openclaw.ai/cli/memory")}\n`,
     );
 
   memory
     .command("status")
-    .description("Show memory search index status")
-    .option("--agent <id>", "Agent id (default: default agent)")
-    .option("--json", "Print JSON")
-    .option("--deep", "Probe embedding provider availability")
-    .option("--index", "Reindex if dirty (implies --deep)")
-    .option("--verbose", "Verbose logging", false)
+    .description(t("memoryCli.statusDesc"))
+    .option("--agent <id>", t("memoryCli.optAgent"))
+    .option("--json", t("memoryCli.optJson"))
+    .option("--deep", t("memoryCli.optDeep"))
+    .option("--index", t("memoryCli.optIndex"))
+    .option("--verbose", t("memoryCli.optVerbose"), false)
     .action(async (opts: MemoryCommandOptions & { force?: boolean }) => {
       await runMemoryStatus(opts);
     });
 
   memory
     .command("index")
-    .description("Reindex memory files")
-    .option("--agent <id>", "Agent id (default: default agent)")
-    .option("--force", "Force full reindex", false)
-    .option("--verbose", "Verbose logging", false)
+    .description(t("memoryCli.indexDesc"))
+    .option("--agent <id>", t("memoryCli.optAgent"))
+    .option("--force", t("memoryCli.optForce"), false)
+    .option("--verbose", t("memoryCli.optVerbose"), false)
     .action(async (opts: MemoryCommandOptions) => {
       setVerbose(Boolean(opts.verbose));
       const { config: cfg, diagnostics } = await loadMemoryCommandConfig("memory index");
@@ -659,7 +660,7 @@ export function registerMemoryCli(program: Command) {
                 defaultRuntime.log("");
               }
               const startedAt = Date.now();
-              let lastLabel = "Indexing memory…";
+              let lastLabel = t("memoryCli.indexingMemory");
               let lastCompleted = 0;
               let lastTotal = 0;
               const formatElapsed = () => {
@@ -692,7 +693,7 @@ export function registerMemoryCli(program: Command) {
                   : `${lastLabel} · elapsed ${elapsed}`;
               };
               if (!syncFn) {
-                defaultRuntime.log("Memory backend does not support manual reindex.");
+                defaultRuntime.log(t("memoryCli.noManualReindex"));
                 return;
               }
               await withProgressTotals(
@@ -732,10 +733,10 @@ export function registerMemoryCli(program: Command) {
               if (qmdIndexSummary) {
                 defaultRuntime.log(qmdIndexSummary);
               }
-              defaultRuntime.log(`Memory index updated (${agentId}).`);
+              defaultRuntime.log(t("memoryCli.indexUpdated", { agentId }));
             } catch (err) {
               const message = formatErrorMessage(err);
-              defaultRuntime.error(`Memory index failed (${agentId}): ${message}`);
+              defaultRuntime.error(t("memoryCli.indexFailedAgent", { agentId, message }));
               process.exitCode = 1;
             }
           },
@@ -745,13 +746,13 @@ export function registerMemoryCli(program: Command) {
 
   memory
     .command("search")
-    .description("Search memory files")
-    .argument("[query]", "Search query")
-    .option("--query <text>", "Search query (alternative to positional argument)")
-    .option("--agent <id>", "Agent id (default: default agent)")
-    .option("--max-results <n>", "Max results", (value: string) => Number(value))
-    .option("--min-score <n>", "Minimum score", (value: string) => Number(value))
-    .option("--json", "Print JSON")
+    .description(t("memoryCli.searchDesc"))
+    .argument("[query]", t("memoryCli.searchQueryArg"))
+    .option("--query <text>", t("memoryCli.optSearchQuery"))
+    .option("--agent <id>", t("memoryCli.optAgent"))
+    .option("--max-results <n>", t("memoryCli.optMaxResults"), (value: string) => Number(value))
+    .option("--min-score <n>", t("memoryCli.optMinScore"), (value: string) => Number(value))
+    .option("--json", t("memoryCli.optJson"))
     .action(
       async (
         queryArg: string | undefined,
@@ -764,7 +765,7 @@ export function registerMemoryCli(program: Command) {
         const query = opts.query ?? queryArg;
         if (!query) {
           defaultRuntime.error(
-            "Missing search query. Provide a positional query or use --query <text>.",
+            t("memoryCli.missingSearchQuery"),
           );
           process.exitCode = 1;
           return;
@@ -784,7 +785,7 @@ export function registerMemoryCli(program: Command) {
               });
             } catch (err) {
               const message = formatErrorMessage(err);
-              defaultRuntime.error(`Memory search failed: ${message}`);
+              defaultRuntime.error(t("memoryCli.searchFailed", { message }));
               process.exitCode = 1;
               return;
             }
@@ -793,7 +794,7 @@ export function registerMemoryCli(program: Command) {
               return;
             }
             if (results.length === 0) {
-              defaultRuntime.log("No matches.");
+              defaultRuntime.log(t("memoryCli.noMatches"));
               return;
             }
             const rich = isRich();

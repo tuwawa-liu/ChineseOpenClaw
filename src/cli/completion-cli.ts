@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { Command, Option } from "commander";
 import { resolveStateDir } from "../config/paths.js";
+import { t } from "../i18n/index.js";
 import { routeLogsToStderr } from "../logging/console.js";
 import { formatDocsLink } from "../terminal/links.js";
 import { theme } from "../terminal/theme.js";
@@ -231,23 +232,23 @@ export async function usesSlowDynamicCompletion(
 export function registerCompletionCli(program: Command) {
   program
     .command("completion")
-    .description("Generate shell completion script")
+    .description(t("completionCli.description"))
     .addHelpText(
       "after",
       () =>
         `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/completion", "docs.openclaw.ai/cli/completion")}\n`,
     )
     .addOption(
-      new Option("-s, --shell <shell>", "Shell to generate completion for (default: zsh)").choices(
+      new Option("-s, --shell <shell>", t("completionCli.optShell")).choices(
         COMPLETION_SHELLS,
       ),
     )
-    .option("-i, --install", "Install completion script to shell profile")
+    .option("-i, --install", t("completionCli.optInstall"))
     .option(
       "--write-state",
-      "Write completion scripts to $OPENCLAW_STATE_DIR/completions (no stdout)",
+      t("completionCli.optWriteState"),
     )
-    .option("-y, --yes", "Skip confirmation (non-interactive)", false)
+    .option("-y, --yes", t("completionCli.optYes"), false)
     .action(async (options) => {
       // Route logs to stderr so plugin loading messages do not corrupt
       // the completion script written to stdout.
@@ -293,7 +294,7 @@ export function registerCompletionCli(program: Command) {
       }
 
       if (!isCompletionShell(shell)) {
-        throw new Error(`Unsupported shell: ${shell}`);
+        throw new Error(t("completionCli.unsupportedShell", { shell }));
       }
       const script = getCompletionScript(shell, program);
       process.stdout.write(script + "\n");
@@ -307,7 +308,7 @@ export async function installCompletion(shell: string, yes: boolean, binName = "
 
   const isShellSupported = isCompletionShell(shell);
   if (!isShellSupported) {
-    console.error(`Automated installation not supported for ${shell} yet.`);
+    console.error(t("completionCli.installNotSupported", { shell }));
     return;
   }
 
@@ -316,7 +317,7 @@ export async function installCompletion(shell: string, yes: boolean, binName = "
   const cacheExists = await pathExists(cachePath);
   if (!cacheExists) {
     console.error(
-      `Completion cache not found at ${cachePath}. Run \`${binName} completion --write-state\` first.`,
+      t("completionCli.cacheNotFound", { cachePath, binName }),
     );
     return;
   }
@@ -337,7 +338,7 @@ export async function installCompletion(shell: string, yes: boolean, binName = "
     profilePath = path.join(home, ".config", "fish", "config.fish");
     sourceLine = formatCompletionSourceLine("fish", binName, cachePath);
   } else {
-    console.error(`Automated installation not supported for ${shell} yet.`);
+    console.error(t("completionCli.installNotSupported", { shell }));
     return;
   }
 
@@ -347,7 +348,7 @@ export async function installCompletion(shell: string, yes: boolean, binName = "
       await fs.access(profilePath);
     } catch {
       if (!yes) {
-        console.warn(`Profile not found at ${profilePath}. Created a new one.`);
+        console.warn(t("completionCli.profileNotFound", { profilePath }));
       }
       await fs.mkdir(path.dirname(profilePath), { recursive: true });
       await fs.writeFile(profilePath, "", "utf-8");
@@ -357,22 +358,22 @@ export async function installCompletion(shell: string, yes: boolean, binName = "
     const update = updateCompletionProfile(content, binName, cachePath, sourceLine);
     if (!update.changed) {
       if (!yes) {
-        console.log(`Completion already installed in ${profilePath}`);
+        console.log(t("completionCli.alreadyInstalled", { profilePath }));
       }
       return;
     }
 
     if (!yes) {
-      const action = update.hadExisting ? "Updating" : "Installing";
-      console.log(`${action} completion in ${profilePath}...`);
+      const action = update.hadExisting ? t("completionCli.updating") : t("completionCli.installing");
+      console.log(t("completionCli.actionInProgress", { action, profilePath }));
     }
 
     await fs.writeFile(profilePath, update.next, "utf-8");
     if (!yes) {
-      console.log(`Completion installed. Restart your shell or run: source ${profilePath}`);
+      console.log(t("completionCli.installed", { profilePath }));
     }
   } catch (err) {
-    console.error(`Failed to install completion: ${err as string}`);
+    console.error(t("completionCli.installFailed", { err: String(err) }));
   }
 }
 

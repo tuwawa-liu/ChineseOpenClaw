@@ -3,6 +3,7 @@ import { resolveChannelDefaultAccountId } from "../channels/plugins/helpers.js";
 import { getChannelPlugin } from "../channels/plugins/index.js";
 import { loadConfig } from "../config/config.js";
 import { danger } from "../globals.js";
+import { t } from "../i18n/index.js";
 import { resolveMessageChannelSelection } from "../infra/outbound/channel-selection.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
@@ -65,22 +66,22 @@ function printDirectoryList(params: {
 export function registerDirectoryCli(program: Command) {
   const directory = program
     .command("directory")
-    .description("Lookup contact and group IDs (self, peers, groups) for supported chat channels")
+    .description(t("directoryCli.description"))
     .addHelpText(
       "after",
       () =>
-        `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["openclaw directory self --channel slack", "Show the connected account identity."],
+        `\n${theme.heading(t("directoryCli.examplesHeading"))}\n${formatHelpExamples([
+          ["openclaw directory self --channel slack", t("directoryCli.exSelf")],
           [
             'openclaw directory peers list --channel slack --query "alice"',
-            "Search contact/user IDs by name.",
+            t("directoryCli.exPeers"),
           ],
-          ["openclaw directory groups list --channel discord", "List available groups/channels."],
+          ["openclaw directory groups list --channel discord", t("directoryCli.exGroups")],
           [
             "openclaw directory groups members --channel discord --group-id <id>",
-            "List members for a specific group.",
+            t("directoryCli.exMembers"),
           ],
-        ])}\n\n${theme.muted("Docs:")} ${formatDocsLink(
+        ])}\n\n${theme.muted(t("directoryCli.docsLabel"))} ${formatDocsLink(
           "/cli/directory",
           "docs.openclaw.ai/cli/directory",
         )}\n`,
@@ -91,9 +92,9 @@ export function registerDirectoryCli(program: Command) {
 
   const withChannel = (cmd: Command) =>
     cmd
-      .option("--channel <name>", "Channel (auto when only one is configured)")
-      .option("--account <id>", "Account id (accountId)")
-      .option("--json", "Output JSON", false);
+      .option("--channel <name>", t("directoryCli.optChannel"))
+      .option("--account <id>", t("directoryCli.optAccount"))
+      .option("--json", t("directoryCli.optJson"), false);
 
   const resolve = async (opts: { channel?: string; account?: string }) => {
     const cfg = loadConfig();
@@ -104,7 +105,7 @@ export function registerDirectoryCli(program: Command) {
     const channelId = selection.channel;
     const plugin = getChannelPlugin(channelId);
     if (!plugin) {
-      throw new Error(`Unsupported channel: ${String(channelId)}`);
+      throw new Error(t("directoryCli.unsupportedChannel", { channelId: String(channelId) }));
     }
     const accountId = opts.account?.trim() || resolveChannelDefaultAccountId({ plugin, cfg });
     return { cfg, channelId, accountId, plugin };
@@ -130,7 +131,7 @@ export function registerDirectoryCli(program: Command) {
     const fn =
       params.action === "listPeers" ? plugin.directory?.listPeers : plugin.directory?.listGroups;
     if (!fn) {
-      throw new Error(`Channel ${channelId} does not support directory ${params.unsupported}`);
+      throw new Error(t("directoryCli.channelNoSupport", { channelId, unsupported: params.unsupported }));
     }
     const result = await fn({
       cfg,
@@ -146,7 +147,7 @@ export function registerDirectoryCli(program: Command) {
     printDirectoryList({ title: params.title, emptyMessage: params.emptyMessage, entries: result });
   };
 
-  withChannel(directory.command("self").description("Show the current account user")).action(
+  withChannel(directory.command("self").description(t("directoryCli.selfDesc"))).action(
     async (opts) => {
       try {
         const { cfg, channelId, accountId, plugin } = await resolve({
@@ -155,7 +156,7 @@ export function registerDirectoryCli(program: Command) {
         });
         const fn = plugin.directory?.self;
         if (!fn) {
-          throw new Error(`Channel ${channelId} does not support directory self`);
+          throw new Error(t("directoryCli.channelNoSupport", { channelId, unsupported: "self" }));
         }
         const result = await fn({ cfg, accountId, runtime: defaultRuntime });
         if (opts.json) {
@@ -163,7 +164,7 @@ export function registerDirectoryCli(program: Command) {
           return;
         }
         if (!result) {
-          defaultRuntime.log(theme.muted("Not available."));
+          defaultRuntime.log(theme.muted(t("directoryCli.notAvailable")));
           return;
         }
         const tableWidth = Math.max(60, (process.stdout.columns ?? 120) - 1);
@@ -185,10 +186,10 @@ export function registerDirectoryCli(program: Command) {
     },
   );
 
-  const peers = directory.command("peers").description("Peer directory (contacts/users)");
-  withChannel(peers.command("list").description("List peers"))
-    .option("--query <text>", "Optional search query")
-    .option("--limit <n>", "Limit results")
+  const peers = directory.command("peers").description(t("directoryCli.peersDesc"));
+  withChannel(peers.command("list").description(t("directoryCli.listPeersDesc")))
+    .option("--query <text>", t("directoryCli.optQuery"))
+    .option("--limit <n>", t("directoryCli.optLimit"))
     .action(async (opts) => {
       try {
         await runDirectoryList({
@@ -204,10 +205,10 @@ export function registerDirectoryCli(program: Command) {
       }
     });
 
-  const groups = directory.command("groups").description("Group directory");
-  withChannel(groups.command("list").description("List groups"))
-    .option("--query <text>", "Optional search query")
-    .option("--limit <n>", "Limit results")
+  const groups = directory.command("groups").description(t("directoryCli.groupsDesc"));
+  withChannel(groups.command("list").description(t("directoryCli.listGroupsDesc")))
+    .option("--query <text>", t("directoryCli.optQuery"))
+    .option("--limit <n>", t("directoryCli.optLimit"))
     .action(async (opts) => {
       try {
         await runDirectoryList({
@@ -226,8 +227,8 @@ export function registerDirectoryCli(program: Command) {
   withChannel(
     groups
       .command("members")
-      .description("List group members")
-      .requiredOption("--group-id <id>", "Group id"),
+      .description(t("directoryCli.listMembersDesc"))
+      .requiredOption("--group-id <id>", t("directoryCli.optGroupId")),
   )
     .option("--limit <n>", "Limit results")
     .action(async (opts) => {
@@ -238,7 +239,7 @@ export function registerDirectoryCli(program: Command) {
         });
         const fn = plugin.directory?.listGroupMembers;
         if (!fn) {
-          throw new Error(`Channel ${channelId} does not support group members listing`);
+          throw new Error(t("directoryCli.channelNoSupport", { channelId, unsupported: "group members listing" }));
         }
         const groupId = String(opts.groupId ?? "").trim();
         if (!groupId) {

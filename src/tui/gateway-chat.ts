@@ -16,6 +16,7 @@ import {
   type SessionsPatchResult,
   type SessionsPatchParams,
 } from "../gateway/protocol/index.js";
+import { t } from "../i18n/index.js";
 import { resolveConfiguredSecretInputString } from "../gateway/resolve-configured-secret-input-string.js";
 import { GATEWAY_CLIENT_MODES, GATEWAY_CLIENT_NAMES } from "../utils/message-channel.js";
 import { VERSION } from "../version.js";
@@ -60,8 +61,8 @@ function throwGatewayAuthResolutionError(reason: string): never {
   throw new Error(
     [
       reason,
-      "Fix: set OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD, pass --token/--password,",
-      "or resolve the configured secret provider for this credential.",
+      t("gatewayChat.fixAuthHint1"),
+      t("gatewayChat.fixAuthHint2"),
     ].join("\n"),
   );
 }

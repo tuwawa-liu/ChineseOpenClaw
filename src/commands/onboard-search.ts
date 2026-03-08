@@ -6,6 +6,7 @@ import {
   hasConfiguredSecretInput,
   normalizeSecretInputString,
 } from "../config/types.secrets.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 import type { SecretInputMode } from "./onboard-types.js";
@@ -25,7 +26,7 @@ export const SEARCH_PROVIDER_OPTIONS: readonly SearchProviderEntry[] = [
   {
     value: "brave",
     label: "Brave Search",
-    hint: "Structured results · country/language/time filters",
+    hint: t("onboardSearch.braveHint"),
     envKeys: ["BRAVE_API_KEY"],
     placeholder: "BSA...",
     signupUrl: "https://brave.com/search/api/",
@@ -33,7 +34,7 @@ export const SEARCH_PROVIDER_OPTIONS: readonly SearchProviderEntry[] = [
   {
     value: "gemini",
     label: "Gemini (Google Search)",
-    hint: "Google Search grounding · AI-synthesized",
+    hint: t("onboardSearch.geminiHint"),
     envKeys: ["GEMINI_API_KEY"],
     placeholder: "AIza...",
     signupUrl: "https://aistudio.google.com/apikey",
@@ -41,7 +42,7 @@ export const SEARCH_PROVIDER_OPTIONS: readonly SearchProviderEntry[] = [
   {
     value: "grok",
     label: "Grok (xAI)",
-    hint: "xAI web-grounded responses",
+    hint: t("onboardSearch.grokHint"),
     envKeys: ["XAI_API_KEY"],
     placeholder: "xai-...",
     signupUrl: "https://console.x.ai/",
@@ -49,7 +50,7 @@ export const SEARCH_PROVIDER_OPTIONS: readonly SearchProviderEntry[] = [
   {
     value: "kimi",
     label: "Kimi (Moonshot)",
-    hint: "Moonshot web search",
+    hint: t("onboardSearch.kimiHint"),
     envKeys: ["KIMI_API_KEY", "MOONSHOT_API_KEY"],
     placeholder: "sk-...",
     signupUrl: "https://platform.moonshot.cn/",
@@ -57,7 +58,7 @@ export const SEARCH_PROVIDER_OPTIONS: readonly SearchProviderEntry[] = [
   {
     value: "perplexity",
     label: "Perplexity Search",
-    hint: "Structured results · domain/country/language/time filters",
+    hint: t("onboardSearch.perplexityHint"),
     envKeys: ["PERPLEXITY_API_KEY"],
     placeholder: "pplx-...",
     signupUrl: "https://www.perplexity.ai/settings/api",
@@ -197,18 +198,18 @@ export async function setupSearch(
 ): Promise<OpenClawConfig> {
   await prompter.note(
     [
-      "Web search lets your agent look things up online.",
-      "Choose a provider and paste your API key.",
-      "Docs: https://docs.openclaw.ai/tools/web",
+      t("onboardSearch.webSearchIntro"),
+      t("onboardSearch.chooseProvider"),
+      t("onboardSearch.docsLink"),
     ].join("\n"),
-    "Web search",
+    t("onboardSearch.webSearch"),
   );
 
   const existingProvider = config.tools?.web?.search?.provider;
 
   const options = SEARCH_PROVIDER_OPTIONS.map((entry) => {
     const configured = hasExistingKey(config, entry.value) || hasKeyInEnv(entry);
-    const hint = configured ? `${entry.hint} · configured` : entry.hint;
+    const hint = configured ? `${entry.hint} · ${t("onboardSearch.configured")}` : entry.hint;
     return { value: entry.value, label: entry.label, hint };
   });
 
@@ -227,13 +228,13 @@ export async function setupSearch(
 
   type PickerValue = SearchProvider | "__skip__";
   const choice = await prompter.select<PickerValue>({
-    message: "Search provider",
+    message: t("onboardSearch.searchProvider"),
     options: [
       ...options,
       {
         value: "__skip__" as const,
-        label: "Skip for now",
-        hint: "Configure later with openclaw configure --section web",
+        label: t("onboardSearch.skipForNow"),
+        hint: t("onboardSearch.skipHint"),
       },
     ],
     initialValue: defaultProvider as PickerValue,
@@ -263,12 +264,12 @@ export async function setupSearch(
     const ref = buildSearchEnvRef(choice);
     await prompter.note(
       [
-        "Secret references enabled — OpenClaw will store a reference instead of the API key.",
-        `Env var: ${ref.id}${envAvailable ? " (detected)" : ""}.`,
-        ...(envAvailable ? [] : [`Set ${ref.id} in the Gateway environment.`]),
-        "Docs: https://docs.openclaw.ai/tools/web",
+        t("onboardSearch.secretRefsEnabled"),
+        `${t("onboardSearch.envVar")}: ${ref.id}${envAvailable ? ` (${t("onboardSearch.detected")})` : ""}.`,
+        ...(envAvailable ? [] : [t("onboardSearch.setEnvVar", { id: ref.id })]),
+        t("onboardSearch.docsLink"),
       ].join("\n"),
-      "Web search",
+      t("onboardSearch.webSearch"),
     );
     return applySearchKey(config, choice, ref);
   }
@@ -298,11 +299,11 @@ export async function setupSearch(
 
   await prompter.note(
     [
-      "No API key stored — web_search won't work until a key is available.",
-      `Get your key at: ${entry.signupUrl}`,
-      "Docs: https://docs.openclaw.ai/tools/web",
+      t("onboardSearch.noApiKey"),
+      `${t("onboardSearch.getKeyAt")}: ${entry.signupUrl}`,
+      t("onboardSearch.docsLink"),
     ].join("\n"),
-    "Web search",
+    t("onboardSearch.webSearch"),
   );
 
   return {
