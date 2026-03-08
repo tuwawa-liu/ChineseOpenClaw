@@ -168,7 +168,7 @@ export function registerDirectoryCli(program: Command) {
           return;
         }
         const tableWidth = Math.max(60, (process.stdout.columns ?? 120) - 1);
-        defaultRuntime.log(theme.heading("Self"));
+        defaultRuntime.log(theme.heading(t("directoryCli.selfLabel")));
         defaultRuntime.log(
           renderTable({
             width: tableWidth,
@@ -196,8 +196,8 @@ export function registerDirectoryCli(program: Command) {
           opts,
           action: "listPeers",
           unsupported: "peers",
-          title: "Peers",
-          emptyMessage: "No peers found.",
+          title: t("directoryCli.peersTitle"),
+          emptyMessage: t("directoryCli.noPeersFound"),
         });
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
@@ -215,8 +215,8 @@ export function registerDirectoryCli(program: Command) {
           opts,
           action: "listGroups",
           unsupported: "groups",
-          title: "Groups",
-          emptyMessage: "No groups found.",
+          title: t("directoryCli.groupsTitle"),
+          emptyMessage: t("directoryCli.noGroupsFound"),
         });
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
@@ -230,7 +230,7 @@ export function registerDirectoryCli(program: Command) {
       .description(t("directoryCli.listMembersDesc"))
       .requiredOption("--group-id <id>", t("directoryCli.optGroupId")),
   )
-    .option("--limit <n>", "Limit results")
+    .option("--limit <n>", t("directoryCli.optLimit"))
     .action(async (opts) => {
       try {
         const { cfg, channelId, accountId, plugin } = await resolve({
@@ -243,7 +243,7 @@ export function registerDirectoryCli(program: Command) {
         }
         const groupId = String(opts.groupId ?? "").trim();
         if (!groupId) {
-          throw new Error("Missing --group-id");
+          throw new Error(t("directoryCli.missingGroupId"));
         }
         const result = await fn({
           cfg,
@@ -257,8 +257,8 @@ export function registerDirectoryCli(program: Command) {
           return;
         }
         printDirectoryList({
-          title: "Group Members",
-          emptyMessage: "No group members found.",
+          title: t("directoryCli.groupMembersTitle"),
+          emptyMessage: t("directoryCli.noGroupMembersFound"),
           entries: result,
         });
       } catch (err) {

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js";
 import { fetchWithSsrFGuard } from "../infra/net/fetch-guard.js";
 import type { SsrFPolicy } from "../infra/net/ssrf.js";
 import { logWarn } from "../logger.js";
@@ -122,7 +123,7 @@ function rejectOversizedBase64Payload(params: {
   const estimated = estimateBase64DecodedBytes(params.data);
   if (estimated > params.maxBytes) {
     throw new Error(
-      `${params.label} too large: ${estimated} bytes (limit: ${params.maxBytes} bytes)`,
+      t("mediaInput.tooLarge", { label: params.label, estimated, maxBytes: params.maxBytes }),
     );
   }
 }
@@ -191,14 +192,14 @@ export async function fetchWithGuard(params: {
 
   try {
     if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+      throw new Error(t("mediaInput.fetchFailed", { status: response.status, statusText: response.statusText }));
     }
 
     const contentLength = response.headers.get("content-length");
     if (contentLength) {
       const size = Number(contentLength);
       if (Number.isFinite(size) && size > params.maxBytes) {
-        throw new Error(`Content too large: ${size} bytes (limit: ${params.maxBytes} bytes)`);
+        throw new Error(t("mediaInput.contentTooLarge", { size, maxBytes: params.maxBytes }));
       }
     }
 
@@ -239,7 +240,7 @@ async function normalizeInputImage(params: {
     await detectMime({ buffer: params.buffer, headerMime: params.mimeType }),
   );
   if (declaredMime.startsWith("image/") && detectedMime && !detectedMime.startsWith("image/")) {
-    throw new Error(`Unsupported image MIME type: ${detectedMime}`);
+    throw new Error(t("mediaInput.unsupportedImageMime", { mime: detectedMime }));
   }
   const sourceMime =
     (detectedMime && HEIC_INPUT_IMAGE_MIMES.has(detectedMime)) ||
@@ -247,7 +248,7 @@ async function normalizeInputImage(params: {
       ? (detectedMime ?? declaredMime)
       : declaredMime;
   if (!params.limits.allowedMimes.has(sourceMime)) {
-    throw new Error(`Unsupported image MIME type: ${sourceMime}`);
+    throw new Error(t("mediaInput.unsupportedImageMime", { mime: sourceMime }));
   }
 
   if (!HEIC_INPUT_IMAGE_MIMES.has(sourceMime)) {
@@ -261,7 +262,7 @@ async function normalizeInputImage(params: {
   const normalizedBuffer = await convertHeicToJpeg(params.buffer);
   if (normalizedBuffer.byteLength > params.limits.maxBytes) {
     throw new Error(
-      `Image too large after HEIC conversion: ${normalizedBuffer.byteLength} bytes (limit: ${params.limits.maxBytes} bytes)`,
+      t("mediaInput.heicTooLarge", { size: normalizedBuffer.byteLength, maxBytes: params.limits.maxBytes }),
     );
   }
   return {
@@ -279,12 +280,12 @@ export async function extractImageContentFromSource(
     rejectOversizedBase64Payload({ data: source.data, maxBytes: limits.maxBytes, label: "Image" });
     const canonicalData = canonicalizeBase64(source.data);
     if (!canonicalData) {
-      throw new Error("input_image base64 source has invalid 'data' field");
+      throw new Error(t("mediaInput.invalidBase64Image"));
     }
     const buffer = Buffer.from(canonicalData, "base64");
     if (buffer.byteLength > limits.maxBytes) {
       throw new Error(
-        `Image too large: ${buffer.byteLength} bytes (limit: ${limits.maxBytes} bytes)`,
+        t("mediaInput.imageTooLarge", { size: buffer.byteLength, maxBytes: limits.maxBytes }),
       );
     }
     return await normalizeInputImage({
@@ -296,7 +297,7 @@ export async function extractImageContentFromSource(
 
   if (source.type === "url") {
     if (!limits.allowUrl) {
-      throw new Error("input_image URL sources are disabled by config");
+      throw new Error(t("mediaInput.imageUrlDisabled"));
     }
     const result = await fetchWithGuard({
       url: source.url,
@@ -316,7 +317,7 @@ export async function extractImageContentFromSource(
     });
   }
 
-  throw new Error(`Unsupported input_image source type: ${(source as { type: string }).type}`);
+  throw new Error(t("mediaInput.unsupportedImageSourceType", { type: (source as { type: string }).type }));
 }
 
 export async function extractFileContentFromSource(params: {
@@ -334,7 +335,7 @@ export async function extractFileContentFromSource(params: {
     rejectOversizedBase64Payload({ data: source.data, maxBytes: limits.maxBytes, label: "File" });
     const canonicalData = canonicalizeBase64(source.data);
     if (!canonicalData) {
-      throw new Error("input_file base64 source has invalid 'data' field");
+      throw new Error(t("mediaInput.invalidBase64File"));
     }
     const parsed = parseContentType(source.mediaType);
     mimeType = parsed.mimeType;
@@ -342,7 +343,7 @@ export async function extractFileContentFromSource(params: {
     buffer = Buffer.from(canonicalData, "base64");
   } else {
     if (!limits.allowUrl) {
-      throw new Error("input_file URL sources are disabled by config");
+      throw new Error(t("mediaInput.fileUrlDisabled"));
     }
     const result = await fetchWithGuard({
       url: source.url,
@@ -362,14 +363,14 @@ export async function extractFileContentFromSource(params: {
   }
 
   if (buffer.byteLength > limits.maxBytes) {
-    throw new Error(`File too large: ${buffer.byteLength} bytes (limit: ${limits.maxBytes} bytes)`);
+    throw new Error(t("mediaInput.fileTooLarge", { size: buffer.byteLength, maxBytes: limits.maxBytes }));
   }
 
   if (!mimeType) {
-    throw new Error("input_file missing media type");
+    throw new Error(t("mediaInput.missingMediaType"));
   }
   if (!limits.allowedMimes.has(mimeType)) {
-    throw new Error(`Unsupported file MIME type: ${mimeType}`);
+    throw new Error(t("mediaInput.unsupportedFileMime", { mimeType }));
   }
 
   if (mimeType === "application/pdf") {

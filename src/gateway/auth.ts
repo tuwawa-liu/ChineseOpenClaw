@@ -5,6 +5,7 @@ import type {
   GatewayTrustedProxyConfig,
 } from "../config/config.js";
 import { resolveSecretInputRef } from "../config/types.secrets.js";
+import { t } from "../i18n/index.js";
 import { readTailscaleWhoisIdentity, type TailscaleWhoisIdentity } from "../infra/tailscale.js";
 import { safeEqualSecret } from "../security/secret-equal.js";
 import {
@@ -300,7 +301,7 @@ export function assertGatewayAuthConfigured(
       return;
     }
     throw new Error(
-      "gateway auth mode is token, but no token was configured (set gateway.auth.token or OPENCLAW_GATEWAY_TOKEN)",
+      t("gatewayAuth.tokenNotConfigured"),
     );
   }
   if (auth.mode === "password" && !auth.password) {
@@ -309,20 +310,20 @@ export function assertGatewayAuthConfigured(
       typeof rawAuthConfig.password !== "string" // pragma: allowlist secret
     ) {
       throw new Error(
-        "gateway auth mode is password, but gateway.auth.password contains a provider reference object instead of a resolved string — bootstrap secrets (gateway.auth.password) must be plaintext strings or set via the OPENCLAW_GATEWAY_PASSWORD environment variable because the secrets provider system has not initialised yet at gateway startup", // pragma: allowlist secret
+        t("gatewayAuth.passwordIsRef"),
       );
     }
-    throw new Error("gateway auth mode is password, but no password was configured");
+    throw new Error(t("gatewayAuth.passwordNotConfigured"));
   }
   if (auth.mode === "trusted-proxy") {
     if (!auth.trustedProxy) {
       throw new Error(
-        "gateway auth mode is trusted-proxy, but no trustedProxy config was provided (set gateway.auth.trustedProxy)",
+        t("gatewayAuth.trustedProxyMissing"),
       );
     }
     if (!auth.trustedProxy.userHeader || auth.trustedProxy.userHeader.trim() === "") {
       throw new Error(
-        "gateway auth mode is trusted-proxy, but trustedProxy.userHeader is empty (set gateway.auth.trustedProxy.userHeader)",
+        t("gatewayAuth.trustedProxyUserHeaderEmpty"),
       );
     }
   }

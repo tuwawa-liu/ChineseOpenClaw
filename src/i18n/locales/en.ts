@@ -3142,6 +3142,14 @@ export const enTaglines: TaglineSet = {
     listGroupsDesc: "List groups",
     listMembersDesc: "List group members",
     optGroupId: "Group id",
+    selfLabel: "Self",
+    peersTitle: "Peers",
+    noPeersFound: "No peers found.",
+    groupsTitle: "Groups",
+    noGroupsFound: "No groups found.",
+    groupMembersTitle: "Group Members",
+    noGroupMembersFound: "No group members found.",
+    missingGroupId: "Missing --group-id",
   },
 
   completionCli: {
@@ -3198,10 +3206,86 @@ export const enTaglines: TaglineSet = {
     missingSearchQuery: "Missing search query. Provide a positional query or use --query <text>.",
     searchFailed: "Memory search failed: {message}",
     noMatches: "No matches.",
+    qmdNotFound: "QMD index not found at {dbPath}",
+    qmdCheckFailed: "QMD index check failed for {dbPath} (exit code {code})",
+    qmdEmpty: "QMD index is empty at {dbPath}",
   },
 
   gatewayChat: {
     fixAuthHint1: "Fix: set OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD, pass --token/--password,",
     fixAuthHint2: "or resolve the configured secret provider for this credential.",
+  },
+
+  // gateway/auth.ts config errors
+  gatewayAuth: {
+    tokenNotConfigured: "gateway auth mode is token, but no token was configured (set gateway.auth.token or OPENCLAW_GATEWAY_TOKEN)",
+    passwordIsRef: "gateway auth mode is password, but gateway.auth.password contains a provider reference object instead of a resolved string \u2014 bootstrap secrets (gateway.auth.password) must be plaintext strings or set via the OPENCLAW_GATEWAY_PASSWORD environment variable because the secrets provider system has not initialised yet at gateway startup",
+    passwordNotConfigured: "gateway auth mode is password, but no password was configured",
+    trustedProxyMissing: "gateway auth mode is trusted-proxy, but no trustedProxy config was provided (set gateway.auth.trustedProxy)",
+    trustedProxyUserHeaderEmpty: "gateway auth mode is trusted-proxy, but trustedProxy.userHeader is empty (set gateway.auth.trustedProxy.userHeader)",
+  },
+
+  // gateway/http-common.ts error messages
+  gatewayHttp: {
+    methodNotAllowed: "Method Not Allowed",
+    unauthorized: "Unauthorized",
+    rateLimited: "Too many failed authentication attempts. Please try again later.",
+    payloadTooLarge: "Payload too large",
+    requestBodyTimeout: "Request body timeout",
+  },
+
+  // gateway/node-invoke-system-run-approval.ts
+  gatewayApproval: {
+    missingRunId: "approval override requires params.runId",
+    unavailable: "exec approvals unavailable",
+    unknownOrExpired: "unknown or expired approval id",
+    expired: "approval expired",
+    missingNodeId: "node.invoke requires nodeId",
+    nodeBindingMissing: "approval id missing node binding",
+    nodeMismatch: "approval id not valid for this node",
+    deviceMismatch: "approval id not valid for this device",
+    clientMismatch: "approval id not valid for this client",
+  },
+
+  // polls.ts validation errors
+  polls: {
+    questionRequired: "Poll question is required",
+    minTwoOptions: "Poll requires at least 2 options",
+    maxOptions: "Poll supports at most {maxOptions} options",
+    minSelections: "maxSelections must be at least 1",
+    maxSelectionsExceed: "maxSelections cannot exceed option count",
+    minDurationSeconds: "durationSeconds must be at least 1",
+    minDurationHours: "durationHours must be at least 1",
+    durationExclusive: "durationSeconds and durationHours are mutually exclusive",
+  },
+
+  // media/input-files.ts error messages
+  mediaInput: {
+    tooLarge: "{label} too large: {estimated} bytes (limit: {maxBytes} bytes)",
+    fetchFailed: "Failed to fetch: {status} {statusText}",
+    contentTooLarge: "Content too large: {size} bytes (limit: {maxBytes} bytes)",
+    unsupportedImageMime: "Unsupported image MIME type: {mime}",
+    heicTooLarge: "Image too large after HEIC conversion: {size} bytes (limit: {maxBytes} bytes)",
+    invalidBase64Image: "input_image base64 source has invalid 'data' field",
+    imageTooLarge: "Image too large: {size} bytes (limit: {maxBytes} bytes)",
+    imageUrlDisabled: "input_image URL sources are disabled by config",
+    unsupportedImageSourceType: "Unsupported input_image source type: {type}",
+    invalidBase64File: "input_file base64 source has invalid 'data' field",
+    fileUrlDisabled: "input_file URL sources are disabled by config",
+    fileTooLarge: "File too large: {size} bytes (limit: {maxBytes} bytes)",
+    missingMediaType: "input_file missing media type",
+    unsupportedFileMime: "Unsupported file MIME type: {mimeType}",
+  },
+
+  // media/image-ops.ts
+  mediaImage: {
+    pngOptimizeFailed: "Failed to optimize PNG image",
+  },
+
+  // infra/tmp-openclaw-dir.ts
+  tmpDir: {
+    tightenedPermissions: "[openclaw] tightened permissions on temp dir: {path}",
+    unsafeFallback: "Unsafe fallback OpenClaw temp dir: {path}",
+    unableToCreate: "Unable to create fallback OpenClaw temp dir: {path}",
   },
 };

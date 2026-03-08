@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { t } from "../i18n/index.js";
 import type { GatewayAuthResult } from "./auth.js";
 import { readJsonBody } from "./hooks.js";
 
@@ -35,12 +36,12 @@ export function sendText(res: ServerResponse, status: number, body: string) {
 
 export function sendMethodNotAllowed(res: ServerResponse, allow = "POST") {
   res.setHeader("Allow", allow);
-  sendText(res, 405, "Method Not Allowed");
+  sendText(res, 405, t("gatewayHttp.methodNotAllowed"));
 }
 
 export function sendUnauthorized(res: ServerResponse) {
   sendJson(res, 401, {
-    error: { message: "Unauthorized", type: "unauthorized" },
+    error: { message: t("gatewayHttp.unauthorized"), type: "unauthorized" },
   });
 }
 
@@ -50,7 +51,7 @@ export function sendRateLimited(res: ServerResponse, retryAfterMs?: number) {
   }
   sendJson(res, 429, {
     error: {
-      message: "Too many failed authentication attempts. Please try again later.",
+      message: t("gatewayHttp.rateLimited"),
       type: "rate_limited",
     },
   });
@@ -79,13 +80,13 @@ export async function readJsonBodyOrError(
   if (!body.ok) {
     if (body.error === "payload too large") {
       sendJson(res, 413, {
-        error: { message: "Payload too large", type: "invalid_request_error" },
+        error: { message: t("gatewayHttp.payloadTooLarge"), type: "invalid_request_error" },
       });
       return undefined;
     }
     if (body.error === "request body timeout") {
       sendJson(res, 408, {
-        error: { message: "Request body timeout", type: "invalid_request_error" },
+        error: { message: t("gatewayHttp.requestBodyTimeout"), type: "invalid_request_error" },
       });
       return undefined;
     }

@@ -3133,10 +3133,17 @@ export const zhCNTaglines: TaglineSet = {
     listGroupsDesc: "列出群组",
     listMembersDesc: "列出群组成员",
     optGroupId: "群组 ID",
+    selfLabel: "自身",
+    peersTitle: "对等节点",
+    noPeersFound: "未找到对等节点。",
+    groupsTitle: "群组",
+    noGroupsFound: "未找到群组。",
+    groupMembersTitle: "群组成员",
+    noGroupMembersFound: "未找到群组成员。",
+    missingGroupId: "缺少 --group-id",
   },
 
   completionCli: {
-    description: "生成 Shell 补全脚本",
     optShell: "要生成补全的 Shell（默认：zsh）",
     optInstall: "将补全脚本安装到 Shell 配置文件",
     optWriteState: "将补全脚本写入 $OPENCLAW_STATE_DIR/completions（不输出到 stdout）",
@@ -3189,10 +3196,79 @@ export const zhCNTaglines: TaglineSet = {
     missingSearchQuery: "缺少搜索查询。请提供位置参数查询或使用 --query <text>。",
     searchFailed: "内存搜索失败：{message}",
     noMatches: "无匹配结果。",
+    qmdNotFound: "在 {dbPath} 未找到 QMD 索引",
+    qmdCheckFailed: "QMD 索引检查失败：{dbPath}（退出代码 {code}）",
+    qmdEmpty: "QMD 索引为空：{dbPath}",
   },
 
   gatewayChat: {
     fixAuthHint1: "修复方法：设置 OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD，传入 --token/--password，",
     fixAuthHint2: "或为此凭据解析已配置的密钥提供商。",
+  },
+
+  gatewayAuth: {
+    tokenNotConfigured: "网关认证模式为 token，但未配置令牌（请设置 gateway.auth.token 或 OPENCLAW_GATEWAY_TOKEN）",
+    passwordIsRef: "网关认证模式为 password，但 gateway.auth.password 包含提供商引用对象而非已解析的字符串——引导密钥（gateway.auth.password）必须是明文字符串或通过 OPENCLAW_GATEWAY_PASSWORD 环境变量设置，因为密钥提供商系统在网关启动时尚未初始化",
+    passwordNotConfigured: "网关认证模式为 password，但未配置密码",
+    trustedProxyMissing: "网关认证模式为 trusted-proxy，但未提供 trustedProxy 配置（请设置 gateway.auth.trustedProxy）",
+    trustedProxyUserHeaderEmpty: "网关认证模式为 trusted-proxy，但 trustedProxy.userHeader 为空（请设置 gateway.auth.trustedProxy.userHeader）",
+  },
+
+  gatewayHttp: {
+    methodNotAllowed: "不允许的请求方法",
+    unauthorized: "未授权",
+    rateLimited: "认证失败次数过多，请稍后重试。",
+    payloadTooLarge: "请求体过大",
+    requestBodyTimeout: "请求体超时",
+  },
+
+  gatewayApproval: {
+    missingRunId: "审批覆盖需要 params.runId",
+    unavailable: "执行审批不可用",
+    unknownOrExpired: "未知或已过期的审批 ID",
+    expired: "审批已过期",
+    missingNodeId: "node.invoke 需要 nodeId",
+    nodeBindingMissing: "审批 ID 缺少节点绑定",
+    nodeMismatch: "审批 ID 对此节点无效",
+    deviceMismatch: "审批 ID 对此设备无效",
+    clientMismatch: "审批 ID 对此客户端无效",
+  },
+
+  polls: {
+    questionRequired: "投票问题为必填项",
+    minTwoOptions: "投票至少需要 2 个选项",
+    maxOptions: "投票最多支持 {maxOptions} 个选项",
+    minSelections: "maxSelections 至少为 1",
+    maxSelectionsExceed: "maxSelections 不能超过选项数量",
+    minDurationSeconds: "durationSeconds 至少为 1",
+    minDurationHours: "durationHours 至少为 1",
+    durationExclusive: "durationSeconds 和 durationHours 不能同时使用",
+  },
+
+  mediaInput: {
+    tooLarge: "{label} 过大：{estimated} 字节（限制：{maxBytes} 字节）",
+    fetchFailed: "获取失败：{status} {statusText}",
+    contentTooLarge: "内容过大：{size} 字节（限制：{maxBytes} 字节）",
+    unsupportedImageMime: "不支持的图片 MIME 类型：{mime}",
+    heicTooLarge: "HEIC 转换后图片过大：{size} 字节（限制：{maxBytes} 字节）",
+    invalidBase64Image: "input_image base64 来源的 'data' 字段无效",
+    imageTooLarge: "图片过大：{size} 字节（限制：{maxBytes} 字节）",
+    imageUrlDisabled: "配置已禁用 input_image URL 来源",
+    unsupportedImageSourceType: "不支持的 input_image 来源类型：{type}",
+    invalidBase64File: "input_file base64 来源的 'data' 字段无效",
+    fileUrlDisabled: "配置已禁用 input_file URL 来源",
+    fileTooLarge: "文件过大：{size} 字节（限制：{maxBytes} 字节）",
+    missingMediaType: "input_file 缺少媒体类型",
+    unsupportedFileMime: "不支持的文件 MIME 类型：{mimeType}",
+  },
+
+  mediaImage: {
+    pngOptimizeFailed: "PNG 图片优化失败",
+  },
+
+  tmpDir: {
+    tightenedPermissions: "[openclaw] 已收紧临时目录权限：{path}",
+    unsafeFallback: "不安全的回退 OpenClaw 临时目录：{path}",
+    unableToCreate: "无法创建回退 OpenClaw 临时目录：{path}",
   },
 };

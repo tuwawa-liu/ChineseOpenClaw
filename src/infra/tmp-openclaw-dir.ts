@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { t } from "../i18n/index.js";
 
 export const POSIX_OPENCLAW_TMP_DIR = "/tmp/openclaw";
 const TMP_DIR_ACCESS_MODE = fs.constants.W_OK | fs.constants.X_OK;
@@ -109,7 +110,7 @@ export function resolvePreferredOpenClawTmpDir(
         return false;
       }
       chmodSync(candidatePath, 0o700);
-      warn(`[openclaw] tightened permissions on temp dir: ${candidatePath}`);
+      warn(t("tmpDir.tightenedPermissions", { path: candidatePath }));
       return resolveDirState(candidatePath) === "available";
     } catch {
       return false;
@@ -126,16 +127,16 @@ export function resolvePreferredOpenClawTmpDir(
       if (tryRepairWritableBits(fallbackPath)) {
         return fallbackPath;
       }
-      throw new Error(`Unsafe fallback OpenClaw temp dir: ${fallbackPath}`);
+      throw new Error(t("tmpDir.unsafeFallback", { path: fallbackPath }));
     }
     try {
       mkdirSync(fallbackPath, { recursive: true, mode: 0o700 });
       chmodSync(fallbackPath, 0o700);
     } catch {
-      throw new Error(`Unable to create fallback OpenClaw temp dir: ${fallbackPath}`);
+      throw new Error(t("tmpDir.unableToCreate", { path: fallbackPath }));
     }
     if (resolveDirState(fallbackPath) !== "available" && !tryRepairWritableBits(fallbackPath)) {
-      throw new Error(`Unsafe fallback OpenClaw temp dir: ${fallbackPath}`);
+      throw new Error(t("tmpDir.unsafeFallback", { path: fallbackPath }));
     }
     return fallbackPath;
   };

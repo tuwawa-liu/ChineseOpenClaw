@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { t } from "../i18n/index.js";
 import { runExec } from "../process/exec.js";
 
 type Sharp = typeof import("sharp");
@@ -462,7 +463,7 @@ export async function optimizeImageToPng(
     };
   }
 
-  throw new Error("Failed to optimize PNG image");
+  throw new Error(t("mediaImage.pngOptimizeFailed"));
 }
 
 /**

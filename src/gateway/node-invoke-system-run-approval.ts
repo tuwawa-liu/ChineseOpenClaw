@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.js";
 import { resolveSystemRunApprovalRuntimeContext } from "../infra/system-run-approval-context.js";
 import { resolveSystemRunCommand } from "../infra/system-run-command.js";
 import type { ExecApprovalRecord } from "./exec-approval-manager.js";
@@ -133,7 +134,7 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
   if (!runId) {
     return systemRunApprovalGuardError({
       code: "MISSING_RUN_ID",
-      message: "approval override requires params.runId",
+      message: t("gatewayApproval.missingRunId"),
     });
   }
 
@@ -141,7 +142,7 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
   if (!manager) {
     return systemRunApprovalGuardError({
       code: "APPROVALS_UNAVAILABLE",
-      message: "exec approvals unavailable",
+      message: t("gatewayApproval.unavailable"),
     });
   }
 
@@ -149,7 +150,7 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
   if (!snapshot) {
     return systemRunApprovalGuardError({
       code: "UNKNOWN_APPROVAL_ID",
-      message: "unknown or expired approval id",
+      message: t("gatewayApproval.unknownOrExpired"),
       details: { runId },
     });
   }
@@ -158,7 +159,7 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
   if (nowMs > snapshot.expiresAtMs) {
     return systemRunApprovalGuardError({
       code: "APPROVAL_EXPIRED",
-      message: "approval expired",
+      message: t("gatewayApproval.expired"),
       details: { runId },
     });
   }
@@ -167,7 +168,7 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
   if (!targetNodeId) {
     return systemRunApprovalGuardError({
       code: "MISSING_NODE_ID",
-      message: "node.invoke requires nodeId",
+      message: t("gatewayApproval.missingNodeId"),
       details: { runId },
     });
   }
@@ -175,14 +176,14 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
   if (!approvalNodeId) {
     return systemRunApprovalGuardError({
       code: "APPROVAL_NODE_BINDING_MISSING",
-      message: "approval id missing node binding",
+      message: t("gatewayApproval.nodeBindingMissing"),
       details: { runId },
     });
   }
   if (approvalNodeId !== targetNodeId) {
     return systemRunApprovalGuardError({
       code: "APPROVAL_NODE_MISMATCH",
-      message: "approval id not valid for this node",
+      message: t("gatewayApproval.nodeMismatch"),
       details: { runId },
     });
   }
@@ -195,7 +196,7 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
     if (snapshotDeviceId !== clientDeviceId) {
       return systemRunApprovalGuardError({
         code: "APPROVAL_DEVICE_MISMATCH",
-        message: "approval id not valid for this device",
+        message: t("gatewayApproval.deviceMismatch"),
         details: { runId },
       });
     }
@@ -205,7 +206,7 @@ export function sanitizeSystemRunParamsForForwarding(opts: {
   ) {
     return systemRunApprovalGuardError({
       code: "APPROVAL_CLIENT_MISMATCH",
-      message: "approval id not valid for this client",
+      message: t("gatewayApproval.clientMismatch"),
       details: { runId },
     });
   }

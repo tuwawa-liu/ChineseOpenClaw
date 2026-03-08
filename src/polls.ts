@@ -1,3 +1,5 @@
+import { t } from "./i18n/index.js";
+
 export type PollInput = {
   question: string;
   options: string[];
@@ -39,15 +41,15 @@ export function normalizePollInput(
 ): NormalizedPollInput {
   const question = input.question.trim();
   if (!question) {
-    throw new Error("Poll question is required");
+    throw new Error(t("polls.questionRequired"));
   }
   const pollOptions = (input.options ?? []).map((option) => option.trim());
   const cleaned = pollOptions.filter(Boolean);
   if (cleaned.length < 2) {
-    throw new Error("Poll requires at least 2 options");
+    throw new Error(t("polls.minTwoOptions"));
   }
   if (options.maxOptions !== undefined && cleaned.length > options.maxOptions) {
-    throw new Error(`Poll supports at most ${options.maxOptions} options`);
+    throw new Error(t("polls.maxOptions", { maxOptions: options.maxOptions }));
   }
   const maxSelectionsRaw = input.maxSelections;
   const maxSelections =
@@ -55,10 +57,10 @@ export function normalizePollInput(
       ? Math.floor(maxSelectionsRaw)
       : 1;
   if (maxSelections < 1) {
-    throw new Error("maxSelections must be at least 1");
+    throw new Error(t("polls.minSelections"));
   }
   if (maxSelections > cleaned.length) {
-    throw new Error("maxSelections cannot exceed option count");
+    throw new Error(t("polls.maxSelectionsExceed"));
   }
 
   const durationSecondsRaw = input.durationSeconds;
@@ -67,7 +69,7 @@ export function normalizePollInput(
       ? Math.floor(durationSecondsRaw)
       : undefined;
   if (durationSeconds !== undefined && durationSeconds < 1) {
-    throw new Error("durationSeconds must be at least 1");
+    throw new Error(t("polls.minDurationSeconds"));
   }
 
   const durationRaw = input.durationHours;
@@ -76,10 +78,10 @@ export function normalizePollInput(
       ? Math.floor(durationRaw)
       : undefined;
   if (durationHours !== undefined && durationHours < 1) {
-    throw new Error("durationHours must be at least 1");
+    throw new Error(t("polls.minDurationHours"));
   }
   if (durationSeconds !== undefined && durationHours !== undefined) {
-    throw new Error("durationSeconds and durationHours are mutually exclusive");
+    throw new Error(t("polls.durationExclusive"));
   }
   return {
     question,

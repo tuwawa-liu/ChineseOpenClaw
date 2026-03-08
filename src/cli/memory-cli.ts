@@ -295,15 +295,15 @@ async function summarizeQmdIndexArtifact(manager: MemoryManager): Promise<string
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;
     if (code === "ENOENT") {
-      throw new Error(`QMD index file not found: ${shortenHomePath(dbPath)}`, { cause: err });
+      throw new Error(t("memoryCli.qmdNotFound", { dbPath: shortenHomePath(dbPath) }), { cause: err });
     }
     throw new Error(
-      `QMD index file check failed: ${shortenHomePath(dbPath)} (${code ?? "error"})`,
+      t("memoryCli.qmdCheckFailed", { dbPath: shortenHomePath(dbPath), code: code ?? "error" }),
       { cause: err },
     );
   }
   if (!stat.isFile() || stat.size <= 0) {
-    throw new Error(`QMD index file is empty: ${shortenHomePath(dbPath)}`);
+    throw new Error(t("memoryCli.qmdEmpty", { dbPath: shortenHomePath(dbPath) }));
   }
   return `QMD index: ${shortenHomePath(dbPath)} (${stat.size} bytes)`;
 }
