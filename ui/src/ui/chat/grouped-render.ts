@@ -117,9 +117,10 @@ export function renderMessageGroup(
 ) {
   const normalizedRole = normalizeRoleForGrouping(group.role);
   const assistantName = opts.assistantName ?? t("chatExtra.assistant");
+  const userLabel = group.senderLabel?.trim();
   const who =
     normalizedRole === "user"
-      ? t("chatExtra.you")
+      ? (userLabel ?? t("chatExtra.you"))
       : normalizedRole === "assistant"
         ? assistantName
         : normalizedRole;
