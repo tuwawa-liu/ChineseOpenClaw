@@ -1230,6 +1230,8 @@ export const zh_CN: TranslationMap = {
   chatExtra: {
     assistant: "助手",
     you: "你",
+    userInitial: "用",
+    assistantInitial: "助",
   },
   appRenderExtra: {
     opensInNewTab: "（在新标签页中打开）",

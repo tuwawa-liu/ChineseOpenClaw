@@ -264,7 +264,7 @@ async function promptWebToolsConfig(
           t("commands.configWiz.noKeyStored"),
           t("commands.configWiz.storeKeyOrEnv", { envVars: envVarNames }),
           t("commands.configWiz.getApiKeyAt", { url: entry.signupUrl }),
-          "Docs: https://docs.openclaw.ai/tools/web",
+          `${t("commands.configureWizard.docs")} https://docs.openclaw.ai/tools/web`,
         ].join("\n"),
         t("commands.configWiz.webSearchTitle"),
       );
@@ -677,8 +677,8 @@ export async function runConfigureWizard(
 
     note(
       [
-        `Web UI: ${links.httpUrl}`,
-        `Gateway WS: ${links.wsUrl}`,
+        `${t("commands.configureWizard.webUi")} ${links.httpUrl}`,
+        `${t("commands.configureWizard.gatewayWs")} ${links.wsUrl}`,
         gatewayStatusLine,
         `${t("commands.configureWizard.docs")} https://docs.openclaw.ai/web/control-ui`,
       ].join("\n"),

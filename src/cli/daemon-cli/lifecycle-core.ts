@@ -6,6 +6,7 @@ import type { GatewayService } from "../../daemon/service.js";
 import { renderSystemdUnavailableHints } from "../../daemon/systemd-hints.js";
 import { isSystemdUserServiceAvailable } from "../../daemon/systemd.js";
 import { isGatewaySecretRefUnavailableError } from "../../gateway/credentials.js";
+import { t } from "../../i18n/index.js";
 import { isWSL } from "../../infra/wsl.js";
 import { defaultRuntime } from "../../runtime.js";
 import { resolveGatewayTokenForDriftCheck } from "./gateway-token-drift.js";
@@ -82,14 +83,14 @@ async function handleServiceNotLoaded(params: {
   params.emit({
     ok: true,
     result: "not-loaded",
-    message: `${params.serviceNoun} service ${params.service.notLoadedText}.`,
+    message: t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }),
     hints,
     service: buildDaemonServiceSnapshot(params.service, params.loaded),
   });
   if (!params.json) {
-    defaultRuntime.log(`${params.serviceNoun} service ${params.service.notLoadedText}.`);
+    defaultRuntime.log(t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }));
     for (const hint of hints) {
-      defaultRuntime.log(`Start with: ${hint}`);
+      defaultRuntime.log(t("lifecycleCore.startWith", { hint }));
     }
   }
 }
@@ -102,7 +103,7 @@ async function resolveServiceLoadedOrFail(params: {
   try {
     return await params.service.isLoaded({ env: process.env });
   } catch (err) {
-    params.fail(`${params.serviceNoun} service check failed: ${String(err)}`);
+    params.fail(t("lifecycleCore.serviceCheckFailed", { noun: params.serviceNoun, err: String(err) }));
     return null;
   }
 }
@@ -118,7 +119,7 @@ export async function runServiceUninstall(params: {
   const { stdout, emit, fail } = createActionIO({ action: "uninstall", json });
 
   if (resolveIsNixMode(process.env)) {
-    fail("Nix mode detected; service uninstall is disabled.");
+    fail(t("lifecycleCore.nixModeUninstallDisabled"));
     return;
   }
 
@@ -138,7 +139,7 @@ export async function runServiceUninstall(params: {
   try {
     await params.service.uninstall({ env: process.env, stdout });
   } catch (err) {
-    fail(`${params.serviceNoun} uninstall failed: ${String(err)}`);
+    fail(t("lifecycleCore.uninstallFailed", { noun: params.serviceNoun, err: String(err) }));
     return;
   }
 
@@ -149,7 +150,7 @@ export async function runServiceUninstall(params: {
     loaded = false;
   }
   if (loaded && params.assertNotLoadedAfterUninstall) {
-    fail(`${params.serviceNoun} service still loaded after uninstall.`);
+    fail(t("lifecycleCore.stillLoadedAfterUninstall", { noun: params.serviceNoun }));
     return;
   }
   emit({
@@ -191,7 +192,7 @@ export async function runServiceStart(params: {
     await params.service.restart({ env: process.env, stdout });
   } catch (err) {
     const hints = params.renderStartHints();
-    fail(`${params.serviceNoun} start failed: ${String(err)}`, hints);
+    fail(t("lifecycleCore.startFailed", { noun: params.serviceNoun, err: String(err) }), hints);
     return;
   }
 
@@ -242,24 +243,24 @@ export async function runServiceStop(params: {
         return;
       }
     } catch (err) {
-      fail(`${params.serviceNoun} stop failed: ${String(err)}`);
+      fail(t("lifecycleCore.stopFailed", { noun: params.serviceNoun, err: String(err) }));
       return;
     }
     emit({
       ok: true,
       result: "not-loaded",
-      message: `${params.serviceNoun} service ${params.service.notLoadedText}.`,
+      message: t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }),
       service: buildDaemonServiceSnapshot(params.service, loaded),
     });
     if (!json) {
-      defaultRuntime.log(`${params.serviceNoun} service ${params.service.notLoadedText}.`);
+      defaultRuntime.log(t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }));
     }
     return;
   }
   try {
     await params.service.stop({ env: process.env, stdout });
   } catch (err) {
-    fail(`${params.serviceNoun} stop failed: ${String(err)}`);
+    fail(t("lifecycleCore.stopFailed", { noun: params.serviceNoun, err: String(err) }));
     return;
   }
 
@@ -302,7 +303,7 @@ export async function runServiceRestart(params: {
     try {
       handledNotLoaded = (await params.onNotLoaded?.({ json, stdout, fail })) ?? null;
     } catch (err) {
-      fail(`${params.serviceNoun} restart failed: ${String(err)}`);
+      fail(t("lifecycleCore.restartFailed", { noun: params.serviceNoun, err: String(err) }));
       return false;
     }
     if (!handledNotLoaded) {
@@ -344,7 +345,7 @@ export async function runServiceRestart(params: {
     } catch (err) {
       if (isGatewaySecretRefUnavailableError(err, "gateway.auth.token")) {
         const warning =
-          "Unable to verify gateway token drift: gateway.auth.token SecretRef is configured but unavailable in this command path.";
+          t("lifecycleCore.tokenDriftUnavailable");
         warnings.push(warning);
         if (!json) {
           defaultRuntime.log(`\n⚠️  ${warning}\n`);
@@ -381,7 +382,7 @@ export async function runServiceRestart(params: {
     return true;
   } catch (err) {
     const hints = params.renderStartHints();
-    fail(`${params.serviceNoun} restart failed: ${String(err)}`, hints);
+    fail(t("lifecycleCore.restartFailed", { noun: params.serviceNoun, err: String(err) }), hints);
     return false;
   }
 }

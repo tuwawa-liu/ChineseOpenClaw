@@ -43,7 +43,7 @@ import { loadValidConfigOrThrow, updateConfig } from "./shared.js";
 
 function guardCancel<T>(value: T | symbol): T {
   if (typeof value === "symbol" || isCancel(value)) {
-    cancel("Cancelled.");
+    cancel(t("modelsAuth.cancelled"));
     process.exit(0);
   }
   return value;
@@ -140,7 +140,7 @@ export async function modelsAuthSetupTokenCommand(
   );
 
   logConfigUpdated(runtime);
-  runtime.log(`Auth profile: ${profileId} (${provider}/token)`);
+  runtime.log(t("modelsAuth.authProfile", { profileId, detail: `${provider}/token` }));
 }
 
 export async function modelsAuthPasteTokenCommand(
@@ -182,7 +182,7 @@ export async function modelsAuthPasteTokenCommand(
   await updateConfig((cfg) => applyAuthProfileConfig(cfg, { profileId, provider, mode: "token" }));
 
   logConfigUpdated(runtime);
-  runtime.log(`Auth profile: ${profileId} (${provider}/token)`);
+  runtime.log(t("modelsAuth.authProfile", { profileId, detail: `${provider}/token` }));
 }
 
 export async function modelsAuthAddCommand(_opts: Record<string, never>, runtime: RuntimeEnv) {
@@ -333,7 +333,7 @@ async function runBuiltInOpenAICodexLogin(params: {
   });
 
   logConfigUpdated(params.runtime);
-  params.runtime.log(`Auth profile: ${profileId} (openai-codex/oauth)`);
+  params.runtime.log(t("modelsAuth.authProfile", { profileId, detail: "openai-codex/oauth" }));
   if (params.opts.setDefault) {
     params.runtime.log(t("modelsAuth.defaultModelSet", { model: OPENAI_CODEX_DEFAULT_MODEL }));
   } else {
@@ -455,7 +455,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
   logConfigUpdated(runtime);
   for (const profile of result.profiles) {
     runtime.log(
-      `Auth profile: ${profile.profileId} (${profile.credential.provider}/${credentialMode(profile.credential)})`,
+      t("modelsAuth.authProfile", { profileId: profile.profileId, detail: `${profile.credential.provider}/${credentialMode(profile.credential)}` }),
     );
   }
   if (result.defaultModel) {

@@ -19,6 +19,7 @@ import { resolveGatewayService } from "../../daemon/service.js";
 import { trimToUndefined } from "../../gateway/credentials.js";
 import { resolveGatewayBindHost } from "../../gateway/net.js";
 import { resolveGatewayProbeAuthWithSecretInputs } from "../../gateway/probe-auth.js";
+import { t } from "../../i18n/index.js";
 import { parseStrictPositiveInteger } from "../../infra/parse-finite-number.js";
 import {
   formatPortDiagnostics,
@@ -199,9 +200,9 @@ async function resolveGatewayStatusSummary(params: {
   const probeUrl = probeUrlOverride ?? `${scheme}://${probeHost}:${daemonPort}`;
   const probeNote =
     !probeUrlOverride && bindMode === "lan"
-      ? `bind=lan listens on 0.0.0.0 (all interfaces); probing via ${probeHost}.`
+      ? t("statusGather.bindLanProbe", { host: probeHost })
       : !probeUrlOverride && bindMode === "loopback"
-        ? "Loopback-only gateway; only local clients can connect."
+        ? t("statusGather.loopbackOnly")
         : undefined;
 
   return {

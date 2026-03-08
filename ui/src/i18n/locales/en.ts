@@ -1232,6 +1232,8 @@ export const en: TranslationMap = {
   chatExtra: {
     assistant: "Assistant",
     you: "You",
+    userInitial: "U",
+    assistantInitial: "A",
   },
   appRenderExtra: {
     opensInNewTab: "(opens in new tab)",

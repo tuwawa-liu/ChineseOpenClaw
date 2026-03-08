@@ -48,7 +48,7 @@ export function renderDiscordCard(params: {
       ${
         discord?.probe
           ? html`<div class="callout" style="margin-top: 12px;">
-            Probe ${discord.probe.ok ? t("channelCommon.probeOk") : t("channelCommon.probeFailed")} ·
+            ${t("channelCommon.probe")} ${discord.probe.ok ? t("channelCommon.probeOk") : t("channelCommon.probeFailed")} ·
             ${discord.probe.status ?? ""} ${discord.probe.error ?? ""}
           </div>`
           : nothing

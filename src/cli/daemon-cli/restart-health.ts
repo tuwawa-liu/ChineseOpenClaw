@@ -1,6 +1,7 @@
 import type { GatewayServiceRuntime } from "../../daemon/service-runtime.js";
 import type { GatewayService } from "../../daemon/service.js";
 import { probeGateway } from "../../gateway/probe.js";
+import { t } from "../../i18n/index.js";
 import {
   classifyPortListener,
   formatPortDiagnostics,
@@ -242,17 +243,17 @@ export function renderRestartDiagnostics(snapshot: GatewayRestartSnapshot): stri
     .join(", ");
 
   if (runtimeSummary) {
-    lines.push(`Service runtime: ${runtimeSummary}`);
+    lines.push(t("restartHealth.serviceRuntime", { summary: runtimeSummary }));
   }
 
   if (snapshot.portUsage.status === "busy") {
     lines.push(...formatPortDiagnostics(snapshot.portUsage));
   } else {
-    lines.push(`Gateway port ${snapshot.portUsage.port} status: ${snapshot.portUsage.status}.`);
+    lines.push(t("restartHealth.gatewayPortStatus", { port: String(snapshot.portUsage.port), status: snapshot.portUsage.status }));
   }
 
   if (snapshot.portUsage.errors?.length) {
-    lines.push(`Port diagnostics errors: ${snapshot.portUsage.errors.join("; ")}`);
+    lines.push(t("restartHealth.portDiagErrors", { errors: snapshot.portUsage.errors.join("; ") }));
   }
 
   return lines;
@@ -264,11 +265,11 @@ export function renderGatewayPortHealthDiagnostics(snapshot: GatewayPortHealthSn
   if (snapshot.portUsage.status === "busy") {
     lines.push(...formatPortDiagnostics(snapshot.portUsage));
   } else {
-    lines.push(`Gateway port ${snapshot.portUsage.port} status: ${snapshot.portUsage.status}.`);
+    lines.push(t("restartHealth.gatewayPortStatus", { port: String(snapshot.portUsage.port), status: snapshot.portUsage.status }));
   }
 
   if (snapshot.portUsage.errors?.length) {
-    lines.push(`Port diagnostics errors: ${snapshot.portUsage.errors.join("; ")}`);
+    lines.push(t("restartHealth.portDiagErrors", { errors: snapshot.portUsage.errors.join("; ") }));
   }
 
   return lines;

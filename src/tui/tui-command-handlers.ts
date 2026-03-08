@@ -436,9 +436,9 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           // to other connected TUI clients sharing the original session key.
           const uniqueKey = `tui-${randomUUID()}`;
           await setSession(uniqueKey);
-          chatLog.addSystem(`new session: ${uniqueKey}`);
+          chatLog.addSystem(t("tui.newSession", { key: uniqueKey }));
         } catch (err) {
-          chatLog.addSystem(`new session failed: ${sanitizeRenderableText(String(err))}`);
+          chatLog.addSystem(t("tui.newSessionFailed", { err: sanitizeRenderableText(String(err)) }));
         }
         break;
       case "reset":

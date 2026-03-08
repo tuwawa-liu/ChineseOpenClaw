@@ -92,7 +92,7 @@ async function loadUsageWithProgress(
 ): Promise<Awaited<ReturnType<typeof loadProviderUsageSummary>> | null> {
   try {
     return await withProgress(
-      { label: "Fetching usage snapshot…", indeterminate: true, enabled: true },
+      { label: t("commands.channelsList.fetchingUsage"), indeterminate: true, enabled: true },
       async () => await loadProviderUsageSummary(),
     );
   } catch (err) {
@@ -160,7 +160,7 @@ export async function channelsListCommand(
     lines.push(theme.muted(t("commands.channelsList.noAuthProviders")));
   } else {
     for (const profile of authProfiles) {
-      const external = profile.isExternal ? theme.muted(" (synced)") : "";
+      const external = profile.isExternal ? theme.muted(" (" + t("commands.channelsList.synced") + ")") : "";
       lines.push(`- ${theme.accent(profile.id)} (${theme.success(profile.type)}${external})`);
     }
   }
@@ -180,5 +180,5 @@ export async function channelsListCommand(
   }
 
   runtime.log("");
-  runtime.log(`Docs: ${formatDocsLink("/gateway/configuration", "gateway/configuration")}`);
+  runtime.log(`${t("commands.channelsList.docs")}: ${formatDocsLink("/gateway/configuration", "gateway/configuration")}`);
 }

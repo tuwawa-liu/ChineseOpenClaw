@@ -103,7 +103,7 @@ export function renderTelegramCard(params: {
       ${
         telegram?.probe
           ? html`<div class="callout" style="margin-top: 12px;">
-            Probe ${telegram.probe.ok ? t("channelCommon.probeOk") : t("channelCommon.probeFailed")} ·
+            ${t("channelCommon.probe")} ${telegram.probe.ok ? t("channelCommon.probeOk") : t("channelCommon.probeFailed")} ·
             ${telegram.probe.status ?? ""} ${telegram.probe.error ?? ""}
           </div>`
           : nothing

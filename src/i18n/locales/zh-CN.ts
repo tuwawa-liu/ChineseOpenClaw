@@ -642,6 +642,8 @@ export const zh_CN: TranslationMap = {
     activationFailed: "设置激活失败：{err}",
     sessionReset: "会话 {key} 已重置",
     resetFailed: "重置失败：{err}",
+    newSession: "新会话：{key}",
+    newSessionFailed: "创建新会话失败：{err}",
     notConnected: "未连接到网关——消息未发送",
     sendFailed: "发送失败：{err}",
     sessionsListFailed: "获取会话列表失败：{err}",
@@ -2237,6 +2239,9 @@ export const zh_CN: TranslationMap = {
       chatChannels: "聊天频道：",
       authProviders: "认证提供者（OAuth + API 密钥）：",
       noAuthProviders: "- 无",
+      fetchingUsage: "正在获取使用快照…",
+      synced: "已同步",
+      docs: "文档",
     },
 
     channelsRemove: {
@@ -2329,6 +2334,8 @@ export const zh_CN: TranslationMap = {
     configureWizard: {
       healthCheckHelp: "健康检查帮助",
       docs: "文档：",
+      webUi: "Web UI：",
+      gatewayWs: "网关 WS：",
     },
 
     configureDaemon: {
@@ -2638,6 +2645,16 @@ export const zhCNTaglines: TaglineSet = {
     accountHeader: "账户",
     statusHeader: "状态",
     notesColumnHeader: "备注",
+    secretUnavailable: "密钥在此命令路径中不可用",
+    httpCredUnavailable: "已配置的 HTTP 凭据在此命令路径中不可用 · 账户 {count}",
+    partialCredentials: "部分凭据（需要 bot+signing）· 账户 {count}",
+    noCredentials: "无凭据（需要 bot+signing）",
+    credentialsOk: "凭据正常（bot {botSources}，signing {signingSources}）{hint} · 账户 {ready}/{total}",
+    tokensUnavailable: "已配置的令牌在此命令路径中不可用 · 账户 {count}",
+    botTokenUnavailable: "已配置的 bot 令牌在此命令路径中不可用 · 账户 {count}",
+    tokenUnavailable: "已配置的令牌在此命令路径中不可用 · 账户 {count}",
+    accountsCount: "账户 {count}",
+    credUnavailable: "已配置的凭据在此命令路径中不可用 · 账户 {count}",
   },
 
   onboardHelpers: {
@@ -2687,6 +2704,8 @@ export const zhCNTaglines: TaglineSet = {
   },
 
   modelsAuth: {
+    cancelled: "已取消。",
+    authProfile: "认证配置：{profileId}（{detail}）",
     setupTokenProviderOnly: "setup-token 仅支持 --provider anthropic。",
     setupTokenTtyRequired: "setup-token 需要交互式 TTY。",
     confirmSetupToken: "您是否已运行 `claude setup-token` 并复制了令牌？",
@@ -2964,5 +2983,42 @@ export const zhCNTaglines: TaglineSet = {
     labelMinimaxApiLightning: "MiniMax M2.5 高速",
     hintMinimaxApiLightning: "官方快速层级（旧称：Lightning）",
     labelCustomApiKey: "自定义提供商",
+  },
+
+  lifecycleCore: {
+    serviceNotLoaded: "{noun} 服务 {text}。",
+    startWith: "启动方式：{hint}",
+    serviceCheckFailed: "{noun} 服务检查失败：{err}",
+    nixModeUninstallDisabled: "检测到 Nix 模式；服务卸载已禁用。",
+    uninstallFailed: "{noun} 卸载失败：{err}",
+    stillLoadedAfterUninstall: "卸载后 {noun} 服务仍处于已加载状态。",
+    startFailed: "{noun} 启动失败：{err}",
+    stopFailed: "{noun} 停止失败：{err}",
+    restartFailed: "{noun} 重启失败：{err}",
+    tokenDriftUnavailable: "无法验证网关令牌漂移：gateway.auth.token SecretRef 已配置但在此命令路径中不可用。",
+  },
+
+  lifecycle: {
+    refusingNonGateway: "拒绝向非网关进程 pid {pid} 发送信号",
+    restartDisabledConfig: "运行中的网关配置已禁用网关重启（commands.restart=false）；非托管的 SIGUSR1 重启将被忽略",
+    stopSignalSent: "已向端口 {port} 上的非托管进程发送网关停止信号：{pids}。",
+    multipleGatewayProcesses: "端口 {port} 上有多个网关进程正在监听：{pids}；请先使用 \"openclaw gateway status --deep\" 再重试重启",
+    restartSignalSent: "已向端口 {port} 上的非托管进程发送网关重启信号：{pid}。",
+    timedOut: "等待网关端口 {port} 恢复健康状态超时，已等待 {seconds} 秒。",
+    restartTimedOut: "网关重启超时，已等待 {seconds} 秒等待健康检查完成。",
+    foundStaleProcesses: "发现过期的网关进程：{pids}。",
+    stoppingStale: "正在停止过期进程并重试重启...",
+    runningNoPort: "网关进程正在运行，但端口 {port} 仍然空闲（启动挂起/崩溃循环或虚拟机启动非常慢）。",
+  },
+
+  restartHealth: {
+    serviceRuntime: "服务运行时：{summary}",
+    gatewayPortStatus: "网关端口 {port} 状态：{status}。",
+    portDiagErrors: "端口诊断错误：{errors}",
+  },
+
+  statusGather: {
+    bindLanProbe: "bind=lan 监听 0.0.0.0（所有接口）；正在通过 {host} 探测。",
+    loopbackOnly: "仅回环网关；只有本地客户端可以连接。",
   },
 };

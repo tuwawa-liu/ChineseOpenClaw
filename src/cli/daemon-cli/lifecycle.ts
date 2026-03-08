@@ -5,6 +5,7 @@ import { readBestEffortConfig, resolveGatewayPort } from "../../config/config.js
 import { parseCmdScriptCommandLine } from "../../daemon/cmd-argv.js";
 import { resolveGatewayService } from "../../daemon/service.js";
 import { probeGateway } from "../../gateway/probe.js";
+import { t } from "../../i18n/index.js";
 import { findGatewayPidsOnPortSync } from "../../infra/restart.js";
 import { defaultRuntime } from "../../runtime.js";
 import { theme } from "../../terminal/theme.js";
@@ -148,7 +149,7 @@ function resolveGatewayPortFallback(): Promise<number> {
 function signalGatewayPid(pid: number, signal: "SIGTERM" | "SIGUSR1") {
   const args = readGatewayProcessArgsSync(pid);
   if (!args || !isGatewayArgv(args)) {
-    throw new Error(`refusing to signal non-gateway process pid ${pid}`);
+    throw new Error(t("lifecycle.refusingNonGateway", { pid: String(pid) }));
   }
   process.kill(pid, signal);
 }
@@ -172,7 +173,7 @@ async function assertUnmanagedGatewayRestartEnabled(port: number): Promise<void>
   }
   if (!isRestartEnabled(probe.configSnapshot as { commands?: unknown } | undefined)) {
     throw new Error(
-      "Gateway restart is disabled in the running gateway config (commands.restart=false); unmanaged SIGUSR1 restart would be ignored",
+      t("lifecycle.restartDisabledConfig"),
     );
   }
 }
@@ -193,7 +194,7 @@ async function stopGatewayWithoutServiceManager(port: number) {
   }
   return {
     result: "stopped" as const,
-    message: `Gateway stop signal sent to unmanaged process${pids.length === 1 ? "" : "es"} on port ${port}: ${formatGatewayPidList(pids)}.`,
+    message: t("lifecycle.stopSignalSent", { count: String(pids.length), port: String(port), pids: formatGatewayPidList(pids) }),
   };
 }
 
@@ -205,13 +206,13 @@ async function restartGatewayWithoutServiceManager(port: number) {
   }
   if (pids.length > 1) {
     throw new Error(
-      `multiple gateway processes are listening on port ${port}: ${formatGatewayPidList(pids)}; use "openclaw gateway status --deep" before retrying restart`,
+      t("lifecycle.multipleGatewayProcesses", { port: String(port), pids: formatGatewayPidList(pids) }),
     );
   }
   signalGatewayPid(pids[0], "SIGUSR1");
   return {
     result: "restarted" as const,
-    message: `Gateway restart signal sent to unmanaged process on port ${port}: ${pids[0]}.`,
+    message: t("lifecycle.restartSignalSent", { port: String(port), pid: String(pids[0]) }),
   };
 }
 
@@ -287,7 +288,7 @@ export async function runDaemonRestart(opts: DaemonLifecycleOptions = {}): Promi
         }
 
         const diagnostics = renderGatewayPortHealthDiagnostics(health);
-        const timeoutLine = `Timed out after ${restartWaitSeconds}s waiting for gateway port ${restartPort} to become healthy.`;
+        const timeoutLine = t("lifecycle.timedOut", { seconds: String(restartWaitSeconds), port: String(restartPort) });
         if (!json) {
           defaultRuntime.log(theme.warn(timeoutLine));
           for (const line of diagnostics) {
@@ -298,7 +299,7 @@ export async function runDaemonRestart(opts: DaemonLifecycleOptions = {}): Promi
           warnings.push(...diagnostics);
         }
 
-        fail(`Gateway restart timed out after ${restartWaitSeconds}s waiting for health checks.`, [
+        fail(t("lifecycle.restartTimedOut", { seconds: String(restartWaitSeconds) }), [
           formatCliCommand("openclaw gateway status --deep"),
           formatCliCommand("openclaw doctor"),
         ]);
@@ -313,11 +314,11 @@ export async function runDaemonRestart(opts: DaemonLifecycleOptions = {}): Promi
       });
 
       if (!health.healthy && health.staleGatewayPids.length > 0) {
-        const staleMsg = `Found stale gateway process(es): ${health.staleGatewayPids.join(", ")}.`;
+        const staleMsg = t("lifecycle.foundStaleProcesses", { pids: health.staleGatewayPids.join(", ") });
         warnings.push(staleMsg);
         if (!json) {
           defaultRuntime.log(theme.warn(staleMsg));
-          defaultRuntime.log(theme.muted("Stopping stale process(es) and retrying restart..."));
+          defaultRuntime.log(theme.muted(t("lifecycle.stoppingStale")));
         }
 
         await terminateStaleGatewayPids(health.staleGatewayPids);
@@ -336,10 +337,10 @@ export async function runDaemonRestart(opts: DaemonLifecycleOptions = {}): Promi
       }
 
       const diagnostics = renderRestartDiagnostics(health);
-      const timeoutLine = `Timed out after ${restartWaitSeconds}s waiting for gateway port ${restartPort} to become healthy.`;
+      const timeoutLine = t("lifecycle.timedOut", { seconds: String(restartWaitSeconds), port: String(restartPort) });
       const runningNoPortLine =
         health.runtime.status === "running" && health.portUsage.status === "free"
-          ? `Gateway process is running but port ${restartPort} is still free (startup hang/crash loop or very slow VM startup).`
+          ? t("lifecycle.runningNoPort", { port: String(restartPort) })
           : null;
       if (!json) {
         defaultRuntime.log(theme.warn(timeoutLine));
@@ -357,7 +358,7 @@ export async function runDaemonRestart(opts: DaemonLifecycleOptions = {}): Promi
         warnings.push(...diagnostics);
       }
 
-      fail(`Gateway restart timed out after ${restartWaitSeconds}s waiting for health checks.`, [
+      fail(t("lifecycle.restartTimedOut", { seconds: String(restartWaitSeconds) }), [
         formatCliCommand("openclaw gateway status --deep"),
         formatCliCommand("openclaw doctor"),
       ]);

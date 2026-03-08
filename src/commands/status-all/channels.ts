@@ -185,7 +185,7 @@ const buildAccountNotes = (params: {
     notes.push(`signing:${snapshot.signingSecretSource}`);
   }
   if (hasConfiguredUnavailableCredentialStatus(entry.account)) {
-    notes.push("secret unavailable in this command path");
+    notes.push(t("statusAllChannels.secretUnavailable"));
   }
   if (snapshot.baseUrl) {
     notes.push(snapshot.baseUrl);
@@ -314,19 +314,19 @@ function summarizeTokenConfig(params: {
     if (unavailable.length > 0) {
       return {
         state: "warn",
-        detail: `configured http credentials unavailable in this command path · accounts ${unavailable.length}`,
+        detail: t("statusAllChannels.httpCredUnavailable", { count: String(unavailable.length) }),
       };
     }
 
     if (partial.length > 0) {
       return {
         state: "warn",
-        detail: `partial credentials (need bot+signing) · accounts ${partial.length}`,
+        detail: t("statusAllChannels.partialCredentials", { count: String(partial.length) }),
       };
     }
 
     if (ready.length === 0) {
-      return { state: "setup", detail: "no credentials (need bot+signing)" };
+      return { state: "setup", detail: t("statusAllChannels.noCredentials") };
     }
 
     const botSources = summarizeSources(ready.map((a) => a.snapshot.botTokenSource ?? "none"));
@@ -346,7 +346,7 @@ function summarizeTokenConfig(params: {
       botHint || signingHint ? ` (bot ${botHint || "?"}, signing ${signingHint || "?"})` : "";
     return {
       state: "ok",
-      detail: `credentials ok (bot ${botSources.label}, signing ${signingSources.label})${hint} · accounts ${ready.length}/${enabled.length || 1}`,
+      detail: t("statusAllChannels.credentialsOk", { botSources: botSources.label, signingSources: signingSources.label, hint, ready: String(ready.length), total: String(enabled.length || 1) }),
     };
   }
 
@@ -377,7 +377,7 @@ function summarizeTokenConfig(params: {
     if (unavailable.length > 0) {
       return {
         state: "warn",
-        detail: `configured tokens unavailable in this command path · accounts ${unavailable.length}`,
+        detail: t("statusAllChannels.tokensUnavailable", { count: String(unavailable.length) }),
       };
     }
 
@@ -416,7 +416,7 @@ function summarizeTokenConfig(params: {
     if (unavailable.length > 0) {
       return {
         state: "warn",
-        detail: `configured bot token unavailable in this command path · accounts ${unavailable.length}`,
+        detail: t("statusAllChannels.botTokenUnavailable", { count: String(unavailable.length) }),
       };
     }
 
@@ -445,7 +445,7 @@ function summarizeTokenConfig(params: {
   if (unavailable.length > 0) {
     return {
       state: "warn",
-      detail: `configured token unavailable in this command path · accounts ${unavailable.length}`,
+      detail: t("statusAllChannels.tokenUnavailable", { count: String(unavailable.length) }),
     };
   }
   if (ready.length === 0) {
@@ -592,7 +592,7 @@ export async function buildChannelsTable(
           extra.push(`auth ${formatTimeAgo(link.authAgeMs)}`);
         }
         if (accounts.length > 1 || plugin.meta.forceAccountBinding) {
-          extra.push(`accounts ${accounts.length || 1}`);
+          extra.push(t("statusAllChannels.accountsCount", { count: String(accounts.length || 1) }));
         }
         return extra.length > 0 ? `${base} · ${extra.join(" · ")}` : base;
       }
@@ -601,7 +601,7 @@ export async function buildChannelsTable(
         if (tokenSummary.detail?.includes("unavailable")) {
           return tokenSummary.detail;
         }
-        return `configured credentials unavailable in this command path · accounts ${unavailableConfiguredAccounts.length}`;
+        return t("statusAllChannels.credUnavailable", { count: String(unavailableConfiguredAccounts.length) });
       }
 
       if (tokenSummary.detail) {
@@ -613,7 +613,7 @@ export async function buildChannelsTable(
         if (accounts.length <= 1 && !plugin.meta.forceAccountBinding) {
           return head;
         }
-        return `${head} · accounts ${configuredAccounts.length}/${enabledAccounts.length || 1}`;
+        return `${head} · ${t("statusAllChannels.accountsCount", { count: String(configuredAccounts.length) })}/${enabledAccounts.length || 1}`;
       }
 
       const reason =

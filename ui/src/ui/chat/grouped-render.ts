@@ -163,9 +163,9 @@ function renderAvatar(role: string, assistant?: Pick<AssistantIdentity, "name" |
   const assistantAvatar = assistant?.avatar?.trim() || "";
   const initial =
     normalized === "user"
-      ? "U"
+      ? t("chatExtra.userInitial")
       : normalized === "assistant"
-        ? assistantName.charAt(0).toUpperCase() || "A"
+        ? assistantName.charAt(0).toUpperCase() || t("chatExtra.assistantInitial")
         : normalized === "tool"
           ? "⚙"
           : "?";

@@ -642,6 +642,8 @@ export const en: TranslationMap = {
     activationFailed: "activation failed: {err}",
     sessionReset: "session {key} reset",
     resetFailed: "reset failed: {err}",
+    newSession: "new session: {key}",
+    newSessionFailed: "new session failed: {err}",
     notConnected: "not connected to gateway — message not sent",
     sendFailed: "send failed: {err}",
     sessionsListFailed: "sessions list failed: {err}",
@@ -2237,6 +2239,9 @@ export const en: TranslationMap = {
       chatChannels: "Chat channels:",
       authProviders: "Auth providers (OAuth + API keys):",
       noAuthProviders: "- none",
+      fetchingUsage: "Fetching usage snapshot…",
+      synced: "synced",
+      docs: "Docs",
     },
 
     channelsRemove: {
@@ -2329,6 +2334,8 @@ export const en: TranslationMap = {
     configureWizard: {
       healthCheckHelp: "Health check help",
       docs: "Docs:",
+      webUi: "Web UI:",
+      gatewayWs: "Gateway WS:",
     },
 
     configureDaemon: {
@@ -2647,6 +2654,16 @@ export const enTaglines: TaglineSet = {
     accountHeader: "Account",
     statusHeader: "Status",
     notesColumnHeader: "Notes",
+    secretUnavailable: "secret unavailable in this command path",
+    httpCredUnavailable: "configured http credentials unavailable in this command path · accounts {count}",
+    partialCredentials: "partial credentials (need bot+signing) · accounts {count}",
+    noCredentials: "no credentials (need bot+signing)",
+    credentialsOk: "credentials ok (bot {botSources}, signing {signingSources}){hint} · accounts {ready}/{total}",
+    tokensUnavailable: "configured tokens unavailable in this command path · accounts {count}",
+    botTokenUnavailable: "configured bot token unavailable in this command path · accounts {count}",
+    tokenUnavailable: "configured token unavailable in this command path · accounts {count}",
+    accountsCount: "accounts {count}",
+    credUnavailable: "configured credentials unavailable in this command path · accounts {count}",
   },
 
   onboardHelpers: {
@@ -2696,6 +2713,8 @@ export const enTaglines: TaglineSet = {
   },
 
   modelsAuth: {
+    cancelled: "Cancelled.",
+    authProfile: "Auth profile: {profileId} ({detail})",
     setupTokenProviderOnly: "Only --provider anthropic is supported for setup-token.",
     setupTokenTtyRequired: "setup-token requires an interactive TTY.",
     confirmSetupToken: "Have you run `claude setup-token` and copied the token?",
@@ -2973,5 +2992,42 @@ export const enTaglines: TaglineSet = {
     labelMinimaxApiLightning: "MiniMax M2.5 Highspeed",
     hintMinimaxApiLightning: "Official fast tier (legacy: Lightning)",
     labelCustomApiKey: "Custom Provider",
+  },
+
+  lifecycleCore: {
+    serviceNotLoaded: "{noun} service {text}.",
+    startWith: "Start with: {hint}",
+    serviceCheckFailed: "{noun} service check failed: {err}",
+    nixModeUninstallDisabled: "Nix mode detected; service uninstall is disabled.",
+    uninstallFailed: "{noun} uninstall failed: {err}",
+    stillLoadedAfterUninstall: "{noun} service still loaded after uninstall.",
+    startFailed: "{noun} start failed: {err}",
+    stopFailed: "{noun} stop failed: {err}",
+    restartFailed: "{noun} restart failed: {err}",
+    tokenDriftUnavailable: "Unable to verify gateway token drift: gateway.auth.token SecretRef is configured but unavailable in this command path.",
+  },
+
+  lifecycle: {
+    refusingNonGateway: "refusing to signal non-gateway process pid {pid}",
+    restartDisabledConfig: "Gateway restart is disabled in the running gateway config (commands.restart=false); unmanaged SIGUSR1 restart would be ignored",
+    stopSignalSent: "Gateway stop signal sent to unmanaged process(es) on port {port}: {pids}.",
+    multipleGatewayProcesses: "multiple gateway processes are listening on port {port}: {pids}; use \"openclaw gateway status --deep\" before retrying restart",
+    restartSignalSent: "Gateway restart signal sent to unmanaged process on port {port}: {pid}.",
+    timedOut: "Timed out after {seconds}s waiting for gateway port {port} to become healthy.",
+    restartTimedOut: "Gateway restart timed out after {seconds}s waiting for health checks.",
+    foundStaleProcesses: "Found stale gateway process(es): {pids}.",
+    stoppingStale: "Stopping stale process(es) and retrying restart...",
+    runningNoPort: "Gateway process is running but port {port} is still free (startup hang/crash loop or very slow VM startup).",
+  },
+
+  restartHealth: {
+    serviceRuntime: "Service runtime: {summary}",
+    gatewayPortStatus: "Gateway port {port} status: {status}.",
+    portDiagErrors: "Port diagnostics errors: {errors}",
+  },
+
+  statusGather: {
+    bindLanProbe: "bind=lan listens on 0.0.0.0 (all interfaces); probing via {host}.",
+    loopbackOnly: "Loopback-only gateway; only local clients can connect.",
   },
 };
