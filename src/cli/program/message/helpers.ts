@@ -1,6 +1,7 @@
 import type { Command } from "commander";
 import { messageCommand } from "../../../commands/message.js";
 import { danger, setVerbose } from "../../../globals.js";
+import { t } from "../../../i18n/index.js";
 import { CHANNEL_TARGET_DESCRIPTION } from "../../../infra/outbound/channel-target.js";
 import { runGlobalGatewayStopSafely } from "../../../plugins/hook-runner-global.js";
 import { defaultRuntime } from "../../../runtime.js";
@@ -37,11 +38,11 @@ export function createMessageCliHelpers(
 ): MessageCliHelpers {
   const withMessageBase = (command: Command) =>
     command
-      .option("--channel <channel>", `Channel: ${messageChannelOptions}`)
-      .option("--account <id>", "Channel account id (accountId)")
-      .option("--json", "Output result as JSON", false)
-      .option("--dry-run", "Print payload and skip sending", false)
-      .option("--verbose", "Verbose logging", false);
+      .option("--channel <channel>", t("msgCli.channelOpt", { channels: messageChannelOptions }))
+      .option("--account <id>", t("msgCli.accountOpt"))
+      .option("--json", t("msgCli.jsonOpt"), false)
+      .option("--dry-run", t("msgCli.dryRunOpt"), false)
+      .option("--verbose", t("msgCli.verboseOpt"), false);
 
   const withMessageTarget = (command: Command) =>
     command.option("-t, --target <dest>", CHANNEL_TARGET_DESCRIPTION);

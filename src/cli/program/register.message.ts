@@ -1,4 +1,5 @@
 import type { Command } from "commander";
+import { t } from "../../i18n/index.js";
 import { formatDocsLink } from "../../terminal/links.js";
 import { theme } from "../../terminal/theme.js";
 import { formatHelpExamples } from "../help-format.js";
@@ -24,7 +25,7 @@ import { registerMessageThreadCommands } from "./message/register.thread.js";
 export function registerMessageCommands(program: Command, ctx: ProgramContext) {
   const message = program
     .command("message")
-    .description("Send, read, and manage messages and channel actions")
+    .description(t("messageCli.messageDesc"))
     .addHelpText(
       "after",
       () =>

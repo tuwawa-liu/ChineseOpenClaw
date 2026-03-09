@@ -1,4 +1,5 @@
 import type { Command } from "commander";
+import { t } from "../../../i18n/index.js";
 import type { MessageCliHelpers } from "./helpers.js";
 
 export function registerMessageSendCommand(message: Command, helpers: MessageCliHelpers) {
@@ -8,27 +9,17 @@ export function registerMessageSendCommand(message: Command, helpers: MessageCli
         .withRequiredMessageTarget(
           message
             .command("send")
-            .description("Send a message")
-            .option("-m, --message <text>", "Message body (required unless --media is set)"),
+            .description(t("msgCli.sendDesc"))
+            .option("-m, --message <text>", t("msgCli.sendMessageOpt")),
         )
-        .option(
-          "--media <path-or-url>",
-          "Attach media (image/audio/video/document). Accepts local paths or URLs.",
-        )
-        .option(
-          "--buttons <json>",
-          "Telegram inline keyboard buttons as JSON (array of button rows)",
-        )
-        .option("--components <json>", "Discord components payload as JSON")
-        .option("--card <json>", "Adaptive Card JSON object (when supported by the channel)")
-        .option("--reply-to <id>", "Reply-to message id")
-        .option("--thread-id <id>", "Thread id (Telegram forum thread)")
-        .option("--gif-playback", "Treat video media as GIF playback (WhatsApp only).", false)
-        .option(
-          "--silent",
-          "Send message silently without notification (Telegram + Discord)",
-          false,
-        ),
+        .option("--media <path-or-url>", t("msgCli.sendMediaOpt"))
+        .option("--buttons <json>", t("msgCli.sendButtonsOpt"))
+        .option("--components <json>", t("msgCli.sendComponentsOpt"))
+        .option("--card <json>", t("msgCli.sendCardOpt"))
+        .option("--reply-to <id>", t("msgCli.sendReplyToOpt"))
+        .option("--thread-id <id>", t("msgCli.sendThreadIdOpt"))
+        .option("--gif-playback", t("msgCli.sendGifPlaybackOpt"), false)
+        .option("--silent", t("msgCli.sendSilentOpt"), false),
     )
     .action(async (opts) => {
       await helpers.runMessageAction("send", opts);

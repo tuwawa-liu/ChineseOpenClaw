@@ -1,21 +1,22 @@
 import type { Command } from "commander";
+import { t } from "../../../i18n/index.js";
 import type { MessageCliHelpers } from "./helpers.js";
 
 export function registerMessageThreadCommands(message: Command, helpers: MessageCliHelpers) {
-  const thread = message.command("thread").description("Thread actions");
+  const thread = message.command("thread").description(t("msgCli.threadDesc"));
 
   helpers
     .withMessageBase(
       helpers.withRequiredMessageTarget(
         thread
           .command("create")
-          .description("Create a thread")
-          .requiredOption("--thread-name <name>", "Thread name"),
+          .description(t("msgCli.threadCreateDesc"))
+          .requiredOption("--thread-name <name>", t("msgCli.threadNameOpt")),
       ),
     )
-    .option("--message-id <id>", "Message id (optional)")
-    .option("-m, --message <text>", "Initial thread message text")
-    .option("--auto-archive-min <n>", "Thread auto-archive minutes")
+    .option("--message-id <id>", t("msgCli.threadMessageIdOpt"))
+    .option("-m, --message <text>", t("msgCli.threadMessageOpt"))
+    .option("--auto-archive-min <n>", t("msgCli.threadAutoArchiveOpt"))
     .action(async (opts) => {
       await helpers.runMessageAction("thread-create", opts);
     });
@@ -24,13 +25,13 @@ export function registerMessageThreadCommands(message: Command, helpers: Message
     .withMessageBase(
       thread
         .command("list")
-        .description("List threads")
-        .requiredOption("--guild-id <id>", "Guild id"),
+        .description(t("msgCli.threadListDesc"))
+        .requiredOption("--guild-id <id>", t("msgCli.guildIdOpt")),
     )
-    .option("--channel-id <id>", "Channel id")
-    .option("--include-archived", "Include archived threads", false)
-    .option("--before <id>", "Read/search before id")
-    .option("--limit <n>", "Result limit")
+    .option("--channel-id <id>", t("msgCli.threadChannelIdOpt"))
+    .option("--include-archived", t("msgCli.threadIncludeArchivedOpt"), false)
+    .option("--before <id>", t("msgCli.threadBeforeOpt"))
+    .option("--limit <n>", t("msgCli.threadLimitOpt"))
     .action(async (opts) => {
       await helpers.runMessageAction("thread-list", opts);
     });
@@ -40,15 +41,12 @@ export function registerMessageThreadCommands(message: Command, helpers: Message
       helpers.withRequiredMessageTarget(
         thread
           .command("reply")
-          .description("Reply in a thread")
-          .requiredOption("-m, --message <text>", "Message body"),
+          .description(t("msgCli.threadReplyDesc"))
+          .requiredOption("-m, --message <text>", t("msgCli.threadReplyMessageOpt")),
       ),
     )
-    .option(
-      "--media <path-or-url>",
-      "Attach media (image/audio/video/document). Accepts local paths or URLs.",
-    )
-    .option("--reply-to <id>", "Reply-to message id")
+    .option("--media <path-or-url>", t("msgCli.threadReplyMediaOpt"))
+    .option("--reply-to <id>", t("msgCli.threadReplyToOpt"))
     .action(async (opts) => {
       await helpers.runMessageAction("thread-reply", opts);
     });

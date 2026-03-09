@@ -1,6 +1,7 @@
 import type { Command } from "commander";
 import { backupVerifyCommand } from "../../commands/backup-verify.js";
 import { backupCreateCommand } from "../../commands/backup.js";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { formatDocsLink } from "../../terminal/links.js";
 import { theme } from "../../terminal/theme.js";
@@ -10,7 +11,7 @@ import { formatHelpExamples } from "../help-format.js";
 export function registerBackupCommand(program: Command) {
   const backup = program
     .command("backup")
-    .description("Create and verify local backup archives for OpenClaw state")
+    .description(t("backupCli.backupDesc"))
     .addHelpText(
       "after",
       () =>
@@ -19,13 +20,13 @@ export function registerBackupCommand(program: Command) {
 
   backup
     .command("create")
-    .description("Write a backup archive for config, credentials, sessions, and workspaces")
-    .option("--output <path>", "Archive path or destination directory")
-    .option("--json", "Output JSON", false)
-    .option("--dry-run", "Print the backup plan without writing the archive", false)
-    .option("--verify", "Verify the archive after writing it", false)
-    .option("--only-config", "Back up only the active JSON config file", false)
-    .option("--no-include-workspace", "Exclude workspace directories from the backup")
+    .description(t("backupCli.createDesc"))
+    .option("--output <path>", t("backupCli.createOutputOpt"))
+    .option("--json", t("backupCli.createJsonOpt"), false)
+    .option("--dry-run", t("backupCli.createDryRunOpt"), false)
+    .option("--verify", t("backupCli.createVerifyOpt"), false)
+    .option("--only-config", t("backupCli.createOnlyConfigOpt"), false)
+    .option("--no-include-workspace", t("backupCli.createNoWorkspaceOpt"))
     .addHelpText(
       "after",
       () =>
@@ -65,8 +66,8 @@ export function registerBackupCommand(program: Command) {
 
   backup
     .command("verify <archive>")
-    .description("Validate a backup archive and its embedded manifest")
-    .option("--json", "Output JSON", false)
+    .description(t("backupCli.verifyDesc"))
+    .option("--json", t("backupCli.verifyJsonOpt"), false)
     .addHelpText(
       "after",
       () =>

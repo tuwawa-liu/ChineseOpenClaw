@@ -38,7 +38,7 @@ export async function modelsAliasesListCommand(
     return;
   }
 
-  runtime.log(t("commands.modelsAliases.aliases", { source: Object.keys(aliases).length }));
+  runtime.log(t("commands.modelsAliases.aliases", { source: String(Object.keys(aliases).length) }));
   if (Object.keys(aliases).length === 0) {
     runtime.log(t("commands.modelsAliases.noAliases"));
     return;
@@ -80,7 +80,12 @@ export async function modelsAliasesAddCommand(
   });
 
   logConfigUpdated(runtime);
-  runtime.log(t("commands.modelsAliases.aliasSet", { alias, target: `${resolved.provider}/${resolved.model}` }));
+  runtime.log(
+    t("commands.modelsAliases.aliasSet", {
+      alias,
+      target: `${resolved.provider}/${resolved.model}`,
+    }),
+  );
 }
 
 export async function modelsAliasesRemoveCommand(aliasRaw: string, runtime: RuntimeEnv) {

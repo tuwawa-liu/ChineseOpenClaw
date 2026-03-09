@@ -4,6 +4,7 @@ import { sessionsCleanupCommand } from "../../commands/sessions-cleanup.js";
 import { sessionsCommand } from "../../commands/sessions.js";
 import { statusCommand } from "../../commands/status.js";
 import { setVerbose } from "../../globals.js";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { formatDocsLink } from "../../terminal/links.js";
 import { theme } from "../../terminal/theme.js";
@@ -43,14 +44,14 @@ async function runWithVerboseAndTimeout(
 export function registerStatusHealthSessionsCommands(program: Command) {
   program
     .command("status")
-    .description("Show channel health and recent session recipients")
-    .option("--json", "Output JSON instead of text", false)
-    .option("--all", "Full diagnosis (read-only, pasteable)", false)
-    .option("--usage", "Show model provider usage/quota snapshots", false)
-    .option("--deep", "Probe channels (WhatsApp Web + Telegram + Discord + Slack + Signal)", false)
-    .option("--timeout <ms>", "Probe timeout in milliseconds", "10000")
-    .option("--verbose", "Verbose logging", false)
-    .option("--debug", "Alias for --verbose", false)
+    .description(t("statusCli.statusDesc"))
+    .option("--json", t("statusCli.jsonOpt"), false)
+    .option("--all", t("statusCli.allOpt"), false)
+    .option("--usage", t("statusCli.usageOpt"), false)
+    .option("--deep", t("statusCli.deepOpt"), false)
+    .option("--timeout <ms>", t("statusCli.timeoutOpt"), "10000")
+    .option("--verbose", t("statusCli.verboseOpt"), false)
+    .option("--debug", t("statusCli.debugOpt"), false)
     .addHelpText(
       "after",
       () =>
@@ -89,11 +90,11 @@ export function registerStatusHealthSessionsCommands(program: Command) {
 
   program
     .command("health")
-    .description("Fetch health from the running gateway")
-    .option("--json", "Output JSON instead of text", false)
-    .option("--timeout <ms>", "Connection timeout in milliseconds", "10000")
-    .option("--verbose", "Verbose logging", false)
-    .option("--debug", "Alias for --verbose", false)
+    .description(t("statusCli.healthDesc"))
+    .option("--json", t("statusCli.healthJsonOpt"), false)
+    .option("--timeout <ms>", t("statusCli.healthTimeoutOpt"), "10000")
+    .option("--verbose", t("statusCli.healthVerboseOpt"), false)
+    .option("--debug", t("statusCli.healthDebugOpt"), false)
     .addHelpText(
       "after",
       () =>
@@ -114,13 +115,13 @@ export function registerStatusHealthSessionsCommands(program: Command) {
 
   const sessionsCmd = program
     .command("sessions")
-    .description("List stored conversation sessions")
-    .option("--json", "Output as JSON", false)
-    .option("--verbose", "Verbose logging", false)
-    .option("--store <path>", "Path to session store (default: resolved from config)")
-    .option("--agent <id>", "Agent id to inspect (default: configured default agent)")
-    .option("--all-agents", "Aggregate sessions across all configured agents", false)
-    .option("--active <minutes>", "Only show sessions updated within the past N minutes")
+    .description(t("statusCli.sessionsDesc"))
+    .option("--json", t("statusCli.sessionsJsonOpt"), false)
+    .option("--verbose", t("statusCli.sessionsVerboseOpt"), false)
+    .option("--store <path>", t("statusCli.sessionsStoreOpt"))
+    .option("--agent <id>", t("statusCli.sessionsAgentOpt"))
+    .option("--all-agents", t("statusCli.sessionsAllAgentsOpt"), false)
+    .option("--active <minutes>", t("statusCli.sessionsActiveOpt"))
     .addHelpText(
       "after",
       () =>
@@ -157,19 +158,15 @@ export function registerStatusHealthSessionsCommands(program: Command) {
 
   sessionsCmd
     .command("cleanup")
-    .description("Run session-store maintenance now")
-    .option("--store <path>", "Path to session store (default: resolved from config)")
-    .option("--agent <id>", "Agent id to maintain (default: configured default agent)")
-    .option("--all-agents", "Run maintenance across all configured agents", false)
-    .option("--dry-run", "Preview maintenance actions without writing", false)
-    .option("--enforce", "Apply maintenance even when configured mode is warn", false)
-    .option(
-      "--fix-missing",
-      "Remove store entries whose transcript files are missing (bypasses age/count retention)",
-      false,
-    )
-    .option("--active-key <key>", "Protect this session key from budget-eviction")
-    .option("--json", "Output JSON", false)
+    .description(t("statusCli.cleanupDesc"))
+    .option("--store <path>", t("statusCli.cleanupStoreOpt"))
+    .option("--agent <id>", t("statusCli.cleanupAgentOpt"))
+    .option("--all-agents", t("statusCli.cleanupAllAgentsOpt"), false)
+    .option("--dry-run", t("statusCli.cleanupDryRunOpt"), false)
+    .option("--enforce", t("statusCli.cleanupEnforceOpt"), false)
+    .option("--fix-missing", t("statusCli.cleanupFixMissingOpt"), false)
+    .option("--active-key <key>", t("statusCli.cleanupActiveKeyOpt"))
+    .option("--json", t("statusCli.cleanupJsonOpt"), false)
     .addHelpText(
       "after",
       () =>
