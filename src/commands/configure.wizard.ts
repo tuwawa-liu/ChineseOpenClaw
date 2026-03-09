@@ -189,13 +189,13 @@ async function promptWebToolsConfig(
     if (stored && SEARCH_PROVIDER_OPTIONS.some((e) => e.value === stored)) {
       return stored;
     }
-    return SEARCH_PROVIDER_OPTIONS.find((e) => hasKeyForProvider(e.value))?.value ?? "brave";
+    return (
+      SEARCH_PROVIDER_OPTIONS.find((e) => hasKeyForProvider(e.value))?.value ??
+      SEARCH_PROVIDER_OPTIONS[0].value
+    );
   })();
 
-  note(
-    t("commands.configWiz.webSearchNote"),
-    t("commands.configWiz.webSearchTitle"),
-  );
+  note(t("commands.configWiz.webSearchNote"), t("commands.configWiz.webSearchTitle"));
 
   const enableSearch = guardCancel(
     await confirm({
@@ -303,14 +303,20 @@ export async function runConfigureWizard(
 ) {
   try {
     printWizardHeader(runtime);
-    intro(opts.command === "update" ? t("commands.configWiz.updateWizard") : t("commands.configWiz.configure"));
+    intro(
+      opts.command === "update"
+        ? t("commands.configWiz.updateWizard")
+        : t("commands.configWiz.configure"),
+    );
     const prompter = createClackPrompter();
 
     const snapshot = await readConfigFileSnapshot();
     const baseConfig: OpenClawConfig = snapshot.valid ? snapshot.config : {};
 
     if (snapshot.exists) {
-      const title = snapshot.valid ? t("commands.configWiz.existingConfig") : t("commands.configWiz.invalidConfig");
+      const title = snapshot.valid
+        ? t("commands.configWiz.existingConfig")
+        : t("commands.configWiz.invalidConfig");
       note(summarizeExistingConfig(baseConfig), title);
       if (!snapshot.valid && snapshot.issues.length > 0) {
         note(
@@ -323,9 +329,7 @@ export async function runConfigureWizard(
         );
       }
       if (!snapshot.valid) {
-        outro(
-          t("commands.configWiz.configInvalid", { cmd: formatCliCommand("openclaw doctor") }),
-        );
+        outro(t("commands.configWiz.configInvalid", { cmd: formatCliCommand("openclaw doctor") }));
         runtime.exit(1);
         return;
       }
@@ -495,7 +499,8 @@ export async function runConfigureWizard(
         await text({
           message: t("commands.configWiz.daemonPort"),
           initialValue: String(gatewayPort),
-          validate: (value) => (Number.isFinite(Number(value)) ? undefined : t("commands.configWiz.invalidPort")),
+          validate: (value) =>
+            Number.isFinite(Number(value)) ? undefined : t("commands.configWiz.invalidPort"),
         }),
         runtime,
       );

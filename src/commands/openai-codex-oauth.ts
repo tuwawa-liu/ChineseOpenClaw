@@ -1,5 +1,5 @@
-import type { OAuthCredentials } from "@mariozechner/pi-ai";
-import { loginOpenAICodex } from "@mariozechner/pi-ai";
+import type { OAuthCredentials } from "@mariozechner/pi-ai/oauth";
+import { loginOpenAICodex } from "@mariozechner/pi-ai/oauth";
 import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
@@ -26,9 +26,7 @@ export async function loginOpenAICodexOAuth(params: {
   }
 
   await prompter.note(
-    isRemote
-      ? t("commands.openaiCodexOAuth.remoteNote")
-      : t("commands.openaiCodexOAuth.localNote"),
+    isRemote ? t("commands.openaiCodexOAuth.remoteNote") : t("commands.openaiCodexOAuth.localNote"),
     t("commands.openaiCodexOAuth.openaiOAuthTitle"),
   );
 
@@ -46,14 +44,17 @@ export async function loginOpenAICodexOAuth(params: {
     const creds = await loginOpenAICodex({
       onAuth: baseOnAuth,
       onPrompt,
-      onProgress: (msg) => spin.update(msg),
+      onProgress: (msg: string) => spin.update(msg),
     });
     spin.stop(t("commands.openaiCodexOAuth.oauthComplete"));
     return creds ?? null;
   } catch (err) {
     spin.stop(t("commands.openaiCodexOAuth.oauthFailed"));
     runtime.error(String(err));
-    await prompter.note(t("commands.openaiCodexOAuth.troubleOAuth"), t("commands.openaiCodexOAuth.oauthHelp"));
+    await prompter.note(
+      t("commands.openaiCodexOAuth.troubleOAuth"),
+      t("commands.openaiCodexOAuth.oauthHelp"),
+    );
     throw err;
   }
 }

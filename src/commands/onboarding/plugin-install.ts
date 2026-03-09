@@ -4,11 +4,13 @@ import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../../agents/ag
 import type { ChannelPluginCatalogEntry } from "../../channels/plugins/catalog.js";
 import { resolveBundledInstallPlanForCatalogEntry } from "../../cli/plugin-install-plan.js";
 import type { OpenClawConfig } from "../../config/config.js";
+import { t } from "../../i18n/index.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 import {
   findBundledPluginSourceInMap,
   resolveBundledPluginSources,
 } from "../../plugins/bundled-sources.js";
+import { clearPluginDiscoveryCache } from "../../plugins/discovery.js";
 import { enablePluginInConfig } from "../../plugins/enable.js";
 import { installPluginFromNpmSpec } from "../../plugins/install.js";
 import { buildNpmResolutionInstallFields, recordPluginInstall } from "../../plugins/installs.js";
@@ -16,7 +18,6 @@ import { loadOpenClawPlugins } from "../../plugins/loader.js";
 import { createPluginLoaderLogger } from "../../plugins/logger.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import type { WizardPrompter } from "../../wizard/prompts.js";
-import { t } from "../../i18n/index.js";
 
 type InstallChoice = "npm" | "local" | "skip";
 
@@ -96,7 +97,10 @@ async function promptInstallChoice(params: {
       ]
     : [];
   const options: Array<{ value: InstallChoice; label: string; hint?: string }> = [
-    { value: "npm", label: t("commands.pluginInstall.downloadNpm", { spec: entry.install.npmSpec }) },
+    {
+      value: "npm",
+      label: t("commands.pluginInstall.downloadNpm", { spec: entry.install.npmSpec }),
+    },
     ...localOptions,
     { value: "skip", label: t("commands.pluginInstall.skipForNow") },
   ];
@@ -200,7 +204,10 @@ export async function ensureOnboardingPluginInstalled(params: {
   }
 
   await prompter.note(
-    t("commands.pluginInstall.installFailed", { spec: entry.install.npmSpec, error: String(result.error) }),
+    t("commands.pluginInstall.installFailed", {
+      spec: entry.install.npmSpec,
+      error: String(result.error),
+    }),
     t("commands.pluginInstall.pluginInstallTitle"),
   );
 
@@ -225,6 +232,7 @@ export function reloadOnboardingPluginRegistry(params: {
   runtime: RuntimeEnv;
   workspaceDir?: string;
 }): void {
+  clearPluginDiscoveryCache();
   const workspaceDir =
     params.workspaceDir ?? resolveAgentWorkspaceDir(params.cfg, resolveDefaultAgentId(params.cfg));
   const log = createSubsystemLogger("plugins");

@@ -3353,6 +3353,7 @@ Object.assign(en, {
     optRequireExisting: "Fail if the session key/label does not exist",
     optResetSession: "Reset the session key before first use",
     optNoPrefixCwd: "Do not prefix prompts with the working directory",
+    optProvenance: "ACP provenance mode: off, meta, or meta+receipt",
     optVerbose: "Verbose logging to stderr",
     clientDescription: "Run an interactive ACP client against the local ACP bridge",
     clientOptCwd: "Working directory for the ACP session",

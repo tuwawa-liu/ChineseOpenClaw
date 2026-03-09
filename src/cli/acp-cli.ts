@@ -2,6 +2,7 @@ import type { Command } from "commander";
 import { runAcpClientInteractive } from "../acp/client.js";
 import { readSecretFromFile } from "../acp/secret-file.js";
 import { serveAcpGateway } from "../acp/server.js";
+import { normalizeAcpProvenanceMode } from "../acp/types.js";
 import { t } from "../i18n/index.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
@@ -27,9 +28,7 @@ function resolveSecretOption(params: {
 }
 
 function warnSecretCliFlag(flag: "--token" | "--password") {
-  defaultRuntime.error(
-    t("acpCli.warnSecretFlag", { flag }),
-  );
+  defaultRuntime.error(t("acpCli.warnSecretFlag", { flag }));
 }
 
 export function registerAcpCli(program: Command) {
@@ -46,6 +45,7 @@ export function registerAcpCli(program: Command) {
     .option("--require-existing", t("acpCli.optRequireExisting"), false)
     .option("--reset-session", t("acpCli.optResetSession"), false)
     .option("--no-prefix-cwd", t("acpCli.optNoPrefixCwd"), false)
+    .option("--provenance <mode>", t("acpCli.optProvenance"))
     .option("-v, --verbose", t("acpCli.optVerbose"), false)
     .addHelpText(
       "after",
@@ -73,6 +73,10 @@ export function registerAcpCli(program: Command) {
         if (opts.password) {
           warnSecretCliFlag("--password");
         }
+        const provenanceMode = normalizeAcpProvenanceMode(opts.provenance as string | undefined);
+        if (opts.provenance && !provenanceMode) {
+          throw new Error("Invalid --provenance value. Use off, meta, or meta+receipt.");
+        }
         await serveAcpGateway({
           gatewayUrl: opts.url as string | undefined,
           gatewayToken,
@@ -82,6 +86,7 @@ export function registerAcpCli(program: Command) {
           requireExistingSession: Boolean(opts.requireExisting),
           resetSession: Boolean(opts.resetSession),
           prefixCwd: !opts.noPrefixCwd,
+          provenanceMode,
           verbose: Boolean(opts.verbose),
         });
       } catch (err) {

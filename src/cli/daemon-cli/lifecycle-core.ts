@@ -1,5 +1,6 @@
 import type { Writable } from "node:stream";
-import { readBestEffortConfig } from "../../config/config.js";
+import { readBestEffortConfig, readConfigFileSnapshot } from "../../config/config.js";
+import { formatConfigIssueLines } from "../../config/issue-format.js";
 import { resolveIsNixMode } from "../../config/paths.js";
 import { checkTokenDrift } from "../../daemon/service-audit.js";
 import type { GatewayService } from "../../daemon/service.js";
@@ -83,12 +84,20 @@ async function handleServiceNotLoaded(params: {
   params.emit({
     ok: true,
     result: "not-loaded",
-    message: t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }),
+    message: t("lifecycleCore.serviceNotLoaded", {
+      noun: params.serviceNoun,
+      text: params.service.notLoadedText,
+    }),
     hints,
     service: buildDaemonServiceSnapshot(params.service, params.loaded),
   });
   if (!params.json) {
-    defaultRuntime.log(t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }));
+    defaultRuntime.log(
+      t("lifecycleCore.serviceNotLoaded", {
+        noun: params.serviceNoun,
+        text: params.service.notLoadedText,
+      }),
+    );
     for (const hint of hints) {
       defaultRuntime.log(t("lifecycleCore.startWith", { hint }));
     }
@@ -103,7 +112,32 @@ async function resolveServiceLoadedOrFail(params: {
   try {
     return await params.service.isLoaded({ env: process.env });
   } catch (err) {
-    params.fail(t("lifecycleCore.serviceCheckFailed", { noun: params.serviceNoun, err: String(err) }));
+    params.fail(
+      t("lifecycleCore.serviceCheckFailed", { noun: params.serviceNoun, err: String(err) }),
+    );
+    return null;
+  }
+}
+
+/**
+ * Best-effort config validation. Returns a string describing the issues if
+ * config exists and is invalid, or null if config is valid/missing/unreadable.
+ *
+ * Note: This reads the config file snapshot in the current CLI environment.
+ * Configs using env vars only available in the service context (launchd/systemd)
+ * may produce false positives, but the check is intentionally best-effort —
+ * a false positive here is safer than a crash on startup. (#35862)
+ */
+async function getConfigValidationError(): Promise<string | null> {
+  try {
+    const snapshot = await readConfigFileSnapshot();
+    if (!snapshot.exists || snapshot.valid) {
+      return null;
+    }
+    return snapshot.issues.length > 0
+      ? formatConfigIssueLines(snapshot.issues, "", { normalizeRoot: true }).join("\n")
+      : "Unknown validation issue.";
+  } catch {
     return null;
   }
 }
@@ -188,6 +222,17 @@ export async function runServiceStart(params: {
     });
     return;
   }
+  // Pre-flight config validation (#35862)
+  {
+    const configError = await getConfigValidationError();
+    if (configError) {
+      fail(
+        `${params.serviceNoun} aborted: config is invalid.\n${configError}\nFix the config and retry, or run "openclaw doctor" to repair.`,
+      );
+      return;
+    }
+  }
+
   try {
     await params.service.restart({ env: process.env, stdout });
   } catch (err) {
@@ -249,11 +294,19 @@ export async function runServiceStop(params: {
     emit({
       ok: true,
       result: "not-loaded",
-      message: t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }),
+      message: t("lifecycleCore.serviceNotLoaded", {
+        noun: params.serviceNoun,
+        text: params.service.notLoadedText,
+      }),
       service: buildDaemonServiceSnapshot(params.service, loaded),
     });
     if (!json) {
-      defaultRuntime.log(t("lifecycleCore.serviceNotLoaded", { noun: params.serviceNoun, text: params.service.notLoadedText }));
+      defaultRuntime.log(
+        t("lifecycleCore.serviceNotLoaded", {
+          noun: params.serviceNoun,
+          text: params.service.notLoadedText,
+        }),
+      );
     }
     return;
   }
@@ -299,6 +352,19 @@ export async function runServiceRestart(params: {
   if (loaded === null) {
     return false;
   }
+
+  // Pre-flight config validation: check before any restart action (including
+  // onNotLoaded which may send SIGUSR1 to an unmanaged process). (#35862)
+  {
+    const configError = await getConfigValidationError();
+    if (configError) {
+      fail(
+        `${params.serviceNoun} aborted: config is invalid.\n${configError}\nFix the config and retry, or run "openclaw doctor" to repair.`,
+      );
+      return false;
+    }
+  }
+
   if (!loaded) {
     try {
       handledNotLoaded = (await params.onNotLoaded?.({ json, stdout, fail })) ?? null;
@@ -344,8 +410,7 @@ export async function runServiceRestart(params: {
       }
     } catch (err) {
       if (isGatewaySecretRefUnavailableError(err, "gateway.auth.token")) {
-        const warning =
-          t("lifecycleCore.tokenDriftUnavailable");
+        const warning = t("lifecycleCore.tokenDriftUnavailable");
         warnings.push(warning);
         if (!json) {
           defaultRuntime.log(`\n⚠️  ${warning}\n`);

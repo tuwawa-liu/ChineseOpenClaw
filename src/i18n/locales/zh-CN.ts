@@ -3252,6 +3252,7 @@ Object.assign(zh_CN, {
     optRequireExisting: "如果会话密钥/标签不存在则失败",
     optResetSession: "首次使用前重置会话密钥",
     optNoPrefixCwd: "不在提示中添加工作目录前缀",
+    optProvenance: "ACP 来源模式：off、meta 或 meta+receipt",
     optVerbose: "向 stderr 输出详细日志",
     clientDescription: "针对本地 ACP 桥接运行交互式 ACP 客户端",
     clientOptCwd: "ACP 会话的工作目录",
