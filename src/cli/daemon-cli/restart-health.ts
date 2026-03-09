@@ -243,6 +243,22 @@ export async function waitForGatewayHealthyListener(params: {
   return snapshot;
 }
 
+function renderPortUsageDiagnostics(snapshot: GatewayPortHealthSnapshot): string[] {
+  const lines: string[] = [];
+
+  if (snapshot.portUsage.status === "busy") {
+    lines.push(...formatPortDiagnostics(snapshot.portUsage));
+  } else {
+    lines.push(`Gateway port ${snapshot.portUsage.port} status: ${snapshot.portUsage.status}.`);
+  }
+
+  if (snapshot.portUsage.errors?.length) {
+    lines.push(`Port diagnostics errors: ${snapshot.portUsage.errors.join("; ")}`);
+  }
+
+  return lines;
+}
+
 export function renderRestartDiagnostics(snapshot: GatewayRestartSnapshot): string[] {
   const lines: string[] = [];
   const runtimeSummary = [
@@ -258,33 +274,13 @@ export function renderRestartDiagnostics(snapshot: GatewayRestartSnapshot): stri
     lines.push(t("restartHealth.serviceRuntime", { summary: runtimeSummary }));
   }
 
-  if (snapshot.portUsage.status === "busy") {
-    lines.push(...formatPortDiagnostics(snapshot.portUsage));
-  } else {
-    lines.push(t("restartHealth.gatewayPortStatus", { port: String(snapshot.portUsage.port), status: snapshot.portUsage.status }));
-  }
-
-  if (snapshot.portUsage.errors?.length) {
-    lines.push(t("restartHealth.portDiagErrors", { errors: snapshot.portUsage.errors.join("; ") }));
-  }
+  lines.push(...renderPortUsageDiagnostics(snapshot));
 
   return lines;
 }
 
 export function renderGatewayPortHealthDiagnostics(snapshot: GatewayPortHealthSnapshot): string[] {
-  const lines: string[] = [];
-
-  if (snapshot.portUsage.status === "busy") {
-    lines.push(...formatPortDiagnostics(snapshot.portUsage));
-  } else {
-    lines.push(t("restartHealth.gatewayPortStatus", { port: String(snapshot.portUsage.port), status: snapshot.portUsage.status }));
-  }
-
-  if (snapshot.portUsage.errors?.length) {
-    lines.push(t("restartHealth.portDiagErrors", { errors: snapshot.portUsage.errors.join("; ") }));
-  }
-
-  return lines;
+  return renderPortUsageDiagnostics(snapshot);
 }
 
 export async function terminateStaleGatewayPids(pids: number[]): Promise<number[]> {
