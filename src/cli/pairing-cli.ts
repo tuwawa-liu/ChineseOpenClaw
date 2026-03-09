@@ -2,6 +2,7 @@ import type { Command } from "commander";
 import { normalizeChannelId } from "../channels/plugins/index.js";
 import { listPairingChannels, notifyPairingApproved } from "../channels/plugins/pairing.js";
 import { loadConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { resolvePairingIdLabel } from "../pairing/pairing-labels.js";
 import {
   approveChannelPairingCode,
@@ -26,13 +27,13 @@ function parseChannel(raw: unknown, channels: PairingChannel[]): PairingChannel 
     .trim()
     .toLowerCase();
   if (!value) {
-    throw new Error("Channel required");
+    throw new Error(t("pairing.channelRequired"));
   }
 
   const normalized = normalizeChannelId(value);
   if (normalized) {
     if (!channels.includes(normalized)) {
-      throw new Error(`Channel ${normalized} does not support pairing`);
+      throw new Error(t("pairing.channelNotSupported", { channel: normalized }));
     }
     return normalized;
   }
@@ -41,7 +42,7 @@ function parseChannel(raw: unknown, channels: PairingChannel[]): PairingChannel 
   if (/^[a-z][a-z0-9_-]{0,63}$/.test(value)) {
     return value as PairingChannel;
   }
-  throw new Error(`Invalid channel: ${value}`);
+  throw new Error(t("pairing.invalidChannel", { channel: value }));
 }
 
 async function notifyApproved(channel: PairingChannel, id: string) {
@@ -53,7 +54,7 @@ export function registerPairingCli(program: Command) {
   const channels = listPairingChannels();
   const pairing = program
     .command("pairing")
-    .description("Secure DM pairing (approve inbound requests)")
+    .description(t("pairingCli.description"))
     .addHelpText(
       "after",
       () =>
@@ -62,17 +63,15 @@ export function registerPairingCli(program: Command) {
 
   pairing
     .command("list")
-    .description("List pending pairing requests")
-    .option("--channel <channel>", `Channel (${channels.join(", ")})`)
-    .option("--account <accountId>", "Account id (for multi-account channels)")
-    .argument("[channel]", `Channel (${channels.join(", ")})`)
-    .option("--json", "Print JSON", false)
+    .description(t("pairingCli.listDescription"))
+    .option("--channel <channel>", t("pairingCli.channelOpt", { channels: channels.join(", ") }))
+    .option("--account <accountId>", t("pairingCli.accountOpt"))
+    .argument("[channel]", t("pairingCli.channelOpt", { channels: channels.join(", ") }))
+    .option("--json", t("pairingCli.jsonOpt"), false)
     .action(async (channelArg, opts) => {
       const channelRaw = opts.channel ?? channelArg ?? (channels.length === 1 ? channels[0] : "");
       if (!channelRaw) {
-        throw new Error(
-          `Channel required. Use --channel <channel> or pass it as the first argument (expected one of: ${channels.join(", ")})`,
-        );
+        throw new Error(t("pairing.channelRequiredDetailed", { channels: channels.join(", ") }));
       }
       const channel = parseChannel(channelRaw, channels);
       const accountId = String(opts.account ?? "").trim();
@@ -84,7 +83,7 @@ export function registerPairingCli(program: Command) {
         return;
       }
       if (requests.length === 0) {
-        defaultRuntime.log(theme.muted(`No pending ${channel} pairing requests.`));
+        defaultRuntime.log(theme.muted(t("pairing.noPendingRequests", { channel })));
         return;
       }
       const idLabel = resolvePairingIdLabel(channel);
@@ -113,12 +112,12 @@ export function registerPairingCli(program: Command) {
 
   pairing
     .command("approve")
-    .description("Approve a pairing code and allow that sender")
-    .option("--channel <channel>", `Channel (${channels.join(", ")})`)
-    .option("--account <accountId>", "Account id (for multi-account channels)")
-    .argument("<codeOrChannel>", "Pairing code (or channel when using 2 args)")
-    .argument("[code]", "Pairing code (when channel is passed as the 1st arg)")
-    .option("--notify", "Notify the requester on the same channel", false)
+    .description(t("pairingCli.approveDescription"))
+    .option("--channel <channel>", t("pairingCli.channelOpt", { channels: channels.join(", ") }))
+    .option("--account <accountId>", t("pairingCli.accountOpt"))
+    .argument("<codeOrChannel>", t("pairingCli.codeOrChannelArg"))
+    .argument("[code]", t("pairingCli.codeArg"))
+    .option("--notify", t("pairingCli.notifyOpt"), false)
     .action(async (codeOrChannel, code, opts) => {
       const defaultChannel = channels.length === 1 ? channels[0] : "";
       const usingExplicitChannel = Boolean(opts.channel);
@@ -156,7 +155,7 @@ export function registerPairingCli(program: Command) {
             code: String(resolvedCode),
           });
       if (!approved) {
-        throw new Error(`No pending pairing request found for code: ${String(resolvedCode)}`);
+        throw new Error(t("pairing.requestNotFound", { code: String(resolvedCode) }));
       }
 
       defaultRuntime.log(
@@ -167,7 +166,7 @@ export function registerPairingCli(program: Command) {
         return;
       }
       await notifyApproved(channel, approved.id).catch((err) => {
-        defaultRuntime.log(theme.warn(`Failed to notify requester: ${String(err)}`));
+        defaultRuntime.log(theme.warn(t("pairing.notifyFailed", { error: String(err) })));
       });
     });
 }

@@ -18,6 +18,7 @@ import {
 import { recordHookInstall } from "../hooks/installs.js";
 import type { HookEntry } from "../hooks/types.js";
 import { loadWorkspaceHookEntries } from "../hooks/workspace.js";
+import { t } from "../i18n/index.js";
 import { resolveArchiveKind } from "../infra/archive.js";
 import { buildPluginStatusReport } from "../plugins/status.js";
 import { defaultRuntime } from "../runtime.js";
@@ -79,15 +80,15 @@ function resolveHookForToggle(
 ): HookStatusEntry {
   const hook = report.hooks.find((h) => h.name === hookName);
   if (!hook) {
-    throw new Error(`Hook "${hookName}" not found`);
+    throw new Error(t("hooks.hookNotFound", { name: hookName }));
   }
   if (hook.managedByPlugin) {
     throw new Error(
-      `Hook "${hookName}" is managed by plugin "${hook.pluginId ?? "unknown"}" and cannot be enabled/disabled.`,
+      t("hooks.managedByPlugin", { name: hookName, plugin: hook.pluginId ?? "unknown" }),
     );
   }
   if (opts?.requireEligible && !hook.eligible) {
-    throw new Error(`Hook "${hookName}" is not eligible (missing requirements)`);
+    throw new Error(t("hooks.notEligible", { name: hookName }));
   }
   return hook;
 }
@@ -181,7 +182,7 @@ function createInstallLogger() {
 }
 
 function logGatewayRestartHint() {
-  defaultRuntime.log("Restart the gateway to load hooks.");
+  defaultRuntime.log(t("hooks.restartGateway"));
 }
 
 function logIntegrityDriftWarning(
@@ -507,7 +508,7 @@ export async function disableHook(hookName: string): Promise<void> {
 export function registerHooksCli(program: Command): void {
   const hooks = program
     .command("hooks")
-    .description("Manage internal agent hooks")
+    .description(t("hooksCli.description"))
     .addHelpText(
       "after",
       () =>
@@ -516,10 +517,10 @@ export function registerHooksCli(program: Command): void {
 
   hooks
     .command("list")
-    .description("List all hooks")
-    .option("--eligible", "Show only eligible hooks", false)
-    .option("--json", "Output as JSON", false)
-    .option("-v, --verbose", "Show more details including missing requirements", false)
+    .description(t("hooksCli.listDescription"))
+    .option("--eligible", t("hooksCli.eligibleOpt"), false)
+    .option("--json", t("hooksCli.jsonOpt"), false)
+    .option("-v, --verbose", t("hooksCli.verboseOpt"), false)
     .action(async (opts) =>
       runHooksCliAction(async () => {
         const config = loadConfig();
@@ -530,8 +531,8 @@ export function registerHooksCli(program: Command): void {
 
   hooks
     .command("info <name>")
-    .description("Show detailed information about a hook")
-    .option("--json", "Output as JSON", false)
+    .description(t("hooksCli.infoDescription"))
+    .option("--json", t("hooksCli.jsonOpt"), false)
     .action(async (name, opts) =>
       runHooksCliAction(async () => {
         const config = loadConfig();
@@ -542,8 +543,8 @@ export function registerHooksCli(program: Command): void {
 
   hooks
     .command("check")
-    .description("Check hooks eligibility status")
-    .option("--json", "Output as JSON", false)
+    .description(t("hooksCli.checkDescription"))
+    .option("--json", t("hooksCli.jsonOpt"), false)
     .action(async (opts) =>
       runHooksCliAction(async () => {
         const config = loadConfig();
@@ -554,7 +555,7 @@ export function registerHooksCli(program: Command): void {
 
   hooks
     .command("enable <name>")
-    .description("Enable a hook")
+    .description(t("hooksCli.enableDescription"))
     .action(async (name) =>
       runHooksCliAction(async () => {
         await enableHook(name);
@@ -563,7 +564,7 @@ export function registerHooksCli(program: Command): void {
 
   hooks
     .command("disable <name>")
-    .description("Disable a hook")
+    .description(t("hooksCli.disableDescription"))
     .action(async (name) =>
       runHooksCliAction(async () => {
         await disableHook(name);
@@ -572,10 +573,10 @@ export function registerHooksCli(program: Command): void {
 
   hooks
     .command("install")
-    .description("Install a hook pack (path, archive, or npm spec)")
-    .argument("<path-or-spec>", "Path to a hook pack or npm package spec")
-    .option("-l, --link", "Link a local path instead of copying", false)
-    .option("--pin", "Record npm installs as exact resolved <name>@<version>", false)
+    .description(t("hooksCli.installDescription"))
+    .argument("<path-or-spec>", t("hooksCli.pathArg"))
+    .option("-l, --link", t("hooksCli.linkOpt"), false)
+    .option("--pin", t("hooksCli.pinOpt"), false)
     .action(async (raw: string, opts: { link?: boolean; pin?: boolean }) => {
       const resolved = resolveUserPath(raw);
       const cfg = loadConfig();
@@ -584,7 +585,7 @@ export function registerHooksCli(program: Command): void {
         if (opts.link) {
           const stat = fs.statSync(resolved);
           if (!stat.isDirectory()) {
-            defaultRuntime.error("Linked hook paths must be directories.");
+            defaultRuntime.error(t("hooks.linkedMustBeDir"));
             process.exit(1);
           }
 
@@ -623,7 +624,7 @@ export function registerHooksCli(program: Command): void {
           });
 
           await writeConfigFile(next);
-          defaultRuntime.log(`Linked hook path: ${shortenHomePath(resolved)}`);
+          defaultRuntime.log(t("hooks.linkedHookPath", { path: shortenHomePath(resolved) }));
           logGatewayRestartHint();
           return;
         }
@@ -651,18 +652,18 @@ export function registerHooksCli(program: Command): void {
         });
 
         await writeConfigFile(next);
-        defaultRuntime.log(`Installed hooks: ${result.hooks.join(", ")}`);
+        defaultRuntime.log(t("hooks.installedHooks", { hooks: result.hooks.join(", ") }));
         logGatewayRestartHint();
         return;
       }
 
       if (opts.link) {
-        defaultRuntime.error("`--link` requires a local path.");
+        defaultRuntime.error(t("hooks.linkRequiresPath"));
         process.exit(1);
       }
 
       if (looksLikeLocalInstallSpec(raw, [".zip", ".tgz", ".tar.gz", ".tar"])) {
-        defaultRuntime.error(`Path not found: ${resolved}`);
+        defaultRuntime.error(t("hooks.pathNotFound", { path: resolved }));
         process.exit(1);
       }
 
@@ -692,23 +693,23 @@ export function registerHooksCli(program: Command): void {
         hooks: result.hooks,
       });
       await writeConfigFile(next);
-      defaultRuntime.log(`Installed hooks: ${result.hooks.join(", ")}`);
+      defaultRuntime.log(t("hooks.installedHooks", { hooks: result.hooks.join(", ") }));
       logGatewayRestartHint();
     });
 
   hooks
     .command("update")
-    .description("Update installed hooks (npm installs only)")
-    .argument("[id]", "Hook pack id (omit with --all)")
-    .option("--all", "Update all tracked hooks", false)
-    .option("--dry-run", "Show what would change without writing", false)
+    .description(t("hooksCli.updateDescription"))
+    .argument("[id]", t("hooksCli.updateIdArg"))
+    .option("--all", t("hooksCli.updateAllOpt"), false)
+    .option("--dry-run", t("hooksCli.dryRunOpt"), false)
     .action(async (id: string | undefined, opts: HooksUpdateOptions) => {
       const cfg = loadConfig();
       const installs = cfg.hooks?.internal?.installs ?? {};
       const targets = opts.all ? Object.keys(installs) : id ? [id] : [];
 
       if (targets.length === 0) {
-        defaultRuntime.error("Provide a hook id or use --all.");
+        defaultRuntime.error(t("hooks.provideIdOrAll"));
         process.exit(1);
       }
 
@@ -718,15 +719,17 @@ export function registerHooksCli(program: Command): void {
       for (const hookId of targets) {
         const record = installs[hookId];
         if (!record) {
-          defaultRuntime.log(theme.warn(`No install record for "${hookId}".`));
+          defaultRuntime.log(theme.warn(t("hooks.noInstallRecord", { id: hookId })));
           continue;
         }
         if (record.source !== "npm") {
-          defaultRuntime.log(theme.warn(`Skipping "${hookId}" (source: ${record.source}).`));
+          defaultRuntime.log(
+            theme.warn(t("hooks.skippingSource", { id: hookId, source: record.source })),
+          );
           continue;
         }
         if (!record.spec) {
-          defaultRuntime.log(theme.warn(`Skipping "${hookId}" (missing npm spec).`));
+          defaultRuntime.log(theme.warn(t("hooks.missingNpmSpec", { id: hookId })));
           continue;
         }
 
@@ -734,7 +737,9 @@ export function registerHooksCli(program: Command): void {
         try {
           installPath = record.installPath ?? resolveHookInstallDir(hookId);
         } catch (err) {
-          defaultRuntime.log(theme.error(`Invalid install path for "${hookId}": ${String(err)}`));
+          defaultRuntime.log(
+            theme.error(t("hooks.invalidInstallPath", { id: hookId, error: String(err) })),
+          );
           continue;
         }
         const currentVersion = await readInstalledPackageVersion(installPath);

@@ -34,12 +34,15 @@ export const en: TranslationMap = {
       helpChannelTag: "- Use --tag <dist-tag|version> for a one-off npm update without persisting",
       helpNonInteractive: "Non-interactive:",
       helpNonInteractiveYes: "- Use --yes to accept downgrade prompts",
-      helpNonInteractiveCombine: "- Combine with --channel/--tag/--restart/--json/--timeout as needed",
-      helpNonInteractiveDry: "- Use --dry-run to preview actions without writing config/installing/restarting",
+      helpNonInteractiveCombine:
+        "- Combine with --channel/--tag/--restart/--json/--timeout as needed",
+      helpNonInteractiveDry:
+        "- Use --dry-run to preview actions without writing config/installing/restarting",
       helpExamples: "Examples:",
       helpNotes: "Notes:",
       helpNoteSwitchChannels: "- Switch channels with --channel stable|beta|dev",
-      helpNoteGlobal: "- For global installs: auto-updates via detected package manager when possible (see docs/install/updating.md)",
+      helpNoteGlobal:
+        "- For global installs: auto-updates via detected package manager when possible (see docs/install/updating.md)",
       helpNoteDowngrade: "- Downgrades require confirmation (can break configuration)",
       helpNoteUncommitted: "- Skips update if the working directory has uncommitted changes",
       wizard: {
@@ -381,10 +384,12 @@ export const en: TranslationMap = {
     onboard: {
       desc: "Interactive wizard to set up the gateway, workspace, and skills",
       optWorkspace: "Agent workspace directory (default: ~/.openclaw/workspace)",
-      optReset: "Reset config + credentials + sessions before running wizard (workspace only with --reset-scope full)",
+      optReset:
+        "Reset config + credentials + sessions before running wizard (workspace only with --reset-scope full)",
       optResetScope: "Reset scope: config|config+creds+sessions|full",
       optNonInteractive: "Run without prompts",
-      optAcceptRisk: "Acknowledge that agents are powerful and full system access is risky (required for --non-interactive)",
+      optAcceptRisk:
+        "Acknowledge that agents are powerful and full system access is risky (required for --non-interactive)",
       optFlow: "Wizard flow: quickstart|advanced|manual",
       optMode: "Wizard mode: local|remote",
       optTokenProvider: "Token provider id (non-interactive; used with --auth-choice token)",
@@ -398,12 +403,14 @@ export const en: TranslationMap = {
       optCustomApiKey: "Custom provider API key (optional)",
       optCustomModelId: "Custom provider model ID",
       optCustomProviderId: "Custom provider ID (optional; auto-derived by default)",
-      optCustomCompatibility: "Custom provider API compatibility: openai|anthropic (default: openai)",
+      optCustomCompatibility:
+        "Custom provider API compatibility: openai|anthropic (default: openai)",
       optGatewayPort: "Gateway port",
       optGatewayBind: "Gateway bind: loopback|tailnet|lan|auto|custom",
       optGatewayAuth: "Gateway auth: token|password",
       optGatewayToken: "Gateway token (token auth)",
-      optGatewayTokenRefEnv: "Gateway token SecretRef env var name (token auth; e.g. OPENCLAW_GATEWAY_TOKEN)",
+      optGatewayTokenRefEnv:
+        "Gateway token SecretRef env var name (token auth; e.g. OPENCLAW_GATEWAY_TOKEN)",
       optGatewayPassword: "Gateway password (password auth)",
       optRemoteUrl: "Remote Gateway WebSocket URL",
       optRemoteToken: "Remote Gateway token (optional)",
@@ -436,8 +443,10 @@ export const en: TranslationMap = {
     dev: "Dev",
     devHint: "Git main",
     restartAfterUpdate: "Restart the gateway service after update?",
-    requiresTty: "Update wizard requires a TTY. Use `openclaw update --channel <stable|beta|dev>` instead.",
-    nonGitDir: "OPENCLAW_GIT_DIR points at a non-git directory: {dir}. Set OPENCLAW_GIT_DIR to an empty folder or an openclaw checkout.",
+    requiresTty:
+      "Update wizard requires a TTY. Use `openclaw update --channel <stable|beta|dev>` instead.",
+    nonGitDir:
+      "OPENCLAW_GIT_DIR points at a non-git directory: {dir}. Set OPENCLAW_GIT_DIR to an empty folder or an openclaw checkout.",
     createGitCheckout: "Create a git checkout at {dir}? (override via OPENCLAW_GIT_DIR)",
     cancelled: "Update cancelled.",
   },
@@ -471,18 +480,21 @@ export const en: TranslationMap = {
   },
   secretsCli: {
     applyPlanNow: "Apply this plan now?",
-    migrationOneWay: "This migration is one-way for migrated plaintext values. Continue with apply?",
+    migrationOneWay:
+      "This migration is one-way for migrated plaintext values. Continue with apply?",
     applyCancelled: "Apply cancelled.",
     secretsApplied: "Secrets applied. Updated {count} file(s).",
     secretsNoChanges: "Secrets apply: no changes.",
     reloadedWithWarnings: "Secrets reloaded with {count} warning(s).",
     reloaded: "Secrets reloaded.",
-    auditSummary: "Secrets audit: {status}. plaintext={plaintext}, unresolved={unresolved}, shadowed={shadowed}, legacy={legacy}.",
+    auditSummary:
+      "Secrets audit: {status}. plaintext={plaintext}, unresolved={unresolved}, shadowed={shadowed}, legacy={legacy}.",
     auditFinding: "- [{code}] {file}:{jsonPath} {message}",
     auditMoreFindings: "... {count} more finding(s).",
     preflightSummary: "Preflight: changed={changed}, files={files}, warnings={warnings}.",
     preflightWarning: "- warning: {warning}",
-    planSummary: "Plan: targets={targets}, providerUpserts={providerUpserts}, providerDeletes={providerDeletes}.",
+    planSummary:
+      "Plan: targets={targets}, providerUpserts={providerUpserts}, providerDeletes={providerDeletes}.",
     planWrittenTo: "Plan written to {path}",
     dryRunChanged: "Secrets apply dry run: {count} file(s) would change.",
     dryRunNoChanges: "Secrets apply dry run: no changes.",
@@ -496,24 +508,60 @@ export const en: TranslationMap = {
     allowlist: { desc: "List/add/remove allowlist entries." },
     approve: { desc: "Approve or deny exec requests." },
     context: { desc: "Explain how context is built and used." },
-    exportSession: { desc: "Export current session to HTML file with full system prompt.", argPath: "Output path (default: workspace)" },
+    exportSession: {
+      desc: "Export current session to HTML file with full system prompt.",
+      argPath: "Output path (default: workspace)",
+    },
     tts: {
       desc: "Control text-to-speech (TTS).",
       argAction: "TTS action",
       argValue: "Provider, limit, or text",
-      menuTitle: "TTS Actions:\n• On – Enable TTS for responses\n• Off – Disable TTS\n• Status – Show current settings\n• Provider – Set voice provider (edge, elevenlabs, openai)\n• Limit – Set max characters for TTS\n• Summary – Toggle AI summary for long texts\n• Audio – Generate TTS from custom text\n• Help – Show usage guide",
+      menuTitle:
+        "TTS Actions:\n• On – Enable TTS for responses\n• Off – Disable TTS\n• Status – Show current settings\n• Provider – Set voice provider (edge, elevenlabs, openai)\n• Limit – Set max characters for TTS\n• Summary – Toggle AI summary for long texts\n• Audio – Generate TTS from custom text\n• Help – Show usage guide",
     },
     whoami: { desc: "Show your sender id." },
-    session: { desc: "Manage session-level settings (for example /session idle).", argAction: "idle | max-age", argValue: "Duration (24h, 90m) or off" },
-    subagents: { desc: "List, kill, log, spawn, or steer subagent runs for this session.", argAction: "list | kill | log | info | send | steer | spawn", argTarget: "Run id, index, or session key", argValue: "Additional input (limit/message)" },
-    acp: { desc: "Manage ACP sessions and runtime options.", argAction: "Action to run", argValue: "Action arguments" },
-    focus: { desc: "Bind this thread (Discord) or topic/conversation (Telegram) to a session target.", argTarget: "Subagent label/index or session key/id/label" },
-    unfocus: { desc: "Remove the current thread (Discord) or topic/conversation (Telegram) binding." },
+    session: {
+      desc: "Manage session-level settings (for example /session idle).",
+      argAction: "idle | max-age",
+      argValue: "Duration (24h, 90m) or off",
+    },
+    subagents: {
+      desc: "List, kill, log, spawn, or steer subagent runs for this session.",
+      argAction: "list | kill | log | info | send | steer | spawn",
+      argTarget: "Run id, index, or session key",
+      argValue: "Additional input (limit/message)",
+    },
+    acp: {
+      desc: "Manage ACP sessions and runtime options.",
+      argAction: "Action to run",
+      argValue: "Action arguments",
+    },
+    focus: {
+      desc: "Bind this thread (Discord) or topic/conversation (Telegram) to a session target.",
+      argTarget: "Subagent label/index or session key/id/label",
+    },
+    unfocus: {
+      desc: "Remove the current thread (Discord) or topic/conversation (Telegram) binding.",
+    },
     agents: { desc: "List thread-bound agents for this session." },
     kill: { desc: "Kill a running subagent (or all).", argTarget: "Label, run id, index, or all" },
-    steer: { desc: "Send guidance to a running subagent.", argTarget: "Label, run id, or index", argMessage: "Steering message" },
-    config: { desc: "Show or set config values.", argAction: "show | get | set | unset", argPath: "Config path", argValue: "Value for set" },
-    debug: { desc: "Set runtime debug overrides.", argAction: "show | reset | set | unset", argPath: "Debug path", argValue: "Value for set" },
+    steer: {
+      desc: "Send guidance to a running subagent.",
+      argTarget: "Label, run id, or index",
+      argMessage: "Steering message",
+    },
+    config: {
+      desc: "Show or set config values.",
+      argAction: "show | get | set | unset",
+      argPath: "Config path",
+      argValue: "Value for set",
+    },
+    debug: {
+      desc: "Set runtime debug overrides.",
+      argAction: "show | reset | set | unset",
+      argPath: "Debug path",
+      argValue: "Value for set",
+    },
     usage: { desc: "Usage footer or cost summary.", argMode: "off, tokens, full, or cost" },
     stop: { desc: "Stop the current run." },
     restart: { desc: "Restart OpenClaw." },
@@ -521,15 +569,30 @@ export const en: TranslationMap = {
     send: { desc: "Set send policy.", argMode: "on, off, or inherit" },
     reset: { desc: "Reset the current session." },
     new: { desc: "Start a new session." },
-    compact: { desc: "Compact the session context.", argInstructions: "Extra compaction instructions" },
+    compact: {
+      desc: "Compact the session context.",
+      argInstructions: "Extra compaction instructions",
+    },
     think: { desc: "Set thinking level.", argLevel: "off, minimal, low, medium, high, xhigh" },
     verbose: { desc: "Toggle verbose mode.", argMode: "on or off" },
     reasoning: { desc: "Toggle reasoning visibility.", argMode: "on, off, or stream" },
     elevated: { desc: "Toggle elevated mode.", argMode: "on, off, ask, or full" },
-    exec: { desc: "Set exec defaults for this session.", argHost: "sandbox, gateway, or node", argSecurity: "deny, allowlist, or full", argAsk: "off, on-miss, or always", argNode: "Node id or name" },
+    exec: {
+      desc: "Set exec defaults for this session.",
+      argHost: "sandbox, gateway, or node",
+      argSecurity: "deny, allowlist, or full",
+      argAsk: "off, on-miss, or always",
+      argNode: "Node id or name",
+    },
     model: { desc: "Show or set the model.", argModel: "Model id (provider/model or id)" },
     models: { desc: "List model providers or provider models." },
-    queue: { desc: "Adjust queue settings.", argMode: "queue mode", argDebounce: "debounce duration (e.g. 500ms, 2s)", argCap: "queue cap", argDrop: "drop policy" },
+    queue: {
+      desc: "Adjust queue settings.",
+      argMode: "queue mode",
+      argDebounce: "debounce duration (e.g. 500ms, 2s)",
+      argCap: "queue cap",
+      argDrop: "drop policy",
+    },
     bash: { desc: "Run host shell commands (host-only).", argCommand: "Shell command" },
     dock: "Switch to {id} for replies.",
     categories: {
@@ -669,7 +732,8 @@ export const en: TranslationMap = {
     headerTemplate: "openclaw tui - {url} - agent {agent} - session {session}",
     disconnected: "gateway disconnected: {reason}",
     pairingActivity: "pairing required: run openclaw devices list",
-    pairingHint: "Pairing required. Run `openclaw devices list`, approve your request ID, then reconnect.",
+    pairingHint:
+      "Pairing required. Run `openclaw devices list`, approve your request ID, then reconnect.",
     idle: "idle",
     connected: "connected",
     disconnectedLabel: "disconnected",
@@ -690,7 +754,8 @@ export const en: TranslationMap = {
     eventGap: "event gap: expected {expected}, got {received}",
   },
   tuiWait: {
-    phrases: "flibbertigibbeting|kerfuffling|dillydallying|twiddling thumbs|noodling|bamboozling|moseying|hobnobbing|pondering|conjuring",
+    phrases:
+      "flibbertigibbeting|kerfuffling|dillydallying|twiddling thumbs|noodling|bamboozling|moseying|hobnobbing|pondering|conjuring",
     fallback: "waiting",
   },
   tuiFmt: {
@@ -741,7 +806,8 @@ export const en: TranslationMap = {
         "Must read: https://docs.openclaw.ai/gateway/security",
       ].join("\n"),
       securityNoteTitle: "Security",
-      riskConfirm: "I understand this is personal-by-default and shared/multi-user use requires lock-down. Continue?",
+      riskConfirm:
+        "I understand this is personal-by-default and shared/multi-user use requires lock-down. Continue?",
       introTitle: "OpenClaw onboarding",
       invalidConfigTitle: "Invalid config",
       configIssuesTitle: "Config issues",
@@ -785,8 +851,10 @@ export const en: TranslationMap = {
       defaultTailscaleOff: "Tailscale exposure: Off",
       tokenSecretRefError: "Could not resolve gateway.auth.token SecretRef for onboarding probe.",
       gatewayAuthNoteTitle: "Gateway auth",
-      passwordSecretRefError: "Could not resolve gateway.auth.password SecretRef for onboarding probe.",
-      remoteTokenSecretRefError: "Could not resolve gateway.remote.token SecretRef for onboarding probe.",
+      passwordSecretRefError:
+        "Could not resolve gateway.auth.password SecretRef for onboarding probe.",
+      remoteTokenSecretRefError:
+        "Could not resolve gateway.remote.token SecretRef for onboarding probe.",
       setupModeMsg: "What do you want to set up?",
       localGateway: "Local gateway (this machine)",
       gatewayReachable: "Gateway reachable ({url})",
@@ -810,11 +878,14 @@ export const en: TranslationMap = {
       installed: "Shell completion installed. {hint}",
     },
     finalize: {
-      systemdUnavailable: "Systemd user services are unavailable. Skipping lingering checks and service install.",
+      systemdUnavailable:
+        "Systemd user services are unavailable. Skipping lingering checks and service install.",
       systemdNoteTitle: "Systemd",
-      lingerReason: "Linux installs use a systemd user service by default. Without lingering, systemd stops the user session on logout/idle and kills the Gateway.",
+      lingerReason:
+        "Linux installs use a systemd user service by default. Without lingering, systemd stops the user session on logout/idle and kills the Gateway.",
       installServiceConfirm: "Install Gateway service (recommended)",
-      systemdSkipInstall: "Systemd user services are unavailable; skipping service install. Use your container supervisor or `docker compose up -d`.",
+      systemdSkipInstall:
+        "Systemd user services are unavailable; skipping service install. Use your container supervisor or `docker compose up -d`.",
       gatewayServiceTitle: "Gateway service",
       serviceRuntimeMsg: "Gateway service runtime",
       quickstartNodeNote: "QuickStart uses Node for the Gateway service (stable + supported).",
@@ -828,7 +899,8 @@ export const en: TranslationMap = {
       serviceUninstalled: "Gateway service uninstalled.",
       uninstallingService: "Uninstalling Gateway service…",
       preparingService: "Preparing Gateway service…",
-      installBlocked: "Gateway install blocked: {reason} Fix gateway auth config/token input and rerun onboarding.",
+      installBlocked:
+        "Gateway install blocked: {reason} Fix gateway auth config/token input and rerun onboarding.",
       installingService: "Installing Gateway service…",
       installFailed: "Gateway service install failed.",
       installSuccess: "Gateway service installed.",
@@ -836,7 +908,8 @@ export const en: TranslationMap = {
       gatewayNoteTitle: "Gateway",
       healthCheckHelpTitle: "Health check help",
       optionalAppsIntro: "Add nodes for extra features:",
-      optionalAppsLines: "- macOS app (system + notifications)\n- iOS app (camera/canvas)\n- Android app (camera/canvas)",
+      optionalAppsLines:
+        "- macOS app (system + notifications)\n- iOS app (camera/canvas)\n- Android app (camera/canvas)",
       optionalAppsTitle: "Optional apps",
       gatewayReachable: "Gateway: reachable",
       gatewayNotDetected: "Gateway: not detected",
@@ -848,15 +921,18 @@ export const en: TranslationMap = {
       tuiDefiningAction: "This is the defining action that makes your agent you.",
       tuiTakeYourTime: "Please take your time.",
       tuiMoreIsBetter: "The more you tell it, the better the experience will be.",
-      tuiWakeUpQuote: "We will send: \"Wake up, my friend!\"",
+      tuiWakeUpQuote: 'We will send: "Wake up, my friend!"',
       startTuiTitle: "Start TUI (best option!)",
       tokenSharedAuth: "Gateway token: shared auth for the Gateway + Control UI.",
-      tokenStoredIn: "Stored in: ~/.openclaw/openclaw.json (gateway.auth.token) or OPENCLAW_GATEWAY_TOKEN.",
+      tokenStoredIn:
+        "Stored in: ~/.openclaw/openclaw.json (gateway.auth.token) or OPENCLAW_GATEWAY_TOKEN.",
       tokenViewCmd: "View token: {cmd}",
       tokenGenCmd: "Generate token: {cmd}",
-      tokenLocalStorage: "Web UI stores a copy in this browser's localStorage (openclaw.control.settings.v1).",
+      tokenLocalStorage:
+        "Web UI stores a copy in this browser's localStorage (openclaw.control.settings.v1).",
       tokenOpenDashboard: "Open the dashboard anytime: {cmd}",
-      tokenPasteHint: "If prompted: paste the token into Control UI settings (or use the tokenized dashboard URL).",
+      tokenPasteHint:
+        "If prompted: paste the token into Control UI settings (or use the tokenized dashboard URL).",
       tokenNoteTitle: "Token",
       hatchBotMsg: "How do you want to hatch your bot?",
       hatchTui: "Hatch in TUI (recommended)",
@@ -873,11 +949,14 @@ export const en: TranslationMap = {
       controlUiSkipTitle: "Control UI",
       backupWorkspace: "Back up your agent workspace.",
       workspaceBackupTitle: "Workspace backup",
-      securityHardening: "Running agents on your computer is risky — harden your setup: https://docs.openclaw.ai/security",
+      securityHardening:
+        "Running agents on your computer is risky — harden your setup: https://docs.openclaw.ai/security",
       securityNoteTitle: "Security",
-      passwordSecretRefError: "Could not resolve gateway.auth.password SecretRef for onboarding auth.",
+      passwordSecretRefError:
+        "Could not resolve gateway.auth.password SecretRef for onboarding auth.",
       gatewayAuthNoteTitle: "Gateway auth",
-      webSearchEnabled: "Web search is enabled, so your agent can look things up online when needed.",
+      webSearchEnabled:
+        "Web search is enabled, so your agent can look things up online when needed.",
       webSearchTitle: "Web search",
       providerLabel: "Provider",
       keyStoredInConfig: "API key: stored in config.",
@@ -890,10 +969,12 @@ export const en: TranslationMap = {
       reEnable: "Re-enable: {cmd}",
       webSearchAutoDetected: "Web search is available via {label} (auto-detected).",
       webSearchSkipped: "Web search was skipped. You can enable it later:",
-      whatNow: "What now: https://openclaw.ai/showcase (\"What People Are Building\").",
+      whatNow: 'What now: https://openclaw.ai/showcase ("What People Are Building").',
       whatNowTitle: "What now",
-      outroWithDashboard: "Onboarding complete. Dashboard opened; keep that tab to control OpenClaw.",
-      outroWithSeed: "Onboarding complete. Web UI seeded in the background; open it anytime with the dashboard link above.",
+      outroWithDashboard:
+        "Onboarding complete. Dashboard opened; keep that tab to control OpenClaw.",
+      outroWithSeed:
+        "Onboarding complete. Web UI seeded in the background; open it anytime with the dashboard link above.",
       outroDefault: "Onboarding complete. Use the dashboard link above to control OpenClaw.",
     },
     gateway: {
@@ -933,7 +1014,7 @@ export const en: TranslationMap = {
       passwordInputMsg: "Gateway password",
     },
     secretInput: {
-      resolveError: "{path}: failed to resolve SecretRef \"{source}:{provider}:{id}\": {error}",
+      resolveError: '{path}: failed to resolve SecretRef "{source}:{provider}:{id}": {error}',
     },
   },
   commands: {
@@ -965,7 +1046,8 @@ export const en: TranslationMap = {
       configureLinkHint: "Add/update channels; disable unselected accounts",
       removeConfig: "Remove channel config",
       removeConfigHint: "Delete channel tokens/settings from openclaw.json",
-      webSearchNote: "Web search lets your agent look things up online using the `web_search` tool.\nChoose a provider and paste your API key.\nDocs: https://docs.openclaw.ai/tools/web",
+      webSearchNote:
+        "Web search lets your agent look things up online using the `web_search` tool.\nChoose a provider and paste your API key.\nDocs: https://docs.openclaw.ai/tools/web",
       webSearchTitle: "Web search",
       enableWebSearch: "Enable web_search?",
       chooseProvider: "Choose web search provider",
@@ -995,7 +1077,8 @@ export const en: TranslationMap = {
       remoteConfigured: "Remote gateway configured.",
       workspaceDir: "Workspace directory",
       existingWorkspaceTitle: "Existing workspace",
-      existingWorkspaceNote: "Existing workspace detected at {dir}\nExisting files are preserved. Missing templates may be created, never overwritten.",
+      existingWorkspaceNote:
+        "Existing workspace detected at {dir}\nExisting files are preserved. Missing templates may be created, never overwritten.",
       daemonPort: "Gateway port for service install",
       invalidPort: "Invalid port",
       noChanges: "No changes selected.",
@@ -1033,7 +1116,8 @@ export const en: TranslationMap = {
       tailscaleBindNote: "Tailscale requires bind=loopback. Adjusting bind to loopback.",
       noteTitle: "Note",
       tailscaleFunnelNote: "Tailscale funnel requires password auth.",
-      trustedProxyIncompat: "Trusted proxy auth is incompatible with Tailscale serve/funnel. Disabling Tailscale.",
+      trustedProxyIncompat:
+        "Trusted proxy auth is incompatible with Tailscale serve/funnel. Disabling Tailscale.",
       tokenSourceMsg: "Gateway token source",
       plaintextLabel: "Generate/store plaintext token",
       plaintextHint: "Default",
@@ -1041,12 +1125,13 @@ export const en: TranslationMap = {
       refHint: "Store an env-backed reference instead of plaintext",
       envVarMsg: "Gateway token env var",
       envVarValidate: "Use an env var name like OPENCLAW_GATEWAY_TOKEN.",
-      envVarMissing: "Environment variable \"{name}\" is missing or empty in this session.",
+      envVarMissing: 'Environment variable "{name}" is missing or empty in this session.',
       envVarValidated: "Validated {name}. OpenClaw will store a token SecretRef.",
       gatewayTokenTitle: "Gateway token",
       tokenBlankMsg: "Gateway token (blank to generate)",
       passwordMsg: "Gateway password",
-      trustedProxyNote: "Trusted proxy mode: OpenClaw trusts user identity from a reverse proxy.\nThe proxy must authenticate users and pass identity via headers.\nOnly requests from specified proxy IPs will be trusted.\n\nCommon use cases: Pomerium, Caddy + OAuth, Traefik + forward auth\nDocs: https://docs.openclaw.ai/gateway/trusted-proxy-auth",
+      trustedProxyNote:
+        "Trusted proxy mode: OpenClaw trusts user identity from a reverse proxy.\nThe proxy must authenticate users and pass identity via headers.\nOnly requests from specified proxy IPs will be trusted.\n\nCommon use cases: Pomerium, Caddy + OAuth, Traefik + forward auth\nDocs: https://docs.openclaw.ai/gateway/trusted-proxy-auth",
       trustedProxyAuthTitle: "Trusted Proxy Auth",
       userHeaderMsg: "Header containing user identity",
       userHeaderRequired: "User header is required",
@@ -1066,14 +1151,16 @@ export const en: TranslationMap = {
       uninstalled: "Gateway service uninstalled.",
       runtimeMsg: "Gateway service runtime",
       preparing: "Preparing Gateway service…",
-      installBlocked: "Gateway install blocked: {reason} Fix gateway auth config/token input and rerun configure.",
+      installBlocked:
+        "Gateway install blocked: {reason} Fix gateway auth config/token input and rerun configure.",
       installBlockedLabel: "Gateway service install blocked.",
       installing: "Installing Gateway service…",
       installed: "Gateway service installed.",
       installFailed: "Gateway service install failed.",
       installFailedNote: "Gateway service install failed: {error}",
       gatewayTitle: "Gateway",
-      lingerReason: "Linux installs use a systemd user service. Without lingering, systemd stops the user session on logout/idle and kills the Gateway.",
+      lingerReason:
+        "Linux installs use a systemd user service. Without lingering, systemd stops the user session on logout/idle and kills the Gateway.",
     },
     doctor: {
       intro: "OpenClaw doctor",
@@ -1083,11 +1170,13 @@ export const en: TranslationMap = {
       gatewayMissingConfig: "Missing config: run `{cmd}` to create it.",
       gatewayTitle: "Gateway",
       gatewayAuthTitle: "Gateway auth",
-      authConflict: "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
-      authConflictFix: "Fix: explicitly set gateway.auth.mode to \"token\" or \"password\".",
+      authConflict:
+        "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
+      authConflictFix: 'Fix: explicitly set gateway.auth.mode to "token" or "password".',
       tokenUnavailable: "Gateway token is managed via SecretRef and is currently unavailable.",
       tokenUnavailableFix: "If the token resolves at runtime, this warning is safe to ignore.",
-      authMissing: "Gateway auth is off or missing a token. Token auth is now the recommended default (including loopback).",
+      authMissing:
+        "Gateway auth is off or missing a token. Token auth is now the recommended default (including loopback).",
       generateTokenConfirm: "Generate and configure a gateway token now?",
       tokenConfigured: "Gateway token configured.",
       legacyTitle: "Legacy state detected",
@@ -1096,12 +1185,13 @@ export const en: TranslationMap = {
       warningsTitle: "Doctor warnings",
       hooksTitle: "Hooks",
       hookModelError: "- hooks.gmail.model {model}: could not be resolved.",
-      systemdNote: "Gateway runs as a systemd user service. Without lingering, service stops on logout.",
+      systemdNote:
+        "Gateway runs as a systemd user service. Without lingering, service stops on logout.",
       workspaceTitle: "Workspace",
       invalidConfigLabel: "Invalid config:",
       invalidConfigItem: "- {path}: {message}",
       complete: "Doctor complete.",
-      fixHint: "Run \"{cmd}\" to apply changes.",
+      fixHint: 'Run "{cmd}" to apply changes.',
       healthCheckHelp: "Health check help",
     },
     reset: {
@@ -1117,7 +1207,7 @@ export const en: TranslationMap = {
       fullResetLabel: "Full reset",
       fullResetHint: "state dir + workspace",
       cancelled: "Reset cancelled.",
-      invalidScope: "Invalid --scope. Expected \"config\", \"config+creds+sessions\", or \"full\".",
+      invalidScope: 'Invalid --scope. Expected "config", "config+creds+sessions", or "full".',
       confirmMsg: "Proceed with {scope} reset?",
       dryRunStop: "[dry-run] stop gateway service",
       nextStep: "Next: {cmd}",
@@ -1147,11 +1237,12 @@ export const en: TranslationMap = {
       workspacePreserved: "Tip: workspaces were preserved. Re-run with --workspace to remove them.",
     },
     agents: {
-      nonInteractiveWorkspace: "Non-interactive mode requires --workspace. Re-run without flags to use the wizard.",
+      nonInteractiveWorkspace:
+        "Non-interactive mode requires --workspace. Re-run without flags to use the wizard.",
       nameRequired: "Agent name is required in non-interactive mode.",
-      nameReserved: "\"{name}\" is reserved. Choose another name.",
-      normalizedId: "Normalized agent id to \"{id}\".",
-      alreadyExists: "Agent \"{id}\" already exists.",
+      nameReserved: '"{name}" is reserved. Choose another name.',
+      normalizedId: 'Normalized agent id to "{id}".',
+      alreadyExists: 'Agent "{id}" already exists.',
       agentLine: "Agent: {id}",
       workspaceLine: "Workspace: {dir}",
       agentDirLine: "Agent dir: {dir}",
@@ -1161,19 +1252,19 @@ export const en: TranslationMap = {
       nameMsg: "Agent name",
       required: "Required",
       agentIdTitle: "Agent id",
-      normalizedNote: "Normalized id to \"{id}\".",
-      updateConfirm: "Agent \"{id}\" already exists. Update it?",
+      normalizedNote: 'Normalized id to "{id}".',
+      updateConfirm: 'Agent "{id}" already exists. Update it?',
       noChanges: "No changes made.",
       workspaceMsg: "Workspace directory",
-      copyAuthConfirm: "Copy auth profiles from \"{id}\"?",
-      authCopied: "Copied auth profiles from \"{id}\".",
+      copyAuthConfirm: 'Copy auth profiles from "{id}"?',
+      authCopied: 'Copied auth profiles from "{id}".',
       authProfilesTitle: "Auth profiles",
       configureAuthConfirm: "Configure model/auth for this agent now?",
       routeBindingsConfirm: "Route selected channels to this agent now? (bindings)",
       routeBindingsTitle: "Routing bindings",
       routeUnchangedNote: "Routing unchanged. Add bindings when you're ready.",
       routeUnchangedTitle: "Routing",
-      agentReady: "Agent \"{id}\" ready.",
+      agentReady: 'Agent "{id}" ready.',
     },
     custom: {
       openaiCompat: "OpenAI-compatible",
@@ -1208,16 +1299,19 @@ export const en: TranslationMap = {
       endpointIdRequired: "Endpoint ID is required.",
       modelAliasMsg: "Model alias (optional)",
       modelAliasPlaceholder: "e.g. local, ollama",
-      endpointRenamedNote: "Endpoint ID \"{from}\" already exists for a different base URL. Using \"{to}\".",
+      endpointRenamedNote:
+        'Endpoint ID "{from}" already exists for a different base URL. Using "{to}".',
       endpointRenamedTitle: "Endpoint ID",
       configuredLog: "Configured custom provider: {provider}/{model}",
     },
     remote: {
       urlValidateScheme: "URL must start with ws:// or wss://",
-      urlValidateInsecure: "Use wss:// for remote hosts, or ws://127.0.0.1/localhost via SSH tunnel. Break-glass: OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 for trusted private networks.",
+      urlValidateInsecure:
+        "Use wss:// for remote hosts, or ws://127.0.0.1/localhost via SSH tunnel. Break-glass: OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 for trusted private networks.",
       discoverConfirm: "Discover gateway on LAN (Bonjour)?",
       discoveryTitle: "Discovery",
-      discoveryNote: "Bonjour discovery requires dns-sd (macOS) or avahi-browse (Linux).\nDocs: https://docs.openclaw.ai/gateway/discovery",
+      discoveryNote:
+        "Bonjour discovery requires dns-sd (macOS) or avahi-browse (Linux).\nDocs: https://docs.openclaw.ai/gateway/discovery",
       searching: "Searching for gateways…",
       foundGateways: "Found {count} gateway(s)",
       noGateways: "No gateways found",
@@ -1225,9 +1319,11 @@ export const en: TranslationMap = {
       connectionMethod: "Connection method",
       directLabel: "Direct gateway WS ({host}:{port})",
       sshLabel: "SSH tunnel (loopback)",
-      directNote: "Direct remote access defaults to TLS.\nUsing: {url}\nIf your gateway is loopback-only, choose SSH tunnel and keep ws://127.0.0.1:18789.",
+      directNote:
+        "Direct remote access defaults to TLS.\nUsing: {url}\nIf your gateway is loopback-only, choose SSH tunnel and keep ws://127.0.0.1:18789.",
       directTitle: "Direct remote",
-      sshNote: "Start a tunnel before using the CLI:\n{cmd}\nDocs: https://docs.openclaw.ai/gateway/remote",
+      sshNote:
+        "Start a tunnel before using the CLI:\n{cmd}\nDocs: https://docs.openclaw.ai/gateway/remote",
       sshTitle: "SSH tunnel",
       wsUrlMsg: "Gateway WebSocket URL",
       authMsg: "Gateway auth",
@@ -1257,7 +1353,8 @@ export const en: TranslationMap = {
       alreadyConfigured: "{label} already configured. What do you want to do?",
       accountSelect: "{label} account",
       channelStatusTitle: "Channel status",
-      dmSecurityNote: "DM security: default is pairing; unknown DMs get a pairing code.\n• Approve in the Web UI → Paired tab or via /approve in an existing paired DM.\n• Public DMs: anyone can message the agent without pairing.\n• Multi-user DMs: each user is paired individually.",
+      dmSecurityNote:
+        "DM security: default is pairing; unknown DMs get a pairing code.\n• Approve in the Web UI → Paired tab or via /approve in an existing paired DM.\n• Public DMs: anyone can message the agent without pairing.\n• Multi-user DMs: each user is paired individually.",
       dmSecurityTitle: "How channels work",
       configureDmConfirm: "Configure DM access policies now? (default: pairing)",
       dmPolicyMsg: "{label} DM policy",
@@ -1273,7 +1370,7 @@ export const en: TranslationMap = {
       noOnboarding: "{channel} does not support onboarding yet.",
       removeTitle: "Remove channel",
       removeNotSupported: "{label} does not support deleting config entries.",
-      deleteConfirm: "Delete {label} account \"{account}\"?",
+      deleteConfirm: 'Delete {label} account "{account}"?',
       selectQuickstart: "Select channel (QuickStart)",
       selectChannel: "Select a channel",
       finishedLabel: "Finished",
@@ -1342,7 +1439,8 @@ export const en: TranslationMap = {
       back: "Back",
     },
     authAnthropic: {
-      setupTokenNote: "Run `claude setup-token` in your terminal.\nThen paste the generated token below.",
+      setupTokenNote:
+        "Run `claude setup-token` in your terminal.\nThen paste the generated token below.",
       setupTokenTitle: "Anthropic setup-token",
       modeMsg: "How do you want to provide this setup token?",
       pasteNow: "Paste setup token now",
@@ -1352,20 +1450,26 @@ export const en: TranslationMap = {
       tokenNameMsg: "Token name (blank = default)",
     },
     authGeminiCli: {
-      cautionNote: "This is an unofficial integration and is not endorsed by Google.\nSome users have reported account restrictions or suspensions after using third-party Gemini CLI and Antigravity OAuth clients.\nProceed only if you understand and accept this risk.",
+      cautionNote:
+        "This is an unofficial integration and is not endorsed by Google.\nSome users have reported account restrictions or suspensions after using third-party Gemini CLI and Antigravity OAuth clients.\nProceed only if you understand and accept this risk.",
       cautionTitle: "Google Gemini CLI caution",
       continueConfirm: "Continue with Google Gemini CLI OAuth?",
       skipNote: "Skipped Google Gemini CLI OAuth setup.",
       skipTitle: "Setup skipped",
     },
     onboard: {
-      authDeprecated: "Auth choice \"{choice}\" is deprecated.\nUse \"--auth-choice token\" (Anthropic setup-token) or \"--auth-choice openai-codex\".",
-      claudeCliDeprecated: "Auth choice \"claude-cli\" is deprecated; using setup-token flow instead.",
-      codexCliDeprecated: "Auth choice \"codex-cli\" is deprecated; using OpenAI Codex OAuth instead.",
-      invalidSecretMode: "Invalid --secret-input-mode. Use \"plaintext\" or \"ref\".",
-      invalidResetScope: "Invalid --reset-scope. Use \"config\", \"config+creds+sessions\", or \"full\".",
-      nonInteractiveRisk: "Non-interactive onboarding requires explicit risk acknowledgement.\nRead: https://docs.openclaw.ai/security",
-      windowsDetected: "Windows detected — OpenClaw runs great on WSL2!\nNative Windows might be trickier.\nQuick setup: wsl --install (one command, one reboot)\nGuide: https://docs.openclaw.ai/windows",
+      authDeprecated:
+        'Auth choice "{choice}" is deprecated.\nUse "--auth-choice token" (Anthropic setup-token) or "--auth-choice openai-codex".',
+      claudeCliDeprecated:
+        'Auth choice "claude-cli" is deprecated; using setup-token flow instead.',
+      codexCliDeprecated:
+        'Auth choice "codex-cli" is deprecated; using OpenAI Codex OAuth instead.',
+      invalidSecretMode: 'Invalid --secret-input-mode. Use "plaintext" or "ref".',
+      invalidResetScope: 'Invalid --reset-scope. Use "config", "config+creds+sessions", or "full".',
+      nonInteractiveRisk:
+        "Non-interactive onboarding requires explicit risk acknowledgement.\nRead: https://docs.openclaw.ai/security",
+      windowsDetected:
+        "Windows detected — OpenClaw runs great on WSL2!\nNative Windows might be trickier.\nQuick setup: wsl --install (one command, one reboot)\nGuide: https://docs.openclaw.ai/windows",
     },
     authHelpers: {
       secretSourceMsg: "Where is this API key stored?",
@@ -1374,11 +1478,14 @@ export const en: TranslationMap = {
       providerLabel: "Configured secret provider",
       providerHint: "Use a configured file or exec secret provider",
       envVarNameMsg: "Environment variable name",
-      envVarFormatError: "Use an env var name like \"OPENAI_API_KEY\" (uppercase letters, numbers, underscores).",
-      envVarMissing: "Environment variable \"{envVar}\" is missing or empty in this session.",
-      envValidated: "Validated environment variable {envVar}. OpenClaw will store a reference, not the key value.",
+      envVarFormatError:
+        'Use an env var name like "OPENAI_API_KEY" (uppercase letters, numbers, underscores).',
+      envVarMissing: 'Environment variable "{envVar}" is missing or empty in this session.',
+      envValidated:
+        "Validated environment variable {envVar}. OpenClaw will store a reference, not the key value.",
       refValidated: "Reference validated",
-      noProviders: "No file/exec secret providers are configured yet. Add one under secrets.providers, or select Environment variable.",
+      noProviders:
+        "No file/exec secret providers are configured yet. Add one under secrets.providers, or select Environment variable.",
       noProvidersTitle: "No providers configured",
       selectProvider: "Select secret provider",
       execProvider: "Exec provider",
@@ -1386,18 +1493,21 @@ export const en: TranslationMap = {
       secretIdFileMsg: "Secret id (JSON pointer for json mode, or 'value' for singleValue mode)",
       secretIdExecMsg: "Secret id for the exec provider",
       secretIdEmpty: "Secret id cannot be empty.",
-      secretIdInvalidPointer: "Use an absolute JSON pointer like \"/providers/openai/apiKey\".",
-      secretIdSingleValue: "singleValue mode expects id \"value\".",
-      providerValidated: "Validated {source} reference {provider}:{id}. OpenClaw will store a reference, not the key value.",
-      invalidProvider: "Provider \"{provider}\" is not a file/exec provider.",
+      secretIdInvalidPointer: 'Use an absolute JSON pointer like "/providers/openai/apiKey".',
+      secretIdSingleValue: 'singleValue mode expects id "value".',
+      providerValidated:
+        "Validated {source} reference {provider}:{id}. OpenClaw will store a reference, not the key value.",
+      invalidProvider: 'Provider "{provider}" is not a file/exec provider.',
       invalidProviderTitle: "Invalid provider",
       refCheckFailed: "Could not validate provider reference {provider}:{id}.",
       refCheckFailedTitle: "Reference check failed",
       checkConfigTryAgain: "Check your provider configuration and try again.",
-      noEnvVarMapping: "No default environment variable mapping found for provider \"{provider}\". Set a provider-specific env var, or re-run onboarding in an interactive terminal to configure a ref.",
-      envVarRequired: "Environment variable \"{envVar}\" is required for --secret-input-mode ref in non-interactive onboarding.",
-      noValidEnvVar: "No valid environment variable name provided for provider \"{provider}\".",
-      modelSetDefault: "Default model set to {model} for agent \"{agentId}\".",
+      noEnvVarMapping:
+        'No default environment variable mapping found for provider "{provider}". Set a provider-specific env var, or re-run onboarding in an interactive terminal to configure a ref.',
+      envVarRequired:
+        'Environment variable "{envVar}" is required for --secret-input-mode ref in non-interactive onboarding.',
+      noValidEnvVar: 'No valid environment variable name provided for provider "{provider}".',
+      modelSetDefault: 'Default model set to {model} for agent "{agentId}".',
       modelConfigured: "Model configured",
       modeMsg: "How do you want to provide this API key?",
       pasteNow: "Paste API key now",
@@ -1422,9 +1532,12 @@ export const en: TranslationMap = {
       modelConfigured: "Model configured",
     },
     authModelCheck: {
-      modelNotFound: "Model not found: {provider}/{model}. Update agents.defaults.model or run /models list.",
-      noAuth: "No auth configured for provider \"{provider}\". The agent may fail until credentials are added.",
-      codexDetected: "Detected OpenAI Codex OAuth. Consider setting agents.defaults.model to {model}.",
+      modelNotFound:
+        "Model not found: {provider}/{model}. Update agents.defaults.model or run /models list.",
+      noAuth:
+        'No auth configured for provider "{provider}". The agent may fail until credentials are added.',
+      codexDetected:
+        "Detected OpenAI Codex OAuth. Consider setting agents.defaults.model to {model}.",
       modelCheck: "Model check",
     },
     authByteplus: {
@@ -1444,13 +1557,15 @@ export const en: TranslationMap = {
       enterApiKey: "Enter OpenRouter API key",
     },
     authGithubCopilot: {
-      loginNote: "This will open a GitHub device login to authorize Copilot.\nRequires an active GitHub Copilot subscription.",
+      loginNote:
+        "This will open a GitHub device login to authorize Copilot.\nRequires an active GitHub Copilot subscription.",
       ttyRequired: "GitHub Copilot login requires an interactive TTY.",
       loginFailed: "GitHub Copilot login failed: {error}",
     },
     authHuggingface: {
       enterApiKey: "Enter Hugging Face API key (HF token)",
-      noteMsg: "Hugging Face Inference Providers offer OpenAI-compatible chat completions.\nCreate a token at: https://huggingface.co/settings/tokens (fine-grained, 'Make calls to Inference Providers').",
+      noteMsg:
+        "Hugging Face Inference Providers offer OpenAI-compatible chat completions.\nCreate a token at: https://huggingface.co/settings/tokens (fine-grained, 'Make calls to Inference Providers').",
       defaultModel: "Default Hugging Face model",
       policyLocked: "Provider locked — router will choose backend by cost or speed.",
     },
@@ -1465,14 +1580,17 @@ export const en: TranslationMap = {
     },
     authOauth: {
       enterClientId: "Enter Chutes OAuth client id",
-      remoteNote: "You are running in a remote/VPS environment.\nA URL will be shown for you to open in your LOCAL browser.\nAfter signing in, paste the redirect URL back here.\n\nRedirect URI: {redirectUri}",
-      localNote: "Browser will open for Chutes authentication.\nIf the callback doesn't auto-complete, paste the redirect URL.\n\nRedirect URI: {redirectUri}",
+      remoteNote:
+        "You are running in a remote/VPS environment.\nA URL will be shown for you to open in your LOCAL browser.\nAfter signing in, paste the redirect URL back here.\n\nRedirect URI: {redirectUri}",
+      localNote:
+        "Browser will open for Chutes authentication.\nIf the callback doesn't auto-complete, paste the redirect URL.\n\nRedirect URI: {redirectUri}",
       chutesOAuth: "Chutes OAuth",
       startingOAuth: "Starting OAuth flow…",
       browserSignIn: "Complete sign-in in browser…",
       oauthComplete: "Chutes OAuth complete",
       oauthFailed: "Chutes OAuth failed",
-      oauthHelp: "Trouble with OAuth?\nVerify CHUTES_CLIENT_ID (and CHUTES_CLIENT_SECRET if required).\nVerify the OAuth app redirect URI includes: {redirectUri}\nChutes docs: https://chutes.ai/docs/sign-in-with-chutes/overview",
+      oauthHelp:
+        "Trouble with OAuth?\nVerify CHUTES_CLIENT_ID (and CHUTES_CLIENT_SECRET if required).\nVerify the OAuth app redirect URI includes: {redirectUri}\nChutes docs: https://chutes.ai/docs/sign-in-with-chutes/overview",
       oauthHelpTitle: "OAuth help",
     },
     authPluginProvider: {
@@ -1489,7 +1607,8 @@ export const en: TranslationMap = {
     },
     authZai: {
       verifiedGlm5: "Verified GLM-5 on {endpoint} endpoint.",
-      codingPlanDetected: "Coding Plan endpoint detected; GLM-5 is not available there. Defaulting to GLM-4.7.",
+      codingPlanDetected:
+        "Coding Plan endpoint detected; GLM-5 is not available there. Defaulting to GLM-4.7.",
     },
     chutesOAuth: {
       missingRedirect: "Missing OAuth redirect URL or authorization code.",
@@ -1505,8 +1624,10 @@ export const en: TranslationMap = {
     },
     openaiCodexOAuth: {
       prerequisites: "OAuth prerequisites",
-      remoteNote: "You are running in a remote/VPS environment.\nA URL will be shown for you to open in your LOCAL browser.\nAfter signing in, paste the redirect URL back here.",
-      localNote: "Browser will open for OpenAI authentication.\nIf the callback doesn't auto-complete, paste the redirect URL.\nOpenAI OAuth uses localhost:1455 for the callback.",
+      remoteNote:
+        "You are running in a remote/VPS environment.\nA URL will be shown for you to open in your LOCAL browser.\nAfter signing in, paste the redirect URL back here.",
+      localNote:
+        "Browser will open for OpenAI authentication.\nIf the callback doesn't auto-complete, paste the redirect URL.\nOpenAI OAuth uses localhost:1455 for the callback.",
       openaiOAuthTitle: "OpenAI Codex OAuth",
       startingOAuth: "Starting OAuth flow…",
       oauthComplete: "OpenAI OAuth complete",
@@ -1517,9 +1638,9 @@ export const en: TranslationMap = {
     },
     agentsBind: {
       unableResolve: "Unable to resolve agent id.",
-      agentNotFound: "Agent \"{agentId}\" not found.",
+      agentNotFound: 'Agent "{agentId}" not found.',
       agentIdRequired: "Agent id is required.",
-      noBindingsAgent: "No routing bindings for agent \"{agentId}\".",
+      noBindingsAgent: 'No routing bindings for agent "{agentId}".',
       noBindings: "No routing bindings.",
       routingBindings: "Routing bindings:",
       provideBindArg: "Provide at least one --bind <channel[:accountId]>.",
@@ -1530,8 +1651,8 @@ export const en: TranslationMap = {
       noNewBindings: "No new bindings added.",
       noBindingsRemoved: "No bindings removed.",
       useAllOrBind: "Use either --all or --bind, not both.",
-      noBindingsToRemove: "No bindings to remove for agent \"{agentId}\".",
-      removedCount: "Removed {count} binding(s) for \"{agentId}\".",
+      noBindingsToRemove: 'No bindings to remove for agent "{agentId}".',
+      removedCount: 'Removed {count} binding(s) for "{agentId}".',
       removedBindings: "Removed bindings:",
       notFound: "Not found:",
       ownedByAnother: "Bindings are owned by another agent:",
@@ -1539,11 +1660,11 @@ export const en: TranslationMap = {
     },
     agentsDelete: {
       agentIdRequired: "Agent id is required.",
-      normalizedId: "Normalized agent id to \"{agentId}\".",
-      cannotDelete: "\"{agentId}\" cannot be deleted.",
-      agentNotFound: "Agent \"{agentId}\" not found.",
+      normalizedId: 'Normalized agent id to "{agentId}".',
+      cannotDelete: '"{agentId}" cannot be deleted.',
+      agentNotFound: 'Agent "{agentId}" not found.',
       nonInteractive: "Non-interactive session. Re-run with --force.",
-      deleteConfirm: "Delete agent \"{agentId}\" and prune workspace/state?",
+      deleteConfirm: 'Delete agent "{agentId}" and prune workspace/state?',
       cancelled: "Cancelled.",
       deleted: "Deleted agent: {agentId}",
     },
@@ -1552,7 +1673,8 @@ export const en: TranslationMap = {
       noMatch: "No agent workspace matches {workspace}. Pass --agent to target a specific agent.",
       multipleMatch: "Multiple agents match {workspace}: {agents}. Pass --agent to choose one.",
       noIdentityData: "No identity data found in {path}.",
-      noIdentityFields: "No identity fields provided. Use --name/--emoji/--theme/--avatar or --from-identity.",
+      noIdentityFields:
+        "No identity fields provided. Use --name/--emoji/--theme/--avatar or --from-identity.",
       agentLabel: "Agent:",
       nameLabel: "Name:",
       themeLabel: "Theme:",
@@ -1571,7 +1693,8 @@ export const en: TranslationMap = {
       providersLabel: "Providers:",
       defaultRouting: "default (no explicit rules)",
       agentsTitle: "Agents:",
-      routingHint: "Routing rules map channel/account/peer to an agent. Use --bindings for full rules.",
+      routingHint:
+        "Routing rules map channel/account/peer to an agent. Use --bindings for full rules.",
       channelStatusHint: "Channel status reflects local config/creds. For live health: {command}.",
     },
     agentsProviders: {
@@ -1589,7 +1712,7 @@ export const en: TranslationMap = {
       timeoutError: "--timeout must be a non-negative integer (seconds; 0 means no timeout)",
       messageRequired: "Message (--message) is required",
       sessionRequired: "Pass --to <E.164>, --session-id, or --agent to choose a session",
-      unknownAgent: "Unknown agent id \"{agentId}\". Use \"{command}\" to see configured agents.",
+      unknownAgent: 'Unknown agent id "{agentId}". Use "{command}" to see configured agents.',
       waitingReply: "Waiting for agent reply…",
       noReply: "No reply from agent.",
       gatewayFailed: "Gateway agent failed; falling back to embedded: {error}",
@@ -1597,7 +1720,7 @@ export const en: TranslationMap = {
     sessionStoreTargets: {
       agentAndAllConflict: "--agent and --all-agents cannot be used together",
       storeConflict: "--store cannot be combined with --agent or --all-agents",
-      unknownAgent: "Unknown agent id \"{agentId}\". Use \"{command}\" to see configured agents.",
+      unknownAgent: 'Unknown agent id "{agentId}". Use "{command}" to see configured agents.',
     },
     statusAll: {
       scanning: "Scanning status --all…",
@@ -1634,7 +1757,8 @@ export const en: TranslationMap = {
       gatewayService: "Gateway service",
       nodeService: "Node service",
       agents: "Agents",
-      agentsSummary: "{total} total · {bootstrapping} bootstrapping · {active} active · {sessions} sessions",
+      agentsSummary:
+        "{total} total · {bootstrapping} bootstrapping · {active} active · {sessions} sessions",
       reachable: "reachable {latency}",
       unreachable: "unreachable",
       unreachableReason: "unreachable ({reason})",
@@ -1687,7 +1811,8 @@ export const en: TranslationMap = {
       headerFlags: "Flags",
     },
     onboardHooks: {
-      hooksIntro: "Hooks let you automate actions when agent commands are issued.\nExample: Save session context to memory when you issue /new or /reset.\n\nLearn more: https://docs.openclaw.ai/automation/hooks",
+      hooksIntro:
+        "Hooks let you automate actions when agent commands are issued.\nExample: Save session context to memory when you issue /new or /reset.\n\nLearn more: https://docs.openclaw.ai/automation/hooks",
       hooksTitle: "Hooks",
       noHooksAvailable: "No eligible hooks found. You can configure hooks later in your config.",
       noHooksTitle: "No Hooks Available",
@@ -1699,7 +1824,7 @@ export const en: TranslationMap = {
     },
     onboardNonInteractive: {
       configInvalid: "Config invalid. Run `{command}` to repair it, then re-run onboarding.",
-      invalidMode: "Invalid --mode \"{mode}\" (use local|remote).",
+      invalidMode: 'Invalid --mode "{mode}" (use local|remote).',
     },
     onboardSkills: {
       eligible: "Eligible: {count}",
@@ -1712,7 +1837,8 @@ export const en: TranslationMap = {
       skipForNow: "Skip for now",
       skipHint: "Continue without installing dependencies",
       brewRecommended: "Homebrew recommended",
-      brewNote: "Many skill dependencies are shipped via Homebrew.\nWithout brew, you'll need to build from source or download releases manually.",
+      brewNote:
+        "Many skill dependencies are shipped via Homebrew.\nWithout brew, you'll need to build from source or download releases manually.",
       showBrewInstall: "Show Homebrew install command?",
       brewInstallTitle: "Homebrew install",
       nodeManagerPrompt: "Preferred node manager for skill installs",
@@ -1800,7 +1926,8 @@ export const en: TranslationMap = {
       sessionsOk: "Sessions OK: {path}",
     },
     signalInstall: {
-      noNativeBuild: "No native signal-cli build is available for {arch}. Install Homebrew (https://brew.sh) and try again, or install signal-cli manually.",
+      noNativeBuild:
+        "No native signal-cli build is available for {arch}. Install Homebrew (https://brew.sh) and try again, or install signal-cli manually.",
       installingViaBrew: "Installing signal-cli via Homebrew ({brew})…",
       brewInstallFailed: "brew install signal-cli failed (exit {code}): {detail}",
       brewBinaryNotFound: "brew install succeeded but signal-cli binary was not found.",
@@ -1814,16 +1941,19 @@ export const en: TranslationMap = {
     },
     systemdLinger: {
       unavailable: "Systemd user services are unavailable. Skipping lingering checks.",
-      unableToRead: "Unable to read loginctl linger status. Ensure systemd + loginctl are available.",
+      unableToRead:
+        "Unable to read loginctl linger status. Ensure systemd + loginctl are available.",
       reason: "Systemd user services stop when you log out or go idle, which kills the Gateway.",
-      actionConfirm: "We can enable lingering now (may require sudo; writes /var/lib/systemd/linger).",
+      actionConfirm:
+        "We can enable lingering now (may require sudo; writes /var/lib/systemd/linger).",
       actionAuto: "Enabling lingering now (may require sudo; writes /var/lib/systemd/linger).",
       enableConfirm: "Enable systemd lingering for {user}?",
       withoutLinger: "Without lingering, the Gateway will stop when you log out.",
       enabled: "Enabled systemd lingering for {user}.",
       enableFailed: "Failed to enable lingering: {error}",
       runManually: "Run manually: sudo loginctl enable-linger {user}",
-      lingerDisabled: "Systemd lingering is disabled for {user}. Run: sudo loginctl enable-linger {user}",
+      lingerDisabled:
+        "Systemd lingering is disabled for {user}. Run: sudo loginctl enable-linger {user}",
     },
     sessionsCleanup: {
       agentLabel: "Agent: {agentId}",
@@ -1833,7 +1963,8 @@ export const en: TranslationMap = {
       wouldPruneMissing: "Would prune missing transcripts: {count}",
       wouldPruneStale: "Would prune stale: {count}",
       wouldCapOverflow: "Would cap overflow: {count}",
-      wouldEnforceBudget: "Would enforce disk budget: {before} -> {after} bytes (files {files}, entries {entries})",
+      wouldEnforceBudget:
+        "Would enforce disk budget: {before} -> {after} bytes (files {files}, entries {entries})",
       plannedActions: "Planned session actions:",
       headerAction: "Action",
       headerKey: "Key",
@@ -1854,21 +1985,24 @@ export const en: TranslationMap = {
       flagAborted: "aborted",
     },
     doctorInstall: {
-      notPnpm: "- node_modules was not installed by pnpm (missing node_modules/.pnpm). Run: pnpm install",
-      packageLockPresent: "- package-lock.json present in a pnpm workspace. If you ran npm install, remove it and reinstall with pnpm.",
+      notPnpm:
+        "- node_modules was not installed by pnpm (missing node_modules/.pnpm). Run: pnpm install",
+      packageLockPresent:
+        "- package-lock.json present in a pnpm workspace. If you ran npm install, remove it and reinstall with pnpm.",
       tsxMissing: "- tsx binary is missing for source runs. Run: pnpm install",
       title: "Install",
     },
     doctorFormat: {
       fileLogs: "File logs: {path}",
-      launchAgentCachedPlistMissing: "LaunchAgent label cached but plist missing. Clear with: launchctl bootout gui/$UID/{label}",
+      launchAgentCachedPlistMissing:
+        "LaunchAgent label cached but plist missing. Clear with: launchctl bootout gui/$UID/{label}",
       thenReinstall: "Then reinstall: {command}",
       serviceNotInstalled: "Service not installed. Run: {command}",
       serviceLoadedNotRunning: "Service is loaded but not running (likely exited immediately).",
       launchdStdout: "Launchd stdout (if installed): {path}",
       launchdStderr: "Launchd stderr (if installed): {path}",
       journalctlLogs: "Logs: journalctl --user -u {unit}.service -n 200 --no-pager",
-      schtasksLogs: "Logs: schtasks /Query /TN \"{task}\" /V /FO LIST",
+      schtasksLogs: 'Logs: schtasks /Query /TN "{task}" /V /FO LIST',
     },
     doctorSecurity: {
       title: "Security",
@@ -1877,18 +2011,23 @@ export const en: TranslationMap = {
       hostExecGating: "  Host exec gating still comes from ~/.openclaw/exec-approvals.json.",
       checkLocalPolicy: "  Check local policy with: {command}",
       criticalNoAuth: "- CRITICAL: Gateway bound to {bind} without authentication.",
-      anyoneCanControl: "  Anyone on your network (or internet if port-forwarded) can fully control your agent.",
+      anyoneCanControl:
+        "  Anyone on your network (or internet if port-forwarded) can fully control your agent.",
       fixBindLoopback: "  Fix: {command}",
-      saferRemoteAccess: "  Safer remote access: keep bind loopback and use Tailscale Serve/Funnel or an SSH tunnel.",
+      saferRemoteAccess:
+        "  Safer remote access: keep bind loopback and use Tailscale Serve/Funnel or an SSH tunnel.",
       exampleTunnel: "  Example tunnel: ssh -N -L 18789:127.0.0.1:18789 user@gateway-host",
       docsLink: "  Docs: https://docs.openclaw.ai/gateway/remote",
       warningNetworkAccessible: "- WARNING: Gateway bound to {bind} (network-accessible).",
       ensureStrongAuth: "  Ensure your auth credentials are strong and not exposed.",
-      dmOpen: "- {label} DMs: OPEN ({policyPath}=\"open\"). Anyone can DM it.",
-      dmOpenInvalid: "- {label} DMs: config invalid — \"open\" requires {allowFromPath} to include \"*\".",
-      dmDisabled: "- {label} DMs: disabled ({policyPath}=\"disabled\").",
-      dmLocked: "- {label} DMs: locked ({policyPath}=\"{dmPolicy}\") with no allowlist; unknown senders will be blocked / get a pairing code.",
-      dmMultipleSenders: "- {label} DMs: multiple senders share the main session; run: {command} to isolate sessions.",
+      dmOpen: '- {label} DMs: OPEN ({policyPath}="open"). Anyone can DM it.',
+      dmOpenInvalid:
+        '- {label} DMs: config invalid — "open" requires {allowFromPath} to include "*".',
+      dmDisabled: '- {label} DMs: disabled ({policyPath}="disabled").',
+      dmLocked:
+        '- {label} DMs: locked ({policyPath}="{dmPolicy}") with no allowlist; unknown senders will be blocked / get a pairing code.',
+      dmMultipleSenders:
+        "- {label} DMs: multiple senders share the main session; run: {command} to isolate sessions.",
       noWarnings: "- No channel security warnings detected.",
     },
     doctorSessionLocks: {
@@ -1896,7 +2035,7 @@ export const en: TranslationMap = {
       failedInspect: "- Failed to inspect session lock files: {error}",
       foundLockFiles: "- Found {count} session lock file(s).",
       staleLockFiles: "- {count} lock file(s) stale.",
-      fixStaleHint: "- Run \"openclaw doctor --fix\" to remove stale lock files automatically.",
+      fixStaleHint: '- Run "openclaw doctor --fix" to remove stale lock files automatically.',
       removedStaleLocks: "- Removed {count} stale session lock file(s).",
     },
     doctorWorkspaceStatus: {
@@ -1914,7 +2053,8 @@ export const en: TranslationMap = {
     doctorBootstrapSize: {
       exceedLimits: "Workspace bootstrap files exceed limits and will be truncated:",
       nearLimits: "Workspace bootstrap files are near configured limits:",
-      totalInjectedChars: "Total bootstrap injected chars: {injected} ({percent} of max/total {max}).",
+      totalInjectedChars:
+        "Total bootstrap injected chars: {injected} ({percent} of max/total {max}).",
       totalRawChars: "Total bootstrap raw chars (before truncation): {raw}.",
       tipPerFile: "- Tip: tune `agents.defaults.bootstrapMaxChars` for per-file limits.",
       tipTotal: "- Tip: tune `agents.defaults.bootstrapTotalMaxChars` for total-budget limits.",
@@ -1922,10 +2062,13 @@ export const en: TranslationMap = {
     },
     doctorCompletion: {
       title: "Shell completion",
-      slowDynamicCompletion: "Your {shell} profile uses slow dynamic completion (source <(...)).\nUpgrading to cached completion for faster shell startup...",
-      failedGenerateCache: "Failed to generate completion cache. Run `{cliName} completion --write-state` manually.",
+      slowDynamicCompletion:
+        "Your {shell} profile uses slow dynamic completion (source <(...)).\nUpgrading to cached completion for faster shell startup...",
+      failedGenerateCache:
+        "Failed to generate completion cache. Run `{cliName} completion --write-state` manually.",
       upgraded: "Shell completion upgraded. Restart your shell or run: source ~/.{profile}",
-      cacheMissing: "Shell completion is configured in your {shell} profile but the cache is missing.\nRegenerating cache...",
+      cacheMissing:
+        "Shell completion is configured in your {shell} profile but the cache is missing.\nRegenerating cache...",
       cacheRegenerated: "Completion cache regenerated at {path}",
       enablePrompt: "Enable {shell} shell completion for {cliName}?",
       installed: "Shell completion installed. Restart your shell or run: source ~/.{profile}",
@@ -1945,17 +2088,22 @@ export const en: TranslationMap = {
       titleGatewayMac: "Gateway (macOS)",
       deprecatedLaunchctlVars: "- Deprecated launchctl environment variables detected (ignored).",
       launchctlVarHint: "- `{key}` is set; use `OPENCLAW_{suffix}` instead.",
-      launchctlOverrides: "- launchctl environment overrides detected (can cause confusing unauthorized errors).",
+      launchctlOverrides:
+        "- launchctl environment overrides detected (can cause confusing unauthorized errors).",
       tokenOverrides: "- `{key}` is set; it overrides config tokens.",
       passwordOverrides: "- `{key}` is set; it overrides config passwords.",
       clearOverrides: "- Clear overrides and restart the app/gateway:",
       deprecatedLegacyVars: "- Deprecated legacy environment variables detected (ignored).",
       useOpenclaw: "- Use OPENCLAW_* equivalents instead:",
       titleEnvironment: "Environment",
-      nodeCompileCacheNotSet: "- NODE_COMPILE_CACHE is not set; repeated CLI runs can be slower on small hosts (Pi/VM).",
-      nodeCompileCacheTmp: "- NODE_COMPILE_CACHE points to /tmp; use /var/tmp so cache survives reboots.",
-      nodeCompileCacheDisabled: "- NODE_DISABLE_COMPILE_CACHE is set; startup compile cache is disabled.",
-      noRespawnNotSet: "- OPENCLAW_NO_RESPAWN is not set to 1; set it to avoid extra startup overhead from self-respawn.",
+      nodeCompileCacheNotSet:
+        "- NODE_COMPILE_CACHE is not set; repeated CLI runs can be slower on small hosts (Pi/VM).",
+      nodeCompileCacheTmp:
+        "- NODE_COMPILE_CACHE points to /tmp; use /var/tmp so cache survives reboots.",
+      nodeCompileCacheDisabled:
+        "- NODE_DISABLE_COMPILE_CACHE is set; startup compile cache is disabled.",
+      noRespawnNotSet:
+        "- OPENCLAW_NO_RESPAWN is not set to 1; set it to avoid extra startup overhead from self-respawn.",
       suggestedEnv: "- Suggested env for low-power hosts:",
       titleStartupOpt: "Startup optimization",
     },
@@ -1968,7 +2116,8 @@ export const en: TranslationMap = {
       topUpCredits: "Top up credits (provider billing) or switch provider.",
       refreshCredentials: "Refresh or replace credentials, then retry.",
       waitCooldown: "Wait for cooldown or switch provider.",
-      invalidTokenExpires: "Invalid token expires metadata. Set a future Unix ms timestamp or remove expires.",
+      invalidTokenExpires:
+        "Invalid token expires metadata. Set a future Unix ms timestamp or remove expires.",
       deprecatedProfileHint: "Deprecated profile. Use {command1} or {command2}.",
       reAuthHint: "Re-auth via `{command1}` or `{command2}`.",
       titleCooldowns: "Auth profile cooldowns",
@@ -1986,37 +2135,44 @@ export const en: TranslationMap = {
       buildHint: "Build it with {script}.",
       buildOrPullHint: "Build or pull it first.",
       buildImagePrompt: "Build {kind} sandbox image now?",
-      dockerNotAvailable: "Sandbox mode is enabled (mode: \"{mode}\") but Docker is not available.",
+      dockerNotAvailable: 'Sandbox mode is enabled (mode: "{mode}") but Docker is not available.',
       dockerRequired: "Docker is required for sandbox mode.",
       isolatedSessionsFail: "Isolated sessions will fail without Docker.",
       optionsLabel: "Options:",
       installDocker: "- Install Docker and restart the gateway",
       disableSandbox: "- Disable sandbox mode: {command}",
       titleDoctorChanges: "Doctor changes",
-      sandboxOverridesIgnored: "- agents.list (id \"{agentId}\") sandbox {overrides} overrides ignored. scope resolves to \"shared\".",
+      sandboxOverridesIgnored:
+        '- agents.list (id "{agentId}") sandbox {overrides} overrides ignored. scope resolves to "shared".',
     },
     doctorMemorySearch: {
       title: "Memory search",
       disabled: "Memory search is explicitly disabled (enabled: false).",
-      localNotReady: "Memory search provider is set to \"local\" and a model path is configured, but the gateway reports local embeddings are not ready.",
+      localNotReady:
+        'Memory search provider is set to "local" and a model path is configured, but the gateway reports local embeddings are not ready.',
       gatewayProbeDetail: "Gateway probe: {detail}",
       verifyCommand: "Verify: {command}",
-      localNoModel: "Memory search provider is set to \"local\" but no local model file was found.",
+      localNoModel: 'Memory search provider is set to "local" but no local model file was found.',
       fixPickOne: "Fix (pick one):",
       installLlama: "- Install node-llama-cpp and set a local model path in config",
       switchRemoteProvider: "- Switch to a remote provider: {command}",
-      apiKeyNotFoundCli: "Memory search provider is set to \"{provider}\" but the API key was not found in the CLI environment.",
-      gatewayReportsReady: "The running gateway reports memory embeddings are ready for the default agent.",
-      noApiKeyFound: "Memory search provider is set to \"{provider}\" but no API key was found.",
+      apiKeyNotFoundCli:
+        'Memory search provider is set to "{provider}" but the API key was not found in the CLI environment.',
+      gatewayReportsReady:
+        "The running gateway reports memory embeddings are ready for the default agent.",
+      noApiKeyFound: 'Memory search provider is set to "{provider}" but no API key was found.',
       semanticRecallWontWork: "Semantic recall will not work without a valid API key.",
       setEnvVar: "- Set {envVar} in your environment",
       configureCreds: "- Configure credentials: {command}",
       toDisable: "- To disable: {command}",
-      autoNoApiKeyCli: "Memory search provider is set to \"auto\" but the API key was not found in the CLI environment.",
+      autoNoApiKeyCli:
+        'Memory search provider is set to "auto" but the API key was not found in the CLI environment.',
       noProviderConfigured: "Memory search is enabled but no embedding provider is configured.",
       semanticRecallNoProvider: "Semantic recall will not work without an embedding provider.",
-      setAnyApiKey: "- Set OPENAI_API_KEY, GEMINI_API_KEY, VOYAGE_API_KEY, or MISTRAL_API_KEY in your environment",
-      forLocalEmbeddings: "- For local embeddings: configure agents.defaults.memorySearch.provider and local model path",
+      setAnyApiKey:
+        "- Set OPENAI_API_KEY, GEMINI_API_KEY, VOYAGE_API_KEY, or MISTRAL_API_KEY in your environment",
+      forLocalEmbeddings:
+        "- For local embeddings: configure agents.defaults.memorySearch.provider and local model path",
       gatewayProbeNotReady: "Gateway memory probe for default agent is not ready: {detail}",
       gatewayProbeNotReadyShort: "Gateway memory probe for default agent is not ready.",
     },
@@ -2039,7 +2195,8 @@ export const en: TranslationMap = {
       installFailed: "Gateway service install failed: {error}",
       runtimeSummary: "Runtime: {summary}",
       startServicePrompt: "Start gateway service now?",
-      launchAgentLoadedStopHint: "LaunchAgent loaded; stopping requires \"{command}\" or launchctl bootout gui/$UID/{label}.",
+      launchAgentLoadedStopHint:
+        'LaunchAgent loaded; stopping requires "{command}" or launchctl bootout gui/$UID/{label}.',
       restartServicePrompt: "Restart gateway service now?",
       gatewayNotRunning: "Gateway not running.",
       titleGatewayConnection: "Gateway connection",
@@ -2054,8 +2211,10 @@ export const en: TranslationMap = {
       sdBackedStorage: "- State directory appears to be on SD/eMMC storage.",
       sdStorageSlow: "- SD/eMMC media can be slower.",
       preferSsd: "- For better startup and state durability, prefer SSD/NVMe.",
-      stateDirMissing: "- CRITICAL: state directory missing ({dir}). Sessions, credentials, logs, and config are stored there.",
-      remoteGatewayHint: "- Gateway is in remote mode; run doctor on the remote host where the gateway runs.",
+      stateDirMissing:
+        "- CRITICAL: state directory missing ({dir}). Sessions, credentials, logs, and config are stored there.",
+      remoteGatewayHint:
+        "- Gateway is in remote mode; run doctor on the remote host where the gateway runs.",
       createStateDirPrompt: "Create {dir} now?",
       failedCreateStateDir: "- Failed to create {dir}: {error}",
       stateDirNotWritable: "- State directory not writable ({dir}).",
@@ -2066,7 +2225,8 @@ export const en: TranslationMap = {
       configFileReadable: "- Config file is group/world readable ({path}). Recommend chmod 600.",
       tightenConfigPrompt: "Tighten permissions on {path} to 600?",
       failedReadConfig: "- Failed to read config permissions ({path}): {error}",
-      oauthDirSkipped: "- OAuth dir not present ({dir}). Skipping create because no WhatsApp/pairing channel config is active.",
+      oauthDirSkipped:
+        "- OAuth dir not present ({dir}). Skipping create because no WhatsApp/pairing channel config is active.",
       criticalMissing: "- CRITICAL: {label} missing ({dir}).",
       createDirPrompt: "Create {label} at {dir}?",
       failedCreate: "- Failed to create {dir}: {error}",
@@ -2075,9 +2235,12 @@ export const en: TranslationMap = {
       multipleStateDirs: "- Multiple state directories detected. This can split session history.",
       activeStateDir: "  Active state dir: {dir}",
       missingTranscripts: "- {missing}/{total} recent sessions are missing transcripts.",
-      mainTranscriptMissing: "- Main session transcript missing ({path}). History will appear to reset.",
-      mainTranscriptLowLines: "- Main session transcript has only {count} line. Session history may not be appending.",
-      orphanTranscripts: "- Found {count} orphan transcript file(s) in {dir}. They are not referenced by sessions.json and can consume disk over time.",
+      mainTranscriptMissing:
+        "- Main session transcript missing ({path}). History will appear to reset.",
+      mainTranscriptLowLines:
+        "- Main session transcript has only {count} line. Session history may not be appending.",
+      orphanTranscripts:
+        "- Found {count} orphan transcript file(s) in {dir}. They are not referenced by sessions.json and can consume disk over time.",
       archiveOrphansPrompt: "Archive {count} orphan transcript file(s) in {dir}?",
       failedArchive: "- Failed to archive orphan transcript {path}: {error}",
       backupTip: "- Tip: back up the workspace in a private git repo (GitHub or GitLab).",
@@ -2094,47 +2257,70 @@ export const en: TranslationMap = {
       titleConfig: "Config",
       titleConfigWarnings: "Config warnings",
       configInvalid: "Config invalid; doctor will run with best-effort config.",
-      fixCompatMigrations: "Run \"{command}\" to apply compatibility migrations.",
-      fixApplyChanges: "Run \"{command}\" to apply these changes.",
-      fixRemoveKeys: "Run \"openclaw doctor --fix\" to remove these keys.",
+      fixCompatMigrations: 'Run "{command}" to apply compatibility migrations.',
+      fixApplyChanges: 'Run "{command}" to apply these changes.',
+      fixRemoveKeys: 'Run "openclaw doctor --fix" to remove these keys.',
       applyRepairsPrompt: "Apply recommended config repairs now?",
       migratedLegacyConfig: "Migrated legacy config: {from} -> {to}",
-      opencodeProviderOverride: "- models.providers.{id} is set; this overrides the built-in OpenCode Zen catalog.",
+      opencodeProviderOverride:
+        "- models.providers.{id} is set; this overrides the built-in OpenCode Zen catalog.",
       opencodeProviderApi: "- models.providers.{id}.api={api}",
-      removeToRestoreRouting: "- Remove these entries to restore per-model API routing + costs (then re-run onboarding if needed).",
+      removeToRestoreRouting:
+        "- Remove these entries to restore per-model API routing + costs (then re-run onboarding if needed).",
       includePathsMustStayUnder: "- $include paths must stay under: {root}",
-      moveSharedIncludes: "- Move shared include files under that directory and update to relative paths like \"./shared/common.json\".",
+      moveSharedIncludes:
+        '- Move shared include files under that directory and update to relative paths like "./shared/common.json".',
       includeError: "- Error: {message}",
-      missingDefaultSubset: "- channels.{channel}: accounts.default is missing and account bindings only cover a subset.",
-      missingDefaultNoBinding: "- channels.{channel}: accounts.default is missing and no valid account-scoped binding exists.",
-      defaultAccountMismatch: "- channels.{channel}: defaultAccount is set to \"{preferred}\" but does not match.",
-      multipleAccountsNoDefault: "- channels.{channel}: multiple accounts are configured but no explicit default is set.",
-      telegramNoToken: "- Telegram allowFrom contains @username entries, but no Telegram bot token is configured; cannot auto-resolve.",
-      telegramTokenUnavailable: "- Telegram allowFrom contains @username entries, but configured Telegram bot credentials are unavailable in this command path; cannot auto-resolve (start the gateway or make the secret source available, then rerun doctor --fix).",
+      missingDefaultSubset:
+        "- channels.{channel}: accounts.default is missing and account bindings only cover a subset.",
+      missingDefaultNoBinding:
+        "- channels.{channel}: accounts.default is missing and no valid account-scoped binding exists.",
+      defaultAccountMismatch:
+        '- channels.{channel}: defaultAccount is set to "{preferred}" but does not match.',
+      multipleAccountsNoDefault:
+        "- channels.{channel}: multiple accounts are configured but no explicit default is set.",
+      telegramNoToken:
+        "- Telegram allowFrom contains @username entries, but no Telegram bot token is configured; cannot auto-resolve.",
+      telegramTokenUnavailable:
+        "- Telegram allowFrom contains @username entries, but configured Telegram bot credentials are unavailable in this command path; cannot auto-resolve (start the gateway or make the secret source available, then rerun doctor --fix).",
       telegramNonNumeric: "- Telegram allowFrom contains {count} non-numeric entries.",
-      fixTelegramResolve: "- Run \"{command}\" to auto-resolve @username entries to numeric IDs.",
+      fixTelegramResolve: '- Run "{command}" to auto-resolve @username entries to numeric IDs.',
       discordNumericEntries: "- Discord allowlists contain {count} numeric entries.",
-      fixDiscordConvert: "- Discord IDs must be strings; run \"{command}\" to convert.",
-      fixAllowFromWildcards: "- Run \"{command}\" to add missing allowFrom wildcards.",
+      fixDiscordConvert: '- Discord IDs must be strings; run "{command}" to convert.',
+      fixAllowFromWildcards: '- Run "{command}" to add missing allowFrom wildcards.',
       legacyToolsBySender: "- Found {count} legacy untyped toolsBySender key(s).",
-      untypedSenderKeysDeprecated: "- Untyped sender keys are deprecated; use explicit prefixes (id:, e164:, username:, name:).",
-      fixMigrateLegacyKeys: "- Run \"{command}\" to migrate legacy keys to typed id: entries.",
-      safeBinsInterpreterNoProfile: "- {scope}.safeBins includes interpreter/runtime '{bin}' without profile.",
-      moreSafeBinsMissing: "- {count} more interpreter/runtime safeBins entries are missing profiles.",
+      untypedSenderKeysDeprecated:
+        "- Untyped sender keys are deprecated; use explicit prefixes (id:, e164:, username:, name:).",
+      fixMigrateLegacyKeys: '- Run "{command}" to migrate legacy keys to typed id: entries.',
+      safeBinsInterpreterNoProfile:
+        "- {scope}.safeBins includes interpreter/runtime '{bin}' without profile.",
+      moreSafeBinsMissing:
+        "- {count} more interpreter/runtime safeBins entries are missing profiles.",
       safeBinsMissingProfile: "- {scope}.safeBins entry '{bin}' is missing safeBinProfiles.{bin}.",
       moreCustomSafeBinsMissing: "- {count} more custom safeBins entries are missing profiles.",
-      fixScaffoldSafeBinProfiles: "- Run \"{command}\" to scaffold missing custom safeBinProfiles entries.",
-      safeBinsOutsideTrusted: "- {scope}.safeBins entry '{bin}' resolves to '{resolved}' outside trusted safe-bin dirs.",
+      fixScaffoldSafeBinProfiles:
+        '- Run "{command}" to scaffold missing custom safeBinProfiles entries.',
+      safeBinsOutsideTrusted:
+        "- {scope}.safeBins entry '{bin}' resolves to '{resolved}' outside trusted safe-bin dirs.",
       moreSafeBinsOutside: "- {count} more safeBins entries resolve outside trusted safe-bin dirs.",
-      addTrustedDirs: "- If intentional, add the binary directory to tools.exec.safeBinTrustedDirs (global or agent scope).",
-      mutableAllowlistEntries: "- Found {count} mutable allowlist entries across {channels} while name matching is disabled by default.",
-      optionABreakGlass: "- Option A (break-glass): enable {flag}=true to keep name/email/nick matching.",
-      optionBRecommended: "- Option B (recommended): resolve names/emails/nicks to stable sender IDs and rewrite the allowlist entries.",
-      dmPolicyAllowlistEmpty: "- {prefix}.dmPolicy is \"allowlist\" but allowFrom is empty \u2014 all DMs will be blocked. Add sender IDs to {prefix}.allowFrom, or run \"{command}\" to auto-migrate from pairing store when entries exist.",
-      groupPolicyAllowlistEmptyFallback: "- {prefix}.groupPolicy is \"allowlist\" but groupAllowFrom (and allowFrom) is empty \u2014 all group messages will be silently dropped. Add sender IDs to {prefix}.groupAllowFrom or {prefix}.allowFrom, or set groupPolicy to \"open\".",
-      groupPolicyAllowlistEmptyNoFallback: "- {prefix}.groupPolicy is \"allowlist\" but groupAllowFrom is empty \u2014 this channel does not fall back to allowFrom, so all group messages will be silently dropped. Add sender IDs to {prefix}.groupAllowFrom, or set groupPolicy to \"open\".",
-      safeBinInterpreterNoProfileRepair: "- {scope}.safeBins includes interpreter/runtime '{bin}' without profile; remove it from safeBins or use explicit allowlist entries.",
-      scaffoldProfileAdded: "- {scope}.safeBinProfiles.{bin}: added scaffold profile {} (review and tighten flags/positionals).",
+      addTrustedDirs:
+        "- If intentional, add the binary directory to tools.exec.safeBinTrustedDirs (global or agent scope).",
+      mutableAllowlistEntries:
+        "- Found {count} mutable allowlist entries across {channels} while name matching is disabled by default.",
+      optionABreakGlass:
+        "- Option A (break-glass): enable {flag}=true to keep name/email/nick matching.",
+      optionBRecommended:
+        "- Option B (recommended): resolve names/emails/nicks to stable sender IDs and rewrite the allowlist entries.",
+      dmPolicyAllowlistEmpty:
+        '- {prefix}.dmPolicy is "allowlist" but allowFrom is empty \u2014 all DMs will be blocked. Add sender IDs to {prefix}.allowFrom, or run "{command}" to auto-migrate from pairing store when entries exist.',
+      groupPolicyAllowlistEmptyFallback:
+        '- {prefix}.groupPolicy is "allowlist" but groupAllowFrom (and allowFrom) is empty \u2014 all group messages will be silently dropped. Add sender IDs to {prefix}.groupAllowFrom or {prefix}.allowFrom, or set groupPolicy to "open".',
+      groupPolicyAllowlistEmptyNoFallback:
+        '- {prefix}.groupPolicy is "allowlist" but groupAllowFrom is empty \u2014 this channel does not fall back to allowFrom, so all group messages will be silently dropped. Add sender IDs to {prefix}.groupAllowFrom, or set groupPolicy to "open".',
+      safeBinInterpreterNoProfileRepair:
+        "- {scope}.safeBins includes interpreter/runtime '{bin}' without profile; remove it from safeBins or use explicit allowlist entries.",
+      scaffoldProfileAdded:
+        "- {scope}.safeBinProfiles.{bin}: added scaffold profile {} (review and tighten flags/positionals).",
     },
     doctorLegacyConfig: {
       movedDmPolicy: "Moved {prefix}.dm.policy → {prefix}.dmPolicy.",
@@ -2145,16 +2331,20 @@ export const en: TranslationMap = {
       movedStreamMode: "Moved {prefix}.streamMode → {prefix}.streaming ({resolved}).",
       normalizedStreamingBool: "Normalized {prefix}.streaming boolean → enum ({resolved}).",
       normalizedStreamingEnum: "Normalized {prefix}.streaming ({before}) → ({resolved}).",
-      movedSingleAccount: "Moved channels.{channel} single-account top-level values into channels.{channel}.accounts.default.",
-      movedSsrfPolicy: "Moved browser.ssrfPolicy.allowPrivateNetwork → browser.ssrfPolicy.dangerouslyAllowPrivateNetwork ({value}).",
-      copiedAckReaction: "Copied messages.ackReaction → channels.whatsapp.ackReaction (scope: {scope}).",
+      movedSingleAccount:
+        "Moved channels.{channel} single-account top-level values into channels.{channel}.accounts.default.",
+      movedSsrfPolicy:
+        "Moved browser.ssrfPolicy.allowPrivateNetwork → browser.ssrfPolicy.dangerouslyAllowPrivateNetwork ({value}).",
+      copiedAckReaction:
+        "Copied messages.ackReaction → channels.whatsapp.ackReaction (scope: {scope}).",
     },
 
     gatewayStatus: {
       inspecting: "Inspecting gateways…",
       sshTunnelFailed: "SSH tunnel failed: {error}",
       sshTunnelFallback: "SSH tunnel failed to start; falling back to direct probes.",
-      multipleGateways: "Unconventional setup: multiple reachable gateways detected. Usually one gateway per network is recommended unless you intentionally run isolated profiles, like a rescue bot (see docs: /gateway#multiple-gateways-same-host).",
+      multipleGateways:
+        "Unconventional setup: multiple reachable gateways detected. Usually one gateway per network is recommended unless you intentionally run isolated profiles, like a rescue bot (see docs: /gateway#multiple-gateways-same-host).",
       headingGatewayStatus: "Gateway Status",
       reachable: "Reachable",
       probeBudget: "Probe budget: {ms}ms",
@@ -2162,7 +2352,8 @@ export const en: TranslationMap = {
       headingDiscovery: "Discovery (this machine)",
       foundGateways: "Found {count} gateway(s) via Bonjour ({domains})",
       foundZeroGateways: "Found 0 gateways via Bonjour ({domains})",
-      tipRemoteMdns: "Tip: if the gateway is remote, mDNS won't cross networks; use Wide-Area Bonjour (split DNS) or SSH tunnels.",
+      tipRemoteMdns:
+        "Tip: if the gateway is remote, mDNS won't cross networks; use Wide-Area Bonjour (split DNS) or SSH tunnels.",
       headingTargets: "Targets",
       gateway: "Gateway",
       wideAreaDiscovery: "Wide-area discovery",
@@ -2172,15 +2363,19 @@ export const en: TranslationMap = {
     },
 
     gatewayInstallToken: {
-      ambiguousBoth: "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
+      ambiguousBoth:
+        "gateway.auth.token and gateway.auth.password are both configured while gateway.auth.mode is unset.",
       ambiguousFix: "Set {tokenCmd} or {passwordCmd}.",
       resolvedEmpty: "gateway.auth.token resolved to an empty or non-string value.",
-      secretRefManaged: "gateway.auth.token is SecretRef-managed; install will not persist a resolved token in service environment. Ensure the SecretRef is resolvable in the daemon runtime context.",
+      secretRefManaged:
+        "gateway.auth.token is SecretRef-managed; install will not persist a resolved token in service environment. Ensure the SecretRef is resolvable in the daemon runtime context.",
       secretRefUnresolved: "gateway.auth.token SecretRef is configured but unresolved ({error}).",
       autoGenSaved: "No gateway token found. Auto-generated one and saving to config.",
-      autoGenTemp: "No gateway token found. Auto-generated one for this run without saving to config.",
+      autoGenTemp:
+        "No gateway token found. Auto-generated one for this run without saving to config.",
       configInvalidSkip: "Warning: config file exists but is invalid; skipping token persistence.",
-      secretRefSkip: "Warning: gateway.auth.token is SecretRef-managed; skipping plaintext token persistence.",
+      secretRefSkip:
+        "Warning: gateway.auth.token is SecretRef-managed; skipping plaintext token persistence.",
       persistError: "Warning: could not persist token to config: {error}",
     },
 
@@ -2217,7 +2412,7 @@ export const en: TranslationMap = {
       addDisplayNames: "Add display names for these accounts? (optional)",
       accountName: "{channel} account name ({accountId})",
       bindNow: "Bind configured channel accounts to agents now?",
-      routeToAgent: "Route {channel} account \"{accountId}\" to agent",
+      routeToAgent: 'Route {channel} account "{accountId}" to agent',
       added: "Added: {binding}",
       updated: "Updated: {binding}",
       routingBindings: "Routing bindings",
@@ -2226,7 +2421,7 @@ export const en: TranslationMap = {
       pluginLoadFailed: "Plugin {label} could not be loaded after install.",
       unknownChannel: "Unknown channel: {channel}",
       noSupportAdd: "Channel {channel} does not support add.",
-      addedAccount: "Added {label} account \"{accountId}\".",
+      addedAccount: 'Added {label} account "{accountId}".',
     },
 
     channelsList: {
@@ -2250,14 +2445,14 @@ export const en: TranslationMap = {
       channel: "Channel",
       account: "Account",
       defaultPrimary: "default (primary)",
-      disableConfirm: "Disable {label} account \"{accountId}\"? (keeps config)",
+      disableConfirm: 'Disable {label} account "{accountId}"? (keeps config)',
       cancelled: "Cancelled.",
       channelRequired: "Channel is required. Use --channel <name>.",
       unknownChannel: "Unknown channel: {channel}",
       noSupportDelete: "Channel {channel} does not support delete.",
       noSupportDisable: "Channel {channel} does not support disable.",
-      deleted: "Deleted {label} account \"{accountKey}\".",
-      disabled: "Disabled {label} account \"{accountKey}\".",
+      deleted: 'Deleted {label} account "{accountKey}".',
+      disabled: 'Disabled {label} account "{accountKey}".',
     },
 
     channelsStatus: {
@@ -2278,7 +2473,8 @@ export const en: TranslationMap = {
       auditOk: "audit ok",
       auditFailed: "audit failed",
       warnings: "Warnings:",
-      tipDeep: "Tip: {link} adds gateway health probes to status output (requires a reachable gateway).",
+      tipDeep:
+        "Tip: {link} adds gateway health probes to status output (requires a reachable gateway).",
       gatewayNotReachable: "Gateway not reachable; showing config-only status.",
       gatewayNotReachableError: "Gateway not reachable: {error}",
       checkingProbe: "Checking channel status (probe)…",
@@ -2347,9 +2543,11 @@ export const en: TranslationMap = {
 
     dashboard: {
       dashboardUrl: "Dashboard URL: {url}",
-      secretRefDisabled: "Token auto-auth is disabled for SecretRef-managed gateway.auth.token; use your external token source if prompted.",
+      secretRefDisabled:
+        "Token auto-auth is disabled for SecretRef-managed gateway.auth.token; use your external token source if prompted.",
       autoAuthUnavailable: "Token auto-auth unavailable: {reason}",
-      setTokenHint: "Set OPENCLAW_GATEWAY_TOKEN in this shell or resolve your secret provider, then rerun `openclaw dashboard`.",
+      setTokenHint:
+        "Set OPENCLAW_GATEWAY_TOKEN in this shell or resolve your secret provider, then rerun `openclaw dashboard`.",
       copiedClipboard: "Copied to clipboard.",
       clipboardUnavailable: "Copy to clipboard unavailable.",
       browserDisabled: "Browser launch disabled (--no-open). Use the URL above.",
@@ -2372,17 +2570,19 @@ export const en: TranslationMap = {
     },
 
     agent: {
-      continueAfterFail: "Continue where you left off. The previous model attempt failed or timed out.",
+      continueAfterFail:
+        "Continue where you left off. The previous model attempt failed or timed out.",
       messageRequired: "Message (--message) is required",
       sessionRequired: "Pass --to <E.164>, --session-id, or --agent to choose a session",
-      unknownAgentId: "Unknown agent id \"{agentId}\". Use \"openclaw agents list\" to see available agents.",
-      agentMismatch: "Agent id \"{agentId}\" does not match session key agent \"{sessionAgent}\"",
+      unknownAgentId:
+        'Unknown agent id "{agentId}". Use "openclaw agents list" to see available agents.',
+      agentMismatch: 'Agent id "{agentId}" does not match session key agent "{sessionAgent}"',
       invalidThinking: "Invalid thinking level. Use one of: {levels}",
       invalidOneShotThinking: "Invalid one-shot thinking level. Use one of: {levels}",
-      invalidVerbose: "Invalid verbose level. Use \"on\", \"full\", or \"off\".",
+      invalidVerbose: 'Invalid verbose level. Use "on", "full", or "off".',
       invalidTimeout: "--timeout must be a non-negative integer (seconds; 0 means no timeout)",
       sendBlocked: "send blocked by session policy",
-      thinkingXhighUnsupported: "Thinking level \"xhigh\" is only supported for {models}",
+      thinkingXhighUnsupported: 'Thinking level "xhigh" is only supported for {models}',
       senderIsOwnerRequired: "senderIsOwner must be explicitly set for ingress agent runs.",
     },
 
@@ -2401,9 +2601,11 @@ export const en: TranslationMap = {
     },
 
     oauthTlsPreflight: {
-      networkError: "OpenAI OAuth prerequisites check failed due to a network error before the browser flow.",
+      networkError:
+        "OpenAI OAuth prerequisites check failed due to a network error before the browser flow.",
       verifyDns: "Verify DNS/firewall/proxy access to auth.openai.com and retry.",
-      tlsFailed: "OpenAI OAuth prerequisites check failed: Node/OpenSSL cannot validate TLS certificates.",
+      tlsFailed:
+        "OpenAI OAuth prerequisites check failed: Node/OpenSSL cannot validate TLS certificates.",
       fixHomebrew: "Fix (Homebrew Node/OpenSSL):",
       verifyCertBundle: "Verify cert bundle exists: {command}",
       retryOauth: "Retry the OAuth login flow.",
@@ -2423,11 +2625,12 @@ export const en: TranslationMap = {
       readingSessions: "Reading sessions…",
       rendering: "Rendering…",
       pluginsDisabled: "plugins disabled",
-      memoryNone: "plugins.slots.memory=\"none\"",
+      memoryNone: 'plugins.slots.memory="none"',
     },
 
     daemonInstallHelpers: {
-      tipWindows: "Tip: rerun from an elevated PowerShell (Start → type PowerShell → right-click → Run as administrator) or skip service install.",
+      tipWindows:
+        "Tip: rerun from an elevated PowerShell (Start → type PowerShell → right-click → Run as administrator) or skip service install.",
       tipRetry: "Tip: rerun `openclaw gateway install` after fixing the error.",
     },
 
@@ -2439,14 +2642,16 @@ export const en: TranslationMap = {
     onboardNonInteractiveLocal: {
       multipleApiKeys: "Multiple API key flags were provided for non-interactive onboarding.",
       useSingleFlag: "Use a single provider flag or pass --auth-choice explicitly.",
-      tipWebSearch: "Tip: run `{command}` to store your Brave API key for web_search. Docs: https://docs.openclaw.ai/tools/web",
+      tipWebSearch:
+        "Tip: run `{command}` to store your Brave API key for web_search. Docs: https://docs.openclaw.ai/tools/web",
     },
 
     onboardNonInteractiveRemote: {
       missingRemoteUrl: "Missing --remote-url for remote mode.",
       remoteGateway: "Remote gateway: {url}",
       auth: "Auth: {auth}",
-      tipWebSearch: "Tip: run `{command}` to store your Brave API key for web_search. Docs: https://docs.openclaw.ai/tools/web",
+      tipWebSearch:
+        "Tip: run `{command}` to store your Brave API key for web_search. Docs: https://docs.openclaw.ai/tools/web",
     },
 
     pluginInstall: {
@@ -2659,10 +2864,12 @@ Object.assign(en, {
     statusHeader: "Status",
     notesColumnHeader: "Notes",
     secretUnavailable: "secret unavailable in this command path",
-    httpCredUnavailable: "configured http credentials unavailable in this command path · accounts {count}",
+    httpCredUnavailable:
+      "configured http credentials unavailable in this command path · accounts {count}",
     partialCredentials: "partial credentials (need bot+signing) · accounts {count}",
     noCredentials: "no credentials (need bot+signing)",
-    credentialsOk: "credentials ok (bot {botSources}, signing {signingSources}){hint} · accounts {ready}/{total}",
+    credentialsOk:
+      "credentials ok (bot {botSources}, signing {signingSources}){hint} · accounts {ready}/{total}",
     tokensUnavailable: "configured tokens unavailable in this command path · accounts {count}",
     botTokenUnavailable: "configured bot token unavailable in this command path · accounts {count}",
     tokenUnavailable: "configured token unavailable in this command path · accounts {count}",
@@ -2681,7 +2888,7 @@ Object.assign(en, {
     skillsNodeManagerLabel: "skills.nodeManager: {value}",
     noKeySettings: "No key settings detected.",
     validationRequired: "Required",
-    validationUndefinedNull: "Cannot be the literal string \"undefined\" or \"null\"",
+    validationUndefinedNull: 'Cannot be the literal string "undefined" or "null"',
     noGuiDetected: "No GUI detected. Open from your computer:",
     thenOpen: "Then open:",
     docsLabel: "Docs:",
@@ -2738,7 +2945,8 @@ Object.assign(en, {
     doesTokenExpire: "Does this token expire?",
     expiresIn: "Expires in (duration)",
     invalidDuration: "Invalid duration (e.g. 365d, 12h, 30m)",
-    unknownProvider: "Unknown provider \"{provider}\". Loaded providers: {available}. Verify plugins via `{command}`.",
+    unknownProvider:
+      'Unknown provider "{provider}". Loaded providers: {available}. Verify plugins via `{command}`.',
     completeBrowserSignIn: "Complete sign-in in browser…",
     oauthNoCredentials: "OpenAI Codex OAuth did not return credentials.",
     defaultModelSet: "Default model set to {model}",
@@ -2781,7 +2989,7 @@ Object.assign(en, {
     slackBotTokenMissing: "Slack bot token missing.",
     accountRequiresChannel: "--account requires a specific --channel.",
     targetRequiresDiscord: "--target requires --channel discord.",
-    unknownChannel: "Unknown channel \"{channel}\".",
+    unknownChannel: 'Unknown channel "{channel}".',
     supportPrefix: "Support: {support}",
     actionsPrefix: "Actions: {actions}",
     notConfigured: "not configured",
@@ -2910,8 +3118,8 @@ Object.assign(en, {
     dmSecurityDocs: "Docs: {link}",
     dmPolicyDefault: "Default: pairing (unknown DMs get a pairing code).",
     dmPolicyApprove: "Approve: {cmd}",
-    dmPolicyAllowlist: "Allowlist DMs: {policyKey}=\"allowlist\" + {allowFromKey} entries.",
-    dmPolicyPublic: "Public DMs: {policyKey}=\"open\" + {allowFromKey} includes \"*\".",
+    dmPolicyAllowlist: 'Allowlist DMs: {policyKey}="allowlist" + {allowFromKey} entries.',
+    dmPolicyPublic: 'Public DMs: {policyKey}="open" + {allowFromKey} includes "*".',
     dmPolicyMultiUser: "Multi-user DMs: run: {cmd} to isolate sessions.",
     dmPolicyMultiUserSuffix: ' (or "per-account-channel-peer" for multi-account channels)',
     dmPolicyDocs: "Docs: {link}",
@@ -3008,20 +3216,24 @@ Object.assign(en, {
     startFailed: "{noun} start failed: {err}",
     stopFailed: "{noun} stop failed: {err}",
     restartFailed: "{noun} restart failed: {err}",
-    tokenDriftUnavailable: "Unable to verify gateway token drift: gateway.auth.token SecretRef is configured but unavailable in this command path.",
+    tokenDriftUnavailable:
+      "Unable to verify gateway token drift: gateway.auth.token SecretRef is configured but unavailable in this command path.",
   },
 
   lifecycle: {
     refusingNonGateway: "refusing to signal non-gateway process pid {pid}",
-    restartDisabledConfig: "Gateway restart is disabled in the running gateway config (commands.restart=false); unmanaged SIGUSR1 restart would be ignored",
+    restartDisabledConfig:
+      "Gateway restart is disabled in the running gateway config (commands.restart=false); unmanaged SIGUSR1 restart would be ignored",
     stopSignalSent: "Gateway stop signal sent to unmanaged process(es) on port {port}: {pids}.",
-    multipleGatewayProcesses: "multiple gateway processes are listening on port {port}: {pids}; use \"openclaw gateway status --deep\" before retrying restart",
+    multipleGatewayProcesses:
+      'multiple gateway processes are listening on port {port}: {pids}; use "openclaw gateway status --deep" before retrying restart',
     restartSignalSent: "Gateway restart signal sent to unmanaged process on port {port}: {pid}.",
     timedOut: "Timed out after {seconds}s waiting for gateway port {port} to become healthy.",
     restartTimedOut: "Gateway restart timed out after {seconds}s waiting for health checks.",
     foundStaleProcesses: "Found stale gateway process(es): {pids}.",
     stoppingStale: "Stopping stale process(es) and retrying restart...",
-    runningNoPort: "Gateway process is running but port {port} is still free (startup hang/crash loop or very slow VM startup).",
+    runningNoPort:
+      "Gateway process is running but port {port} is still free (startup hang/crash loop or very slow VM startup).",
   },
 
   restartHealth: {
@@ -3039,7 +3251,8 @@ Object.assign(en, {
     setup: "Initialize local config and agent workspace",
     onboard: "Interactive onboarding wizard for gateway, workspace, and skills",
     configure: "Interactive setup wizard for credentials, channels, gateway, and agent defaults",
-    config: "Non-interactive config helpers (get/set/unset/file/validate). Default: starts setup wizard.",
+    config:
+      "Non-interactive config helpers (get/set/unset/file/validate). Default: starts setup wizard.",
     backup: "Create and verify local backup archives for OpenClaw state",
     doctor: "Health checks + quick fixes for the gateway and channels",
     dashboard: "Open the Control UI with your current token",
@@ -3057,7 +3270,8 @@ Object.assign(en, {
 
   tuiLocalShell: {
     allowPrompt: "Allow local shell commands for this session?",
-    allowWarning: "This runs commands on YOUR machine (not the gateway) and may delete files or reveal secrets.",
+    allowWarning:
+      "This runs commands on YOUR machine (not the gateway) and may delete files or reveal secrets.",
     selectHint: "Select Yes/No (arrows + Enter), Esc to cancel.",
     no: "No",
     yes: "Yes",
@@ -3082,7 +3296,8 @@ Object.assign(en, {
     searchProvider: "Search provider",
     skipForNow: "Skip for now",
     skipHint: "Configure later with openclaw configure --section web",
-    secretRefsEnabled: "Secret references enabled — OpenClaw will store a reference instead of the API key.",
+    secretRefsEnabled:
+      "Secret references enabled — OpenClaw will store a reference instead of the API key.",
     envVar: "Env var",
     detected: "detected",
     setEnvVar: "Set {id} in the Gateway environment.",
@@ -3091,17 +3306,21 @@ Object.assign(en, {
   },
 
   doctorConfigAnalysis: {
-    providerOverride: "models.providers.{id} is set; this overrides the built-in OpenCode Zen catalog.",
-    removeEntries: "Remove these entries to restore per-model API routing + costs (then re-run onboarding if needed).",
+    providerOverride:
+      "models.providers.{id} is set; this overrides the built-in OpenCode Zen catalog.",
+    removeEntries:
+      "Remove these entries to restore per-model API routing + costs (then re-run onboarding if needed).",
     openCodeZen: "OpenCode Zen",
     includePathsMust: "$include paths must stay under: {configRoot}",
-    moveSharedFiles: "Move shared include files under that directory and update to relative paths like \"./shared/common.json\".",
+    moveSharedFiles:
+      'Move shared include files under that directory and update to relative paths like "./shared/common.json".',
     errorLabel: "Error",
     doctorWarnings: "Doctor warnings",
   },
 
   acpCli: {
-    warnSecretFlag: "Warning: {flag} can be exposed via process listings. Prefer {flag}-file or environment variables.",
+    warnSecretFlag:
+      "Warning: {flag} can be exposed via process listings. Prefer {flag}-file or environment variables.",
     description: "Run an ACP bridge backed by the Gateway",
     optUrl: "Gateway WebSocket URL (defaults to gateway.remote.url when configured)",
     optToken: "Gateway token (if required)",
@@ -3163,7 +3382,8 @@ Object.assign(en, {
     optYes: "Skip confirmation (non-interactive)",
     unsupportedShell: "Unsupported shell: {shell}",
     installNotSupported: "Automated installation not supported for {shell} yet.",
-    cacheNotFound: "Completion cache not found at {cachePath}. Run `{binName} completion --write-state` first.",
+    cacheNotFound:
+      "Completion cache not found at {cachePath}. Run `{binName} completion --write-state` first.",
     profileNotFound: "Profile not found at {profilePath}. Created a new one.",
     alreadyInstalled: "Completion already installed in {profilePath}",
     updating: "Updating",
@@ -3215,17 +3435,22 @@ Object.assign(en, {
   },
 
   gatewayChat: {
-    fixAuthHint1: "Fix: set OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD, pass --token/--password,",
+    fixAuthHint1:
+      "Fix: set OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD, pass --token/--password,",
     fixAuthHint2: "or resolve the configured secret provider for this credential.",
   },
 
   // gateway/auth.ts config errors
   gatewayAuth: {
-    tokenNotConfigured: "gateway auth mode is token, but no token was configured (set gateway.auth.token or OPENCLAW_GATEWAY_TOKEN)",
-    passwordIsRef: "gateway auth mode is password, but gateway.auth.password contains a provider reference object instead of a resolved string \u2014 bootstrap secrets (gateway.auth.password) must be plaintext strings or set via the OPENCLAW_GATEWAY_PASSWORD environment variable because the secrets provider system has not initialised yet at gateway startup",
+    tokenNotConfigured:
+      "gateway auth mode is token, but no token was configured (set gateway.auth.token or OPENCLAW_GATEWAY_TOKEN)",
+    passwordIsRef:
+      "gateway auth mode is password, but gateway.auth.password contains a provider reference object instead of a resolved string \u2014 bootstrap secrets (gateway.auth.password) must be plaintext strings or set via the OPENCLAW_GATEWAY_PASSWORD environment variable because the secrets provider system has not initialised yet at gateway startup",
     passwordNotConfigured: "gateway auth mode is password, but no password was configured",
-    trustedProxyMissing: "gateway auth mode is trusted-proxy, but no trustedProxy config was provided (set gateway.auth.trustedProxy)",
-    trustedProxyUserHeaderEmpty: "gateway auth mode is trusted-proxy, but trustedProxy.userHeader is empty (set gateway.auth.trustedProxy.userHeader)",
+    trustedProxyMissing:
+      "gateway auth mode is trusted-proxy, but no trustedProxy config was provided (set gateway.auth.trustedProxy)",
+    trustedProxyUserHeaderEmpty:
+      "gateway auth mode is trusted-proxy, but trustedProxy.userHeader is empty (set gateway.auth.trustedProxy.userHeader)",
   },
 
   // gateway/http-common.ts error messages
@@ -3290,5 +3515,311 @@ Object.assign(en, {
     tightenedPermissions: "[openclaw] tightened permissions on temp dir: {path}",
     unsafeFallback: "Unsafe fallback OpenClaw temp dir: {path}",
     unableToCreate: "Unable to create fallback OpenClaw temp dir: {path}",
+  },
+
+  // src/cli/docs-cli.ts
+  docsCli: {
+    description: "Search the live OpenClaw docs",
+    queryArg: "Search query",
+  },
+
+  // src/cli/clawbot-cli.ts
+  clawbotCli: {
+    description: "Legacy clawbot command aliases",
+  },
+
+  // src/cli/dns-cli.ts
+  dnsCli: {
+    description: "DNS helpers for wide-area discovery (Tailscale + CoreDNS)",
+    setupDescription:
+      "Set up CoreDNS to serve your discovery domain for unicast DNS-SD (Wide-Area Bonjour)",
+    domainOpt: "Wide-area discovery domain (e.g. openclaw.internal)",
+    applyOpt: "Install/update CoreDNS config and (re)start the service (requires sudo)",
+  },
+  dns: {
+    brewPrefixFailed: "failed to resolve Homebrew prefix",
+    noDomainError:
+      "No wide-area domain configured. Set discovery.wideArea.domain or pass --domain.",
+    macosOnlyError: "dns setup is currently supported on macOS only",
+    noTailnetIpError: "no tailnet IP detected; ensure Tailscale is running on this machine",
+  },
+
+  // src/cli/tui-cli.ts
+  tuiCli: {
+    description: "Open a terminal UI connected to the Gateway",
+    urlOpt: "Gateway WebSocket URL (defaults to gateway.remote.url when configured)",
+    tokenOpt: "Gateway token (if required)",
+    passwordOpt: "Gateway password (if required)",
+    sessionOpt: 'Session key (default: "main", or "global" when scope is global)',
+    deliverOpt: "Deliver assistant replies",
+    thinkingOpt: "Thinking level override",
+    messageOpt: "Send an initial message after connecting",
+    timeoutMsOpt: "Agent timeout in ms (defaults to agents.defaults.timeoutSeconds)",
+    historyLimitOpt: "History entries to load",
+    invalidTimeoutMs: 'warning: invalid --timeout-ms "{value}"; ignoring',
+  },
+
+  // src/cli/system-cli.ts
+  systemCli: {
+    description: "System tools (events, heartbeat, presence)",
+    eventDescription: "Enqueue a system event and optionally trigger a heartbeat",
+    eventTextOpt: "System event text",
+    eventModeOpt: "Wake mode (now|next-heartbeat)",
+    outputJson: "Output JSON",
+    heartbeatDescription: "Heartbeat controls",
+    heartbeatLastDescription: "Show the last heartbeat event",
+    heartbeatEnableDescription: "Enable heartbeats",
+    heartbeatDisableDescription: "Disable heartbeats",
+    presenceDescription: "List system presence entries",
+  },
+  system: {
+    invalidMode: "--mode must be now or next-heartbeat",
+    textRequired: "--text is required",
+  },
+
+  // src/cli/config-cli.ts
+  configCli: {
+    description:
+      "Non-interactive config helpers (get/set/unset/file/validate). Run without subcommand for the setup wizard.",
+    sectionOpt: "Configure wizard sections (repeatable). Use with no subcommand.",
+    getDescription: "Get a config value by dot path",
+    pathArg: "Config path (dot or bracket notation)",
+    outputJson: "Output JSON",
+    setDescription: "Set a config value by dot path",
+    valueArg: "Value (JSON5 or raw string)",
+    strictJsonOpt: "Strict JSON5 parsing (error instead of raw string fallback)",
+    legacyJsonOpt: "Legacy alias for --strict-json",
+    unsetDescription: "Remove a config value by dot path",
+    fileDescription: "Print the active config file path",
+    validateDescription:
+      "Validate the current config against the schema without starting the gateway",
+    validateJsonOpt: "Output validation result as JSON",
+  },
+  config: {
+    missingBracket: 'Invalid path (missing "]"): {path}',
+    emptyBrackets: 'Invalid path (empty "[]"): {path}',
+    parseFailed: "Failed to parse JSON5 value: {error}",
+    invalidSegment: "Invalid path segment: {segment}",
+    expectedNumeric: 'Expected numeric index for array segment "{segment}"',
+    cannotTraverse: 'Cannot traverse into "{segment}" (not an object)',
+    cannotSet: 'Cannot set "{segment}" (parent is not an object)',
+    invalidAt: "Config invalid at {path}.",
+    pathEmpty: "Path is empty.",
+    pathNotFound: "Config path not found: {path}",
+    removed: "Removed {path}. Restart the gateway to apply.",
+    fileNotFound: "Config file not found: {path}",
+    invalidAtColon: "Config invalid at {path}:",
+    valid: "Config valid: {path}",
+    validationError: "Config validation error: {error}",
+    updated: "Updated {path}. Restart the gateway to apply.",
+  },
+
+  // src/cli/devices-cli.ts
+  devicesCli: {
+    description: "Device pairing and auth tokens",
+    listDescription: "List pending and paired devices",
+    removeDescription: "Remove a paired device entry",
+    deviceIdArg: "Paired device id",
+    clearDescription: "Clear paired devices from the gateway table",
+    clearPendingOpt: "Also reject all pending pairing requests",
+    clearYesOpt: "Confirm destructive clear",
+    approveDescription: "Approve a pending device pairing request",
+    requestIdArg: "Pending request id",
+    approveLatestOpt: "Approve the most recent pending request",
+    rejectDescription: "Reject a pending device pairing request",
+    rotateDescription: "Rotate a device token for a role",
+    deviceIdOpt: "Device id",
+    roleOpt: "Role name",
+    scopeOpt: "Scopes to attach to the token (repeatable)",
+    revokeDescription: "Revoke a device token for a role",
+  },
+  devices: {
+    fallbackNotice: "Direct scope access failed; using local fallback.",
+    urlOpt: "Gateway WebSocket URL (defaults to gateway.remote.url when configured)",
+    tokenOpt: "Gateway token (if required)",
+    passwordOpt: "Gateway password (password auth)",
+    timeoutOpt: "Timeout in ms",
+    outputJson: "Output JSON",
+    deviceAndRoleRequired: "--device and --role required",
+    noPairingEntries: "No device pairing entries.",
+    deviceIdRequired: "deviceId is required",
+    refusingClear: "Refusing to clear pairing table without --yes",
+    noPendingRequests: "No pending device pairing requests to approve",
+    unknownRequestId: "unknown requestId",
+  },
+
+  // src/cli/hooks-cli.ts
+  hooksCli: {
+    description: "Manage internal agent hooks",
+    listDescription: "List all hooks",
+    eligibleOpt: "Show only eligible hooks",
+    jsonOpt: "Output as JSON",
+    verboseOpt: "Show more details including missing requirements",
+    infoDescription: "Show detailed information about a hook",
+    checkDescription: "Check hooks eligibility status",
+    enableDescription: "Enable a hook",
+    disableDescription: "Disable a hook",
+    installDescription: "Install a hook pack (path, archive, or npm spec)",
+    pathArg: "Path to a hook pack or npm package spec",
+    linkOpt: "Link a local path instead of copying",
+    pinOpt: "Record npm installs as exact resolved <name>@<version>",
+    updateDescription: "Update installed hooks (npm installs only)",
+    updateIdArg: "Hook pack id (omit with --all)",
+    updateAllOpt: "Update all tracked hooks",
+    dryRunOpt: "Show what would change without writing",
+  },
+  hooks: {
+    hookNotFound: 'Hook "{name}" not found',
+    managedByPlugin:
+      'Hook "{name}" is managed by plugin "{plugin}" and cannot be enabled/disabled.',
+    notEligible: 'Hook "{name}" is not eligible (missing requirements)',
+    restartGateway: "Restart the gateway to load hooks.",
+    linkedMustBeDir: "Linked hook paths must be directories.",
+    linkedHookPath: "Linked hook path: {path}",
+    installedHooks: "Installed hooks: {hooks}",
+    linkRequiresPath: "`--link` requires a local path.",
+    pathNotFound: "Path not found: {path}",
+    provideIdOrAll: "Provide a hook id or use --all.",
+    noInstallRecord: 'No install record for "{id}".',
+    skippingSource: 'Skipping "{id}" (source: {source}).',
+    missingNpmSpec: 'Skipping "{id}" (missing npm spec).',
+    invalidInstallPath: 'Invalid install path for "{id}": {error}',
+  },
+
+  // src/cli/logs-cli.ts
+  logsCli: {
+    description: "Tail gateway file logs via RPC",
+    limitOpt: "Max lines to return",
+    maxBytesOpt: "Max bytes to read",
+    followOpt: "Follow log output",
+    intervalOpt: "Polling interval in ms",
+    jsonOpt: "Emit JSON log lines",
+    plainOpt: "Plain text output (no ANSI styling)",
+    noColorOpt: "Disable ANSI colors",
+    localTimeOpt: "Display timestamps in local timezone",
+  },
+  logs: {
+    unexpectedResponse: "Unexpected logs.tail response",
+    gatewayNotReachable: "Gateway not reachable. Is it running and accessible?",
+  },
+
+  // src/cli/exec-approvals-cli.ts
+  approvalsCli: {
+    description: "Manage exec approvals (gateway or node host)",
+    getDescription: "Fetch exec approvals snapshot",
+    nodeOpt: "Target node id/name/IP",
+    gatewayOpt: "Force gateway approvals",
+    setDescription: "Replace exec approvals with a JSON file",
+    fileOpt: "Path to JSON file to upload",
+    stdinOpt: "Read JSON from stdin",
+    allowlistDescription: "Edit the per-agent allowlist",
+    allowlistAddDescription: "Add a glob pattern to an allowlist",
+    allowlistRemoveDescription: "Remove a glob pattern from an allowlist",
+  },
+  approvals: {
+    hashMissing: "Exec approvals hash missing; reload and retry.",
+    showingLocal: "Showing local approvals.",
+    provideFileOrStdin: "Provide --file or --stdin.",
+    useEitherFileOrStdin: "Use either --file or --stdin (not both).",
+    parseJsonFailed: "Failed to parse approvals JSON: {error}",
+    alreadyAllowlisted: "Already allowlisted.",
+    patternNotFound: "Pattern not found.",
+  },
+
+  // src/cli/plugins-cli.ts
+  pluginsCli: {
+    description: "Manage OpenClaw plugins and extensions",
+    listDescription: "List discovered plugins",
+    jsonOpt: "Print JSON",
+    enabledOpt: "Only show enabled plugins",
+    verboseOpt: "Show detailed entries",
+    infoDescription: "Show plugin details",
+    idArg: "Plugin id",
+    enableDescription: "Enable a plugin in config",
+    disableDescription: "Disable a plugin in config",
+    uninstallDescription: "Uninstall a plugin",
+    keepFilesOpt: "Keep installed files on disk",
+    keepConfigDeprecatedOpt: "Deprecated alias for --keep-files",
+    forceOpt: "Skip confirmation prompt",
+    dryRunOpt: "Show what would be removed without making changes",
+    installDescription: "Install a plugin (path, archive, or npm spec)",
+    pathArg: "Path (.ts/.js/.zip/.tgz/.tar.gz) or an npm package spec",
+    linkOpt: "Link a local path instead of copying",
+    pinOpt: "Record npm installs as exact resolved <name>@<version>",
+    updateDescription: "Update installed plugins (npm installs only)",
+    updateIdArg: "Plugin id (omit with --all)",
+    updateAllOpt: "Update all tracked plugins",
+    doctorDescription: "Report plugin load issues",
+  },
+  plugins: {
+    installedPlugin: "Installed plugin: {id}",
+    restartToLoad: "Restart the gateway to load plugins.",
+    linkedPluginPath: "Linked plugin path: {path}",
+    linkRequiresPath: "`--link` requires a local path.",
+    pathNotFound: "Path not found: {path}",
+    noPluginsFound: "No plugins found.",
+    pluginNotFound: "Plugin not found: {id}",
+    enabled: 'Enabled plugin "{id}". Restart the gateway to apply.',
+    couldNotEnable: 'Plugin "{id}" could not be enabled ({reason}).',
+    disabled: 'Disabled plugin "{id}". Restart the gateway to apply.',
+    keepConfigDeprecated: "`--keep-config` is deprecated, use `--keep-files`.",
+    notManaged:
+      'Plugin "{id}" is not managed by plugins config/install records and cannot be uninstalled.',
+    dryRunNotice: "Dry run, no changes made.",
+    cancelled: "Cancelled.",
+    uninstalled: 'Uninstalled plugin "{id}". Removed: {removed}.',
+    restartGateway: "Restart the gateway to apply changes.",
+    noNpmPlugins: "No npm-installed plugins to update.",
+    provideIdOrAll: "Provide a plugin id or use --all.",
+    noIssues: "No plugin issues detected.",
+  },
+
+  // src/cli/pairing-cli.ts
+  pairingCli: {
+    description: "Secure DM pairing (approve inbound requests)",
+    listDescription: "List pending pairing requests",
+    channelOpt: "Channel ({channels})",
+    accountOpt: "Account id (for multi-account channels)",
+    jsonOpt: "Print JSON",
+    approveDescription: "Approve a pairing code and allow that sender",
+    codeOrChannelArg: "Pairing code (or channel when using 2 args)",
+    codeArg: "Pairing code (when channel is passed as the 1st arg)",
+    notifyOpt: "Notify the requester on the same channel",
+  },
+  pairing: {
+    channelRequired: "Channel required",
+    channelNotSupported: "Channel {channel} does not support pairing",
+    invalidChannel: "Invalid channel: {channel}",
+    channelRequiredDetailed:
+      "Channel required. Use --channel <channel> or pass it as the first argument (expected one of: {channels})",
+    noPendingRequests: "No pending {channel} pairing requests.",
+    requestNotFound: "No pending pairing request found for code: {code}",
+    notifyFailed: "Failed to notify requester: {error}",
+  },
+
+  // src/cli/qr-cli.ts
+  qrCli: {
+    description: "Generate an iOS pairing QR code and setup code",
+    remoteOpt:
+      "Use gateway.remote.url and gateway.remote token/password (ignores device-pair publicUrl)",
+    urlOpt: "Override gateway URL used in the setup payload",
+    publicUrlOpt: "Override gateway public URL used in the setup payload",
+    tokenOpt: "Override gateway token for setup payload",
+    passwordOpt: "Override gateway password for setup payload",
+    setupCodeOnlyOpt: "Print only the setup code",
+    noAsciiOpt: "Skip ASCII QR rendering",
+    jsonOpt: "Output JSON",
+  },
+  qr: {
+    tokenOrPassword: "Use either --token or --password, not both.",
+    remoteUrlRequired:
+      "qr --remote requires gateway.remote.url (or gateway.tailscale.mode=serve/funnel).",
+    heading: "Pairing QR",
+    scanInstructions: "Scan this with the OpenClaw iOS app (Onboarding -> Scan QR).",
+    setupCodeLabel: "Setup code:",
+    gatewayLabel: "Gateway:",
+    authLabel: "Auth:",
+    sourceLabel: "Source:",
+    approveInstructions: "Approve after scan with:",
   },
 });

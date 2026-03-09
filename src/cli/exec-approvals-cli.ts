@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import type { Command } from "commander";
 import JSON5 from "json5";
+import { t } from "../i18n/index.js";
 import {
   readExecApprovalsSnapshot,
   saveExecApprovals,
@@ -117,7 +118,7 @@ async function loadWritableSnapshotTarget(opts: ExecApprovalsCliOpts): Promise<{
   const targetLabel = source === "local" ? "local" : nodeId ? `node:${nodeId}` : "gateway";
   const baseHash = snapshot.hash;
   if (!baseHash) {
-    exitWithError("Exec approvals hash missing; reload and retry.");
+    exitWithError(t("approvals.hashMissing"));
   }
   return { snapshot, nodeId, source, targetLabel, baseHash };
 }
@@ -349,7 +350,7 @@ export function registerExecApprovalsCli(program: Command) {
   const approvals = program
     .command("approvals")
     .alias("exec-approvals")
-    .description("Manage exec approvals (gateway or node host)")
+    .description(t("approvalsCli.description"))
     .addHelpText(
       "after",
       () =>
@@ -358,9 +359,9 @@ export function registerExecApprovalsCli(program: Command) {
 
   const getCmd = approvals
     .command("get")
-    .description("Fetch exec approvals snapshot")
-    .option("--node <node>", "Target node id/name/IP")
-    .option("--gateway", "Force gateway approvals", false)
+    .description(t("approvalsCli.getDescription"))
+    .option("--node <node>", t("approvalsCli.nodeOpt"))
+    .option("--gateway", t("approvalsCli.gatewayOpt"), false)
     .action(async (opts: ExecApprovalsCliOpts) => {
       try {
         const { snapshot, nodeId, source } = await loadSnapshotTarget(opts);
@@ -371,7 +372,7 @@ export function registerExecApprovalsCli(program: Command) {
 
         const muted = (text: string) => (isRich() ? theme.muted(text) : text);
         if (source === "local") {
-          defaultRuntime.log(muted("Showing local approvals."));
+          defaultRuntime.log(muted(t("approvals.showingLocal")));
           defaultRuntime.log("");
         }
         const targetLabel = source === "local" ? "local" : nodeId ? `node:${nodeId}` : "gateway";
@@ -385,18 +386,18 @@ export function registerExecApprovalsCli(program: Command) {
 
   const setCmd = approvals
     .command("set")
-    .description("Replace exec approvals with a JSON file")
-    .option("--node <node>", "Target node id/name/IP")
-    .option("--gateway", "Force gateway approvals", false)
-    .option("--file <path>", "Path to JSON file to upload")
-    .option("--stdin", "Read JSON from stdin", false)
+    .description(t("approvalsCli.setDescription"))
+    .option("--node <node>", t("approvalsCli.nodeOpt"))
+    .option("--gateway", t("approvalsCli.gatewayOpt"), false)
+    .option("--file <path>", t("approvalsCli.fileOpt"))
+    .option("--stdin", t("approvalsCli.stdinOpt"), false)
     .action(async (opts: ExecApprovalsCliOpts) => {
       try {
         if (!opts.file && !opts.stdin) {
-          exitWithError("Provide --file or --stdin.");
+          exitWithError(t("approvals.provideFileOrStdin"));
         }
         if (opts.file && opts.stdin) {
-          exitWithError("Use either --file or --stdin (not both).");
+          exitWithError(t("approvals.useEitherFileOrStdin"));
         }
         const { source, nodeId, targetLabel, baseHash } = await loadWritableSnapshotTarget(opts);
         const raw = opts.stdin ? await readStdin() : await fs.readFile(String(opts.file), "utf8");
@@ -404,7 +405,7 @@ export function registerExecApprovalsCli(program: Command) {
         try {
           file = JSON5.parse(raw);
         } catch (err) {
-          exitWithError(`Failed to parse approvals JSON: ${String(err)}`);
+          exitWithError(t("approvals.parseJsonFailed", { error: String(err) }));
         }
         file.version = 1;
         await saveSnapshotTargeted({ opts, source, nodeId, file, baseHash, targetLabel });
@@ -417,7 +418,7 @@ export function registerExecApprovalsCli(program: Command) {
 
   const allowlist = approvals
     .command("allowlist")
-    .description("Edit the per-agent allowlist")
+    .description(t("approvalsCli.allowlistDescription"))
     .addHelpText(
       "after",
       () =>
@@ -439,10 +440,10 @@ export function registerExecApprovalsCli(program: Command) {
   registerAllowlistMutationCommand({
     allowlist,
     name: "add",
-    description: "Add a glob pattern to an allowlist",
+    description: t("approvalsCli.allowlistAddDescription"),
     mutate: ({ trimmedPattern, file, agent, agentKey, allowlistEntries }) => {
       if (allowlistEntries.some((entry) => normalizeAllowlistEntry(entry) === trimmedPattern)) {
-        defaultRuntime.log("Already allowlisted.");
+        defaultRuntime.log(t("approvals.alreadyAllowlisted"));
         return false;
       }
       allowlistEntries.push({ pattern: trimmedPattern, lastUsedAt: Date.now() });
@@ -455,13 +456,13 @@ export function registerExecApprovalsCli(program: Command) {
   registerAllowlistMutationCommand({
     allowlist,
     name: "remove",
-    description: "Remove a glob pattern from an allowlist",
+    description: t("approvalsCli.allowlistRemoveDescription"),
     mutate: ({ trimmedPattern, file, agent, agentKey, allowlistEntries }) => {
       const nextEntries = allowlistEntries.filter(
         (entry) => normalizeAllowlistEntry(entry) !== trimmedPattern,
       );
       if (nextEntries.length === allowlistEntries.length) {
-        defaultRuntime.log("Pattern not found.");
+        defaultRuntime.log(t("approvals.patternNotFound"));
         return false;
       }
       if (nextEntries.length === 0) {

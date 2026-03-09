@@ -5,6 +5,7 @@ import type { Command } from "commander";
 import type { OpenClawConfig } from "../config/config.js";
 import { loadConfig, writeConfigFile } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
+import { t } from "../i18n/index.js";
 import { resolveArchiveKind } from "../infra/archive.js";
 import { type BundledPluginSource, findBundledPluginSource } from "../plugins/bundled-sources.js";
 import { enablePluginInConfig } from "../plugins/enable.js";
@@ -192,8 +193,8 @@ async function installBundledPluginSource(params: {
   await writeConfigFile(next);
   logSlotWarnings(slotResult.warnings);
   defaultRuntime.log(theme.warn(params.warning));
-  defaultRuntime.log(`Installed plugin: ${params.bundledSource.pluginId}`);
-  defaultRuntime.log(`Restart the gateway to load plugins.`);
+  defaultRuntime.log(t("plugins.installedPlugin", { id: params.bundledSource.pluginId }));
+  defaultRuntime.log(t("plugins.restartToLoad"));
 }
 
 async function runPluginInstallCommand(params: {
@@ -244,8 +245,8 @@ async function runPluginInstallCommand(params: {
       next = slotResult.config;
       await writeConfigFile(next);
       logSlotWarnings(slotResult.warnings);
-      defaultRuntime.log(`Linked plugin path: ${shortenHomePath(resolved)}`);
-      defaultRuntime.log(`Restart the gateway to load plugins.`);
+      defaultRuntime.log(t("plugins.linkedPluginPath", { path: shortenHomePath(resolved) }));
+      defaultRuntime.log(t("plugins.restartToLoad"));
       return;
     }
 
@@ -274,13 +275,13 @@ async function runPluginInstallCommand(params: {
     next = slotResult.config;
     await writeConfigFile(next);
     logSlotWarnings(slotResult.warnings);
-    defaultRuntime.log(`Installed plugin: ${result.pluginId}`);
-    defaultRuntime.log(`Restart the gateway to load plugins.`);
+    defaultRuntime.log(t("plugins.installedPlugin", { id: result.pluginId }));
+    defaultRuntime.log(t("plugins.restartToLoad"));
     return;
   }
 
   if (opts.link) {
-    defaultRuntime.error("`--link` requires a local path.");
+    defaultRuntime.error(t("plugins.linkRequiresPath"));
     process.exit(1);
   }
 
@@ -296,7 +297,7 @@ async function runPluginInstallCommand(params: {
       ".zip",
     ])
   ) {
-    defaultRuntime.error(`Path not found: ${resolved}`);
+    defaultRuntime.error(t("plugins.pathNotFound", { path: resolved }));
     process.exit(1);
   }
 
@@ -358,13 +359,13 @@ async function runPluginInstallCommand(params: {
   next = slotResult.config;
   await writeConfigFile(next);
   logSlotWarnings(slotResult.warnings);
-  defaultRuntime.log(`Installed plugin: ${result.pluginId}`);
-  defaultRuntime.log(`Restart the gateway to load plugins.`);
+  defaultRuntime.log(t("plugins.installedPlugin", { id: result.pluginId }));
+  defaultRuntime.log(t("plugins.restartToLoad"));
 }
 export function registerPluginsCli(program: Command) {
   const plugins = program
     .command("plugins")
-    .description("Manage OpenClaw plugins and extensions")
+    .description(t("pluginsCli.description"))
     .addHelpText(
       "after",
       () =>
@@ -373,10 +374,10 @@ export function registerPluginsCli(program: Command) {
 
   plugins
     .command("list")
-    .description("List discovered plugins")
-    .option("--json", "Print JSON")
-    .option("--enabled", "Only show enabled plugins", false)
-    .option("--verbose", "Show detailed entries", false)
+    .description(t("pluginsCli.listDescription"))
+    .option("--json", t("pluginsCli.jsonOpt"))
+    .option("--enabled", t("pluginsCli.enabledOpt"), false)
+    .option("--verbose", t("pluginsCli.verboseOpt"), false)
     .action((opts: PluginsListOptions) => {
       const report = buildPluginStatusReport();
       const list = opts.enabled
@@ -394,7 +395,7 @@ export function registerPluginsCli(program: Command) {
       }
 
       if (list.length === 0) {
-        defaultRuntime.log(theme.muted("No plugins found."));
+        defaultRuntime.log(theme.muted(t("plugins.noPluginsFound")));
         return;
       }
 
@@ -471,14 +472,14 @@ export function registerPluginsCli(program: Command) {
 
   plugins
     .command("info")
-    .description("Show plugin details")
-    .argument("<id>", "Plugin id")
-    .option("--json", "Print JSON")
+    .description(t("pluginsCli.infoDescription"))
+    .argument("<id>", t("pluginsCli.idArg"))
+    .option("--json", t("pluginsCli.jsonOpt"))
     .action((id: string, opts: PluginInfoOptions) => {
       const report = buildPluginStatusReport();
       const plugin = report.plugins.find((p) => p.id === id || p.name === id);
       if (!plugin) {
-        defaultRuntime.error(`Plugin not found: ${id}`);
+        defaultRuntime.error(t("plugins.pluginNotFound", { id }));
         process.exit(1);
       }
       const cfg = loadConfig();
@@ -549,8 +550,8 @@ export function registerPluginsCli(program: Command) {
 
   plugins
     .command("enable")
-    .description("Enable a plugin in config")
-    .argument("<id>", "Plugin id")
+    .description(t("pluginsCli.enableDescription"))
+    .argument("<id>", t("pluginsCli.idArg"))
     .action(async (id: string) => {
       const cfg = loadConfig();
       const enableResult = enablePluginInConfig(cfg, id);
@@ -560,35 +561,35 @@ export function registerPluginsCli(program: Command) {
       await writeConfigFile(next);
       logSlotWarnings(slotResult.warnings);
       if (enableResult.enabled) {
-        defaultRuntime.log(`Enabled plugin "${id}". Restart the gateway to apply.`);
+        defaultRuntime.log(t("plugins.enabled", { id }));
         return;
       }
       defaultRuntime.log(
         theme.warn(
-          `Plugin "${id}" could not be enabled (${enableResult.reason ?? "unknown reason"}).`,
+          t("plugins.couldNotEnable", { id, reason: enableResult.reason ?? "unknown reason" }),
         ),
       );
     });
 
   plugins
     .command("disable")
-    .description("Disable a plugin in config")
-    .argument("<id>", "Plugin id")
+    .description(t("pluginsCli.disableDescription"))
+    .argument("<id>", t("pluginsCli.idArg"))
     .action(async (id: string) => {
       const cfg = loadConfig();
       const next = setPluginEnabledInConfig(cfg, id, false);
       await writeConfigFile(next);
-      defaultRuntime.log(`Disabled plugin "${id}". Restart the gateway to apply.`);
+      defaultRuntime.log(t("plugins.disabled", { id }));
     });
 
   plugins
     .command("uninstall")
-    .description("Uninstall a plugin")
-    .argument("<id>", "Plugin id")
-    .option("--keep-files", "Keep installed files on disk", false)
-    .option("--keep-config", "Deprecated alias for --keep-files", false)
-    .option("--force", "Skip confirmation prompt", false)
-    .option("--dry-run", "Show what would be removed without making changes", false)
+    .description(t("pluginsCli.uninstallDescription"))
+    .argument("<id>", t("pluginsCli.idArg"))
+    .option("--keep-files", t("pluginsCli.keepFilesOpt"), false)
+    .option("--keep-config", t("pluginsCli.keepConfigDeprecatedOpt"), false)
+    .option("--force", t("pluginsCli.forceOpt"), false)
+    .option("--dry-run", t("pluginsCli.dryRunOpt"), false)
     .action(async (id: string, opts: PluginUninstallOptions) => {
       const cfg = loadConfig();
       const report = buildPluginStatusReport({ config: cfg });
@@ -596,7 +597,7 @@ export function registerPluginsCli(program: Command) {
       const keepFiles = Boolean(opts.keepFiles || opts.keepConfig);
 
       if (opts.keepConfig) {
-        defaultRuntime.log(theme.warn("`--keep-config` is deprecated, use `--keep-files`."));
+        defaultRuntime.log(theme.warn(t("plugins.keepConfigDeprecated")));
       }
 
       // Find plugin by id or name
@@ -609,11 +610,9 @@ export function registerPluginsCli(program: Command) {
 
       if (!hasEntry && !hasInstall) {
         if (plugin) {
-          defaultRuntime.error(
-            `Plugin "${pluginId}" is not managed by plugins config/install records and cannot be uninstalled.`,
-          );
+          defaultRuntime.error(t("plugins.notManaged", { id: pluginId }));
         } else {
-          defaultRuntime.error(`Plugin not found: ${id}`);
+          defaultRuntime.error(t("plugins.pluginNotFound", { id }));
         }
         process.exit(1);
       }
@@ -661,14 +660,14 @@ export function registerPluginsCli(program: Command) {
       defaultRuntime.log(`Will remove: ${preview.length > 0 ? preview.join(", ") : "(nothing)"}`);
 
       if (opts.dryRun) {
-        defaultRuntime.log(theme.muted("Dry run, no changes made."));
+        defaultRuntime.log(theme.muted(t("plugins.dryRunNotice")));
         return;
       }
 
       if (!opts.force) {
         const confirmed = await promptYesNo(`Uninstall plugin "${pluginId}"?`);
         if (!confirmed) {
-          defaultRuntime.log("Cancelled.");
+          defaultRuntime.log(t("plugins.cancelled"));
           return;
         }
       }
@@ -711,27 +710,30 @@ export function registerPluginsCli(program: Command) {
       }
 
       defaultRuntime.log(
-        `Uninstalled plugin "${pluginId}". Removed: ${removed.length > 0 ? removed.join(", ") : "nothing"}.`,
+        t("plugins.uninstalled", {
+          id: pluginId,
+          removed: removed.length > 0 ? removed.join(", ") : "nothing",
+        }),
       );
-      defaultRuntime.log("Restart the gateway to apply changes.");
+      defaultRuntime.log(t("plugins.restartGateway"));
     });
 
   plugins
     .command("install")
-    .description("Install a plugin (path, archive, or npm spec)")
-    .argument("<path-or-spec>", "Path (.ts/.js/.zip/.tgz/.tar.gz) or an npm package spec")
-    .option("-l, --link", "Link a local path instead of copying", false)
-    .option("--pin", "Record npm installs as exact resolved <name>@<version>", false)
+    .description(t("pluginsCli.installDescription"))
+    .argument("<path-or-spec>", t("pluginsCli.pathArg"))
+    .option("-l, --link", t("pluginsCli.linkOpt"), false)
+    .option("--pin", t("pluginsCli.pinOpt"), false)
     .action(async (raw: string, opts: { link?: boolean; pin?: boolean }) => {
       await runPluginInstallCommand({ raw, opts });
     });
 
   plugins
     .command("update")
-    .description("Update installed plugins (npm installs only)")
-    .argument("[id]", "Plugin id (omit with --all)")
-    .option("--all", "Update all tracked plugins", false)
-    .option("--dry-run", "Show what would change without writing", false)
+    .description(t("pluginsCli.updateDescription"))
+    .argument("[id]", t("pluginsCli.updateIdArg"))
+    .option("--all", t("pluginsCli.updateAllOpt"), false)
+    .option("--dry-run", t("pluginsCli.dryRunOpt"), false)
     .action(async (id: string | undefined, opts: PluginUpdateOptions) => {
       const cfg = loadConfig();
       const installs = cfg.plugins?.installs ?? {};
@@ -739,10 +741,10 @@ export function registerPluginsCli(program: Command) {
 
       if (targets.length === 0) {
         if (opts.all) {
-          defaultRuntime.log("No npm-installed plugins to update.");
+          defaultRuntime.log(t("plugins.noNpmPlugins"));
           return;
         }
-        defaultRuntime.error("Provide a plugin id or use --all.");
+        defaultRuntime.error(t("plugins.provideIdOrAll"));
         process.exit(1);
       }
 
@@ -784,20 +786,20 @@ export function registerPluginsCli(program: Command) {
 
       if (!opts.dryRun && result.changed) {
         await writeConfigFile(result.config);
-        defaultRuntime.log("Restart the gateway to load plugins.");
+        defaultRuntime.log(t("plugins.restartToLoad"));
       }
     });
 
   plugins
     .command("doctor")
-    .description("Report plugin load issues")
+    .description(t("pluginsCli.doctorDescription"))
     .action(() => {
       const report = buildPluginStatusReport();
       const errors = report.plugins.filter((p) => p.status === "error");
       const diags = report.diagnostics.filter((d) => d.level === "error");
 
       if (errors.length === 0 && diags.length === 0) {
-        defaultRuntime.log("No plugin issues detected.");
+        defaultRuntime.log(t("plugins.noIssues"));
         return;
       }
 

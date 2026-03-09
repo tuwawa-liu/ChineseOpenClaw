@@ -39,7 +39,8 @@ export const zh_CN: TranslationMap = {
       helpExamples: "示例：",
       helpNotes: "注意事项：",
       helpNoteSwitchChannels: "- 使用 --channel stable|beta|dev 切换通道",
-      helpNoteGlobal: "- 全局安装时：尽可能通过检测到的包管理器自动更新（参见 docs/install/updating.md）",
+      helpNoteGlobal:
+        "- 全局安装时：尽可能通过检测到的包管理器自动更新（参见 docs/install/updating.md）",
       helpNoteDowngrade: "- 降级需要确认（可能破坏配置）",
       helpNoteUncommitted: "- 工作目录有未提交更改时跳过更新",
       wizard: {
@@ -437,7 +438,8 @@ export const zh_CN: TranslationMap = {
     devHint: "Git main 分支",
     restartAfterUpdate: "更新后重启网关服务？",
     requiresTty: "更新向导需要 TTY。请使用 `openclaw update --channel <stable|beta|dev>` 代替。",
-    nonGitDir: "OPENCLAW_GIT_DIR 指向非 Git 目录：{dir}。请将 OPENCLAW_GIT_DIR 设置为空文件夹或 openclaw 检出目录。",
+    nonGitDir:
+      "OPENCLAW_GIT_DIR 指向非 Git 目录：{dir}。请将 OPENCLAW_GIT_DIR 设置为空文件夹或 openclaw 检出目录。",
     createGitCheckout: "在 {dir} 创建 Git 检出？（通过 OPENCLAW_GIT_DIR 覆盖）",
     cancelled: "更新已取消。",
   },
@@ -477,12 +479,14 @@ export const zh_CN: TranslationMap = {
     secretsNoChanges: "密钥应用：无更改。",
     reloadedWithWarnings: "密钥已重新加载，有 {count} 个警告。",
     reloaded: "密钥已重新加载。",
-    auditSummary: "密钥审计：{status}。明文={plaintext}，未解析={unresolved}，被遮蔽={shadowed}，遗留={legacy}。",
+    auditSummary:
+      "密钥审计：{status}。明文={plaintext}，未解析={unresolved}，被遮蔽={shadowed}，遗留={legacy}。",
     auditFinding: "- [{code}] {file}:{jsonPath} {message}",
     auditMoreFindings: "... 还有 {count} 个发现。",
     preflightSummary: "预检查：已更改={changed}，文件数={files}，警告数={warnings}。",
     preflightWarning: "- 警告：{warning}",
-    planSummary: "计划：目标数={targets}，提供商新增/更新={providerUpserts}，提供商删除={providerDeletes}。",
+    planSummary:
+      "计划：目标数={targets}，提供商新增/更新={providerUpserts}，提供商删除={providerDeletes}。",
     planWrittenTo: "计划已写入 {path}",
     dryRunChanged: "密钥应用模拟运行：{count} 个文件将被更改。",
     dryRunNoChanges: "密钥应用模拟运行：无更改。",
@@ -496,24 +500,54 @@ export const zh_CN: TranslationMap = {
     allowlist: { desc: "列出/添加/移除允许列表条目。" },
     approve: { desc: "批准或拒绝执行请求。" },
     context: { desc: "说明上下文的构建和使用方式。" },
-    exportSession: { desc: "将当前会话导出为包含完整系统提示词的 HTML 文件。", argPath: "输出路径（默认：工作区）" },
+    exportSession: {
+      desc: "将当前会话导出为包含完整系统提示词的 HTML 文件。",
+      argPath: "输出路径（默认：工作区）",
+    },
     tts: {
       desc: "控制文字转语音（TTS）。",
       argAction: "TTS 操作",
       argValue: "提供商、限制或文本",
-      menuTitle: "TTS 操作：\n• On – 为回复启用 TTS\n• Off – 禁用 TTS\n• Status – 显示当前设置\n• Provider – 设置语音提供商（edge、elevenlabs、openai）\n• Limit – 设置 TTS 最大字符数\n• Summary – 切换长文本的 AI 摘要\n• Audio – 从自定义文本生成 TTS\n• Help – 显示使用指南",
+      menuTitle:
+        "TTS 操作：\n• On – 为回复启用 TTS\n• Off – 禁用 TTS\n• Status – 显示当前设置\n• Provider – 设置语音提供商（edge、elevenlabs、openai）\n• Limit – 设置 TTS 最大字符数\n• Summary – 切换长文本的 AI 摘要\n• Audio – 从自定义文本生成 TTS\n• Help – 显示使用指南",
     },
     whoami: { desc: "显示你的发送者 ID。" },
-    session: { desc: "管理会话级设置（例如 /session idle）。", argAction: "idle | max-age", argValue: "时长（24h、90m）或 off" },
-    subagents: { desc: "列出、终止、查看日志、生成或引导当前会话的子代理运行。", argAction: "list | kill | log | info | send | steer | spawn", argTarget: "运行 ID、索引或会话密钥", argValue: "附加输入（限制/消息）" },
+    session: {
+      desc: "管理会话级设置（例如 /session idle）。",
+      argAction: "idle | max-age",
+      argValue: "时长（24h、90m）或 off",
+    },
+    subagents: {
+      desc: "列出、终止、查看日志、生成或引导当前会话的子代理运行。",
+      argAction: "list | kill | log | info | send | steer | spawn",
+      argTarget: "运行 ID、索引或会话密钥",
+      argValue: "附加输入（限制/消息）",
+    },
     acp: { desc: "管理 ACP 会话和运行时选项。", argAction: "要执行的操作", argValue: "操作参数" },
-    focus: { desc: "将此线程（Discord）或话题/对话（Telegram）绑定到会话目标。", argTarget: "子代理标签/索引或会话密钥/ID/标签" },
+    focus: {
+      desc: "将此线程（Discord）或话题/对话（Telegram）绑定到会话目标。",
+      argTarget: "子代理标签/索引或会话密钥/ID/标签",
+    },
     unfocus: { desc: "移除当前线程（Discord）或话题/对话（Telegram）的绑定。" },
     agents: { desc: "列出当前会话的线程绑定代理。" },
     kill: { desc: "终止运行中的子代理（或全部）。", argTarget: "标签、运行 ID、索引或 all" },
-    steer: { desc: "向运行中的子代理发送引导指令。", argTarget: "标签、运行 ID 或索引", argMessage: "引导消息" },
-    config: { desc: "显示或设置配置值。", argAction: "show | get | set | unset", argPath: "配置路径", argValue: "要设置的值" },
-    debug: { desc: "设置运行时调试覆盖。", argAction: "show | reset | set | unset", argPath: "调试路径", argValue: "要设置的值" },
+    steer: {
+      desc: "向运行中的子代理发送引导指令。",
+      argTarget: "标签、运行 ID 或索引",
+      argMessage: "引导消息",
+    },
+    config: {
+      desc: "显示或设置配置值。",
+      argAction: "show | get | set | unset",
+      argPath: "配置路径",
+      argValue: "要设置的值",
+    },
+    debug: {
+      desc: "设置运行时调试覆盖。",
+      argAction: "show | reset | set | unset",
+      argPath: "调试路径",
+      argValue: "要设置的值",
+    },
     usage: { desc: "用量尾注或费用摘要。", argMode: "off、tokens、full 或 cost" },
     stop: { desc: "停止当前运行。" },
     restart: { desc: "重启 OpenClaw。" },
@@ -526,10 +560,22 @@ export const zh_CN: TranslationMap = {
     verbose: { desc: "切换详细模式。", argMode: "on 或 off" },
     reasoning: { desc: "切换推理可见性。", argMode: "on、off 或 stream" },
     elevated: { desc: "切换提权模式。", argMode: "on、off、ask 或 full" },
-    exec: { desc: "设置当前会话的执行默认值。", argHost: "sandbox、gateway 或 node", argSecurity: "deny、allowlist 或 full", argAsk: "off、on-miss 或 always", argNode: "节点 ID 或名称" },
+    exec: {
+      desc: "设置当前会话的执行默认值。",
+      argHost: "sandbox、gateway 或 node",
+      argSecurity: "deny、allowlist 或 full",
+      argAsk: "off、on-miss 或 always",
+      argNode: "节点 ID 或名称",
+    },
     model: { desc: "显示或设置模型。", argModel: "模型 ID（provider/model 或 id）" },
     models: { desc: "列出模型提供商或提供商模型。" },
-    queue: { desc: "调整队列设置。", argMode: "队列模式", argDebounce: "防抖时长（如 500ms、2s）", argCap: "队列容量", argDrop: "丢弃策略" },
+    queue: {
+      desc: "调整队列设置。",
+      argMode: "队列模式",
+      argDebounce: "防抖时长（如 500ms、2s）",
+      argCap: "队列容量",
+      argDrop: "丢弃策略",
+    },
     bash: { desc: "运行宿主 Shell 命令（仅限宿主）。", argCommand: "Shell 命令" },
     dock: "切换到 {id} 进行回复。",
     categories: {
@@ -690,7 +736,8 @@ export const zh_CN: TranslationMap = {
     eventGap: "事件间隔：预期 {expected}，收到 {received}",
   },
   tuiWait: {
-    phrases: "天马行空中|东拉西扯中|磨磨蹭蹭中|无所事事中|胡思乱想中|眼花缭乱中|闲庭信步中|高谈阔论中|冥思苦想中|施展法术中",
+    phrases:
+      "天马行空中|东拉西扯中|磨磨蹭蹭中|无所事事中|胡思乱想中|眼花缭乱中|闲庭信步中|高谈阔论中|冥思苦想中|施展法术中",
     fallback: "等待中",
   },
   tuiFmt: {
@@ -812,9 +859,11 @@ export const zh_CN: TranslationMap = {
     finalize: {
       systemdUnavailable: "Systemd 用户服务不可用。跳过延迟检查和服务安装。",
       systemdNoteTitle: "Systemd",
-      lingerReason: "Linux 安装默认使用 systemd 用户服务。如果没有启用驻留，systemd 会在登出/空闲时停止用户会话并终止网关。",
+      lingerReason:
+        "Linux 安装默认使用 systemd 用户服务。如果没有启用驻留，systemd 会在登出/空闲时停止用户会话并终止网关。",
       installServiceConfirm: "安装网关服务（推荐）",
-      systemdSkipInstall: "Systemd 用户服务不可用；跳过服务安装。请使用容器管理器或 `docker compose up -d`。",
+      systemdSkipInstall:
+        "Systemd 用户服务不可用；跳过服务安装。请使用容器管理器或 `docker compose up -d`。",
       gatewayServiceTitle: "网关服务",
       serviceRuntimeMsg: "网关服务运行时",
       quickstartNodeNote: "快速开始使用 Node 作为网关服务运行时（稳定 + 受支持）。",
@@ -836,7 +885,8 @@ export const zh_CN: TranslationMap = {
       gatewayNoteTitle: "网关",
       healthCheckHelpTitle: "健康检查帮助",
       optionalAppsIntro: "添加节点以获取额外功能：",
-      optionalAppsLines: "- macOS 应用（系统 + 通知）\n- iOS 应用（相机/画布）\n- Android 应用（相机/画布）",
+      optionalAppsLines:
+        "- macOS 应用（系统 + 通知）\n- iOS 应用（相机/画布）\n- Android 应用（相机/画布）",
       optionalAppsTitle: "可选应用",
       gatewayReachable: "网关：可达",
       gatewayNotDetected: "网关：未检测到",
@@ -848,13 +898,15 @@ export const zh_CN: TranslationMap = {
       tuiDefiningAction: "这是定义你的代理的关键步骤。",
       tuiTakeYourTime: "请慢慢来。",
       tuiMoreIsBetter: "你告诉它越多，体验就越好。",
-      tuiWakeUpQuote: "我们将发送：\"Wake up, my friend!\"",
+      tuiWakeUpQuote: '我们将发送："Wake up, my friend!"',
       startTuiTitle: "启动 TUI（最佳选择！）",
       tokenSharedAuth: "网关令牌：网关 + 控制界面的共享认证。",
-      tokenStoredIn: "存储在：~/.openclaw/openclaw.json (gateway.auth.token) 或 OPENCLAW_GATEWAY_TOKEN。",
+      tokenStoredIn:
+        "存储在：~/.openclaw/openclaw.json (gateway.auth.token) 或 OPENCLAW_GATEWAY_TOKEN。",
       tokenViewCmd: "查看令牌：{cmd}",
       tokenGenCmd: "生成令牌：{cmd}",
-      tokenLocalStorage: "Web UI 在浏览器的 localStorage 中存储副本 (openclaw.control.settings.v1)。",
+      tokenLocalStorage:
+        "Web UI 在浏览器的 localStorage 中存储副本 (openclaw.control.settings.v1)。",
       tokenOpenDashboard: "随时打开仪表板：{cmd}",
       tokenPasteHint: "如果提示：将令牌粘贴到控制界面设置中（或使用带令牌的仪表板 URL）。",
       tokenNoteTitle: "令牌",
@@ -873,7 +925,8 @@ export const zh_CN: TranslationMap = {
       controlUiSkipTitle: "控制界面",
       backupWorkspace: "备份你的代理工作区。",
       workspaceBackupTitle: "工作区备份",
-      securityHardening: "在你的计算机上运行代理存在风险 — 加固你的设置：https://docs.openclaw.ai/security",
+      securityHardening:
+        "在你的计算机上运行代理存在风险 — 加固你的设置：https://docs.openclaw.ai/security",
       securityNoteTitle: "安全",
       passwordSecretRefError: "无法解析 gateway.auth.password 的 SecretRef 进行初始化认证。",
       gatewayAuthNoteTitle: "网关认证",
@@ -890,7 +943,7 @@ export const zh_CN: TranslationMap = {
       reEnable: "重新启用：{cmd}",
       webSearchAutoDetected: "Web 搜索可通过 {label} 使用（自动检测）。",
       webSearchSkipped: "Web 搜索已跳过。稍后可以启用：",
-      whatNow: "下一步：https://openclaw.ai/showcase（\"大家都在构建什么\"）。",
+      whatNow: '下一步：https://openclaw.ai/showcase（"大家都在构建什么"）。',
       whatNowTitle: "下一步",
       outroWithDashboard: "初始化完成。仪表板已打开；保持该标签页以控制 OpenClaw。",
       outroWithSeed: "初始化完成。Web UI 正在后台加载；随时通过上方的仪表板链接打开。",
@@ -933,7 +986,7 @@ export const zh_CN: TranslationMap = {
       passwordInputMsg: "网关密码",
     },
     secretInput: {
-      resolveError: "{path}：无法解析 SecretRef \"{source}:{provider}:{id}\"：{error}",
+      resolveError: '{path}：无法解析 SecretRef "{source}:{provider}:{id}"：{error}',
     },
   },
   commands: {
@@ -965,7 +1018,8 @@ export const zh_CN: TranslationMap = {
       configureLinkHint: "添加/更新频道；禁用未选择的账户",
       removeConfig: "移除频道配置",
       removeConfigHint: "从 openclaw.json 删除频道令牌/设置",
-      webSearchNote: "网页搜索让你的代理通过 `web_search` 工具在线查找信息。\n选择提供商并粘贴 API 密钥。\n文档：https://docs.openclaw.ai/tools/web",
+      webSearchNote:
+        "网页搜索让你的代理通过 `web_search` 工具在线查找信息。\n选择提供商并粘贴 API 密钥。\n文档：https://docs.openclaw.ai/tools/web",
       webSearchTitle: "网页搜索",
       enableWebSearch: "启用 web_search？",
       chooseProvider: "选择网页搜索提供商",
@@ -995,7 +1049,8 @@ export const zh_CN: TranslationMap = {
       remoteConfigured: "远程网关已配置。",
       workspaceDir: "工作区目录",
       existingWorkspaceTitle: "已有工作区",
-      existingWorkspaceNote: "在 {dir} 检测到已有工作区\n已有文件将被保留。缺失的模板可能会被创建，但绝不会被覆盖。",
+      existingWorkspaceNote:
+        "在 {dir} 检测到已有工作区\n已有文件将被保留。缺失的模板可能会被创建，但绝不会被覆盖。",
       daemonPort: "服务安装的网关端口",
       invalidPort: "无效端口",
       noChanges: "未选择任何更改。",
@@ -1041,12 +1096,13 @@ export const zh_CN: TranslationMap = {
       refHint: "存储基于环境变量的引用而非明文",
       envVarMsg: "网关令牌环境变量",
       envVarValidate: "使用类似 OPENCLAW_GATEWAY_TOKEN 的环境变量名。",
-      envVarMissing: "环境变量 \"{name}\" 在当前会话中缺失或为空。",
+      envVarMissing: '环境变量 "{name}" 在当前会话中缺失或为空。',
       envVarValidated: "已验证 {name}。OpenClaw 将存储令牌 SecretRef。",
       gatewayTokenTitle: "网关令牌",
       tokenBlankMsg: "网关令牌（留空自动生成）",
       passwordMsg: "网关密码",
-      trustedProxyNote: "可信代理模式：OpenClaw 信任来自反向代理的用户身份。\n代理必须认证用户并通过 Header 传递身份。\n仅来自指定代理 IP 的请求会被信任。\n\n常见用例：Pomerium、Caddy + OAuth、Traefik + 前向认证\n文档：https://docs.openclaw.ai/gateway/trusted-proxy-auth",
+      trustedProxyNote:
+        "可信代理模式：OpenClaw 信任来自反向代理的用户身份。\n代理必须认证用户并通过 Header 传递身份。\n仅来自指定代理 IP 的请求会被信任。\n\n常见用例：Pomerium、Caddy + OAuth、Traefik + 前向认证\n文档：https://docs.openclaw.ai/gateway/trusted-proxy-auth",
       trustedProxyAuthTitle: "可信代理认证",
       userHeaderMsg: "包含用户身份的 Header",
       userHeaderRequired: "用户 Header 是必需的",
@@ -1073,7 +1129,8 @@ export const zh_CN: TranslationMap = {
       installFailed: "网关服务安装失败。",
       installFailedNote: "网关服务安装失败：{error}",
       gatewayTitle: "网关",
-      lingerReason: "Linux 安装使用 systemd 用户服务。没有 lingering，systemd 会在注销/空闲时停止用户会话并终止网关。",
+      lingerReason:
+        "Linux 安装使用 systemd 用户服务。没有 lingering，systemd 会在注销/空闲时停止用户会话并终止网关。",
     },
     doctor: {
       intro: "OpenClaw 诊断",
@@ -1083,8 +1140,9 @@ export const zh_CN: TranslationMap = {
       gatewayMissingConfig: "缺少配置：运行 `{cmd}` 创建。",
       gatewayTitle: "网关",
       gatewayAuthTitle: "网关认证",
-      authConflict: "gateway.auth.token 和 gateway.auth.password 同时配置，但 gateway.auth.mode 未设置。",
-      authConflictFix: "修复：将 gateway.auth.mode 明确设为 \"token\" 或 \"password\"。",
+      authConflict:
+        "gateway.auth.token 和 gateway.auth.password 同时配置，但 gateway.auth.mode 未设置。",
+      authConflictFix: '修复：将 gateway.auth.mode 明确设为 "token" 或 "password"。',
       tokenUnavailable: "网关令牌通过 SecretRef 管理，当前不可用。",
       tokenUnavailableFix: "如果令牌在运行时可以解析，可以安全忽略此警告。",
       authMissing: "网关认证已关闭或缺少令牌。令牌认证现在是推荐的默认方式（包括回环）。",
@@ -1101,7 +1159,7 @@ export const zh_CN: TranslationMap = {
       invalidConfigLabel: "无效配置：",
       invalidConfigItem: "- {path}：{message}",
       complete: "诊断完成。",
-      fixHint: "运行 \"{cmd}\" 以应用更改。",
+      fixHint: '运行 "{cmd}" 以应用更改。',
       healthCheckHelp: "健康检查帮助",
     },
     reset: {
@@ -1117,7 +1175,7 @@ export const zh_CN: TranslationMap = {
       fullResetLabel: "完全重置",
       fullResetHint: "状态目录 + 工作区",
       cancelled: "重置已取消。",
-      invalidScope: "无效的 --scope。期望 \"config\"、\"config+creds+sessions\" 或 \"full\"。",
+      invalidScope: '无效的 --scope。期望 "config"、"config+creds+sessions" 或 "full"。',
       confirmMsg: "继续 {scope} 重置？",
       dryRunStop: "[试运行] 停止网关服务",
       nextStep: "下一步：{cmd}",
@@ -1149,9 +1207,9 @@ export const zh_CN: TranslationMap = {
     agents: {
       nonInteractiveWorkspace: "非交互模式需要 --workspace。不带标志重新运行以使用向导。",
       nameRequired: "非交互模式需要代理名称。",
-      nameReserved: "\"{name}\" 是保留名称。请选择其他名称。",
-      normalizedId: "代理 ID 已规范化为 \"{id}\"。",
-      alreadyExists: "代理 \"{id}\" 已存在。",
+      nameReserved: '"{name}" 是保留名称。请选择其他名称。',
+      normalizedId: '代理 ID 已规范化为 "{id}"。',
+      alreadyExists: '代理 "{id}" 已存在。',
       agentLine: "代理：{id}",
       workspaceLine: "工作区：{dir}",
       agentDirLine: "代理目录：{dir}",
@@ -1161,19 +1219,19 @@ export const zh_CN: TranslationMap = {
       nameMsg: "代理名称",
       required: "必填",
       agentIdTitle: "代理 ID",
-      normalizedNote: "ID 已规范化为 \"{id}\"。",
-      updateConfirm: "代理 \"{id}\" 已存在。是否更新？",
+      normalizedNote: 'ID 已规范化为 "{id}"。',
+      updateConfirm: '代理 "{id}" 已存在。是否更新？',
       noChanges: "未做更改。",
       workspaceMsg: "工作区目录",
-      copyAuthConfirm: "从 \"{id}\" 复制认证配置文件？",
-      authCopied: "已从 \"{id}\" 复制认证配置文件。",
+      copyAuthConfirm: '从 "{id}" 复制认证配置文件？',
+      authCopied: '已从 "{id}" 复制认证配置文件。',
       authProfilesTitle: "认证配置文件",
       configureAuthConfirm: "现在为此代理配置模型/认证？",
       routeBindingsConfirm: "现在将选定频道路由到此代理？（绑定）",
       routeBindingsTitle: "路由绑定",
       routeUnchangedNote: "路由未更改。在准备好时添加绑定。",
       routeUnchangedTitle: "路由",
-      agentReady: "代理 \"{id}\" 已就绪。",
+      agentReady: '代理 "{id}" 已就绪。',
     },
     custom: {
       openaiCompat: "OpenAI 兼容",
@@ -1208,16 +1266,18 @@ export const zh_CN: TranslationMap = {
       endpointIdRequired: "端点 ID 是必需的。",
       modelAliasMsg: "模型别名（可选）",
       modelAliasPlaceholder: "例如 local, ollama",
-      endpointRenamedNote: "端点 ID \"{from}\" 已存在于不同的基础 URL。使用 \"{to}\"。",
+      endpointRenamedNote: '端点 ID "{from}" 已存在于不同的基础 URL。使用 "{to}"。',
       endpointRenamedTitle: "端点 ID",
       configuredLog: "已配置自定义提供商：{provider}/{model}",
     },
     remote: {
       urlValidateScheme: "URL 必须以 ws:// 或 wss:// 开头",
-      urlValidateInsecure: "远程主机请使用 wss://，或通过 SSH 隧道使用 ws://127.0.0.1/localhost。紧急例外：对可信私有网络设置 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1。",
+      urlValidateInsecure:
+        "远程主机请使用 wss://，或通过 SSH 隧道使用 ws://127.0.0.1/localhost。紧急例外：对可信私有网络设置 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1。",
       discoverConfirm: "在局域网上发现网关 (Bonjour)？",
       discoveryTitle: "发现",
-      discoveryNote: "Bonjour 发现需要 dns-sd (macOS) 或 avahi-browse (Linux)。\n文档：https://docs.openclaw.ai/gateway/discovery",
+      discoveryNote:
+        "Bonjour 发现需要 dns-sd (macOS) 或 avahi-browse (Linux)。\n文档：https://docs.openclaw.ai/gateway/discovery",
       searching: "正在搜索网关…",
       foundGateways: "找到 {count} 个网关",
       noGateways: "未找到网关",
@@ -1225,7 +1285,8 @@ export const zh_CN: TranslationMap = {
       connectionMethod: "连接方式",
       directLabel: "直连网关 WS ({host}:{port})",
       sshLabel: "SSH 隧道（回环）",
-      directNote: "直接远程访问默认使用 TLS。\n使用：{url}\n如果网关仅限回环访问，请选择 SSH 隧道并保持 ws://127.0.0.1:18789。",
+      directNote:
+        "直接远程访问默认使用 TLS。\n使用：{url}\n如果网关仅限回环访问，请选择 SSH 隧道并保持 ws://127.0.0.1:18789。",
       directTitle: "直接远程",
       sshNote: "使用 CLI 前请先启动隧道：\n{cmd}\n文档：https://docs.openclaw.ai/gateway/remote",
       sshTitle: "SSH 隧道",
@@ -1257,7 +1318,8 @@ export const zh_CN: TranslationMap = {
       alreadyConfigured: "{label} 已配置。你想怎么做？",
       accountSelect: "{label} 账户",
       channelStatusTitle: "频道状态",
-      dmSecurityNote: "DM 安全：默认为配对模式；未知 DM 会收到配对码。\n• 在 Web UI → 已配对标签页中批准，或在已配对 DM 中使用 /approve。\n• 公开 DM：任何人都可以不经配对直接向代理发消息。\n• 多用户 DM：每个用户单独配对。",
+      dmSecurityNote:
+        "DM 安全：默认为配对模式；未知 DM 会收到配对码。\n• 在 Web UI → 已配对标签页中批准，或在已配对 DM 中使用 /approve。\n• 公开 DM：任何人都可以不经配对直接向代理发消息。\n• 多用户 DM：每个用户单独配对。",
       dmSecurityTitle: "频道工作方式",
       configureDmConfirm: "现在配置 DM 访问策略？（默认：配对）",
       dmPolicyMsg: "{label} DM 策略",
@@ -1273,7 +1335,7 @@ export const zh_CN: TranslationMap = {
       noOnboarding: "{channel} 尚不支持引导流程。",
       removeTitle: "移除频道",
       removeNotSupported: "{label} 不支持删除配置条目。",
-      deleteConfirm: "删除 {label} 账户 \"{account}\"？",
+      deleteConfirm: '删除 {label} 账户 "{account}"？',
       selectQuickstart: "选择频道（快速开始）",
       selectChannel: "选择频道",
       finishedLabel: "完成",
@@ -1352,20 +1414,25 @@ export const zh_CN: TranslationMap = {
       tokenNameMsg: "令牌名称（留空 = 默认）",
     },
     authGeminiCli: {
-      cautionNote: "这是一个非官方集成，未经 Google 认可。\n部分用户反映在使用第三方 Gemini CLI 和 Antigravity OAuth 客户端后账户受到限制或封禁。\n仅在您理解并接受此风险后继续。",
+      cautionNote:
+        "这是一个非官方集成，未经 Google 认可。\n部分用户反映在使用第三方 Gemini CLI 和 Antigravity OAuth 客户端后账户受到限制或封禁。\n仅在您理解并接受此风险后继续。",
       cautionTitle: "Google Gemini CLI 注意事项",
       continueConfirm: "继续使用 Google Gemini CLI OAuth？",
       skipNote: "已跳过 Google Gemini CLI OAuth 设置。",
       skipTitle: "设置已跳过",
     },
     onboard: {
-      authDeprecated: "认证选项 \"{choice}\" 已弃用。\n请使用 \"--auth-choice token\"（Anthropic setup-token）或 \"--auth-choice openai-codex\"。",
-      claudeCliDeprecated: "认证选项 \"claude-cli\" 已弃用；改用 setup-token 流程。",
-      codexCliDeprecated: "认证选项 \"codex-cli\" 已弃用；改用 OpenAI Codex OAuth。",
-      invalidSecretMode: "无效的 --secret-input-mode。请使用 \"plaintext\" 或 \"ref\"。",
-      invalidResetScope: "无效的 --reset-scope。请使用 \"config\"、\"config+creds+sessions\" 或 \"full\"。",
-      nonInteractiveRisk: "非交互式引导需要明确的风险确认。\n请阅读：https://docs.openclaw.ai/security",
-      windowsDetected: "检测到 Windows — OpenClaw 在 WSL2 上运行效果很好！\n原生 Windows 可能会更棘手。\n快速设置：wsl --install（一条命令，一次重启）\n指南：https://docs.openclaw.ai/windows",
+      authDeprecated:
+        '认证选项 "{choice}" 已弃用。\n请使用 "--auth-choice token"（Anthropic setup-token）或 "--auth-choice openai-codex"。',
+      claudeCliDeprecated: '认证选项 "claude-cli" 已弃用；改用 setup-token 流程。',
+      codexCliDeprecated: '认证选项 "codex-cli" 已弃用；改用 OpenAI Codex OAuth。',
+      invalidSecretMode: '无效的 --secret-input-mode。请使用 "plaintext" 或 "ref"。',
+      invalidResetScope:
+        '无效的 --reset-scope。请使用 "config"、"config+creds+sessions" 或 "full"。',
+      nonInteractiveRisk:
+        "非交互式引导需要明确的风险确认。\n请阅读：https://docs.openclaw.ai/security",
+      windowsDetected:
+        "检测到 Windows — OpenClaw 在 WSL2 上运行效果很好！\n原生 Windows 可能会更棘手。\n快速设置：wsl --install（一条命令，一次重启）\n指南：https://docs.openclaw.ai/windows",
     },
     authHelpers: {
       secretSourceMsg: "此 API 密钥存储在哪里？",
@@ -1374,11 +1441,12 @@ export const zh_CN: TranslationMap = {
       providerLabel: "已配置的密钥提供者",
       providerHint: "使用已配置的 file 或 exec 密钥提供者",
       envVarNameMsg: "环境变量名称",
-      envVarFormatError: "请使用类似 \"OPENAI_API_KEY\" 的环境变量名（大写字母、数字、下划线）。",
-      envVarMissing: "环境变量 \"{envVar}\" 在当前会话中缺失或为空。",
+      envVarFormatError: '请使用类似 "OPENAI_API_KEY" 的环境变量名（大写字母、数字、下划线）。',
+      envVarMissing: '环境变量 "{envVar}" 在当前会话中缺失或为空。',
       envValidated: "已验证环境变量 {envVar}。OpenClaw 将存储引用，而非密钥值。",
       refValidated: "引用已验证",
-      noProviders: "尚未配置 file/exec 密钥提供者。请在 secrets.providers 下添加一个，或选择环境变量。",
+      noProviders:
+        "尚未配置 file/exec 密钥提供者。请在 secrets.providers 下添加一个，或选择环境变量。",
       noProvidersTitle: "未配置提供者",
       selectProvider: "选择密钥提供者",
       execProvider: "Exec 提供者",
@@ -1386,18 +1454,20 @@ export const zh_CN: TranslationMap = {
       secretIdFileMsg: "密钥 ID（json 模式使用 JSON 指针，singleValue 模式使用 'value'）",
       secretIdExecMsg: "exec 提供者的密钥 ID",
       secretIdEmpty: "密钥 ID 不能为空。",
-      secretIdInvalidPointer: "请使用绝对 JSON 指针，如 \"/providers/openai/apiKey\"。",
-      secretIdSingleValue: "singleValue 模式期望 ID 为 \"value\"。",
+      secretIdInvalidPointer: '请使用绝对 JSON 指针，如 "/providers/openai/apiKey"。',
+      secretIdSingleValue: 'singleValue 模式期望 ID 为 "value"。',
       providerValidated: "已验证 {source} 引用 {provider}:{id}。OpenClaw 将存储引用，而非密钥值。",
-      invalidProvider: "提供者 \"{provider}\" 不是 file/exec 提供者。",
+      invalidProvider: '提供者 "{provider}" 不是 file/exec 提供者。',
       invalidProviderTitle: "无效提供者",
       refCheckFailed: "无法验证提供者引用 {provider}:{id}。",
       refCheckFailedTitle: "引用检查失败",
       checkConfigTryAgain: "请检查提供者配置并重试。",
-      noEnvVarMapping: "未找到提供者 \"{provider}\" 的默认环境变量映射。请设置提供者特定的环境变量，或在交互式终端中重新运行引导以配置引用。",
-      envVarRequired: "环境变量 \"{envVar}\" 在非交互式引导的 --secret-input-mode ref 模式下是必需的。",
-      noValidEnvVar: "未提供提供者 \"{provider}\" 的有效环境变量名称。",
-      modelSetDefault: "默认模型已设置为 {model}，代理 \"{agentId}\"。",
+      noEnvVarMapping:
+        '未找到提供者 "{provider}" 的默认环境变量映射。请设置提供者特定的环境变量，或在交互式终端中重新运行引导以配置引用。',
+      envVarRequired:
+        '环境变量 "{envVar}" 在非交互式引导的 --secret-input-mode ref 模式下是必需的。',
+      noValidEnvVar: '未提供提供者 "{provider}" 的有效环境变量名称。',
+      modelSetDefault: '默认模型已设置为 {model}，代理 "{agentId}"。',
       modelConfigured: "模型已配置",
       modeMsg: "您希望如何提供此 API 密钥？",
       pasteNow: "立即粘贴 API 密钥",
@@ -1422,8 +1492,9 @@ export const zh_CN: TranslationMap = {
       modelConfigured: "模型已配置",
     },
     authModelCheck: {
-      modelNotFound: "未找到模型：{provider}/{model}。请更新 agents.defaults.model 或运行 /models list。",
-      noAuth: "未为提供者 \"{provider}\" 配置认证。代理可能会失败，直到添加凭据。",
+      modelNotFound:
+        "未找到模型：{provider}/{model}。请更新 agents.defaults.model 或运行 /models list。",
+      noAuth: '未为提供者 "{provider}" 配置认证。代理可能会失败，直到添加凭据。',
       codexDetected: "检测到 OpenAI Codex OAuth。建议将 agents.defaults.model 设置为 {model}。",
       modelCheck: "模型检查",
     },
@@ -1450,7 +1521,8 @@ export const zh_CN: TranslationMap = {
     },
     authHuggingface: {
       enterApiKey: "输入 Hugging Face API 密钥（HF 令牌）",
-      noteMsg: "Hugging Face 推理提供者提供 OpenAI 兼容的聊天补全。\n在此创建令牌：https://huggingface.co/settings/tokens（细粒度，'Make calls to Inference Providers'）。",
+      noteMsg:
+        "Hugging Face 推理提供者提供 OpenAI 兼容的聊天补全。\n在此创建令牌：https://huggingface.co/settings/tokens（细粒度，'Make calls to Inference Providers'）。",
       defaultModel: "默认 Hugging Face 模型",
       policyLocked: "提供者已锁定 — 路由器将按成本或速度选择后端。",
     },
@@ -1465,14 +1537,17 @@ export const zh_CN: TranslationMap = {
     },
     authOauth: {
       enterClientId: "输入 Chutes OAuth 客户端 ID",
-      remoteNote: "您正在远程/VPS 环境中运行。\n将显示一个 URL，请在本地浏览器中打开。\n登录后，将重定向 URL 粘贴回此处。\n\n重定向 URI：{redirectUri}",
-      localNote: "浏览器将打开进行 Chutes 认证。\n如果回调未自动完成，请粘贴重定向 URL。\n\n重定向 URI：{redirectUri}",
+      remoteNote:
+        "您正在远程/VPS 环境中运行。\n将显示一个 URL，请在本地浏览器中打开。\n登录后，将重定向 URL 粘贴回此处。\n\n重定向 URI：{redirectUri}",
+      localNote:
+        "浏览器将打开进行 Chutes 认证。\n如果回调未自动完成，请粘贴重定向 URL。\n\n重定向 URI：{redirectUri}",
       chutesOAuth: "Chutes OAuth",
       startingOAuth: "正在启动 OAuth 流程…",
       browserSignIn: "在浏览器中完成登录…",
       oauthComplete: "Chutes OAuth 完成",
       oauthFailed: "Chutes OAuth 失败",
-      oauthHelp: "OAuth 遇到问题？\n请验证 CHUTES_CLIENT_ID（以及 CHUTES_CLIENT_SECRET，如果需要的话）。\n请验证 OAuth 应用重定向 URI 包含：{redirectUri}\nChutes 文档：https://chutes.ai/docs/sign-in-with-chutes/overview",
+      oauthHelp:
+        "OAuth 遇到问题？\n请验证 CHUTES_CLIENT_ID（以及 CHUTES_CLIENT_SECRET，如果需要的话）。\n请验证 OAuth 应用重定向 URI 包含：{redirectUri}\nChutes 文档：https://chutes.ai/docs/sign-in-with-chutes/overview",
       oauthHelpTitle: "OAuth 帮助",
     },
     authPluginProvider: {
@@ -1505,8 +1580,10 @@ export const zh_CN: TranslationMap = {
     },
     openaiCodexOAuth: {
       prerequisites: "OAuth 前提条件",
-      remoteNote: "您正在远程/VPS 环境中运行。\n将显示一个 URL，请在本地浏览器中打开。\n登录后，将重定向 URL 粘贴回此处。",
-      localNote: "浏览器将打开进行 OpenAI 认证。\n如果回调未自动完成，请粘贴重定向 URL。\nOpenAI OAuth 使用 localhost:1455 作为回调。",
+      remoteNote:
+        "您正在远程/VPS 环境中运行。\n将显示一个 URL，请在本地浏览器中打开。\n登录后，将重定向 URL 粘贴回此处。",
+      localNote:
+        "浏览器将打开进行 OpenAI 认证。\n如果回调未自动完成，请粘贴重定向 URL。\nOpenAI OAuth 使用 localhost:1455 作为回调。",
       openaiOAuthTitle: "OpenAI Codex OAuth",
       startingOAuth: "正在启动 OAuth 流程…",
       oauthComplete: "OpenAI OAuth 完成",
@@ -1517,9 +1594,9 @@ export const zh_CN: TranslationMap = {
     },
     agentsBind: {
       unableResolve: "无法解析代理 ID。",
-      agentNotFound: "未找到代理 \"{agentId}\"。",
+      agentNotFound: '未找到代理 "{agentId}"。',
       agentIdRequired: "代理 ID 是必需的。",
-      noBindingsAgent: "代理 \"{agentId}\" 没有路由绑定。",
+      noBindingsAgent: '代理 "{agentId}" 没有路由绑定。',
       noBindings: "没有路由绑定。",
       routingBindings: "路由绑定：",
       provideBindArg: "请提供至少一个 --bind <channel[:accountId]>。",
@@ -1530,8 +1607,8 @@ export const zh_CN: TranslationMap = {
       noNewBindings: "未添加新绑定。",
       noBindingsRemoved: "未移除绑定。",
       useAllOrBind: "请使用 --all 或 --bind，不能同时使用。",
-      noBindingsToRemove: "代理 \"{agentId}\" 没有可移除的绑定。",
-      removedCount: "已移除 \"{agentId}\" 的 {count} 个绑定。",
+      noBindingsToRemove: '代理 "{agentId}" 没有可移除的绑定。',
+      removedCount: '已移除 "{agentId}" 的 {count} 个绑定。',
       removedBindings: "已移除绑定：",
       notFound: "未找到：",
       ownedByAnother: "绑定属于其他代理：",
@@ -1539,11 +1616,11 @@ export const zh_CN: TranslationMap = {
     },
     agentsDelete: {
       agentIdRequired: "代理 ID 是必需的。",
-      normalizedId: "已将代理 ID 规范化为 \"{agentId}\"。",
-      cannotDelete: "无法删除 \"{agentId}\"。",
-      agentNotFound: "未找到代理 \"{agentId}\"。",
+      normalizedId: '已将代理 ID 规范化为 "{agentId}"。',
+      cannotDelete: '无法删除 "{agentId}"。',
+      agentNotFound: '未找到代理 "{agentId}"。',
       nonInteractive: "非交互式会话。请使用 --force 重新运行。",
-      deleteConfirm: "删除代理 \"{agentId}\" 并清理工作区/状态？",
+      deleteConfirm: '删除代理 "{agentId}" 并清理工作区/状态？',
       cancelled: "已取消。",
       deleted: "已删除代理：{agentId}",
     },
@@ -1552,7 +1629,8 @@ export const zh_CN: TranslationMap = {
       noMatch: "没有代理工作区匹配 {workspace}。请使用 --agent 指定特定代理。",
       multipleMatch: "多个代理匹配 {workspace}：{agents}。请使用 --agent 选择一个。",
       noIdentityData: "在 {path} 中未找到身份数据。",
-      noIdentityFields: "未提供身份字段。请使用 --name/--emoji/--theme/--avatar 或 --from-identity。",
+      noIdentityFields:
+        "未提供身份字段。请使用 --name/--emoji/--theme/--avatar 或 --from-identity。",
       agentLabel: "代理：",
       nameLabel: "名称：",
       themeLabel: "主题：",
@@ -1589,7 +1667,7 @@ export const zh_CN: TranslationMap = {
       timeoutError: "--timeout 必须是非负整数（秒；0 表示无超时）",
       messageRequired: "消息（--message）是必需的",
       sessionRequired: "请传入 --to <E.164>、--session-id 或 --agent 来选择会话",
-      unknownAgent: "未知代理 ID \"{agentId}\"。使用 \"{command}\" 查看已配置的代理。",
+      unknownAgent: '未知代理 ID "{agentId}"。使用 "{command}" 查看已配置的代理。',
       waitingReply: "正在等待代理回复…",
       noReply: "代理无回复。",
       gatewayFailed: "网关代理失败；回退到嵌入式：{error}",
@@ -1597,7 +1675,7 @@ export const zh_CN: TranslationMap = {
     sessionStoreTargets: {
       agentAndAllConflict: "--agent 和 --all-agents 不能同时使用",
       storeConflict: "--store 不能与 --agent 或 --all-agents 同时使用",
-      unknownAgent: "未知代理 ID \"{agentId}\"。使用 \"{command}\" 查看已配置的代理。",
+      unknownAgent: '未知代理 ID "{agentId}"。使用 "{command}" 查看已配置的代理。',
     },
     statusAll: {
       scanning: "正在扫描完整状态…",
@@ -1687,7 +1765,8 @@ export const zh_CN: TranslationMap = {
       headerFlags: "标志",
     },
     onboardHooks: {
-      hooksIntro: "钩子可以在代理命令执行时自动化操作。\n示例：在您执行 /new 或 /reset 时将会话上下文保存到记忆中。\n\n了解更多：https://docs.openclaw.ai/automation/hooks",
+      hooksIntro:
+        "钩子可以在代理命令执行时自动化操作。\n示例：在您执行 /new 或 /reset 时将会话上下文保存到记忆中。\n\n了解更多：https://docs.openclaw.ai/automation/hooks",
       hooksTitle: "钩子",
       noHooksAvailable: "未找到可用钩子。您可以稍后在配置中设置钩子。",
       noHooksTitle: "无可用钩子",
@@ -1699,7 +1778,7 @@ export const zh_CN: TranslationMap = {
     },
     onboardNonInteractive: {
       configInvalid: "配置无效。运行 `{command}` 修复后重新执行引导。",
-      invalidMode: "无效的 --mode \"{mode}\"（使用 local|remote）。",
+      invalidMode: '无效的 --mode "{mode}"（使用 local|remote）。',
     },
     onboardSkills: {
       eligible: "可用：{count}",
@@ -1800,7 +1879,8 @@ export const zh_CN: TranslationMap = {
       sessionsOk: "会话正常：{path}",
     },
     signalInstall: {
-      noNativeBuild: "{arch} 没有可用的原生 signal-cli 构建。请安装 Homebrew (https://brew.sh) 后重试，或手动安装 signal-cli。",
+      noNativeBuild:
+        "{arch} 没有可用的原生 signal-cli 构建。请安装 Homebrew (https://brew.sh) 后重试，或手动安装 signal-cli。",
       installingViaBrew: "正在通过 Homebrew ({brew}) 安装 signal-cli…",
       brewInstallFailed: "brew install signal-cli 失败（退出码 {code}）：{detail}",
       brewBinaryNotFound: "brew install 成功但未找到 signal-cli 二进制文件。",
@@ -1833,7 +1913,8 @@ export const zh_CN: TranslationMap = {
       wouldPruneMissing: "将清理缺失的记录：{count}",
       wouldPruneStale: "将清理过期条目：{count}",
       wouldCapOverflow: "将限制溢出条目：{count}",
-      wouldEnforceBudget: "将执行磁盘预算：{before} -> {after} 字节（文件 {files}，条目 {entries}）",
+      wouldEnforceBudget:
+        "将执行磁盘预算：{before} -> {after} 字节（文件 {files}，条目 {entries}）",
       plannedActions: "计划的会话操作：",
       headerAction: "操作",
       headerKey: "键",
@@ -1855,20 +1936,22 @@ export const zh_CN: TranslationMap = {
     },
     doctorInstall: {
       notPnpm: "- node_modules 不是由 pnpm 安装的（缺少 node_modules/.pnpm）。运行：pnpm install",
-      packageLockPresent: "- pnpm 工作区中存在 package-lock.json。如果运行了 npm install，请删除并用 pnpm 重新安装。",
+      packageLockPresent:
+        "- pnpm 工作区中存在 package-lock.json。如果运行了 npm install，请删除并用 pnpm 重新安装。",
       tsxMissing: "- tsx 二进制文件缺失，无法从源码运行。运行：pnpm install",
       title: "安装",
     },
     doctorFormat: {
       fileLogs: "文件日志：{path}",
-      launchAgentCachedPlistMissing: "LaunchAgent 标签已缓存但 plist 文件缺失。清除命令：launchctl bootout gui/$UID/{label}",
+      launchAgentCachedPlistMissing:
+        "LaunchAgent 标签已缓存但 plist 文件缺失。清除命令：launchctl bootout gui/$UID/{label}",
       thenReinstall: "然后重新安装：{command}",
       serviceNotInstalled: "服务未安装。运行：{command}",
       serviceLoadedNotRunning: "服务已加载但未运行（可能立即退出了）。",
       launchdStdout: "Launchd 标准输出（如已安装）：{path}",
       launchdStderr: "Launchd 标准错误（如已安装）：{path}",
       journalctlLogs: "日志：journalctl --user -u {unit}.service -n 200 --no-pager",
-      schtasksLogs: "日志：schtasks /Query /TN \"{task}\" /V /FO LIST",
+      schtasksLogs: '日志：schtasks /Query /TN "{task}" /V /FO LIST',
     },
     doctorSecurity: {
       title: "安全",
@@ -1879,15 +1962,17 @@ export const zh_CN: TranslationMap = {
       criticalNoAuth: "- 严重：网关绑定到 {bind}，无身份验证。",
       anyoneCanControl: "  网络上的任何人（或端口转发后的互联网用户）都可以完全控制您的代理。",
       fixBindLoopback: "  修复：{command}",
-      saferRemoteAccess: "  更安全的远程访问：保持绑定回环并使用 Tailscale Serve/Funnel 或 SSH 隧道。",
+      saferRemoteAccess:
+        "  更安全的远程访问：保持绑定回环并使用 Tailscale Serve/Funnel 或 SSH 隧道。",
       exampleTunnel: "  示例隧道：ssh -N -L 18789:127.0.0.1:18789 user@gateway-host",
       docsLink: "  文档：https://docs.openclaw.ai/gateway/remote",
       warningNetworkAccessible: "- 警告：网关绑定到 {bind}（可通过网络访问）。",
       ensureStrongAuth: "  请确保您的身份验证凭据足够安全且未泄露。",
-      dmOpen: "- {label} 私信：开放（{policyPath}=\"open\"）。任何人都可以发私信。",
-      dmOpenInvalid: "- {label} 私信：配置无效 — \"open\" 要求 {allowFromPath} 包含 \"*\"。",
-      dmDisabled: "- {label} 私信：已禁用（{policyPath}=\"disabled\"）。",
-      dmLocked: "- {label} 私信：已锁定（{policyPath}=\"{dmPolicy}\"），无白名单；未知发送者将被阻止/获得配对码。",
+      dmOpen: '- {label} 私信：开放（{policyPath}="open"）。任何人都可以发私信。',
+      dmOpenInvalid: '- {label} 私信：配置无效 — "open" 要求 {allowFromPath} 包含 "*"。',
+      dmDisabled: '- {label} 私信：已禁用（{policyPath}="disabled"）。',
+      dmLocked:
+        '- {label} 私信：已锁定（{policyPath}="{dmPolicy}"），无白名单；未知发送者将被阻止/获得配对码。',
       dmMultipleSenders: "- {label} 私信：多个发送者共享主会话；运行：{command} 以隔离会话。",
       noWarnings: "- 未检测到频道安全警告。",
     },
@@ -1896,7 +1981,7 @@ export const zh_CN: TranslationMap = {
       failedInspect: "- 无法检查会话锁文件：{error}",
       foundLockFiles: "- 发现 {count} 个会话锁文件。",
       staleLockFiles: "- {count} 个锁文件已过期。",
-      fixStaleHint: "- 运行 \"openclaw doctor --fix\" 以自动删除过期锁文件。",
+      fixStaleHint: '- 运行 "openclaw doctor --fix" 以自动删除过期锁文件。',
       removedStaleLocks: "- 已删除 {count} 个过期会话锁文件。",
     },
     doctorWorkspaceStatus: {
@@ -1922,7 +2007,8 @@ export const zh_CN: TranslationMap = {
     },
     doctorCompletion: {
       title: "Shell 补全",
-      slowDynamicCompletion: "您的 {shell} 配置使用了慢速动态补全（source <(...)）。\n正在升级为缓存补全以加快 shell 启动...",
+      slowDynamicCompletion:
+        "您的 {shell} 配置使用了慢速动态补全（source <(...)）。\n正在升级为缓存补全以加快 shell 启动...",
       failedGenerateCache: "生成补全缓存失败。请手动运行 `{cliName} completion --write-state`。",
       upgraded: "Shell 补全已升级。重启 shell 或运行：source ~/.{profile}",
       cacheMissing: "Shell 补全已在您的 {shell} 配置中启用，但缓存文件缺失。\n正在重新生成缓存...",
@@ -1952,7 +2038,8 @@ export const zh_CN: TranslationMap = {
       deprecatedLegacyVars: "- 检测到已弃用的旧版环境变量（已忽略）。",
       useOpenclaw: "- 请改用 OPENCLAW_* 等效项：",
       titleEnvironment: "环境",
-      nodeCompileCacheNotSet: "- NODE_COMPILE_CACHE 未设置；在小型主机（Pi/VM）上重复 CLI 运行可能更慢。",
+      nodeCompileCacheNotSet:
+        "- NODE_COMPILE_CACHE 未设置；在小型主机（Pi/VM）上重复 CLI 运行可能更慢。",
       nodeCompileCacheTmp: "- NODE_COMPILE_CACHE 指向 /tmp；使用 /var/tmp 以便缓存在重启后保留。",
       nodeCompileCacheDisabled: "- NODE_DISABLE_COMPILE_CACHE 已设置；启动编译缓存已禁用。",
       noRespawnNotSet: "- OPENCLAW_NO_RESPAWN 未设置为 1；设置它以避免自重启带来的额外启动开销。",
@@ -1986,37 +2073,40 @@ export const zh_CN: TranslationMap = {
       buildHint: "使用 {script} 构建。",
       buildOrPullHint: "请先构建或拉取镜像。",
       buildImagePrompt: "立即构建 {kind} 沙箱镜像？",
-      dockerNotAvailable: "沙箱模式已启用（mode: \"{mode}\"）但 Docker 不可用。",
+      dockerNotAvailable: '沙箱模式已启用（mode: "{mode}"）但 Docker 不可用。',
       dockerRequired: "沙箱模式需要 Docker。",
       isolatedSessionsFail: "没有 Docker，隔离会话将无法运行。",
       optionsLabel: "选项：",
       installDocker: "- 安装 Docker 并重启网关",
       disableSandbox: "- 禁用沙箱模式：{command}",
       titleDoctorChanges: "Doctor 更改",
-      sandboxOverridesIgnored: "- agents.list（id \"{agentId}\"）沙箱 {overrides} 覆盖已忽略。scope 解析为 \"shared\"。",
+      sandboxOverridesIgnored:
+        '- agents.list（id "{agentId}"）沙箱 {overrides} 覆盖已忽略。scope 解析为 "shared"。',
     },
     doctorMemorySearch: {
       title: "记忆搜索",
       disabled: "记忆搜索已明确禁用（enabled: false）。",
-      localNotReady: "记忆搜索提供商设置为 \"local\" 且已配置模型路径，但网关报告本地嵌入尚未就绪。",
+      localNotReady: '记忆搜索提供商设置为 "local" 且已配置模型路径，但网关报告本地嵌入尚未就绪。',
       gatewayProbeDetail: "网关探测：{detail}",
       verifyCommand: "验证：{command}",
-      localNoModel: "记忆搜索提供商设置为 \"local\" 但未找到本地模型文件。",
+      localNoModel: '记忆搜索提供商设置为 "local" 但未找到本地模型文件。',
       fixPickOne: "修复（选择一种）：",
       installLlama: "- 安装 node-llama-cpp 并在配置中设置本地模型路径",
       switchRemoteProvider: "- 切换到远程提供商：{command}",
-      apiKeyNotFoundCli: "记忆搜索提供商设置为 \"{provider}\" 但在 CLI 环境中未找到 API 密钥。",
+      apiKeyNotFoundCli: '记忆搜索提供商设置为 "{provider}" 但在 CLI 环境中未找到 API 密钥。',
       gatewayReportsReady: "运行中的网关报告默认代理的记忆嵌入已就绪。",
-      noApiKeyFound: "记忆搜索提供商设置为 \"{provider}\" 但未找到 API 密钥。",
+      noApiKeyFound: '记忆搜索提供商设置为 "{provider}" 但未找到 API 密钥。',
       semanticRecallWontWork: "没有有效的 API 密钥，语义召回将无法工作。",
       setEnvVar: "- 在环境中设置 {envVar}",
       configureCreds: "- 配置凭据：{command}",
       toDisable: "- 禁用：{command}",
-      autoNoApiKeyCli: "记忆搜索提供商设置为 \"auto\" 但在 CLI 环境中未找到 API 密钥。",
+      autoNoApiKeyCli: '记忆搜索提供商设置为 "auto" 但在 CLI 环境中未找到 API 密钥。',
       noProviderConfigured: "记忆搜索已启用但未配置嵌入提供商。",
       semanticRecallNoProvider: "没有嵌入提供商，语义召回将无法工作。",
-      setAnyApiKey: "- 在环境中设置 OPENAI_API_KEY、GEMINI_API_KEY、VOYAGE_API_KEY 或 MISTRAL_API_KEY",
-      forLocalEmbeddings: "- 使用本地嵌入：配置 agents.defaults.memorySearch.provider 和本地模型路径",
+      setAnyApiKey:
+        "- 在环境中设置 OPENAI_API_KEY、GEMINI_API_KEY、VOYAGE_API_KEY 或 MISTRAL_API_KEY",
+      forLocalEmbeddings:
+        "- 使用本地嵌入：配置 agents.defaults.memorySearch.provider 和本地模型路径",
       gatewayProbeNotReady: "默认代理的网关记忆探测未就绪：{detail}",
       gatewayProbeNotReadyShort: "默认代理的网关记忆探测未就绪。",
     },
@@ -2039,7 +2129,8 @@ export const zh_CN: TranslationMap = {
       installFailed: "网关服务安装失败：{error}",
       runtimeSummary: "运行时：{summary}",
       startServicePrompt: "立即启动网关服务？",
-      launchAgentLoadedStopHint: "LaunchAgent 已加载；需要 \"{command}\" 或 launchctl bootout gui/$UID/{label} 停止。",
+      launchAgentLoadedStopHint:
+        'LaunchAgent 已加载；需要 "{command}" 或 launchctl bootout gui/$UID/{label} 停止。',
       restartServicePrompt: "立即重启网关服务？",
       gatewayNotRunning: "网关未运行。",
       titleGatewayConnection: "网关连接",
@@ -2066,7 +2157,8 @@ export const zh_CN: TranslationMap = {
       configFileReadable: "- 配置文件对组/其他用户可读（{path}）。建议 chmod 600。",
       tightenConfigPrompt: "将 {path} 的权限收紧为 600？",
       failedReadConfig: "- 读取配置权限失败（{path}）：{error}",
-      oauthDirSkipped: "- OAuth 目录不存在（{dir}）。因为没有活动的 WhatsApp/配对渠道配置，跳过创建。",
+      oauthDirSkipped:
+        "- OAuth 目录不存在（{dir}）。因为没有活动的 WhatsApp/配对渠道配置，跳过创建。",
       criticalMissing: "- 严重：{label} 缺失（{dir}）。",
       createDirPrompt: "在 {dir} 创建 {label}？",
       failedCreate: "- 创建 {dir} 失败：{error}",
@@ -2077,7 +2169,8 @@ export const zh_CN: TranslationMap = {
       missingTranscripts: "- {missing}/{total} 个最近的会话缺少记录文件。",
       mainTranscriptMissing: "- 主会话记录文件缺失（{path}）。历史记录将看起来被重置。",
       mainTranscriptLowLines: "- 主会话记录文件只有 {count} 行。会话历史可能没有正确追加。",
-      orphanTranscripts: "- 在 {dir} 中发现 {count} 个孤立记录文件。它们未被 sessions.json 引用，会随时间占用磁盘空间。",
+      orphanTranscripts:
+        "- 在 {dir} 中发现 {count} 个孤立记录文件。它们未被 sessions.json 引用，会随时间占用磁盘空间。",
       archiveOrphansPrompt: "归档 {dir} 中的 {count} 个孤立记录文件？",
       failedArchive: "- 归档孤立记录文件 {path} 失败：{error}",
       backupTip: "- 提示：在私有 git 仓库（GitHub 或 GitLab）中备份工作空间。",
@@ -2094,47 +2187,64 @@ export const zh_CN: TranslationMap = {
       titleConfig: "配置",
       titleConfigWarnings: "配置警告",
       configInvalid: "配置无效；doctor 将使用尽最大努力的配置运行。",
-      fixCompatMigrations: "运行 \"{command}\" 以应用兼容性迁移。",
-      fixApplyChanges: "运行 \"{command}\" 以应用这些更改。",
-      fixRemoveKeys: "运行 \"openclaw doctor --fix\" 以删除这些键。",
+      fixCompatMigrations: '运行 "{command}" 以应用兼容性迁移。',
+      fixApplyChanges: '运行 "{command}" 以应用这些更改。',
+      fixRemoveKeys: '运行 "openclaw doctor --fix" 以删除这些键。',
       applyRepairsPrompt: "立即应用推荐的配置修复？",
       migratedLegacyConfig: "已迁移旧版配置：{from} -> {to}",
-      opencodeProviderOverride: "- models.providers.{id} 已设置；这会覆盖内置的 OpenCode Zen 目录。",
+      opencodeProviderOverride:
+        "- models.providers.{id} 已设置；这会覆盖内置的 OpenCode Zen 目录。",
       opencodeProviderApi: "- models.providers.{id}.api={api}",
-      removeToRestoreRouting: "- 删除这些条目以恢复按模型的 API 路由 + 费用（然后根据需要重新运行 onboarding）。",
+      removeToRestoreRouting:
+        "- 删除这些条目以恢复按模型的 API 路由 + 费用（然后根据需要重新运行 onboarding）。",
       includePathsMustStayUnder: "- $include 路径必须在以下目录下：{root}",
-      moveSharedIncludes: "- 将共享的 include 文件移到该目录下，并更新为相对路径如 \"./shared/common.json\"。",
+      moveSharedIncludes:
+        '- 将共享的 include 文件移到该目录下，并更新为相对路径如 "./shared/common.json"。',
       includeError: "- 错误：{message}",
       missingDefaultSubset: "- channels.{channel}：accounts.default 缺失，且账户绑定仅覆盖部分。",
-      missingDefaultNoBinding: "- channels.{channel}：accounts.default 缺失，且没有有效的账户作用域绑定。",
-      defaultAccountMismatch: "- channels.{channel}：defaultAccount 设置为 \"{preferred}\" 但不匹配。",
+      missingDefaultNoBinding:
+        "- channels.{channel}：accounts.default 缺失，且没有有效的账户作用域绑定。",
+      defaultAccountMismatch:
+        '- channels.{channel}：defaultAccount 设置为 "{preferred}" 但不匹配。',
       multipleAccountsNoDefault: "- channels.{channel}：配置了多个账户但未设置明确的默认值。",
-      telegramNoToken: "- Telegram allowFrom 包含 @username 条目，但未配置 Telegram bot 令牌；无法自动解析。",
-      telegramTokenUnavailable: "- Telegram allowFrom 包含 @username 条目，但已配置的 Telegram bot 凭据在此命令路径中不可用；无法自动解析（启动网关或使密钥来源可用后重新运行 doctor --fix）。",
+      telegramNoToken:
+        "- Telegram allowFrom 包含 @username 条目，但未配置 Telegram bot 令牌；无法自动解析。",
+      telegramTokenUnavailable:
+        "- Telegram allowFrom 包含 @username 条目，但已配置的 Telegram bot 凭据在此命令路径中不可用；无法自动解析（启动网关或使密钥来源可用后重新运行 doctor --fix）。",
       telegramNonNumeric: "- Telegram allowFrom 包含 {count} 个非数字条目。",
-      fixTelegramResolve: "- 运行 \"{command}\" 以自动将 @username 条目解析为数字 ID。",
+      fixTelegramResolve: '- 运行 "{command}" 以自动将 @username 条目解析为数字 ID。',
       discordNumericEntries: "- Discord 白名单包含 {count} 个数字条目。",
-      fixDiscordConvert: "- Discord ID 必须是字符串；运行 \"{command}\" 进行转换。",
-      fixAllowFromWildcards: "- 运行 \"{command}\" 以添加缺失的 allowFrom 通配符。",
+      fixDiscordConvert: '- Discord ID 必须是字符串；运行 "{command}" 进行转换。',
+      fixAllowFromWildcards: '- 运行 "{command}" 以添加缺失的 allowFrom 通配符。',
       legacyToolsBySender: "- 发现 {count} 个旧版无类型 toolsBySender 键。",
-      untypedSenderKeysDeprecated: "- 无类型的发送者键已弃用；请使用显式前缀（id:、e164:、username:、name:）。",
-      fixMigrateLegacyKeys: "- 运行 \"{command}\" 以将旧版键迁移为带类型的 id: 条目。",
+      untypedSenderKeysDeprecated:
+        "- 无类型的发送者键已弃用；请使用显式前缀（id:、e164:、username:、name:）。",
+      fixMigrateLegacyKeys: '- 运行 "{command}" 以将旧版键迁移为带类型的 id: 条目。',
       safeBinsInterpreterNoProfile: "- {scope}.safeBins 包含解释器/运行时 '{bin}' 但缺少配置。",
       moreSafeBinsMissing: "- 还有 {count} 个解释器/运行时 safeBins 条目缺少配置。",
       safeBinsMissingProfile: "- {scope}.safeBins 条目 '{bin}' 缺少 safeBinProfiles.{bin}。",
       moreCustomSafeBinsMissing: "- 还有 {count} 个自定义 safeBins 条目缺少配置。",
-      fixScaffoldSafeBinProfiles: "- 运行 \"{command}\" 以搭建缺失的自定义 safeBinProfiles 条目。",
-      safeBinsOutsideTrusted: "- {scope}.safeBins 条目 '{bin}' 解析到 '{resolved}'，不在受信任的 safe-bin 目录中。",
+      fixScaffoldSafeBinProfiles: '- 运行 "{command}" 以搭建缺失的自定义 safeBinProfiles 条目。',
+      safeBinsOutsideTrusted:
+        "- {scope}.safeBins 条目 '{bin}' 解析到 '{resolved}'，不在受信任的 safe-bin 目录中。",
       moreSafeBinsOutside: "- 还有 {count} 个 safeBins 条目解析到受信任的 safe-bin 目录之外。",
-      addTrustedDirs: "- 如果是有意的，请将二进制目录添加到 tools.exec.safeBinTrustedDirs（全局或代理作用域）。",
-      mutableAllowlistEntries: "- 在 {channels} 中发现 {count} 个可变白名单条目，但名称匹配默认已禁用。",
+      addTrustedDirs:
+        "- 如果是有意的，请将二进制目录添加到 tools.exec.safeBinTrustedDirs（全局或代理作用域）。",
+      mutableAllowlistEntries:
+        "- 在 {channels} 中发现 {count} 个可变白名单条目，但名称匹配默认已禁用。",
       optionABreakGlass: "- 选项 A（紧急）：启用 {flag}=true 以保持名称/邮箱/昵称匹配。",
-      optionBRecommended: "- 选项 B（推荐）：将名称/邮箱/昵称解析为稳定的发送者 ID 并重写白名单条目。",
-      dmPolicyAllowlistEmpty: "- {prefix}.dmPolicy 为 \"allowlist\" 但 allowFrom 为空 \u2014 所有私聊将被阻止。请将发送者 ID 添加到 {prefix}.allowFrom，或运行 \"{command}\" 以从配对存储自动迁移。",
-      groupPolicyAllowlistEmptyFallback: "- {prefix}.groupPolicy 为 \"allowlist\" 但 groupAllowFrom（和 allowFrom）为空 \u2014 所有群组消息将被静默丢弃。请将发送者 ID 添加到 {prefix}.groupAllowFrom 或 {prefix}.allowFrom，或将 groupPolicy 设为 \"open\"。",
-      groupPolicyAllowlistEmptyNoFallback: "- {prefix}.groupPolicy 为 \"allowlist\" 但 groupAllowFrom 为空 \u2014 此频道不会回退到 allowFrom，因此所有群组消息将被静默丢弃。请将发送者 ID 添加到 {prefix}.groupAllowFrom，或将 groupPolicy 设为 \"open\"。",
-      safeBinInterpreterNoProfileRepair: "- {scope}.safeBins 包含解释器/运行时 '{bin}' 但缺少配置；请从 safeBins 中删除或使用显式的白名单条目。",
-      scaffoldProfileAdded: "- {scope}.safeBinProfiles.{bin}：已添加脚手架配置 {} （请审查并收紧 flags/positionals）。",
+      optionBRecommended:
+        "- 选项 B（推荐）：将名称/邮箱/昵称解析为稳定的发送者 ID 并重写白名单条目。",
+      dmPolicyAllowlistEmpty:
+        '- {prefix}.dmPolicy 为 "allowlist" 但 allowFrom 为空 \u2014 所有私聊将被阻止。请将发送者 ID 添加到 {prefix}.allowFrom，或运行 "{command}" 以从配对存储自动迁移。',
+      groupPolicyAllowlistEmptyFallback:
+        '- {prefix}.groupPolicy 为 "allowlist" 但 groupAllowFrom（和 allowFrom）为空 \u2014 所有群组消息将被静默丢弃。请将发送者 ID 添加到 {prefix}.groupAllowFrom 或 {prefix}.allowFrom，或将 groupPolicy 设为 "open"。',
+      groupPolicyAllowlistEmptyNoFallback:
+        '- {prefix}.groupPolicy 为 "allowlist" 但 groupAllowFrom 为空 \u2014 此频道不会回退到 allowFrom，因此所有群组消息将被静默丢弃。请将发送者 ID 添加到 {prefix}.groupAllowFrom，或将 groupPolicy 设为 "open"。',
+      safeBinInterpreterNoProfileRepair:
+        "- {scope}.safeBins 包含解释器/运行时 '{bin}' 但缺少配置；请从 safeBins 中删除或使用显式的白名单条目。",
+      scaffoldProfileAdded:
+        "- {scope}.safeBinProfiles.{bin}：已添加脚手架配置 {} （请审查并收紧 flags/positionals）。",
     },
     doctorLegacyConfig: {
       movedDmPolicy: "已移动 {prefix}.dm.policy → {prefix}.dmPolicy。",
@@ -2145,16 +2255,20 @@ export const zh_CN: TranslationMap = {
       movedStreamMode: "已移动 {prefix}.streamMode → {prefix}.streaming（{resolved}）。",
       normalizedStreamingBool: "已规范化 {prefix}.streaming 布尔值 → 枚举（{resolved}）。",
       normalizedStreamingEnum: "已规范化 {prefix}.streaming（{before}）→（{resolved}）。",
-      movedSingleAccount: "已将 channels.{channel} 单账户顶层值移入 channels.{channel}.accounts.default。",
-      movedSsrfPolicy: "已移动 browser.ssrfPolicy.allowPrivateNetwork → browser.ssrfPolicy.dangerouslyAllowPrivateNetwork（{value}）。",
-      copiedAckReaction: "已复制 messages.ackReaction → channels.whatsapp.ackReaction（作用域：{scope}）。",
+      movedSingleAccount:
+        "已将 channels.{channel} 单账户顶层值移入 channels.{channel}.accounts.default。",
+      movedSsrfPolicy:
+        "已移动 browser.ssrfPolicy.allowPrivateNetwork → browser.ssrfPolicy.dangerouslyAllowPrivateNetwork（{value}）。",
+      copiedAckReaction:
+        "已复制 messages.ackReaction → channels.whatsapp.ackReaction（作用域：{scope}）。",
     },
 
     gatewayStatus: {
       inspecting: "正在检查网关…",
       sshTunnelFailed: "SSH 隧道失败：{error}",
       sshTunnelFallback: "SSH 隧道启动失败；回退到直接探测。",
-      multipleGateways: "非常规设置：检测到多个可达网关。通常建议每个网络一个网关，除非你有意运行隔离配置文件，如救援机器人（参见文档：/gateway#multiple-gateways-same-host）。",
+      multipleGateways:
+        "非常规设置：检测到多个可达网关。通常建议每个网络一个网关，除非你有意运行隔离配置文件，如救援机器人（参见文档：/gateway#multiple-gateways-same-host）。",
       headingGatewayStatus: "网关状态",
       reachable: "可达",
       probeBudget: "探测预算：{ms}ms",
@@ -2162,7 +2276,8 @@ export const zh_CN: TranslationMap = {
       headingDiscovery: "发现（本机）",
       foundGateways: "通过 Bonjour 发现 {count} 个网关（{domains}）",
       foundZeroGateways: "通过 Bonjour 发现 0 个网关（{domains}）",
-      tipRemoteMdns: "提示：如果网关在远程，mDNS 无法跨网络；请使用 Wide-Area Bonjour（分割 DNS）或 SSH 隧道。",
+      tipRemoteMdns:
+        "提示：如果网关在远程，mDNS 无法跨网络；请使用 Wide-Area Bonjour（分割 DNS）或 SSH 隧道。",
       headingTargets: "目标",
       gateway: "网关",
       wideAreaDiscovery: "广域发现",
@@ -2172,10 +2287,12 @@ export const zh_CN: TranslationMap = {
     },
 
     gatewayInstallToken: {
-      ambiguousBoth: "gateway.auth.token 和 gateway.auth.password 同时配置，但 gateway.auth.mode 未设置。",
+      ambiguousBoth:
+        "gateway.auth.token 和 gateway.auth.password 同时配置，但 gateway.auth.mode 未设置。",
       ambiguousFix: "设置 {tokenCmd} 或 {passwordCmd}。",
       resolvedEmpty: "gateway.auth.token 解析为空值或非字符串值。",
-      secretRefManaged: "gateway.auth.token 由 SecretRef 管理；安装时不会在服务环境中持久化解析后的令牌。请确保 SecretRef 在守护进程运行时上下文中可解析。",
+      secretRefManaged:
+        "gateway.auth.token 由 SecretRef 管理；安装时不会在服务环境中持久化解析后的令牌。请确保 SecretRef 在守护进程运行时上下文中可解析。",
       secretRefUnresolved: "gateway.auth.token SecretRef 已配置但未解析（{error}）。",
       autoGenSaved: "未找到网关令牌。已自动生成并保存到配置。",
       autoGenTemp: "未找到网关令牌。已自动生成一个仅用于本次运行（不保存到配置）。",
@@ -2217,7 +2334,7 @@ export const zh_CN: TranslationMap = {
       addDisplayNames: "为这些账户添加显示名称？（可选）",
       accountName: "{channel} 账户名称（{accountId}）",
       bindNow: "现在将已配置的频道账户绑定到代理？",
-      routeToAgent: "将 {channel} 账户 \"{accountId}\" 路由到代理",
+      routeToAgent: '将 {channel} 账户 "{accountId}" 路由到代理',
       added: "已添加：{binding}",
       updated: "已更新：{binding}",
       routingBindings: "路由绑定",
@@ -2226,7 +2343,7 @@ export const zh_CN: TranslationMap = {
       pluginLoadFailed: "插件 {label} 安装后无法加载。",
       unknownChannel: "未知频道：{channel}",
       noSupportAdd: "频道 {channel} 不支持添加。",
-      addedAccount: "已添加 {label} 账户 \"{accountId}\"。",
+      addedAccount: '已添加 {label} 账户 "{accountId}"。',
     },
 
     channelsList: {
@@ -2250,14 +2367,14 @@ export const zh_CN: TranslationMap = {
       channel: "频道",
       account: "账户",
       defaultPrimary: "默认（主要）",
-      disableConfirm: "禁用 {label} 账户 \"{accountId}\"？（保留配置）",
+      disableConfirm: '禁用 {label} 账户 "{accountId}"？（保留配置）',
       cancelled: "已取消。",
       channelRequired: "频道为必填项。请使用 --channel <name>。",
       unknownChannel: "未知频道：{channel}",
       noSupportDelete: "频道 {channel} 不支持删除。",
       noSupportDisable: "频道 {channel} 不支持禁用。",
-      deleted: "已删除 {label} 账户 \"{accountKey}\"。",
-      disabled: "已禁用 {label} 账户 \"{accountKey}\"。",
+      deleted: '已删除 {label} 账户 "{accountKey}"。',
+      disabled: '已禁用 {label} 账户 "{accountKey}"。',
     },
 
     channelsStatus: {
@@ -2347,9 +2464,11 @@ export const zh_CN: TranslationMap = {
 
     dashboard: {
       dashboardUrl: "仪表板 URL：{url}",
-      secretRefDisabled: "SecretRef 管理的 gateway.auth.token 已禁用令牌自动认证；如果提示，请使用你的外部令牌源。",
+      secretRefDisabled:
+        "SecretRef 管理的 gateway.auth.token 已禁用令牌自动认证；如果提示，请使用你的外部令牌源。",
       autoAuthUnavailable: "令牌自动认证不可用：{reason}",
-      setTokenHint: "在此 shell 中设置 OPENCLAW_GATEWAY_TOKEN 或解析你的密钥提供者，然后重新运行 `openclaw dashboard`。",
+      setTokenHint:
+        "在此 shell 中设置 OPENCLAW_GATEWAY_TOKEN 或解析你的密钥提供者，然后重新运行 `openclaw dashboard`。",
       copiedClipboard: "已复制到剪贴板。",
       clipboardUnavailable: "复制到剪贴板不可用。",
       browserDisabled: "浏览器启动已禁用（--no-open）。请使用上面的 URL。",
@@ -2375,14 +2494,14 @@ export const zh_CN: TranslationMap = {
       continueAfterFail: "从上次中断处继续。之前的模型请求失败或超时。",
       messageRequired: "消息（--message）为必填项",
       sessionRequired: "请传入 --to <E.164>、--session-id 或 --agent 以选择会话",
-      unknownAgentId: "未知代理 ID \"{agentId}\"。使用 \"openclaw agents list\" 查看可用代理。",
-      agentMismatch: "代理 ID \"{agentId}\" 与会话键中的代理 \"{sessionAgent}\" 不匹配",
+      unknownAgentId: '未知代理 ID "{agentId}"。使用 "openclaw agents list" 查看可用代理。',
+      agentMismatch: '代理 ID "{agentId}" 与会话键中的代理 "{sessionAgent}" 不匹配',
       invalidThinking: "无效的思考级别。请使用以下之一：{levels}",
       invalidOneShotThinking: "无效的一次性思考级别。请使用以下之一：{levels}",
-      invalidVerbose: "无效的详细级别。请使用 \"on\"、\"full\" 或 \"off\"。",
+      invalidVerbose: '无效的详细级别。请使用 "on"、"full" 或 "off"。',
       invalidTimeout: "--timeout 必须是非负整数（秒；0 表示无超时）",
       sendBlocked: "发送被会话策略阻止",
-      thinkingXhighUnsupported: "思考级别 \"xhigh\" 仅支持 {models}",
+      thinkingXhighUnsupported: '思考级别 "xhigh" 仅支持 {models}',
       senderIsOwnerRequired: "入站代理运行必须显式设置 senderIsOwner。",
     },
 
@@ -2423,11 +2542,12 @@ export const zh_CN: TranslationMap = {
       readingSessions: "正在读取会话…",
       rendering: "正在渲染…",
       pluginsDisabled: "插件已禁用",
-      memoryNone: "plugins.slots.memory=\"none\"",
+      memoryNone: 'plugins.slots.memory="none"',
     },
 
     daemonInstallHelpers: {
-      tipWindows: "提示：从提升权限的 PowerShell 重新运行（开始 → 输入 PowerShell → 右键 → 以管理员身份运行）或跳过服务安装。",
+      tipWindows:
+        "提示：从提升权限的 PowerShell 重新运行（开始 → 输入 PowerShell → 右键 → 以管理员身份运行）或跳过服务安装。",
       tipRetry: "提示：修复错误后重新运行 `openclaw gateway install`。",
     },
 
@@ -2439,14 +2559,16 @@ export const zh_CN: TranslationMap = {
     onboardNonInteractiveLocal: {
       multipleApiKeys: "非交互式引导中提供了多个 API 密钥标志。",
       useSingleFlag: "请使用单个提供者标志或显式传入 --auth-choice。",
-      tipWebSearch: "提示：运行 `{command}` 以存储你的 Brave API 密钥用于 web_search。文档：https://docs.openclaw.ai/tools/web",
+      tipWebSearch:
+        "提示：运行 `{command}` 以存储你的 Brave API 密钥用于 web_search。文档：https://docs.openclaw.ai/tools/web",
     },
 
     onboardNonInteractiveRemote: {
       missingRemoteUrl: "远程模式缺少 --remote-url。",
       remoteGateway: "远程网关：{url}",
       auth: "认证：{auth}",
-      tipWebSearch: "提示：运行 `{command}` 以存储你的 Brave API 密钥用于 web_search。文档：https://docs.openclaw.ai/tools/web",
+      tipWebSearch:
+        "提示：运行 `{command}` 以存储你的 Brave API 密钥用于 web_search。文档：https://docs.openclaw.ai/tools/web",
     },
 
     pluginInstall: {
@@ -2478,7 +2600,8 @@ export const zhCNTaglines: TaglineSet = {
     easter: "复活节快乐：我找到了你丢失的环境变量——就当是一次迷你 CLI 彩蛋寻宝吧。",
     hanukkah: "光明节快乐：八个夜晚，八次重试，零羞耻——愿你的网关常亮，部署安宁。",
     halloween: "万圣节快乐：恐怖季节——小心幽灵般的依赖、被诅咒的缓存，以及 node_modules 的亡灵。",
-    thanksgiving: "感恩节快乐：感谢稳定的端口、正常的 DNS，和一个读日志的机器人，让你再也不用操心。",
+    thanksgiving:
+      "感恩节快乐：感谢稳定的端口、正常的 DNS，和一个读日志的机器人，让你再也不用操心。",
     valentines: "情人节快乐：玫瑰是 typed，紫罗兰是 piped——我来自动化杂活，你去陪伴真人吧。",
   },
   lines: [
@@ -2653,7 +2776,8 @@ Object.assign(zh_CN, {
     httpCredUnavailable: "已配置的 HTTP 凭据在此命令路径中不可用 · 账户 {count}",
     partialCredentials: "部分凭据（需要 bot+signing）· 账户 {count}",
     noCredentials: "无凭据（需要 bot+signing）",
-    credentialsOk: "凭据正常（bot {botSources}，signing {signingSources}）{hint} · 账户 {ready}/{total}",
+    credentialsOk:
+      "凭据正常（bot {botSources}，signing {signingSources}）{hint} · 账户 {ready}/{total}",
     tokensUnavailable: "已配置的令牌在此命令路径中不可用 · 账户 {count}",
     botTokenUnavailable: "已配置的 bot 令牌在此命令路径中不可用 · 账户 {count}",
     tokenUnavailable: "已配置的令牌在此命令路径中不可用 · 账户 {count}",
@@ -2672,7 +2796,7 @@ Object.assign(zh_CN, {
     skillsNodeManagerLabel: "skills.nodeManager：{value}",
     noKeySettings: "未检测到关键设置。",
     validationRequired: "必填",
-    validationUndefinedNull: "不能是字面字符串 \"undefined\" 或 \"null\"",
+    validationUndefinedNull: '不能是字面字符串 "undefined" 或 "null"',
     noGuiDetected: "未检测到图形界面。请从您的电脑打开：",
     thenOpen: "然后打开：",
     docsLabel: "文档：",
@@ -2729,7 +2853,8 @@ Object.assign(zh_CN, {
     doesTokenExpire: "此令牌是否会过期？",
     expiresIn: "过期时间（时长）",
     invalidDuration: "无效的时长（例如 365d、12h、30m）",
-    unknownProvider: "未知提供商 \"{provider}\"。已加载的提供商：{available}。通过 `{command}` 验证插件。",
+    unknownProvider:
+      '未知提供商 "{provider}"。已加载的提供商：{available}。通过 `{command}` 验证插件。',
     completeBrowserSignIn: "在浏览器中完成登录…",
     oauthNoCredentials: "OpenAI Codex OAuth 未返回凭据。",
     defaultModelSet: "默认模型已设置为 {model}",
@@ -2772,7 +2897,7 @@ Object.assign(zh_CN, {
     slackBotTokenMissing: "缺少 Slack 机器人令牌。",
     accountRequiresChannel: "--account 需要指定具体的 --channel。",
     targetRequiresDiscord: "--target 需要 --channel discord。",
-    unknownChannel: "未知频道 \"{channel}\"。",
+    unknownChannel: '未知频道 "{channel}"。',
     supportPrefix: "支持：{support}",
     actionsPrefix: "动作：{actions}",
     notConfigured: "未配置",
@@ -2901,8 +3026,8 @@ Object.assign(zh_CN, {
     dmSecurityDocs: "文档：{link}",
     dmPolicyDefault: "默认：配对模式（未知 DM 将收到配对码）。",
     dmPolicyApprove: "批准：{cmd}",
-    dmPolicyAllowlist: "允许列表 DM：{policyKey}=\"allowlist\" + {allowFromKey} 条目。",
-    dmPolicyPublic: "公开 DM：{policyKey}=\"open\" + {allowFromKey} 包含 \"*\"。",
+    dmPolicyAllowlist: '允许列表 DM：{policyKey}="allowlist" + {allowFromKey} 条目。',
+    dmPolicyPublic: '公开 DM：{policyKey}="open" + {allowFromKey} 包含 "*"。',
     dmPolicyMultiUser: "多用户 DM：运行 {cmd} 以隔离会话。",
     dmPolicyMultiUserSuffix: '（或使用 "per-account-channel-peer" 用于多账户频道）',
     dmPolicyDocs: "文档：{link}",
@@ -2999,20 +3124,24 @@ Object.assign(zh_CN, {
     startFailed: "{noun} 启动失败：{err}",
     stopFailed: "{noun} 停止失败：{err}",
     restartFailed: "{noun} 重启失败：{err}",
-    tokenDriftUnavailable: "无法验证网关令牌漂移：gateway.auth.token SecretRef 已配置但在此命令路径中不可用。",
+    tokenDriftUnavailable:
+      "无法验证网关令牌漂移：gateway.auth.token SecretRef 已配置但在此命令路径中不可用。",
   },
 
   lifecycle: {
     refusingNonGateway: "拒绝向非网关进程 pid {pid} 发送信号",
-    restartDisabledConfig: "运行中的网关配置已禁用网关重启（commands.restart=false）；非托管的 SIGUSR1 重启将被忽略",
+    restartDisabledConfig:
+      "运行中的网关配置已禁用网关重启（commands.restart=false）；非托管的 SIGUSR1 重启将被忽略",
     stopSignalSent: "已向端口 {port} 上的非托管进程发送网关停止信号：{pids}。",
-    multipleGatewayProcesses: "端口 {port} 上有多个网关进程正在监听：{pids}；请先使用 \"openclaw gateway status --deep\" 再重试重启",
+    multipleGatewayProcesses:
+      '端口 {port} 上有多个网关进程正在监听：{pids}；请先使用 "openclaw gateway status --deep" 再重试重启',
     restartSignalSent: "已向端口 {port} 上的非托管进程发送网关重启信号：{pid}。",
     timedOut: "等待网关端口 {port} 恢复健康状态超时，已等待 {seconds} 秒。",
     restartTimedOut: "网关重启超时，已等待 {seconds} 秒等待健康检查完成。",
     foundStaleProcesses: "发现过期的网关进程：{pids}。",
     stoppingStale: "正在停止过期进程并重试重启...",
-    runningNoPort: "网关进程正在运行，但端口 {port} 仍然空闲（启动挂起/崩溃循环或虚拟机启动非常慢）。",
+    runningNoPort:
+      "网关进程正在运行，但端口 {port} 仍然空闲（启动挂起/崩溃循环或虚拟机启动非常慢）。",
   },
 
   restartHealth: {
@@ -3086,7 +3215,7 @@ Object.assign(zh_CN, {
     removeEntries: "移除这些条目以恢复按模型的 API 路由 + 费用（如需要请重新运行引导）。",
     openCodeZen: "OpenCode Zen",
     includePathsMust: "$include 路径必须位于以下目录下：{configRoot}",
-    moveSharedFiles: "将共享 include 文件移至该目录下，并更新为相对路径如 \"./shared/common.json\"。",
+    moveSharedFiles: '将共享 include 文件移至该目录下，并更新为相对路径如 "./shared/common.json"。',
     errorLabel: "错误",
     doctorWarnings: "Doctor 警告",
   },
@@ -3205,16 +3334,21 @@ Object.assign(zh_CN, {
   },
 
   gatewayChat: {
-    fixAuthHint1: "修复方法：设置 OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD，传入 --token/--password，",
+    fixAuthHint1:
+      "修复方法：设置 OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD，传入 --token/--password，",
     fixAuthHint2: "或为此凭据解析已配置的密钥提供商。",
   },
 
   gatewayAuth: {
-    tokenNotConfigured: "网关认证模式为 token，但未配置令牌（请设置 gateway.auth.token 或 OPENCLAW_GATEWAY_TOKEN）",
-    passwordIsRef: "网关认证模式为 password，但 gateway.auth.password 包含提供商引用对象而非已解析的字符串——引导密钥（gateway.auth.password）必须是明文字符串或通过 OPENCLAW_GATEWAY_PASSWORD 环境变量设置，因为密钥提供商系统在网关启动时尚未初始化",
+    tokenNotConfigured:
+      "网关认证模式为 token，但未配置令牌（请设置 gateway.auth.token 或 OPENCLAW_GATEWAY_TOKEN）",
+    passwordIsRef:
+      "网关认证模式为 password，但 gateway.auth.password 包含提供商引用对象而非已解析的字符串——引导密钥（gateway.auth.password）必须是明文字符串或通过 OPENCLAW_GATEWAY_PASSWORD 环境变量设置，因为密钥提供商系统在网关启动时尚未初始化",
     passwordNotConfigured: "网关认证模式为 password，但未配置密码",
-    trustedProxyMissing: "网关认证模式为 trusted-proxy，但未提供 trustedProxy 配置（请设置 gateway.auth.trustedProxy）",
-    trustedProxyUserHeaderEmpty: "网关认证模式为 trusted-proxy，但 trustedProxy.userHeader 为空（请设置 gateway.auth.trustedProxy.userHeader）",
+    trustedProxyMissing:
+      "网关认证模式为 trusted-proxy，但未提供 trustedProxy 配置（请设置 gateway.auth.trustedProxy）",
+    trustedProxyUserHeaderEmpty:
+      "网关认证模式为 trusted-proxy，但 trustedProxy.userHeader 为空（请设置 gateway.auth.trustedProxy.userHeader）",
   },
 
   gatewayHttp: {
@@ -3273,5 +3407,305 @@ Object.assign(zh_CN, {
     tightenedPermissions: "[openclaw] 已收紧临时目录权限：{path}",
     unsafeFallback: "不安全的回退 OpenClaw 临时目录：{path}",
     unableToCreate: "无法创建回退 OpenClaw 临时目录：{path}",
+  },
+
+  // src/cli/docs-cli.ts
+  docsCli: {
+    description: "搜索 OpenClaw 在线文档",
+    queryArg: "搜索查询",
+  },
+
+  // src/cli/clawbot-cli.ts
+  clawbotCli: {
+    description: "旧版 clawbot 命令别名",
+  },
+
+  // src/cli/dns-cli.ts
+  dnsCli: {
+    description: "广域发现 DNS 辅助工具（Tailscale + CoreDNS）",
+    setupDescription: "设置 CoreDNS 以服务你的发现域名用于单播 DNS-SD（广域 Bonjour）",
+    domainOpt: "广域发现域名（例如 openclaw.internal）",
+    applyOpt: "安装/更新 CoreDNS 配置并（重新）启动服务（需要 sudo）",
+  },
+  dns: {
+    brewPrefixFailed: "无法解析 Homebrew 前缀",
+    noDomainError: "未配置广域域名。请设置 discovery.wideArea.domain 或使用 --domain 参数。",
+    macosOnlyError: "DNS 设置目前仅支持 macOS",
+    noTailnetIpError: "未检测到 Tailnet IP；请确保此机器上 Tailscale 正在运行",
+  },
+
+  // src/cli/tui-cli.ts
+  tuiCli: {
+    description: "打开连接到网关的终端 UI",
+    urlOpt: "网关 WebSocket URL（配置了 gateway.remote.url 时使用默认值）",
+    tokenOpt: "网关令牌（如需要）",
+    passwordOpt: "网关密码（如需要）",
+    sessionOpt: '会话密钥（默认："main"，全局范围时为 "global"）',
+    deliverOpt: "投递助手回复",
+    thinkingOpt: "思考级别覆盖",
+    messageOpt: "连接后发送初始消息",
+    timeoutMsOpt: "代理超时毫秒数（默认值来自 agents.defaults.timeoutSeconds）",
+    historyLimitOpt: "加载的历史记录条数",
+    invalidTimeoutMs: '警告：无效的 --timeout-ms "{value}"；已忽略',
+  },
+
+  // src/cli/system-cli.ts
+  systemCli: {
+    description: "系统工具（事件、心跳、存在状态）",
+    eventDescription: "入队一个系统事件并可选触发心跳",
+    eventTextOpt: "系统事件文本",
+    eventModeOpt: "唤醒模式（now|next-heartbeat）",
+    outputJson: "输出 JSON",
+    heartbeatDescription: "心跳控制",
+    heartbeatLastDescription: "显示最后一次心跳事件",
+    heartbeatEnableDescription: "启用心跳",
+    heartbeatDisableDescription: "禁用心跳",
+    presenceDescription: "列出系统存在状态条目",
+  },
+  system: {
+    invalidMode: "--mode 必须为 now 或 next-heartbeat",
+    textRequired: "--text 是必填项",
+  },
+
+  // src/cli/config-cli.ts
+  configCli: {
+    description:
+      "非交互式配置辅助工具（get/set/unset/file/validate）。不带子命令运行时启动配置向导。",
+    sectionOpt: "配置向导区段（可重复）。与不带子命令一起使用。",
+    getDescription: "通过点路径获取配置值",
+    pathArg: "配置路径（点号或方括号表示法）",
+    outputJson: "输出 JSON",
+    setDescription: "通过点路径设置配置值",
+    valueArg: "值（JSON5 或原始字符串）",
+    strictJsonOpt: "严格 JSON5 解析（出错时报错而非回退为原始字符串）",
+    legacyJsonOpt: "--strict-json 的旧版别名",
+    unsetDescription: "通过点路径删除配置值",
+    fileDescription: "打印当前配置文件路径",
+    validateDescription: "在不启动网关的情况下验证当前配置是否符合模式",
+    validateJsonOpt: "以 JSON 格式输出验证结果",
+  },
+  config: {
+    missingBracket: '无效路径（缺少 "]"）：{path}',
+    emptyBrackets: '无效路径（空 "[]"）：{path}',
+    parseFailed: "解析 JSON5 值失败：{error}",
+    invalidSegment: "无效路径段：{segment}",
+    expectedNumeric: '数组段 "{segment}" 需要数字索引',
+    cannotTraverse: '无法遍历 "{segment}"（不是对象）',
+    cannotSet: '无法设置 "{segment}"（父级不是对象）',
+    invalidAt: "配置在 {path} 处无效。",
+    pathEmpty: "路径为空。",
+    pathNotFound: "未找到配置路径：{path}",
+    removed: "已删除 {path}。请重启网关以应用更改。",
+    fileNotFound: "未找到配置文件：{path}",
+    invalidAtColon: "配置在 {path} 处无效：",
+    valid: "配置有效：{path}",
+    validationError: "配置验证错误：{error}",
+    updated: "已更新 {path}。请重启网关以应用更改。",
+  },
+
+  // src/cli/devices-cli.ts
+  devicesCli: {
+    description: "设备配对与认证令牌",
+    listDescription: "列出待处理和已配对的设备",
+    removeDescription: "移除已配对的设备条目",
+    deviceIdArg: "已配对设备 ID",
+    clearDescription: "从网关表中清除已配对设备",
+    clearPendingOpt: "同时拒绝所有待处理的配对请求",
+    clearYesOpt: "确认执行破坏性清除",
+    approveDescription: "批准待处理的设备配对请求",
+    requestIdArg: "待处理请求 ID",
+    approveLatestOpt: "批准最近的待处理请求",
+    rejectDescription: "拒绝待处理的设备配对请求",
+    rotateDescription: "轮换设备角色的令牌",
+    deviceIdOpt: "设备 ID",
+    roleOpt: "角色名称",
+    scopeOpt: "附加到令牌的范围（可重复）",
+    revokeDescription: "撤销设备角色的令牌",
+  },
+  devices: {
+    fallbackNotice: "直接范围访问失败；使用本地回退。",
+    urlOpt: "网关 WebSocket URL（配置了 gateway.remote.url 时使用默认值）",
+    tokenOpt: "网关令牌（如需要）",
+    passwordOpt: "网关密码（密码认证）",
+    timeoutOpt: "超时毫秒数",
+    outputJson: "输出 JSON",
+    deviceAndRoleRequired: "--device 和 --role 为必填项",
+    noPairingEntries: "没有设备配对条目。",
+    deviceIdRequired: "deviceId 为必填项",
+    refusingClear: "拒绝在没有 --yes 的情况下清除配对表",
+    noPendingRequests: "没有待批准的设备配对请求",
+    unknownRequestId: "未知的 requestId",
+  },
+
+  // src/cli/hooks-cli.ts
+  hooksCli: {
+    description: "管理内部代理钩子",
+    listDescription: "列出所有钩子",
+    eligibleOpt: "仅显示符合条件的钩子",
+    jsonOpt: "以 JSON 格式输出",
+    verboseOpt: "显示更多详情，包括缺失的依赖",
+    infoDescription: "显示钩子的详细信息",
+    checkDescription: "检查钩子资格状态",
+    enableDescription: "启用钩子",
+    disableDescription: "禁用钩子",
+    installDescription: "安装钩子包（路径、归档或 npm 包名）",
+    pathArg: "钩子包路径或 npm 包名",
+    linkOpt: "链接本地路径而非复制",
+    pinOpt: "将 npm 安装记录为精确解析的 <name>@<version>",
+    updateDescription: "更新已安装的钩子（仅限 npm 安装）",
+    updateIdArg: "钩子包 ID（与 --all 一起使用时可省略）",
+    updateAllOpt: "更新所有已跟踪的钩子",
+    dryRunOpt: "显示将要更改的内容但不实际写入",
+  },
+  hooks: {
+    hookNotFound: '未找到钩子 "{name}"',
+    managedByPlugin: '钩子 "{name}" 由插件 "{plugin}" 管理，无法启用/禁用。',
+    notEligible: '钩子 "{name}" 不符合条件（缺少依赖）',
+    restartGateway: "请重启网关以加载钩子。",
+    linkedMustBeDir: "链接的钩子路径必须是目录。",
+    linkedHookPath: "已链接钩子路径：{path}",
+    installedHooks: "已安装钩子：{hooks}",
+    linkRequiresPath: "`--link` 需要本地路径。",
+    pathNotFound: "未找到路径：{path}",
+    provideIdOrAll: "请提供钩子 ID 或使用 --all。",
+    noInstallRecord: '未找到 "{id}" 的安装记录。',
+    skippingSource: '跳过 "{id}"（来源：{source}）。',
+    missingNpmSpec: '跳过 "{id}"（缺少 npm 包名）。',
+    invalidInstallPath: '"{id}" 的安装路径无效：{error}',
+  },
+
+  // src/cli/logs-cli.ts
+  logsCli: {
+    description: "通过 RPC 查看网关文件日志",
+    limitOpt: "返回的最大行数",
+    maxBytesOpt: "读取的最大字节数",
+    followOpt: "跟踪日志输出",
+    intervalOpt: "轮询间隔毫秒数",
+    jsonOpt: "输出 JSON 日志行",
+    plainOpt: "纯文本输出（无 ANSI 样式）",
+    noColorOpt: "禁用 ANSI 颜色",
+    localTimeOpt: "以本地时区显示时间戳",
+  },
+  logs: {
+    unexpectedResponse: "来自 logs.tail 的意外响应",
+    gatewayNotReachable: "网关不可达。它是否正在运行且可访问？",
+  },
+
+  // src/cli/exec-approvals-cli.ts
+  approvalsCli: {
+    description: "管理执行审批（网关或节点主机）",
+    getDescription: "获取执行审批快照",
+    nodeOpt: "目标节点 ID/名称/IP",
+    gatewayOpt: "强制使用网关审批",
+    setDescription: "使用 JSON 文件替换执行审批",
+    fileOpt: "要上传的 JSON 文件路径",
+    stdinOpt: "从标准输入读取 JSON",
+    allowlistDescription: "编辑每个代理的白名单",
+    allowlistAddDescription: "向白名单添加通配符模式",
+    allowlistRemoveDescription: "从白名单移除通配符模式",
+  },
+  approvals: {
+    hashMissing: "执行审批哈希缺失；请重新加载后重试。",
+    showingLocal: "显示本地审批。",
+    provideFileOrStdin: "请提供 --file 或 --stdin。",
+    useEitherFileOrStdin: "请使用 --file 或 --stdin（不能同时使用两者）。",
+    parseJsonFailed: "解析审批 JSON 失败：{error}",
+    alreadyAllowlisted: "已在白名单中。",
+    patternNotFound: "未找到该模式。",
+  },
+
+  // src/cli/plugins-cli.ts
+  pluginsCli: {
+    description: "管理 OpenClaw 插件和扩展",
+    listDescription: "列出已发现的插件",
+    jsonOpt: "输出 JSON",
+    enabledOpt: "仅显示已启用的插件",
+    verboseOpt: "显示详细条目",
+    infoDescription: "显示插件详情",
+    idArg: "插件 ID",
+    enableDescription: "在配置中启用插件",
+    disableDescription: "在配置中禁用插件",
+    uninstallDescription: "卸载插件",
+    keepFilesOpt: "保留磁盘上的已安装文件",
+    keepConfigDeprecatedOpt: "--keep-files 的已弃用别名",
+    forceOpt: "跳过确认提示",
+    dryRunOpt: "显示将要移除的内容但不实际更改",
+    installDescription: "安装插件（路径、归档或 npm 包名）",
+    pathArg: "路径（.ts/.js/.zip/.tgz/.tar.gz）或 npm 包名",
+    linkOpt: "链接本地路径而非复制",
+    pinOpt: "将 npm 安装记录为精确解析的 <name>@<version>",
+    updateDescription: "更新已安装的插件（仅限 npm 安装）",
+    updateIdArg: "插件 ID（与 --all 一起使用时可省略）",
+    updateAllOpt: "更新所有已跟踪的插件",
+    doctorDescription: "报告插件加载问题",
+  },
+  plugins: {
+    installedPlugin: "已安装插件：{id}",
+    restartToLoad: "请重启网关以加载插件。",
+    linkedPluginPath: "已链接插件路径：{path}",
+    linkRequiresPath: "`--link` 需要本地路径。",
+    pathNotFound: "未找到路径：{path}",
+    noPluginsFound: "未找到插件。",
+    pluginNotFound: "未找到插件：{id}",
+    enabled: '已启用插件 "{id}"。请重启网关以应用更改。',
+    couldNotEnable: '插件 "{id}" 无法启用（{reason}）。',
+    disabled: '已禁用插件 "{id}"。请重启网关以应用更改。',
+    keepConfigDeprecated: "`--keep-config` 已弃用，请使用 `--keep-files`。",
+    notManaged: '插件 "{id}" 不受插件配置/安装记录管理，无法卸载。',
+    dryRunNotice: "试运行，未做任何更改。",
+    cancelled: "已取消。",
+    uninstalled: '已卸载插件 "{id}"。已移除：{removed}。',
+    restartGateway: "请重启网关以应用更改。",
+    noNpmPlugins: "没有通过 npm 安装的插件可更新。",
+    provideIdOrAll: "请提供插件 ID 或使用 --all。",
+    noIssues: "未检测到插件问题。",
+  },
+
+  // src/cli/pairing-cli.ts
+  pairingCli: {
+    description: "安全 DM 配对（批准入站请求）",
+    listDescription: "列出待处理的配对请求",
+    channelOpt: "频道（{channels}）",
+    accountOpt: "账户 ID（用于多账户频道）",
+    jsonOpt: "输出 JSON",
+    approveDescription: "批准配对码并允许该发送者",
+    codeOrChannelArg: "配对码（或使用 2 个参数时为频道）",
+    codeArg: "配对码（当频道作为第 1 个参数传入时）",
+    notifyOpt: "在同一频道通知请求者",
+  },
+  pairing: {
+    channelRequired: "频道为必填项",
+    channelNotSupported: "频道 {channel} 不支持配对",
+    invalidChannel: "无效频道：{channel}",
+    channelRequiredDetailed:
+      "频道为必填项。使用 --channel <channel> 或将其作为第一个参数传入（应为以下之一：{channels}）",
+    noPendingRequests: "没有待处理的 {channel} 配对请求。",
+    requestNotFound: "未找到配对码 {code} 的待处理配对请求",
+    notifyFailed: "通知请求者失败：{error}",
+  },
+
+  // src/cli/qr-cli.ts
+  qrCli: {
+    description: "生成 iOS 配对二维码和设置码",
+    remoteOpt: "使用 gateway.remote.url 和 gateway.remote 令牌/密码（忽略 device-pair publicUrl）",
+    urlOpt: "覆盖设置载荷中使用的网关 URL",
+    publicUrlOpt: "覆盖设置载荷中使用的网关公共 URL",
+    tokenOpt: "覆盖设置载荷的网关令牌",
+    passwordOpt: "覆盖设置载荷的网关密码",
+    setupCodeOnlyOpt: "仅打印设置码",
+    noAsciiOpt: "跳过 ASCII 二维码渲染",
+    jsonOpt: "输出 JSON",
+  },
+  qr: {
+    tokenOrPassword: "请使用 --token 或 --password，不能同时使用两者。",
+    remoteUrlRequired:
+      "qr --remote 需要 gateway.remote.url（或 gateway.tailscale.mode=serve/funnel）。",
+    heading: "配对二维码",
+    scanInstructions: "使用 OpenClaw iOS 应用扫描此二维码（引导 -> 扫描二维码）。",
+    setupCodeLabel: "设置码：",
+    gatewayLabel: "网关：",
+    authLabel: "认证：",
+    sourceLabel: "来源：",
+    approveInstructions: "扫描后使用以下命令批准：",
   },
 });

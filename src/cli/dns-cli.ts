@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Command } from "commander";
 import { loadConfig } from "../config/config.js";
+import { t } from "../i18n/index.js";
 import { pickPrimaryTailnetIPv4, pickPrimaryTailnetIPv6 } from "../infra/tailnet.js";
 import { getWideAreaZonePath, resolveWideAreaDiscoveryDomain } from "../infra/widearea-dns.js";
 import { defaultRuntime } from "../runtime.js";
@@ -84,7 +85,7 @@ function detectBrewPrefix(): string {
   const out = run("brew", ["--prefix"]);
   const prefix = out.trim();
   if (!prefix) {
-    throw new Error("failed to resolve Homebrew prefix");
+    throw new Error(t("dns.brewPrefixFailed"));
   }
   return prefix;
 }
@@ -102,7 +103,7 @@ function ensureImportLine(corefilePath: string, importGlob: string): boolean {
 export function registerDnsCli(program: Command) {
   const dns = program
     .command("dns")
-    .description("DNS helpers for wide-area discovery (Tailscale + CoreDNS)")
+    .description(t("dnsCli.description"))
     .addHelpText(
       "after",
       () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/dns", "docs.openclaw.ai/cli/dns")}\n`,
@@ -110,15 +111,9 @@ export function registerDnsCli(program: Command) {
 
   dns
     .command("setup")
-    .description(
-      "Set up CoreDNS to serve your discovery domain for unicast DNS-SD (Wide-Area Bonjour)",
-    )
-    .option("--domain <domain>", "Wide-area discovery domain (e.g. openclaw.internal)")
-    .option(
-      "--apply",
-      "Install/update CoreDNS config and (re)start the service (requires sudo)",
-      false,
-    )
+    .description(t("dnsCli.setupDescription"))
+    .option("--domain <domain>", t("dnsCli.domainOpt"))
+    .option("--apply", t("dnsCli.applyOpt"), false)
     .action(async (opts) => {
       const cfg = loadConfig();
       const tailnetIPv4 = pickPrimaryTailnetIPv4();
@@ -127,9 +122,7 @@ export function registerDnsCli(program: Command) {
         configDomain: (opts.domain as string | undefined) ?? cfg.discovery?.wideArea?.domain,
       });
       if (!wideAreaDomain) {
-        throw new Error(
-          "No wide-area domain configured. Set discovery.wideArea.domain or pass --domain.",
-        );
+        throw new Error(t("dns.noDomainError"));
       }
       const zonePath = getWideAreaZonePath(wideAreaDomain);
 
@@ -180,10 +173,10 @@ export function registerDnsCli(program: Command) {
       }
 
       if (process.platform !== "darwin") {
-        throw new Error("dns setup is currently supported on macOS only");
+        throw new Error(t("dns.macosOnlyError"));
       }
       if (!tailnetIPv4 && !tailnetIPv6) {
-        throw new Error("no tailnet IP detected; ensure Tailscale is running on this machine");
+        throw new Error(t("dns.noTailnetIpError"));
       }
 
       const prefix = detectBrewPrefix();

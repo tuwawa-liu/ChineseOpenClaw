@@ -4,6 +4,7 @@ import { loadConfig } from "../config/config.js";
 import { hasConfiguredSecretInput } from "../config/types.secrets.js";
 import { readGatewayPasswordEnv, readGatewayTokenEnv } from "../gateway/credentials.js";
 import { resolveRequiredConfiguredSecretRefInputString } from "../gateway/resolve-configured-secret-input-string.js";
+import { t } from "../i18n/index.js";
 import { resolvePairingSetupFromConfig, encodePairingSetupCode } from "../pairing/setup-code.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { defaultRuntime } from "../runtime.js";
@@ -98,27 +99,23 @@ function emitQrSecretResolveDiagnostics(diagnostics: string[], opts: QrCliOption
 export function registerQrCli(program: Command) {
   program
     .command("qr")
-    .description("Generate an iOS pairing QR code and setup code")
+    .description(t("qrCli.description"))
     .addHelpText(
       "after",
       () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/qr", "docs.openclaw.ai/cli/qr")}\n`,
     )
-    .option(
-      "--remote",
-      "Use gateway.remote.url and gateway.remote token/password (ignores device-pair publicUrl)",
-      false,
-    )
-    .option("--url <url>", "Override gateway URL used in the setup payload")
-    .option("--public-url <url>", "Override gateway public URL used in the setup payload")
-    .option("--token <token>", "Override gateway token for setup payload")
-    .option("--password <password>", "Override gateway password for setup payload")
-    .option("--setup-code-only", "Print only the setup code", false)
-    .option("--no-ascii", "Skip ASCII QR rendering")
-    .option("--json", "Output JSON", false)
+    .option("--remote", t("qrCli.remoteOpt"), false)
+    .option("--url <url>", t("qrCli.urlOpt"))
+    .option("--public-url <url>", t("qrCli.publicUrlOpt"))
+    .option("--token <token>", t("qrCli.tokenOpt"))
+    .option("--password <password>", t("qrCli.passwordOpt"))
+    .option("--setup-code-only", t("qrCli.setupCodeOnlyOpt"), false)
+    .option("--no-ascii", t("qrCli.noAsciiOpt"))
+    .option("--json", t("qrCli.jsonOpt"), false)
     .action(async (opts: QrCliOptions) => {
       try {
         if (opts.token && opts.password) {
-          throw new Error("Use either --token or --password, not both.");
+          throw new Error(t("qr.tokenOrPassword"));
         }
 
         const token = typeof opts.token === "string" ? opts.token.trim() : "";
@@ -132,9 +129,7 @@ export function registerQrCli(program: Command) {
           const hasRemoteUrl = typeof remoteUrl === "string" && remoteUrl.trim().length > 0;
           const hasTailscaleServe = tailscaleMode === "serve" || tailscaleMode === "funnel";
           if (!hasRemoteUrl && !hasTailscaleServe) {
-            throw new Error(
-              "qr --remote requires gateway.remote.url (or gateway.tailscale.mode=serve/funnel).",
-            );
+            throw new Error(t("qr.remoteUrlRequired"));
           }
         }
         let loaded = loadedRaw;
@@ -240,11 +235,7 @@ export function registerQrCli(program: Command) {
           return;
         }
 
-        const lines: string[] = [
-          theme.heading("Pairing QR"),
-          "Scan this with the OpenClaw iOS app (Onboarding -> Scan QR).",
-          "",
-        ];
+        const lines: string[] = [theme.heading(t("qr.heading")), t("qr.scanInstructions"), ""];
 
         if (opts.ascii !== false) {
           const qrAscii = await renderQrAscii(setupCode);
@@ -252,12 +243,12 @@ export function registerQrCli(program: Command) {
         }
 
         lines.push(
-          `${theme.muted("Setup code:")} ${setupCode}`,
-          `${theme.muted("Gateway:")} ${resolved.payload.url}`,
-          `${theme.muted("Auth:")} ${resolved.authLabel}`,
-          `${theme.muted("Source:")} ${resolved.urlSource}`,
+          `${theme.muted(t("qr.setupCodeLabel"))} ${setupCode}`,
+          `${theme.muted(t("qr.gatewayLabel"))} ${resolved.payload.url}`,
+          `${theme.muted(t("qr.authLabel"))} ${resolved.authLabel}`,
+          `${theme.muted(t("qr.sourceLabel"))} ${resolved.urlSource}`,
           "",
-          "Approve after scan with:",
+          t("qr.approveInstructions"),
           `  ${theme.command("openclaw devices list")}`,
           `  ${theme.command("openclaw devices approve <requestId>")}`,
         );

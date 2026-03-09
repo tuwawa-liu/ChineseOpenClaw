@@ -6,6 +6,7 @@ import { CONFIG_PATH } from "../config/paths.js";
 import { isBlockedObjectKey } from "../config/prototype-keys.js";
 import { redactConfigObject } from "../config/redact-snapshot.js";
 import { danger, info, success } from "../globals.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
@@ -59,11 +60,11 @@ function parsePath(raw: string): PathSegment[] {
       current = "";
       const close = trimmed.indexOf("]", i);
       if (close === -1) {
-        throw new Error(`Invalid path (missing "]"): ${raw}`);
+        throw new Error(t("config.missingBracket", { path: raw }));
       }
       const inside = trimmed.slice(i + 1, close).trim();
       if (!inside) {
-        throw new Error(`Invalid path (empty "[]"): ${raw}`);
+        throw new Error(t("config.emptyBrackets", { path: raw }));
       }
       parts.push(inside);
       i = close + 1;
@@ -84,7 +85,7 @@ function parseValue(raw: string, opts: ConfigSetParseOpts): unknown {
     try {
       return JSON5.parse(trimmed);
     } catch (err) {
-      throw new Error(`Failed to parse JSON5 value: ${String(err)}`, { cause: err });
+      throw new Error(t("config.parseFailed", { error: String(err) }), { cause: err });
     }
   }
 
@@ -106,7 +107,7 @@ function formatDoctorHint(message: string): string {
 function validatePathSegments(path: PathSegment[]): void {
   for (const segment of path) {
     if (!isIndexSegment(segment) && isBlockedObjectKey(segment)) {
-      throw new Error(`Invalid path segment: ${segment}`);
+      throw new Error(t("config.invalidSegment", { segment }));
     }
   }
 }
@@ -145,7 +146,7 @@ function setAtPath(root: Record<string, unknown>, path: PathSegment[], value: un
     const nextIsIndex = Boolean(next && isIndexSegment(next));
     if (Array.isArray(current)) {
       if (!isIndexSegment(segment)) {
-        throw new Error(`Expected numeric index for array segment "${segment}"`);
+        throw new Error(t("config.expectedNumeric", { segment }));
       }
       const index = Number.parseInt(segment, 10);
       const existing = current[index];
@@ -156,7 +157,7 @@ function setAtPath(root: Record<string, unknown>, path: PathSegment[], value: un
       continue;
     }
     if (!current || typeof current !== "object") {
-      throw new Error(`Cannot traverse into "${segment}" (not an object)`);
+      throw new Error(t("config.cannotTraverse", { segment }));
     }
     const record = current as Record<string, unknown>;
     const existing = hasOwnPathKey(record, segment) ? record[segment] : undefined;
@@ -169,14 +170,14 @@ function setAtPath(root: Record<string, unknown>, path: PathSegment[], value: un
   const last = path[path.length - 1];
   if (Array.isArray(current)) {
     if (!isIndexSegment(last)) {
-      throw new Error(`Expected numeric index for array segment "${last}"`);
+      throw new Error(t("config.expectedNumeric", { segment: last }));
     }
     const index = Number.parseInt(last, 10);
     current[index] = value;
     return;
   }
   if (!current || typeof current !== "object") {
-    throw new Error(`Cannot set "${last}" (parent is not an object)`);
+    throw new Error(t("config.cannotSet", { segment: last }));
   }
   (current as Record<string, unknown>)[last] = value;
 }
@@ -234,7 +235,7 @@ async function loadValidConfig(runtime: RuntimeEnv = defaultRuntime) {
   if (snapshot.valid) {
     return snapshot;
   }
-  runtime.error(`Config invalid at ${shortenHomePath(snapshot.path)}.`);
+  runtime.error(t("config.invalidAt", { path: shortenHomePath(snapshot.path) }));
   for (const line of formatConfigIssueLines(snapshot.issues, "-", { normalizeRoot: true })) {
     runtime.error(line);
   }
@@ -246,7 +247,7 @@ async function loadValidConfig(runtime: RuntimeEnv = defaultRuntime) {
 function parseRequiredPath(path: string): PathSegment[] {
   const parsedPath = parsePath(path);
   if (parsedPath.length === 0) {
-    throw new Error("Path is empty.");
+    throw new Error(t("config.pathEmpty"));
   }
   validatePathSegments(parsedPath);
   return parsedPath;
@@ -284,7 +285,7 @@ export async function runConfigGet(opts: { path: string; json?: boolean; runtime
     const redacted = redactConfigObject(snapshot.config);
     const res = getAtPath(redacted, parsedPath);
     if (!res.found) {
-      runtime.error(danger(`Config path not found: ${opts.path}`));
+      runtime.error(danger(t("config.pathNotFound", { path: opts.path })));
       runtime.exit(1);
       return;
     }
@@ -318,12 +319,12 @@ export async function runConfigUnset(opts: { path: string; runtime?: RuntimeEnv 
     const next = structuredClone(snapshot.resolved) as Record<string, unknown>;
     const removed = unsetAtPath(next, parsedPath);
     if (!removed) {
-      runtime.error(danger(`Config path not found: ${opts.path}`));
+      runtime.error(danger(t("config.pathNotFound", { path: opts.path })));
       runtime.exit(1);
       return;
     }
     await writeConfigFile(next, { unsetPaths: [parsedPath] });
-    runtime.log(info(`Removed ${opts.path}. Restart the gateway to apply.`));
+    runtime.log(info(t("config.removed", { path: opts.path })));
   } catch (err) {
     runtime.error(danger(String(err)));
     runtime.exit(1);
@@ -354,7 +355,7 @@ export async function runConfigValidate(opts: { json?: boolean; runtime?: Runtim
       if (opts.json) {
         runtime.log(JSON.stringify({ valid: false, path: outputPath, error: "file not found" }));
       } else {
-        runtime.error(danger(`Config file not found: ${shortPath}`));
+        runtime.error(danger(t("config.fileNotFound", { path: shortPath })));
       }
       runtime.exit(1);
       return;
@@ -366,7 +367,7 @@ export async function runConfigValidate(opts: { json?: boolean; runtime?: Runtim
       if (opts.json) {
         runtime.log(JSON.stringify({ valid: false, path: outputPath, issues }, null, 2));
       } else {
-        runtime.error(danger(`Config invalid at ${shortPath}:`));
+        runtime.error(danger(t("config.invalidAtColon", { path: shortPath })));
         for (const line of formatConfigIssueLines(issues, danger("×"), { normalizeRoot: true })) {
           runtime.error(`  ${line}`);
         }
@@ -380,13 +381,13 @@ export async function runConfigValidate(opts: { json?: boolean; runtime?: Runtim
     if (opts.json) {
       runtime.log(JSON.stringify({ valid: true, path: outputPath }));
     } else {
-      runtime.log(success(`Config valid: ${shortPath}`));
+      runtime.log(success(t("config.valid", { path: shortPath })));
     }
   } catch (err) {
     if (opts.json) {
       runtime.log(JSON.stringify({ valid: false, path: outputPath, error: String(err) }));
     } else {
-      runtime.error(danger(`Config validation error: ${String(err)}`));
+      runtime.error(danger(t("config.validationError", { error: String(err) })));
     }
     runtime.exit(1);
   }
@@ -395,9 +396,7 @@ export async function runConfigValidate(opts: { json?: boolean; runtime?: Runtim
 export function registerConfigCli(program: Command) {
   const cmd = program
     .command("config")
-    .description(
-      "Non-interactive config helpers (get/set/unset/file/validate). Run without subcommand for the setup wizard.",
-    )
+    .description(t("configCli.description"))
     .addHelpText(
       "after",
       () =>
@@ -405,7 +404,7 @@ export function registerConfigCli(program: Command) {
     )
     .option(
       "--section <section>",
-      "Configure wizard sections (repeatable). Use with no subcommand.",
+      t("configCli.sectionOpt"),
       (value: string, previous: string[]) => [...previous, value],
       [] as string[],
     )
@@ -416,20 +415,20 @@ export function registerConfigCli(program: Command) {
 
   cmd
     .command("get")
-    .description("Get a config value by dot path")
-    .argument("<path>", "Config path (dot or bracket notation)")
-    .option("--json", "Output JSON", false)
+    .description(t("configCli.getDescription"))
+    .argument("<path>", t("configCli.pathArg"))
+    .option("--json", t("configCli.outputJson"), false)
     .action(async (path: string, opts) => {
       await runConfigGet({ path, json: Boolean(opts.json) });
     });
 
   cmd
     .command("set")
-    .description("Set a config value by dot path")
-    .argument("<path>", "Config path (dot or bracket notation)")
-    .argument("<value>", "Value (JSON5 or raw string)")
-    .option("--strict-json", "Strict JSON5 parsing (error instead of raw string fallback)", false)
-    .option("--json", "Legacy alias for --strict-json", false)
+    .description(t("configCli.setDescription"))
+    .argument("<path>", t("configCli.pathArg"))
+    .argument("<value>", t("configCli.valueArg"))
+    .option("--strict-json", t("configCli.strictJsonOpt"), false)
+    .option("--json", t("configCli.legacyJsonOpt"), false)
     .action(async (path: string, value: string, opts) => {
       try {
         const parsedPath = parseRequiredPath(path);
@@ -444,7 +443,7 @@ export function registerConfigCli(program: Command) {
         ensureValidOllamaProviderForApiKeySet(next, parsedPath);
         setAtPath(next, parsedPath, parsedValue);
         await writeConfigFile(next);
-        defaultRuntime.log(info(`Updated ${path}. Restart the gateway to apply.`));
+        defaultRuntime.log(info(t("config.updated", { path })));
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
         defaultRuntime.exit(1);
@@ -453,23 +452,23 @@ export function registerConfigCli(program: Command) {
 
   cmd
     .command("unset")
-    .description("Remove a config value by dot path")
-    .argument("<path>", "Config path (dot or bracket notation)")
+    .description(t("configCli.unsetDescription"))
+    .argument("<path>", t("configCli.pathArg"))
     .action(async (path: string) => {
       await runConfigUnset({ path });
     });
 
   cmd
     .command("file")
-    .description("Print the active config file path")
+    .description(t("configCli.fileDescription"))
     .action(async () => {
       await runConfigFile({});
     });
 
   cmd
     .command("validate")
-    .description("Validate the current config against the schema without starting the gateway")
-    .option("--json", "Output validation result as JSON", false)
+    .description(t("configCli.validateDescription"))
+    .option("--json", t("configCli.validateJsonOpt"), false)
     .action(async (opts) => {
       await runConfigValidate({ json: Boolean(opts.json) });
     });

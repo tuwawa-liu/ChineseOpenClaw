@@ -1,6 +1,7 @@
 import { setTimeout as delay } from "node:timers/promises";
 import type { Command } from "commander";
 import { buildGatewayConnectionDetails } from "../gateway/call.js";
+import { t } from "../i18n/index.js";
 import { parseLogLine } from "../logging/parse-log-line.js";
 import { formatLocalIsoWithOffset, isValidTimeZone } from "../logging/timestamps.js";
 import { formatDocsLink } from "../terminal/links.js";
@@ -56,7 +57,7 @@ async function fetchLogs(
     { progress: showProgress },
   );
   if (!payload || typeof payload !== "object") {
-    throw new Error("Unexpected logs.tail response");
+    throw new Error(t("logs.unexpectedResponse"));
   }
   return payload as LogsTailPayload;
 }
@@ -164,7 +165,7 @@ function emitGatewayError(
   errorLine: (text: string) => boolean,
 ) {
   const details = buildGatewayConnectionDetails({ url: opts.url });
-  const message = "Gateway not reachable. Is it running and accessible?";
+  const message = t("logs.gatewayNotReachable");
   const hint = `Hint: run \`${formatCliCommand("openclaw doctor")}\`.`;
   const errorText = err instanceof Error ? err.message : String(err);
 
@@ -198,15 +199,15 @@ function emitGatewayError(
 export function registerLogsCli(program: Command) {
   const logs = program
     .command("logs")
-    .description("Tail gateway file logs via RPC")
-    .option("--limit <n>", "Max lines to return", "200")
-    .option("--max-bytes <n>", "Max bytes to read", "250000")
-    .option("--follow", "Follow log output", false)
-    .option("--interval <ms>", "Polling interval in ms", "1000")
-    .option("--json", "Emit JSON log lines", false)
-    .option("--plain", "Plain text output (no ANSI styling)", false)
-    .option("--no-color", "Disable ANSI colors")
-    .option("--local-time", "Display timestamps in local timezone", false)
+    .description(t("logsCli.description"))
+    .option("--limit <n>", t("logsCli.limitOpt"), "200")
+    .option("--max-bytes <n>", t("logsCli.maxBytesOpt"), "250000")
+    .option("--follow", t("logsCli.followOpt"), false)
+    .option("--interval <ms>", t("logsCli.intervalOpt"), "1000")
+    .option("--json", t("logsCli.jsonOpt"), false)
+    .option("--plain", t("logsCli.plainOpt"), false)
+    .option("--no-color", t("logsCli.noColorOpt"))
+    .option("--local-time", t("logsCli.localTimeOpt"), false)
     .addHelpText(
       "after",
       () =>
