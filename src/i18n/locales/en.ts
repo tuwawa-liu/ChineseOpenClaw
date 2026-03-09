@@ -2568,7 +2568,10 @@ export const enTaglines: TaglineSet = {
     "Deployed locally, trusted globally, debugged eternally.",
     "You had me at 'openclaw gateway start.'",
   ],
+};
 
+// Keys that were structurally misplaced – merge into en.
+Object.assign(en, {
   statusAllDiagnosis: {
     gatewayConnectionDetails: "Gateway connection details:",
     configLabel: "Config: {path}",
@@ -3288,4 +3291,4 @@ export const enTaglines: TaglineSet = {
     unsafeFallback: "Unsafe fallback OpenClaw temp dir: {path}",
     unableToCreate: "Unable to create fallback OpenClaw temp dir: {path}",
   },
-};
+});

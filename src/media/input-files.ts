@@ -123,7 +123,7 @@ function rejectOversizedBase64Payload(params: {
   const estimated = estimateBase64DecodedBytes(params.data);
   if (estimated > params.maxBytes) {
     throw new Error(
-      t("mediaInput.tooLarge", { label: params.label, estimated, maxBytes: params.maxBytes }),
+      t("mediaInput.tooLarge", { label: params.label, estimated: String(estimated), maxBytes: String(params.maxBytes) }),
     );
   }
 }
@@ -192,14 +192,14 @@ export async function fetchWithGuard(params: {
 
   try {
     if (!response.ok) {
-      throw new Error(t("mediaInput.fetchFailed", { status: response.status, statusText: response.statusText }));
+      throw new Error(t("mediaInput.fetchFailed", { status: String(response.status), statusText: response.statusText }));
     }
 
     const contentLength = response.headers.get("content-length");
     if (contentLength) {
       const size = Number(contentLength);
       if (Number.isFinite(size) && size > params.maxBytes) {
-        throw new Error(t("mediaInput.contentTooLarge", { size, maxBytes: params.maxBytes }));
+        throw new Error(t("mediaInput.contentTooLarge", { size: String(size), maxBytes: String(params.maxBytes) }));
       }
     }
 
@@ -262,7 +262,7 @@ async function normalizeInputImage(params: {
   const normalizedBuffer = await convertHeicToJpeg(params.buffer);
   if (normalizedBuffer.byteLength > params.limits.maxBytes) {
     throw new Error(
-      t("mediaInput.heicTooLarge", { size: normalizedBuffer.byteLength, maxBytes: params.limits.maxBytes }),
+      t("mediaInput.heicTooLarge", { size: String(normalizedBuffer.byteLength), maxBytes: String(params.limits.maxBytes) }),
     );
   }
   return {
@@ -285,7 +285,7 @@ export async function extractImageContentFromSource(
     const buffer = Buffer.from(canonicalData, "base64");
     if (buffer.byteLength > limits.maxBytes) {
       throw new Error(
-        t("mediaInput.imageTooLarge", { size: buffer.byteLength, maxBytes: limits.maxBytes }),
+        t("mediaInput.imageTooLarge", { size: String(buffer.byteLength), maxBytes: String(limits.maxBytes) }),
       );
     }
     return await normalizeInputImage({
@@ -363,7 +363,7 @@ export async function extractFileContentFromSource(params: {
   }
 
   if (buffer.byteLength > limits.maxBytes) {
-    throw new Error(t("mediaInput.fileTooLarge", { size: buffer.byteLength, maxBytes: limits.maxBytes }));
+    throw new Error(t("mediaInput.fileTooLarge", { size: String(buffer.byteLength), maxBytes: String(limits.maxBytes) }));
   }
 
   if (!mimeType) {

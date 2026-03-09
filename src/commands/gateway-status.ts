@@ -302,7 +302,7 @@ export async function gatewayStatusCommand(
       ? `${colorize(rich, theme.success, t("commands.gatewayStatus.reachable"))}: yes`
       : `${colorize(rich, theme.error, t("commands.gatewayStatus.reachable"))}: no`,
   );
-  runtime.log(colorize(rich, theme.muted, t("commands.gatewayStatus.probeBudget", { ms: overallTimeoutMs })));
+  runtime.log(colorize(rich, theme.muted, t("commands.gatewayStatus.probeBudget", { ms: String(overallTimeoutMs) })));
 
   if (warnings.length > 0) {
     runtime.log("");
@@ -317,7 +317,7 @@ export async function gatewayStatusCommand(
   const discoveryDomains = wideAreaDomain ? `local. + ${wideAreaDomain}` : "local.";
   runtime.log(
     discovery.length > 0
-      ? t("commands.gatewayStatus.foundGateways", { count: discovery.length, domains: discoveryDomains })
+      ? t("commands.gatewayStatus.foundGateways", { count: String(discovery.length), domains: discoveryDomains })
       : t("commands.gatewayStatus.foundZeroGateways", { domains: discoveryDomains }),
   );
   if (discovery.length === 0) {

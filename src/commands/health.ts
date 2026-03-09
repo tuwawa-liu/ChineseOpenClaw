@@ -719,12 +719,12 @@ export async function healthCommand(
     }
     if (displayAgents.length === 0) {
       runtime.log(
-        info(t("commands.health.sessionStore", { path: summary.sessions.path, count: summary.sessions.count })),
+        info(t("commands.health.sessionStore", { path: summary.sessions.path, count: String(summary.sessions.count) })),
       );
       if (summary.sessions.recent.length > 0) {
         for (const r of summary.sessions.recent) {
           runtime.log(
-            t("commands.health.sessionRecent", { key: r.key, age: r.updatedAt ? t("commands.health.sessionAgo", { minutes: Math.round((Date.now() - r.updatedAt) / 60000) }) : t("commands.health.noActivity") }),
+            t("commands.health.sessionRecent", { key: r.key, age: r.updatedAt ? t("commands.health.sessionAgo", { minutes: String(Math.round((Date.now() - r.updatedAt) / 60000)) }) : t("commands.health.noActivity") }),
           );
         }
       }
@@ -732,13 +732,13 @@ export async function healthCommand(
       for (const agent of displayAgents) {
         runtime.log(
           info(
-            t("commands.health.sessionStoreAgent", { agentId: agent.agentId, path: agent.sessions.path, count: agent.sessions.count }),
+            t("commands.health.sessionStoreAgent", { agentId: agent.agentId, path: agent.sessions.path, count: String(agent.sessions.count) }),
           ),
         );
         if (agent.sessions.recent.length > 0) {
           for (const r of agent.sessions.recent) {
             runtime.log(
-              t("commands.health.sessionRecent", { key: r.key, age: r.updatedAt ? t("commands.health.sessionAgo", { minutes: Math.round((Date.now() - r.updatedAt) / 60000) }) : t("commands.health.noActivity") }),
+              t("commands.health.sessionRecent", { key: r.key, age: r.updatedAt ? t("commands.health.sessionAgo", { minutes: String(Math.round((Date.now() - r.updatedAt) / 60000)) }) : t("commands.health.noActivity") }),
             );
           }
         }

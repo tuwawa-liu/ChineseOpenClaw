@@ -2559,7 +2559,10 @@ export const zhCNTaglines: TaglineSet = {
     "本地部署，全球信赖，永恒调试。",
     "你在「openclaw gateway start」的那一刻就征服了我。",
   ],
+};
 
+// Keys that were structurally misplaced – merge into zh_CN.
+Object.assign(zh_CN, {
   statusAllDiagnosis: {
     gatewayConnectionDetails: "网关连接详情：",
     configLabel: "配置：{path}",
@@ -3271,4 +3274,4 @@ export const zhCNTaglines: TaglineSet = {
     unsafeFallback: "不安全的回退 OpenClaw 临时目录：{path}",
     unableToCreate: "无法创建回退 OpenClaw 临时目录：{path}",
   },
-};
+});
