@@ -272,7 +272,7 @@ function resolveBrowserBaseUrl(params: {
   }
   if (!resolved.enabled) {
     throw new Error(
-      "Browser control is disabled. Set browser.enabled=true in ~/.openclaw/openclaw.json.",
+      "浏览器控制已禁用。设置 browser.enabled=true in ~/.openclaw/openclaw.json.",
     );
   }
   return undefined;
@@ -287,7 +287,7 @@ export function createBrowserTool(opts?: {
   const hostHint =
     opts?.allowHostControl === false ? "Host target blocked by policy." : "Host target allowed.";
   return {
-    label: "Browser",
+    label: "浏览器",
     name: "browser",
     description: [
       "Control the browser via OpenClaw's browser control server (status/start/stop/profiles/tabs/open/snapshot/screenshot/actions).",

@@ -4,6 +4,7 @@ import { resolveCronStaggerMs } from "../../cron/stagger.js";
 import type { CronJob, CronSchedule } from "../../cron/types.js";
 import { danger } from "../../globals.js";
 import { formatDurationHuman } from "../../infra/format-time/format-duration.ts";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { colorize, isRich, theme } from "../../terminal/theme.js";
 import type { GatewayRpcOpts } from "../gateway-rpc.js";
@@ -33,8 +34,8 @@ export async function warnIfCronSchedulerDisabled(opts: GatewayRpcOpts) {
     const store = typeof res?.storePath === "string" ? res.storePath : "";
     defaultRuntime.error(
       [
-        "warning: cron scheduler is disabled in the Gateway; jobs are saved but will not run automatically.",
-        "Re-enable with `cron.enabled: true` (or remove `cron.enabled: false`) and restart the Gateway.",
+        t("cronShared.schedulerDisabledWarning"),
+        t("cronShared.reEnableHint"),
         store ? `store: ${store}` : "",
       ]
         .filter(Boolean)
@@ -186,7 +187,7 @@ const formatStatus = (job: CronJob) => {
 
 export function printCronList(jobs: CronJob[], runtime = defaultRuntime) {
   if (jobs.length === 0) {
-    runtime.log("No cron jobs.");
+    runtime.log(t("cronShared.noCronJobs"));
     return;
   }
 

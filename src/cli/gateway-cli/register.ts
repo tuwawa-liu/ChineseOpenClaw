@@ -95,11 +95,11 @@ export function registerGatewayCli(program: Command) {
       .addHelpText(
         "after",
         () =>
-          `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-            ["openclaw gateway run", "Run the gateway in the foreground."],
-            ["openclaw gateway status", "Show service status and probe reachability."],
-            ["openclaw gateway discover", "Find local and wide-area gateway beacons."],
-            ["openclaw gateway call health", "Call a gateway RPC method directly."],
+          `\n${theme.heading("示例：")}\n${formatHelpExamples([
+            ["openclaw gateway run", "在前台运行网关。"],
+            ["openclaw gateway status", "显示服务状态和探测可达性。"],
+            ["openclaw gateway discover", "查找本地和广域网关信标。"],
+            ["openclaw gateway call health", "直接调用网关 RPC 方法。"],
           ])}\n\n${theme.muted("Docs:")} ${formatDocsLink("/cli/gateway", "docs.openclaw.ai/cli/gateway")}\n`,
       ),
   );
@@ -128,10 +128,10 @@ export function registerGatewayCli(program: Command) {
           }
           const rich = isRich();
           defaultRuntime.log(
-            `${colorize(rich, theme.heading, "Gateway call")}: ${colorize(rich, theme.muted, String(method))}`,
+            `${colorize(rich, theme.heading, "网关调用")}: ${colorize(rich, theme.muted, String(method))}`,
           );
           defaultRuntime.log(JSON.stringify(result, null, 2));
-        }, "Gateway call failed");
+        }, "网关调用失败");
       }),
   );
 
@@ -155,7 +155,7 @@ export function registerGatewayCli(program: Command) {
           for (const line of renderCostUsageSummary(summary, days, rich)) {
             defaultRuntime.log(line);
           }
-        }, "Gateway usage cost failed");
+        }, "网关使用费用查询失败");
       }),
   );
 
@@ -175,7 +175,7 @@ export function registerGatewayCli(program: Command) {
           const rich = isRich();
           const obj: Record<string, unknown> = result && typeof result === "object" ? result : {};
           const durationMs = typeof obj.durationMs === "number" ? obj.durationMs : null;
-          defaultRuntime.log(colorize(rich, theme.heading, "Gateway Health"));
+          defaultRuntime.log(colorize(rich, theme.heading, "网关健康状态"));
           defaultRuntime.log(
             `${colorize(rich, theme.success, "OK")}${durationMs != null ? ` (${durationMs}ms)` : ""}`,
           );
@@ -221,7 +221,7 @@ export function registerGatewayCli(program: Command) {
         const domains = ["local.", ...(wideAreaDomain ? [wideAreaDomain] : [])];
         const beacons = await withProgress(
           {
-            label: "Scanning for gateways…",
+            label: "正在扫描网关…",
             indeterminate: true,
             enabled: opts.json !== true,
             delayMs: 0,
@@ -257,7 +257,7 @@ export function registerGatewayCli(program: Command) {
         }
 
         const rich = isRich();
-        defaultRuntime.log(colorize(rich, theme.heading, "Gateway Discovery"));
+        defaultRuntime.log(colorize(rich, theme.heading, "网关发现"));
         defaultRuntime.log(
           colorize(
             rich,

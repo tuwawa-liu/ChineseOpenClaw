@@ -189,7 +189,7 @@ function parseArgs(args: string[]): AcpServerOptions {
     if (arg === "--provenance") {
       const provenanceMode = normalizeAcpProvenanceMode(args[i + 1]);
       if (!provenanceMode) {
-        throw new Error("Invalid --provenance value. Use off, meta, or meta+receipt.");
+        throw new Error("无效的 --provenance 值。请使用 off、meta 或 meta+receipt。");
       }
       opts.provenanceMode = provenanceMode;
       i += 1;
@@ -205,10 +205,10 @@ function parseArgs(args: string[]): AcpServerOptions {
     }
   }
   if (opts.gatewayToken?.trim() && tokenFile?.trim()) {
-    throw new Error("Use either --token or --token-file.");
+    throw new Error("请使用 --token 或 --token-file 之一。");
   }
   if (opts.gatewayPassword?.trim() && passwordFile?.trim()) {
-    throw new Error("Use either --password or --password-file.");
+    throw new Error("请使用 --password 或 --password-file 之一。");
   }
   if (tokenFile?.trim()) {
     opts.gatewayToken = readSecretFromFile(tokenFile, "Gateway token");

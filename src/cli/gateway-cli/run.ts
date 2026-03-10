@@ -92,7 +92,7 @@ const GATEWAY_TAILSCALE_MODES: readonly GatewayTailscaleMode[] = ["off", "serve"
 
 function warnInlinePasswordFlag() {
   defaultRuntime.error(
-    "Warning: --password can be exposed via process listings. Prefer --password-file or OPENCLAW_GATEWAY_PASSWORD.",
+    "警告：--password 可能通过进程列表暴露。建议使用 --password-file 或 OPENCLAW_GATEWAY_PASSWORD。",
   );
 }
 
@@ -100,10 +100,10 @@ function resolveGatewayPasswordOption(opts: GatewayRunOpts): string | undefined 
   const direct = toOptionString(opts.password);
   const file = toOptionString(opts.passwordFile);
   if (direct && file) {
-    throw new Error("Use either --password or --password-file.");
+    throw new Error("请使用 --password 或 --password-file 之一。");
   }
   if (file) {
-    return readSecretFromFile(file, "Gateway password");
+    return readSecretFromFile(file, "网关密码");
   }
   return direct;
 }
@@ -161,7 +161,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   const isDevProfile = process.env.OPENCLAW_PROFILE?.trim().toLowerCase() === "dev";
   const devMode = Boolean(opts.dev) || isDevProfile;
   if (opts.reset && !devMode) {
-    defaultRuntime.error("Use --reset with --dev.");
+    defaultRuntime.error("请将 --reset 与 --dev 一起使用。");
     defaultRuntime.exit(1);
     return;
   }
@@ -201,7 +201,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   const cfg = loadConfig();
   const portOverride = parsePort(opts.port);
   if (opts.port !== undefined && portOverride === null) {
-    defaultRuntime.error("Invalid port");
+    defaultRuntime.error("无效端口");
     defaultRuntime.exit(1);
   }
   const port = portOverride ?? resolveGatewayPort(cfg);
@@ -377,8 +377,8 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   if (resolvedAuthMode === "password" && !passwordConfigured) {
     defaultRuntime.error(
       [
-        "Gateway auth is set to password, but no password is configured.",
-        "Set gateway.auth.password (or OPENCLAW_GATEWAY_PASSWORD), or pass --password.",
+        "网关认证设置为密码模式，但未配置密码。",
+        "设置 gateway.auth.password（或 OPENCLAW_GATEWAY_PASSWORD），或传入 --password。",
         ...authHints,
       ]
         .filter(Boolean)
@@ -389,7 +389,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   }
   if (resolvedAuthMode === "none") {
     gatewayLog.warn(
-      "Gateway auth mode=none explicitly configured; all gateway connections are unauthenticated.",
+      "网关认证模式=none 已明确配置；所有网关连接均未认证。",
     );
   }
   if (
@@ -400,8 +400,8 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   ) {
     defaultRuntime.error(
       [
-        `Refusing to bind gateway to ${bind} without auth.`,
-        "Set gateway.auth.token/password (or OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD) or pass --token/--password.",
+        `拒绝在没有认证的情况下将网关绑定到 ${bind}。`,
+        "设置 gateway.auth.token/password（或 OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD）或传入 --token/--password。",
         ...authHints,
       ]
         .filter(Boolean)

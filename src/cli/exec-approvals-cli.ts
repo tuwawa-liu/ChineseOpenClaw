@@ -113,7 +113,7 @@ async function loadWritableSnapshotTarget(opts: ExecApprovalsCliOpts): Promise<{
 }> {
   const { snapshot, nodeId, source } = await loadSnapshotTarget(opts);
   if (source === "local") {
-    defaultRuntime.log(theme.muted("Writing local approvals."));
+    defaultRuntime.log(theme.muted("正在写入本地审批。"));
   }
   const targetLabel = source === "local" ? "local" : nodeId ? `node:${nodeId}` : "gateway";
   const baseHash = snapshot.hash;
@@ -186,24 +186,24 @@ function renderApprovalsSnapshot(snapshot: ExecApprovalsSnapshot, targetLabel: s
   }
 
   const summaryRows = [
-    { Field: "Target", Value: targetLabel },
-    { Field: "Path", Value: snapshot.path },
-    { Field: "Exists", Value: snapshot.exists ? "yes" : "no" },
-    { Field: "Hash", Value: snapshot.hash },
-    { Field: "Version", Value: String(file.version ?? 1) },
-    { Field: "Socket", Value: file.socket?.path ?? "default" },
-    { Field: "Defaults", Value: defaultsParts.length > 0 ? defaultsParts.join(", ") : "none" },
-    { Field: "Agents", Value: String(Object.keys(agents).length) },
-    { Field: "Allowlist", Value: String(allowlistRows.length) },
+    { Field: "目标", Value: targetLabel },
+    { Field: "路径", Value: snapshot.path },
+    { Field: "存在", Value: snapshot.exists ? "yes" : "no" },
+    { Field: "哈希", Value: snapshot.hash },
+    { Field: "版本", Value: String(file.version ?? 1) },
+    { Field: "套接字", Value: file.socket?.path ?? "default" },
+    { Field: "默认值", Value: defaultsParts.length > 0 ? defaultsParts.join(", ") : "none" },
+    { Field: "代理", Value: String(Object.keys(agents).length) },
+    { Field: "允许列表", Value: String(allowlistRows.length) },
   ];
 
-  defaultRuntime.log(heading("Approvals"));
+  defaultRuntime.log(heading("审批"));
   defaultRuntime.log(
     renderTable({
       width: tableWidth,
       columns: [
-        { key: "Field", header: "Field", minWidth: 8 },
-        { key: "Value", header: "Value", minWidth: 24, flex: true },
+        { key: "字段", header: "Field", minWidth: 8 },
+        { key: "值", header: "Value", minWidth: 24, flex: true },
       ],
       rows: summaryRows,
     }).trimEnd(),
@@ -211,7 +211,7 @@ function renderApprovalsSnapshot(snapshot: ExecApprovalsSnapshot, targetLabel: s
 
   if (allowlistRows.length === 0) {
     defaultRuntime.log("");
-    defaultRuntime.log(muted("No allowlist entries."));
+    defaultRuntime.log(muted(t("execApprovalsCli.noAllowlistEntries")));
     return;
   }
 
@@ -222,9 +222,9 @@ function renderApprovalsSnapshot(snapshot: ExecApprovalsSnapshot, targetLabel: s
       width: tableWidth,
       columns: [
         { key: "Target", header: "Target", minWidth: 10 },
-        { key: "Agent", header: "Agent", minWidth: 8 },
-        { key: "Pattern", header: "Pattern", minWidth: 20, flex: true },
-        { key: "LastUsed", header: "Last Used", minWidth: 10 },
+        { key: "代理", header: "Agent", minWidth: 8 },
+        { key: "模式", header: "Pattern", minWidth: 20, flex: true },
+        { key: "LastUsed", header: "上次使用", minWidth: 10 },
       ],
       rows: allowlistRows,
     }).trimEnd(),
@@ -304,7 +304,7 @@ async function runAllowlistMutation(
   mutate: AllowlistMutation,
 ): Promise<void> {
   try {
-    const trimmedPattern = requireTrimmedNonEmpty(pattern, "Pattern required.");
+    const trimmedPattern = requireTrimmedNonEmpty(pattern, "需要模式。");
     const context = await loadWritableAllowlistAgent(opts);
     const shouldSave = await mutate({ ...context, trimmedPattern });
     if (!shouldSave) {

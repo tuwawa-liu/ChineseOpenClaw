@@ -36,11 +36,11 @@ export function buildPortHints(listeners: PortListener[], port: number): string[
     );
   }
   if (kinds.has("unknown")) {
-    hints.push("Another process is listening on this port.");
+    hints.push("另一个进程正在监听此端口。");
   }
   if (listeners.length > 1) {
     hints.push(
-      "Multiple listeners detected; ensure only one gateway/tunnel per port unless intentionally running isolated profiles.",
+      "检测到多个监听器；确保每个端口只有一个网关/隧道 unless intentionally running isolated profiles.",
     );
   }
   return hints;

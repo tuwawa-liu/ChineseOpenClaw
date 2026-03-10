@@ -72,20 +72,20 @@ export function registerSecurityCli(program: Command) {
       const muted = (text: string) => (rich ? theme.muted(text) : text);
 
       const lines: string[] = [];
-      lines.push(heading("OpenClaw security audit"));
+      lines.push(heading("OpenClaw 安全审计"));
       lines.push(muted(`Summary: ${formatSummary(report.summary)}`));
       lines.push(muted(`Run deeper: ${formatCliCommand("openclaw security audit --deep")}`));
 
       if (opts.fix) {
         lines.push(muted(`Fix: ${formatCliCommand("openclaw security audit --fix")}`));
         if (!fixResult) {
-          lines.push(muted("Fixes: failed to apply (unexpected error)"));
+          lines.push(muted("修复：应用失败（意外错误）"));
         } else if (
           fixResult.errors.length === 0 &&
           fixResult.changes.length === 0 &&
           fixResult.actions.every((a) => !a.ok)
         ) {
-          lines.push(muted("Fixes: no changes applied"));
+          lines.push(muted("修复：未应用更改"));
         } else {
           lines.push("");
           lines.push(heading("FIX"));

@@ -235,7 +235,7 @@ export function registerChannelsCli(program: Command) {
           },
           defaultRuntime,
         );
-      }, "Channel login failed");
+      }, "通道登录失败");
     });
 
   channels
@@ -252,6 +252,6 @@ export function registerChannelsCli(program: Command) {
           },
           defaultRuntime,
         );
-      }, "Channel logout failed");
+      }, "通道退出失败");
     });
 }

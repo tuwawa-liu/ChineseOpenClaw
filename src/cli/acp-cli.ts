@@ -75,7 +75,7 @@ export function registerAcpCli(program: Command) {
         }
         const provenanceMode = normalizeAcpProvenanceMode(opts.provenance as string | undefined);
         if (opts.provenance && !provenanceMode) {
-          throw new Error("Invalid --provenance value. Use off, meta, or meta+receipt.");
+          throw new Error("无效的 --provenance 值。请使用 off、meta 或 meta+receipt。");
         }
         await serveAcpGateway({
           gatewayUrl: opts.url as string | undefined,

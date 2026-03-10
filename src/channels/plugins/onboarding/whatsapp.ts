@@ -6,6 +6,7 @@ import { mergeWhatsAppConfig } from "../../../config/merge-config.js";
 import type { DmPolicy } from "../../../config/types.js";
 import { DEFAULT_ACCOUNT_ID } from "../../../routing/session-key.js";
 import type { RuntimeEnv } from "../../../runtime.js";
+import { t } from "../../../i18n/index.js";
 import { formatDocsLink } from "../../../terminal/links.js";
 import { normalizeE164, pathExists } from "../../../utils.js";
 import {
@@ -332,7 +333,7 @@ export const whatsappOnboardingAdapter: ChannelOnboardingAdapter = {
       try {
         await loginWeb(false, undefined, runtime, accountId);
       } catch (err) {
-        runtime.error(`WhatsApp login failed: ${String(err)}`);
+        runtime.error(t("whatsappOnboarding.loginFailed", { error: String(err) }));
         await prompter.note(`Docs: ${formatDocsLink("/whatsapp", "whatsapp")}`, "WhatsApp help");
       }
     } else if (!linked) {

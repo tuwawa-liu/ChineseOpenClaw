@@ -356,13 +356,13 @@ export class DiscordVoiceManager {
     if (!this.voiceEnabled) {
       return {
         ok: false,
-        message: "Discord voice is disabled (channels.discord.voice.enabled).",
+        message: "Discord 语音已禁用（channels.discord.voice.enabled）。",
       };
     }
     const guildId = params.guildId.trim();
     const channelId = params.channelId.trim();
     if (!guildId || !channelId) {
-      return { ok: false, message: "Missing guildId or channelId." };
+      return { ok: false, message: "缺少 guildId 或 channelId。" };
     }
     logVoiceVerbose(`join requested: guild ${guildId} channel ${channelId}`);
 
@@ -387,12 +387,12 @@ export class DiscordVoiceManager {
     }
     const channelGuildId = "guildId" in channelInfo ? channelInfo.guildId : undefined;
     if (channelGuildId && channelGuildId !== guildId) {
-      return { ok: false, message: "Voice channel is not in this guild." };
+      return { ok: false, message: "语音频道不在此服务器中。" };
     }
 
     const voicePlugin = this.params.client.getPlugin<VoicePlugin>("voice");
     if (!voicePlugin) {
-      return { ok: false, message: "Discord voice plugin is not available." };
+      return { ok: false, message: "Discord 语音插件不可用。" };
     }
 
     const adapterCreator = voicePlugin.getGatewayAdapterCreator(guildId);

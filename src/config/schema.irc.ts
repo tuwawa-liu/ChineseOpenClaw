@@ -1,12 +1,12 @@
 export const IRC_FIELD_LABELS: Record<string, string> = {
   "channels.irc": "IRC",
-  "channels.irc.dmPolicy": "IRC DM Policy",
-  "channels.irc.nickserv.enabled": "IRC NickServ Enabled",
-  "channels.irc.nickserv.service": "IRC NickServ Service",
-  "channels.irc.nickserv.password": "IRC NickServ Password",
-  "channels.irc.nickserv.passwordFile": "IRC NickServ Password File",
-  "channels.irc.nickserv.register": "IRC NickServ Register",
-  "channels.irc.nickserv.registerEmail": "IRC NickServ Register Email",
+  "channels.irc.dmPolicy": "IRC 私信策略",
+  "channels.irc.nickserv.enabled": "启用 IRC NickServ",
+  "channels.irc.nickserv.service": "IRC NickServ 服务",
+  "channels.irc.nickserv.password": "IRC NickServ 密码",
+  "channels.irc.nickserv.passwordFile": "IRC NickServ 密码文件",
+  "channels.irc.nickserv.register": "IRC NickServ 注册",
+  "channels.irc.nickserv.registerEmail": "IRC NickServ 注册邮箱",
 };
 
 export const IRC_FIELD_HELP: Record<string, string> = {

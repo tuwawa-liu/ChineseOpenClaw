@@ -8,13 +8,13 @@ export function buildPairingReply(params: {
 }): string {
   const { channel, idLine, code } = params;
   return [
-    "OpenClaw: access not configured.",
+    "OpenClaw：未配置访问。",
     "",
     idLine,
     "",
     `Pairing code: ${code}`,
     "",
-    "Ask the bot owner to approve with:",
+    "请机器人所有者运行以下命令批准：",
     formatCliCommand(`openclaw pairing approve ${channel} ${code}`),
   ].join("\n");
 }

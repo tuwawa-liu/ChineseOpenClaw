@@ -128,7 +128,7 @@ export async function setupSkills(
       if (showBrewInstall) {
         await prompter.note(
           [
-            "Run:",
+            "运行：",
             '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
           ].join("\n"),
           t("commands.onboardSkills.brewInstallTitle"),

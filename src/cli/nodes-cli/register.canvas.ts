@@ -209,7 +209,7 @@ export function registerNodesCanvasCommands(nodes: Command) {
           const { version, messageCount } = validateA2UIJsonl(jsonl);
           if (version === "v0.9") {
             throw new Error(
-              "Detected A2UI v0.9 JSONL (createSurface). OpenClaw currently supports v0.8 only.",
+              "检测到 A2UI v0.9 JSONL (createSurface)。OpenClaw 目前仅支持 v0.8。",
             );
           }
           await invokeCanvas(opts, "canvas.a2ui.pushJSONL", { jsonl });

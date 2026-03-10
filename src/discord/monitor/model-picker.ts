@@ -424,7 +424,7 @@ function buildModelRows(params: {
           userId: params.userId,
         }),
         options: providerOptions,
-        placeholder: "Select provider",
+        placeholder: "选择提供者",
       }),
     ]),
   );
@@ -470,7 +470,7 @@ function buildModelRows(params: {
 
   const buttonRowItems: Button[] = [
     createModelPickerButton({
-      label: "Cancel",
+      label: "取消",
       style: ButtonStyle.Secondary,
       customId: buildDiscordModelPickerCustomId({
         command: params.command,
@@ -483,7 +483,7 @@ function buildModelRows(params: {
       }),
     }),
     createModelPickerButton({
-      label: "Reset to default",
+      label: "重置为默认",
       style: ButtonStyle.Secondary,
       disabled: shouldDisableReset,
       customId: buildDiscordModelPickerCustomId({
@@ -501,7 +501,7 @@ function buildModelRows(params: {
   if (hasQuickModels) {
     buttonRowItems.push(
       createModelPickerButton({
-        label: "Recents",
+        label: "最近使用",
         style: ButtonStyle.Secondary,
         customId: buildDiscordModelPickerCustomId({
           command: params.command,
@@ -518,7 +518,7 @@ function buildModelRows(params: {
 
   buttonRowItems.push(
     createModelPickerButton({
-      label: "Submit",
+      label: "提交",
       style: ButtonStyle.Primary,
       disabled: !hasPendingSelection,
       customId: buildDiscordModelPickerCustomId({
@@ -747,7 +747,7 @@ export function renderDiscordModelPickerProvidersView(
   ];
   return buildRenderedShell({
     layout: params.layout ?? "v2",
-    title: "Model Picker",
+    title: "模型选择器",
     detailLines,
     rows,
     footer: `All ${page.totalItems} providers shown`,
@@ -788,7 +788,7 @@ export function renderDiscordModelPickerModelsView(
         `Provider not found: ${normalizeProviderId(params.provider)}`,
       ],
       rows,
-      footer: "Choose a different provider.",
+      footer: "选择不同的提供者。",
     });
   }
 
@@ -807,7 +807,7 @@ export function renderDiscordModelPickerModelsView(
   const defaultModel = `${params.data.resolvedDefault.provider}/${params.data.resolvedDefault.model}`;
   const pendingLine = params.pendingModel
     ? `Selected: ${params.pendingModel} (press Submit)`
-    : "Select a model, then press Submit.";
+    : "选择一个模型，然后按提交。";
 
   return buildRenderedShell({
     layout: params.layout ?? "v2",

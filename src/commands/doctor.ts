@@ -158,7 +158,7 @@ export async function doctorCommand(
         note(
           [
             t("commands.doctor.tokenUnavailable"),
-            "Doctor will not overwrite gateway.auth.token with a plaintext value.",
+            "Doctor 不会用明文值覆盖 gateway.auth.token。",
             t("commands.doctor.tokenUnavailableFix"),
           ].join("\n"),
           t("commands.doctor.gatewayAuthTitle"),

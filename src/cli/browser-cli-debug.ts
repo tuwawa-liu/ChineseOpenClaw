@@ -118,7 +118,7 @@ export function registerBrowserDebugCommands(
           return;
         }
         if (!result.errors.length) {
-          defaultRuntime.log("No page errors.");
+          defaultRuntime.log(t("browserDebug.noPageErrors"));
           return;
         }
         defaultRuntime.log(
@@ -160,7 +160,7 @@ export function registerBrowserDebugCommands(
           return;
         }
         if (!result.requests.length) {
-          defaultRuntime.log("No requests recorded.");
+          defaultRuntime.log(t("browserDebug.noRequestsRecorded"));
           return;
         }
         defaultRuntime.log(

@@ -1,4 +1,4 @@
-export type ToolProfileId = "minimal" | "coding" | "messaging" | "full";
+export type ToolProfileId = "最小" | "编码" | "消息" | "完整";
 
 type ToolProfilePolicy = {
   allow?: string[];
@@ -25,17 +25,17 @@ type CoreToolDefinition = {
 };
 
 const CORE_TOOL_SECTION_ORDER: Array<{ id: string; label: string }> = [
-  { id: "fs", label: "Files" },
-  { id: "runtime", label: "Runtime" },
-  { id: "web", label: "Web" },
-  { id: "memory", label: "Memory" },
-  { id: "sessions", label: "Sessions" },
+  { id: "fs", label: "文件" },
+  { id: "runtime", label: "运行时" },
+  { id: "web", label: "网页" },
+  { id: "memory", label: "记忆" },
+  { id: "sessions", label: "会话" },
   { id: "ui", label: "UI" },
-  { id: "messaging", label: "Messaging" },
-  { id: "automation", label: "Automation" },
-  { id: "nodes", label: "Nodes" },
-  { id: "agents", label: "Agents" },
-  { id: "media", label: "Media" },
+  { id: "messaging", label: "消息" },
+  { id: "automation", label: "自动化" },
+  { id: "nodes", label: "节点" },
+  { id: "agents", label: "代理" },
+  { id: "media", label: "媒体" },
 ];
 
 const CORE_TOOL_DEFINITIONS: CoreToolDefinition[] = [

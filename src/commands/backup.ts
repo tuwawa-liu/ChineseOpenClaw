@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import * as tar from "tar";
 import type { RuntimeEnv } from "../runtime.js";
+import { t } from "../i18n/index.js";
 import { resolveHomeDir, resolveUserPath } from "../utils.js";
 import { resolveRuntimeServiceVersion } from "../version.js";
 import {
@@ -290,8 +291,8 @@ export async function backupCreateCommand(
   if (plan.included.length === 0) {
     throw new Error(
       onlyConfig
-        ? "No OpenClaw config file was found to back up."
-        : "No local OpenClaw state was found to back up.",
+        ? t("backupCli.noConfigFound")
+        : t("backupCli.noStateFound"),
     );
   }
 

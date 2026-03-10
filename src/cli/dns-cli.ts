@@ -127,7 +127,7 @@ export function registerDnsCli(program: Command) {
       const zonePath = getWideAreaZonePath(wideAreaDomain);
 
       const tableWidth = Math.max(60, (process.stdout.columns ?? 120) - 1);
-      defaultRuntime.log(theme.heading("DNS setup"));
+      defaultRuntime.log(theme.heading("DNS 设置"));
       defaultRuntime.log(
         renderTable({
           width: tableWidth,
@@ -146,7 +146,7 @@ export function registerDnsCli(program: Command) {
         }).trimEnd(),
       );
       defaultRuntime.log("");
-      defaultRuntime.log(theme.heading("Recommended ~/.openclaw/openclaw.json:"));
+      defaultRuntime.log(theme.heading("推荐 ~/.openclaw/openclaw.json："));
       defaultRuntime.log(
         JSON.stringify(
           {
@@ -158,7 +158,7 @@ export function registerDnsCli(program: Command) {
         ),
       );
       defaultRuntime.log("");
-      defaultRuntime.log(theme.heading("Tailscale admin (DNS → Nameservers):"));
+      defaultRuntime.log(theme.heading("Tailscale 管理（DNS → 名称服务器）："));
       defaultRuntime.log(
         theme.muted(`- Add nameserver: ${tailnetIPv4 ?? "<this machine's tailnet IPv4>"}`),
       );
@@ -168,7 +168,7 @@ export function registerDnsCli(program: Command) {
 
       if (!opts.apply) {
         defaultRuntime.log("");
-        defaultRuntime.log(theme.muted("Run with --apply to install CoreDNS and configure it."));
+        defaultRuntime.log(theme.muted("运行 --apply 安装 CoreDNS 并配置。"));
         return;
       }
 
@@ -238,7 +238,7 @@ export function registerDnsCli(program: Command) {
       }
 
       defaultRuntime.log("");
-      defaultRuntime.log(theme.heading("Starting CoreDNS (sudo)…"));
+      defaultRuntime.log(theme.heading("正在启动 CoreDNS (sudo)…"));
       run("sudo", ["brew", "services", "restart", "coredns"], {
         inherit: true,
       });

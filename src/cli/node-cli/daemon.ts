@@ -237,22 +237,22 @@ export async function runNodeDaemonStatus(opts: NodeDaemonStatusOptions = {}) {
     createCliStatusTextStyles();
 
   const serviceStatus = loaded ? okText(service.loadedText) : warnText(service.notLoadedText);
-  defaultRuntime.log(`${label("Service:")} ${accent(service.label)} (${serviceStatus})`);
+  defaultRuntime.log(`${label("服务：")} ${accent(service.label)} (${serviceStatus})`);
 
   if (command?.programArguments?.length) {
-    defaultRuntime.log(`${label("Command:")} ${infoText(command.programArguments.join(" "))}`);
+    defaultRuntime.log(`${label("命令：")} ${infoText(command.programArguments.join(" "))}`);
   }
   if (command?.sourcePath) {
-    defaultRuntime.log(`${label("Service file:")} ${infoText(command.sourcePath)}`);
+    defaultRuntime.log(`${label("服务文件：")} ${infoText(command.sourcePath)}`);
   }
   if (command?.workingDirectory) {
-    defaultRuntime.log(`${label("Working dir:")} ${infoText(command.workingDirectory)}`);
+    defaultRuntime.log(`${label("工作目录：")} ${infoText(command.workingDirectory)}`);
   }
 
   const runtimeLine = formatRuntimeStatus(runtime);
   if (runtimeLine) {
     const runtimeColor = resolveRuntimeStatusColor(runtime?.status);
-    defaultRuntime.log(`${label("Runtime:")} ${colorize(rich, runtimeColor, runtimeLine)}`);
+    defaultRuntime.log(`${label("运行时：")} ${colorize(rich, runtimeColor, runtimeLine)}`);
   }
 
   if (!loaded) {

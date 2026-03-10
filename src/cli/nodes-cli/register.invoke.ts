@@ -87,7 +87,7 @@ async function resolveNodePlatform(opts: NodesRpcOpts, nodeId: string): Promise<
 function requirePreparedRunPayload(payload: unknown) {
   const prepared = parsePreparedSystemRunPayload(payload);
   if (!prepared) {
-    throw new Error("invalid system.run.prepare response");
+    throw new Error(t("nodesInvoke.invalidPrepareResponse"));
   }
   return prepared;
 }
@@ -96,14 +96,14 @@ function resolveNodesRunPolicy(opts: NodesRunOpts, execDefaults: ExecDefaults | 
   const configuredSecurity = normalizeExecSecurity(execDefaults?.security) ?? "allowlist";
   const requestedSecurity = normalizeExecSecurity(opts.security);
   if (opts.security && !requestedSecurity) {
-    throw new Error("invalid --security (use deny|allowlist|full)");
+    throw new Error(t("nodesInvoke.invalidSecurity"));
   }
   // Keep local exec defaults in sync with exec-approvals.json when tools.exec.ask is unset.
   const configuredAsk =
     normalizeExecAsk(execDefaults?.ask) ?? loadExecApprovals().defaults?.ask ?? "on-miss";
   const requestedAsk = normalizeExecAsk(opts.ask);
   if (opts.ask && !requestedAsk) {
-    throw new Error("invalid --ask (use off|on-miss|always)");
+    throw new Error(t("nodesInvoke.invalidAsk"));
   }
   return {
     security: minSecurity(configuredSecurity, requestedSecurity ?? configuredSecurity),

@@ -1,6 +1,7 @@
 import os from "node:os";
 import path from "node:path";
 import { resolveRequiredHomeDir } from "../infra/home-dir.js";
+import { t } from "../i18n/index.js";
 import { isValidProfileName } from "./profile-utils.js";
 
 export type CliProfileParseResult =
@@ -47,7 +48,7 @@ export function parseCliProfileArgs(argv: string[]): CliProfileParseResult {
 
     if (arg === "--dev") {
       if (profile && profile !== "dev") {
-        return { ok: false, error: "Cannot combine --dev with --profile" };
+        return { ok: false, error: t("profileCli.cannotCombineDevProfile") };
       }
       sawDev = true;
       profile = "dev";
@@ -56,7 +57,7 @@ export function parseCliProfileArgs(argv: string[]): CliProfileParseResult {
 
     if (arg === "--profile" || arg.startsWith("--profile=")) {
       if (sawDev) {
-        return { ok: false, error: "Cannot combine --dev with --profile" };
+        return { ok: false, error: t("profileCli.cannotCombineDevProfile") };
       }
       const next = args[i + 1];
       const { value, consumedNext } = takeValue(arg, next);
@@ -64,12 +65,12 @@ export function parseCliProfileArgs(argv: string[]): CliProfileParseResult {
         i += 1;
       }
       if (!value) {
-        return { ok: false, error: "--profile requires a value" };
+        return { ok: false, error: t("profileCli.profileRequiresValue") };
       }
       if (!isValidProfileName(value)) {
         return {
           ok: false,
-          error: 'Invalid --profile (use letters, numbers, "_", "-" only)',
+          error: t("profileCli.invalidProfile"),
         };
       }
       profile = value;

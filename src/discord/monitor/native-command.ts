@@ -658,7 +658,7 @@ async function handleDiscordModelPickerInteraction(
     await safeDiscordInteractionCall("model picker update", () =>
       interaction.update(
         buildDiscordModelPickerNoticePayload(
-          "Sorry, that model picker interaction is no longer available.",
+          "抱歉，该模型选择器交互不再可用。",
         ),
       ),
     );
@@ -755,7 +755,7 @@ async function handleDiscordModelPickerInteraction(
     if (!selectedProvider || !pickerData.byProvider.has(selectedProvider)) {
       await safeDiscordInteractionCall("model picker update", () =>
         interaction.update(
-          buildDiscordModelPickerNoticePayload("Sorry, that provider isn't available anymore."),
+          buildDiscordModelPickerNoticePayload("抱歉，该提供者不再可用。"),
         ),
       );
       return;
@@ -784,7 +784,7 @@ async function handleDiscordModelPickerInteraction(
     if (!provider || !selectedModel) {
       await safeDiscordInteractionCall("model picker update", () =>
         interaction.update(
-          buildDiscordModelPickerNoticePayload("Sorry, I couldn't read that model selection."),
+          buildDiscordModelPickerNoticePayload("抱歉，无法读取该模型选择。"),
         ),
       );
       return;
@@ -798,7 +798,7 @@ async function handleDiscordModelPickerInteraction(
     if (!modelIndex) {
       await safeDiscordInteractionCall("model picker update", () =>
         interaction.update(
-          buildDiscordModelPickerNoticePayload("Sorry, that model isn't available anymore."),
+          buildDiscordModelPickerNoticePayload("抱歉，该模型不再可用。"),
         ),
       );
       return;
@@ -858,7 +858,7 @@ async function handleDiscordModelPickerInteraction(
       await safeDiscordInteractionCall("model picker update", () =>
         interaction.update(
           buildDiscordModelPickerNoticePayload(
-            "That selection expired. Please choose a model again.",
+            "该选择已过期。请重新选择模型。",
           ),
         ),
       );
@@ -873,7 +873,7 @@ async function handleDiscordModelPickerInteraction(
     if (!selectionCommand) {
       await safeDiscordInteractionCall("model picker update", () =>
         interaction.update(
-          buildDiscordModelPickerNoticePayload("Sorry, /model is unavailable right now."),
+          buildDiscordModelPickerNoticePayload("抱歉，/model 目前不可用。"),
         ),
       );
       return;
@@ -1389,11 +1389,11 @@ async function dispatchDiscordCommandInteraction(params: {
       })
     : null;
   if (channelConfig?.enabled === false) {
-    await respond("This channel is disabled.");
+    await respond("此频道已禁用。");
     return;
   }
   if (interaction.guild && channelConfig?.allowed === false) {
-    await respond("This channel is not allowed.");
+    await respond("此频道不被允许。");
     return;
   }
   if (useAccessGroups && interaction.guild) {
@@ -1421,7 +1421,7 @@ async function dispatchDiscordCommandInteraction(params: {
   let commandAuthorized = true;
   if (isDirectMessage) {
     if (!dmEnabled || dmPolicy === "disabled") {
-      await respond("Discord DMs are disabled.");
+      await respond("Discord 私信已禁用。");
       return;
     }
     const dmAccess = await resolveDiscordDmCommandAccess({
@@ -1457,7 +1457,7 @@ async function dispatchDiscordCommandInteraction(params: {
           );
         },
         onUnauthorized: async () => {
-          await respond("You are not authorized to use this command.", { ephemeral: true });
+          await respond("你无权使用此命令。", { ephemeral: true });
         },
       });
       return;
@@ -1498,7 +1498,7 @@ async function dispatchDiscordCommandInteraction(params: {
     }
   }
   if (isGroupDm && discordConfig?.dm?.groupEnabled === false) {
-    await respond("Discord group DMs are disabled.");
+    await respond("Discord 群组私信已禁用。");
     return;
   }
 
@@ -1562,7 +1562,7 @@ async function dispatchDiscordCommandInteraction(params: {
       accountId,
     });
     if (!hasRenderableReplyPayload(pluginReply)) {
-      await respond("Done.");
+      await respond("完成。");
       return;
     }
     await deliverDiscordInteractionReply({

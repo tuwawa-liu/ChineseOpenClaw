@@ -10,26 +10,26 @@ import { theme } from "../../terminal/theme.js";
 import type { UpdateCommandOptions } from "./shared.js";
 
 const STEP_LABELS: Record<string, string> = {
-  "clean check": "Working directory is clean",
-  "upstream check": "Upstream branch exists",
-  "git fetch": "Fetching latest changes",
-  "git rebase": "Rebasing onto target commit",
-  "git rev-parse @{upstream}": "Resolving upstream commit",
-  "git rev-list": "Enumerating candidate commits",
-  "git clone": "Cloning git checkout",
-  "preflight worktree": "Preparing preflight worktree",
-  "preflight cleanup": "Cleaning preflight worktree",
-  "deps install": "Installing dependencies",
-  build: "Building",
-  "ui:build": "Building UI assets",
-  "ui:build (post-doctor repair)": "Restoring missing UI assets",
-  "ui assets verify": "Validating UI assets",
-  "openclaw doctor entry": "Checking doctor entrypoint",
-  "openclaw doctor": "Running doctor checks",
-  "git rev-parse HEAD (after)": "Verifying update",
-  "global update": "Updating via package manager",
-  "global update (omit optional)": "Retrying update without optional deps",
-  "global install": "Installing global package",
+  "clean check": "工作目录无改动",
+  "upstream check": "上游分支存在",
+  "git fetch": "正在获取最新更改",
+  "git rebase": "正在变基到目标提交",
+  "git rev-parse @{upstream}": "正在解析上游提交",
+  "git rev-list": "正在枚举候选提交",
+  "git clone": "正在克隆 git 检出",
+  "preflight worktree": "正在准备预检工作树",
+  "preflight cleanup": "正在清理预检工作树",
+  "deps install": "正在安装依赖",
+  build: "正在构建",
+  "ui:build": "正在构建 UI 资源",
+  "ui:build (post-doctor repair)": "正在恢复缺失的 UI 资源",
+  "ui assets verify": "正在验证 UI 资源",
+  "openclaw doctor entry": "正在检查 doctor 入口点",
+  "openclaw doctor": "正在运行 doctor 检查",
+  "git rev-parse HEAD (after)": "正在验证更新",
+  "global update": "正在通过包管理器更新",
+  "global update (omit optional)": "正在重试更新（排除可选依赖）",
+  "global install": "正在安装全局包",
 };
 
 function getStepLabel(step: UpdateStepInfo): string {
@@ -50,7 +50,7 @@ export function inferUpdateFailureHints(result: UpdateRunResult): string[] {
 
   if (failedStep.name.startsWith("global update") && stderr.includes("eacces")) {
     hints.push(
-      "Detected permission failure (EACCES). Re-run with a writable global prefix or sudo (for system-managed Node installs).",
+      "检测到权限失败（EACCES）。使用可写的全局前缀或 sudo 重新运行（适用于系统管理的 Node 安装）。",
     );
     hints.push("Example: npm config set prefix ~/.local && npm i -g openclaw@latest");
   }
@@ -60,7 +60,7 @@ export function inferUpdateFailureHints(result: UpdateRunResult): string[] {
     (stderr.includes("node-gyp") || stderr.includes("prebuild"))
   ) {
     hints.push(
-      "Detected native optional dependency build failure. The updater retries with --omit=optional automatically.",
+      "检测到原生可选依赖构建失败。更新器会自动使用 --omit=optional 重试。",
     );
     hints.push("If it still fails: npm i -g openclaw@latest --omit=optional");
   }
@@ -147,7 +147,7 @@ export function printResult(result: UpdateRunResult, opts: PrintResultOptions): 
 
   defaultRuntime.log("");
   defaultRuntime.log(
-    `${theme.heading("Update Result:")} ${statusColor(result.status.toUpperCase())}`,
+    `${theme.heading("更新结果：")} ${statusColor(result.status.toUpperCase())}`,
   );
   if (result.root) {
     defaultRuntime.log(`  Root: ${theme.muted(result.root)}`);
@@ -167,7 +167,7 @@ export function printResult(result: UpdateRunResult, opts: PrintResultOptions): 
 
   if (!opts.hideSteps && result.steps.length > 0) {
     defaultRuntime.log("");
-    defaultRuntime.log(theme.heading("Steps:"));
+    defaultRuntime.log(theme.heading("步骤："));
     for (const step of result.steps) {
       const status = formatStepStatus(step.exitCode);
       const duration = theme.muted(`(${formatDurationPrecise(step.durationMs)})`);
@@ -187,7 +187,7 @@ export function printResult(result: UpdateRunResult, opts: PrintResultOptions): 
   const hints = inferUpdateFailureHints(result);
   if (hints.length > 0) {
     defaultRuntime.log("");
-    defaultRuntime.log(theme.heading("Recovery hints:"));
+    defaultRuntime.log(theme.heading("恢复提示："));
     for (const hint of hints) {
       defaultRuntime.log(`  - ${theme.warn(hint)}`);
     }

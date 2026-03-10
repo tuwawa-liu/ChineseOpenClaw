@@ -17,7 +17,7 @@ export const TAILSCALE_EXPOSURE_OPTIONS = [
 ] as const;
 
 export const TAILSCALE_MISSING_BIN_NOTE_LINES = [
-  "Tailscale binary not found in PATH or /Applications.",
+  "在 PATH 中未找到 Tailscale 二进制文件 or /Applications.",
   "Ensure Tailscale is installed from:",
   "  https://tailscale.com/download/mac",
   "",

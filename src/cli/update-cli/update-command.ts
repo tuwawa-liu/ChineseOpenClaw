@@ -32,6 +32,7 @@ import { runGatewayUpdate, type UpdateRunResult } from "../../infra/update-runne
 import { syncPluginsForUpdateChannel, updateNpmInstalledPlugins } from "../../plugins/update.js";
 import { runCommandWithTimeout } from "../../process/exec.js";
 import { defaultRuntime } from "../../runtime.js";
+import { t } from "../../i18n/index.js";
 import { stylePromptMessage } from "../../terminal/prompt-style.js";
 import { theme } from "../../terminal/theme.js";
 import { pathExists } from "../../utils.js";
@@ -92,7 +93,7 @@ const UPDATE_QUIPS = [
 ];
 
 function pickUpdateQuip(): string {
-  return UPDATE_QUIPS[Math.floor(Math.random() * UPDATE_QUIPS.length)] ?? "Update complete.";
+  return UPDATE_QUIPS[Math.floor(Math.random() * UPDATE_QUIPS.length)] ?? "更新完成。";
 }
 
 function resolveGatewayInstallEntrypointCandidates(root?: string): string[] {
@@ -141,8 +142,8 @@ function printDryRunPreview(preview: UpdateDryRunPreview, jsonMode: boolean): vo
     return;
   }
 
-  defaultRuntime.log(theme.heading("Update dry-run"));
-  defaultRuntime.log(theme.muted("No changes were applied."));
+  defaultRuntime.log(theme.heading("更新预演"));
+  defaultRuntime.log(theme.muted(t("updateCommand.noChangesApplied")));
   defaultRuntime.log("");
   defaultRuntime.log(`  Root: ${theme.muted(preview.root)}`);
   defaultRuntime.log(`  Install kind: ${theme.muted(preview.installKind)}`);
@@ -160,14 +161,14 @@ function printDryRunPreview(preview: UpdateDryRunPreview, jsonMode: boolean): vo
   }
 
   defaultRuntime.log("");
-  defaultRuntime.log(theme.heading("Planned actions:"));
+  defaultRuntime.log(theme.heading("计划操作："));
   for (const action of preview.actions) {
     defaultRuntime.log(`  - ${action}`);
   }
 
   if (preview.notes.length > 0) {
     defaultRuntime.log("");
-    defaultRuntime.log(theme.heading("Notes:"));
+    defaultRuntime.log(theme.heading("备注："));
     for (const note of preview.notes) {
       defaultRuntime.log(`  - ${theme.muted(note)}`);
     }
@@ -212,7 +213,7 @@ async function tryInstallShellCompletion(opts: {
   const status = await checkShellCompletionStatus(CLI_NAME);
 
   if (status.usesSlowPattern) {
-    defaultRuntime.log(theme.muted("Upgrading shell completion to cached version..."));
+    defaultRuntime.log(theme.muted("正在将 Shell 补全升级到缓存版..."));
     const cacheGenerated = await ensureCompletionCacheExists(CLI_NAME);
     if (cacheGenerated) {
       await installCompletion(status.shell, true, CLI_NAME);
@@ -221,14 +222,14 @@ async function tryInstallShellCompletion(opts: {
   }
 
   if (status.profileInstalled && !status.cacheExists) {
-    defaultRuntime.log(theme.muted("Regenerating shell completion cache..."));
+    defaultRuntime.log(theme.muted("正在重新生成 Shell 补全缓存..."));
     await ensureCompletionCacheExists(CLI_NAME);
     return;
   }
 
   if (!status.profileInstalled) {
     defaultRuntime.log("");
-    defaultRuntime.log(theme.heading("Shell completion"));
+    defaultRuntime.log(theme.heading("Shell 补全"));
 
     const shouldInstall = await confirm({
       message: stylePromptMessage(`Enable ${status.shell} shell completion for ${CLI_NAME}?`),
@@ -248,7 +249,7 @@ async function tryInstallShellCompletion(opts: {
 
     const cacheGenerated = await ensureCompletionCacheExists(CLI_NAME);
     if (!cacheGenerated) {
-      defaultRuntime.log(theme.warn("Failed to generate completion cache."));
+      defaultRuntime.log(theme.warn(t("updateCommand.failedToGenerateCompletionCache")));
       return;
     }
 
@@ -409,7 +410,7 @@ async function updatePluginsAfterCoreUpdate(params: {
 }): Promise<void> {
   if (!params.configSnapshot.valid) {
     if (!params.opts.json) {
-      defaultRuntime.log(theme.warn("Skipping plugin updates: config is invalid."));
+      defaultRuntime.log(theme.warn(t("updateCommand.skippingPluginUpdates")));
     }
     return;
   }
@@ -424,7 +425,7 @@ async function updatePluginsAfterCoreUpdate(params: {
 
   if (!params.opts.json) {
     defaultRuntime.log("");
-    defaultRuntime.log(theme.heading("Updating plugins..."));
+    defaultRuntime.log(theme.heading(t("updateCommand.updatingPlugins")));
   }
 
   const syncResult = await syncPluginsForUpdateChannel({
@@ -460,13 +461,13 @@ async function updatePluginsAfterCoreUpdate(params: {
   if (syncResult.summary.switchedToBundled.length > 0) {
     defaultRuntime.log(
       theme.muted(
-        `Switched to bundled plugins: ${summarizeList(syncResult.summary.switchedToBundled)}.`,
+        t("updateCommand.switchedToBundled", { plugins: summarizeList(syncResult.summary.switchedToBundled) }),
       ),
     );
   }
   if (syncResult.summary.switchedToNpm.length > 0) {
     defaultRuntime.log(
-      theme.muted(`Restored npm plugins: ${summarizeList(syncResult.summary.switchedToNpm)}.`),
+      theme.muted(t("updateCommand.restoredNpmPlugins", { plugins: summarizeList(syncResult.summary.switchedToNpm) })),
     );
   }
   for (const warning of syncResult.summary.warnings) {
@@ -482,7 +483,7 @@ async function updatePluginsAfterCoreUpdate(params: {
   const skipped = npmResult.outcomes.filter((entry) => entry.status === "skipped").length;
 
   if (npmResult.outcomes.length === 0) {
-    defaultRuntime.log(theme.muted("No plugin updates needed."));
+    defaultRuntime.log(theme.muted(t("updateCommand.noPluginUpdatesNeeded")));
   } else {
     const parts = [`${updated} updated`, `${unchanged} unchanged`];
     if (failed > 0) {
@@ -491,7 +492,7 @@ async function updatePluginsAfterCoreUpdate(params: {
     if (skipped > 0) {
       parts.push(`${skipped} skipped`);
     }
-    defaultRuntime.log(theme.muted(`npm plugins: ${parts.join(", ")}.`));
+    defaultRuntime.log(theme.muted(t("updateCommand.npmPlugins", { plugins: parts.join(", ") })));
   }
 
   for (const outcome of npmResult.outcomes) {
@@ -513,7 +514,7 @@ async function maybeRestartService(params: {
   if (params.shouldRestart) {
     if (!params.opts.json) {
       defaultRuntime.log("");
-      defaultRuntime.log(theme.heading("Restarting service..."));
+      defaultRuntime.log(theme.heading("正在重启服务..."));
     }
 
     try {
@@ -529,7 +530,7 @@ async function maybeRestartService(params: {
           if (!params.opts.json) {
             defaultRuntime.log(
               theme.warn(
-                `Failed to refresh gateway service environment from updated install: ${String(err)}`,
+                t("updateCommand.failedToRefreshGateway", { error: String(err) }),
               ),
             );
           }
@@ -543,7 +544,7 @@ async function maybeRestartService(params: {
       }
 
       if (!params.opts.json && restarted) {
-        defaultRuntime.log(theme.success("Daemon restarted successfully."));
+        defaultRuntime.log(theme.success(t("updateCommand.daemonRestartedSuccessfully")));
         defaultRuntime.log("");
         process.env.OPENCLAW_UPDATE_IN_PROGRESS = "1";
         try {
@@ -553,7 +554,7 @@ async function maybeRestartService(params: {
             nonInteractive: !interactiveDoctor,
           });
         } catch (err) {
-          defaultRuntime.log(theme.warn(`Doctor failed: ${String(err)}`));
+          defaultRuntime.log(theme.warn(`Doctor 检查失败：${String(err)}`));
         } finally {
           delete process.env.OPENCLAW_UPDATE_IN_PROGRESS;
         }
@@ -569,7 +570,7 @@ async function maybeRestartService(params: {
           if (!params.opts.json) {
             defaultRuntime.log(
               theme.warn(
-                `Found stale gateway process(es) after restart: ${health.staleGatewayPids.join(", ")}. Cleaning up...`,
+                t("updateCommand.staleGatewayProcesses", { pids: health.staleGatewayPids.join(", ") }),
               ),
             );
           }
@@ -582,9 +583,9 @@ async function maybeRestartService(params: {
         }
 
         if (health.healthy) {
-          defaultRuntime.log(theme.success("Daemon restart completed."));
+          defaultRuntime.log(theme.success(t("updateCommand.daemonRestartCompleted")));
         } else {
-          defaultRuntime.log(theme.warn("Gateway did not become healthy after restart."));
+          defaultRuntime.log(theme.warn(t("updateCommand.gatewayNotHealthyAfterRestart")));
           for (const line of renderRestartDiagnostics(health)) {
             defaultRuntime.log(theme.muted(line));
           }
@@ -651,13 +652,13 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
 
   const requestedChannel = normalizeUpdateChannel(opts.channel);
   if (opts.channel && !requestedChannel) {
-    defaultRuntime.error(`--channel must be "stable", "beta", or "dev" (got "${opts.channel}")`);
+    defaultRuntime.error(t("updateCommand.channelMustBe", { channel: opts.channel ?? "" }));
     defaultRuntime.exit(1);
     return;
   }
   if (opts.channel && !configSnapshot.valid) {
     const issues = formatConfigIssueLines(configSnapshot.issues, "-");
-    defaultRuntime.error(["Config is invalid; cannot set update channel.", ...issues].join("\n"));
+    defaultRuntime.error([t("updateCommand.configInvalidCannotSetChannel"), ...issues].join("\n"));
     defaultRuntime.exit(1);
     return;
   }
@@ -810,7 +811,7 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
 
   const showProgress = !opts.json && process.stdout.isTTY;
   if (!opts.json) {
-    defaultRuntime.log(theme.heading("Updating OpenClaw..."));
+    defaultRuntime.log(theme.heading("正在更新 OpenClaw..."));
     defaultRuntime.log("");
   }
 

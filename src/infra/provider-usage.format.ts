@@ -88,7 +88,7 @@ export function formatUsageSummaryLine(
 
 export function formatUsageReportLines(summary: UsageSummary, opts?: { now?: number }): string[] {
   if (summary.providers.length === 0) {
-    return ["Usage: no provider usage available."];
+    return ["用量：无可用提供者用量。"];
   }
 
   const lines: string[] = ["Usage:"];

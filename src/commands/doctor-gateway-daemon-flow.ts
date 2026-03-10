@@ -115,7 +115,7 @@ export async function maybeRepairGatewayDaemon(params: {
   if (process.platform === "darwin" && params.cfg.gateway?.mode !== "remote") {
     const gatewayRepaired = await maybeRepairLaunchAgentBootstrap({
       env: process.env,
-      title: "Gateway",
+      title: "网关",
       runtime: params.runtime,
       prompter: params.prompter,
     });
@@ -124,7 +124,7 @@ export async function maybeRepairGatewayDaemon(params: {
         ...process.env,
         OPENCLAW_LAUNCHD_LABEL: resolveNodeLaunchAgentLabel(),
       },
-      title: "Node",
+      title: "节点",
       runtime: params.runtime,
       prompter: params.prompter,
     });

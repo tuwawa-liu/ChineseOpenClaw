@@ -185,13 +185,13 @@ function resolveAuth(cfg: OpenClawConfig, env: NodeJS.ProcessEnv): ResolveAuthRe
 
   if (mode === "password") {
     if (!password) {
-      return { error: "Gateway auth is set to password, but no password is configured." };
+      return { error: "网关认证设置为密码模式，但未配置密码。" };
     }
     return { password, label: "password" };
   }
   if (mode === "token") {
     if (!token) {
-      return { error: "Gateway auth is set to token, but no token is configured." };
+      return { error: "网关认证设置为令牌模式，但未配置令牌。" };
     }
     return { token, label: "token" };
   }
@@ -201,7 +201,7 @@ function resolveAuth(cfg: OpenClawConfig, env: NodeJS.ProcessEnv): ResolveAuthRe
   if (password) {
     return { password, label: "password" };
   }
-  return { error: "Gateway auth is not configured (no token or password)." };
+  return { error: "网关认证未配置（无令牌或密码）。" };
 }
 
 async function resolveGatewayTokenSecretRef(
@@ -305,7 +305,7 @@ async function resolveGatewayUrl(
     if (url) {
       return { url, source: "plugins.entries.device-pair.config.publicUrl" };
     }
-    return { error: "Configured publicUrl is invalid." };
+    return { error: "配置的 publicUrl 无效。" };
   }
 
   const remoteUrlRaw = cfg.gateway?.remote?.url;
@@ -321,7 +321,7 @@ async function resolveGatewayUrl(
   if (tailscaleMode === "serve" || tailscaleMode === "funnel") {
     const host = await resolveTailnetHostWithRunner(opts.runCommandWithTimeout);
     if (!host) {
-      return { error: "Tailscale Serve is enabled, but MagicDNS could not be resolved." };
+      return { error: "Tailscale Serve 已启用，但无法解析 MagicDNS。" };
     }
     return { url: `wss://${host}`, source: `gateway.tailscale.mode=${tailscaleMode}` };
   }
@@ -344,7 +344,7 @@ async function resolveGatewayUrl(
 
   return {
     error:
-      "Gateway is only bound to loopback. Set gateway.bind=lan, enable tailscale serve, or configure plugins.entries.device-pair.config.publicUrl.",
+      "网关仅绑定到回环。设置 gateway.bind=lan、启用 tailscale serve 或配置 plugins.entries.device-pair.config.publicUrl。",
   };
 }
 
@@ -377,7 +377,7 @@ export async function resolvePairingSetupFromConfig(
   });
 
   if (!urlResult.url) {
-    return { ok: false, error: urlResult.error ?? "Gateway URL unavailable." };
+    return { ok: false, error: urlResult.error ?? "网关 URL 不可用。" };
   }
 
   if (!auth.label) {

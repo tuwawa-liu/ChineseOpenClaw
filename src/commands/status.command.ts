@@ -233,7 +233,7 @@ export async function statusCommand(
   const tableWidth = Math.max(60, (process.stdout.columns ?? 120) - 1);
 
   if (secretDiagnostics.length > 0) {
-    runtime.log(theme.warn("Secret diagnostics:"));
+    runtime.log(theme.warn("密钥诊断："));
     for (const entry of secretDiagnostics) {
       runtime.log(`- ${entry}`);
     }

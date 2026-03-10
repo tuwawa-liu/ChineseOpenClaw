@@ -62,11 +62,11 @@ async function authorizeVoiceCommand(
   const channelOverride = options?.channelOverride;
   const channel = channelOverride ? undefined : interaction.channel;
   if (!interaction.guild) {
-    return { ok: false, message: "Voice commands are only available in guilds." };
+    return { ok: false, message: "语音命令仅在服务器中可用。" };
   }
   const user = interaction.user;
   if (!user) {
-    return { ok: false, message: "Unable to resolve command user." };
+    return { ok: false, message: "无法解析命令用户。" };
   }
 
   const channelId = channelOverride?.id ?? channel?.id ?? "";
@@ -124,7 +124,7 @@ async function authorizeVoiceCommand(
     : null;
 
   if (channelConfig?.enabled === false) {
-    return { ok: false, message: "This channel is disabled." };
+    return { ok: false, message: "此频道已禁用。" };
   }
 
   const channelAllowlistConfigured =
@@ -184,7 +184,7 @@ async function authorizeVoiceCommand(
   });
 
   if (!commandAuthorized) {
-    return { ok: false, message: "You are not authorized to use this command." };
+    return { ok: false, message: "你无权使用此命令。" };
   }
 
   return { ok: true, guildId: interaction.guild.id };
@@ -197,7 +197,7 @@ async function resolveVoiceCommandRuntimeContext(
   const guildId = interaction.guild?.id;
   if (!guildId) {
     await interaction.reply({
-      content: "Unable to resolve guild for this command.",
+      content: "无法解析此命令的服务器。",
       ephemeral: true,
     });
     return null;
@@ -205,7 +205,7 @@ async function resolveVoiceCommandRuntimeContext(
   const manager = params.getManager();
   if (!manager) {
     await interaction.reply({
-      content: "Voice manager is not available yet.",
+      content: "语音管理器尚不可用。",
       ephemeral: true,
     });
     return null;
@@ -237,13 +237,13 @@ export function createDiscordVoiceCommand(params: VoiceCommandContext): CommandW
 
   class JoinCommand extends Command {
     name = "join";
-    description = "Join a voice channel";
+    description = "加入语音频道";
     defer = true;
     ephemeral = params.ephemeralDefault;
     options: CommandOptions = [
       {
         name: "channel",
-        description: "Voice channel to join",
+        description: "要加入的语音频道",
         type: ApplicationCommandOptionType.Channel,
         required: true,
         channel_types: VOICE_CHANNEL_TYPES,
@@ -253,7 +253,7 @@ export function createDiscordVoiceCommand(params: VoiceCommandContext): CommandW
     async run(interaction: CommandInteraction) {
       const channel = await interaction.options.getChannel("channel", true);
       if (!channel || !("id" in channel)) {
-        await interaction.reply({ content: "Voice channel not found.", ephemeral: true });
+        await interaction.reply({ content: "未找到语音频道。", ephemeral: true });
         return;
       }
 
@@ -272,13 +272,13 @@ export function createDiscordVoiceCommand(params: VoiceCommandContext): CommandW
         return;
       }
       if (!isVoiceChannelType(channel.type)) {
-        await interaction.reply({ content: "That is not a voice channel.", ephemeral: true });
+        await interaction.reply({ content: "这不是语音频道。", ephemeral: true });
         return;
       }
       const guildId = access.guildId ?? ("guildId" in channel ? channel.guildId : undefined);
       if (!guildId) {
         await interaction.reply({
-          content: "Unable to resolve guild for this voice channel.",
+          content: "无法解析此语音频道的服务器。",
           ephemeral: true,
         });
         return;
@@ -300,7 +300,7 @@ export function createDiscordVoiceCommand(params: VoiceCommandContext): CommandW
 
   class LeaveCommand extends Command {
     name = "leave";
-    description = "Leave the current voice channel";
+    description = "离开当前语音频道";
     defer = true;
     ephemeral = params.ephemeralDefault;
 
@@ -328,7 +328,7 @@ export function createDiscordVoiceCommand(params: VoiceCommandContext): CommandW
 
   class StatusCommand extends Command {
     name = "status";
-    description = "Show active voice sessions";
+    description = "显示活跃的语音会话";
     defer = true;
     ephemeral = params.ephemeralDefault;
 
@@ -350,7 +350,7 @@ export function createDiscordVoiceCommand(params: VoiceCommandContext): CommandW
         return;
       }
       if (sessions.length === 0) {
-        await interaction.reply({ content: "No active voice sessions.", ephemeral: true });
+        await interaction.reply({ content: "没有活跃的语音会话。", ephemeral: true });
         return;
       }
       const lines = sessions.map(
@@ -362,7 +362,7 @@ export function createDiscordVoiceCommand(params: VoiceCommandContext): CommandW
 
   return new (class extends CommandWithSubcommands {
     name = "vc";
-    description = "Voice channel controls";
+    description = "语音频道控制";
     subcommands = [new JoinCommand(), new LeaveCommand(), new StatusCommand()];
   })();
 }

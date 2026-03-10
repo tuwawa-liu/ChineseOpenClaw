@@ -64,7 +64,7 @@ function validateBackendOptionValue(rawValue: unknown): string {
 export function validateRuntimeModeInput(rawMode: unknown): string {
   return validateBoundedText({
     value: rawMode,
-    field: "Runtime mode",
+    field: "运行时模式",
     maxLength: MAX_RUNTIME_MODE_LENGTH,
   });
 }
@@ -72,7 +72,7 @@ export function validateRuntimeModeInput(rawMode: unknown): string {
 export function validateRuntimeModelInput(rawModel: unknown): string {
   return validateBoundedText({
     value: rawModel,
-    field: "Model id",
+    field: "模型 ID",
     maxLength: MAX_MODEL_LENGTH,
   });
 }
@@ -80,7 +80,7 @@ export function validateRuntimeModelInput(rawModel: unknown): string {
 export function validateRuntimePermissionProfileInput(rawProfile: unknown): string {
   return validateBoundedText({
     value: rawProfile,
-    field: "Permission profile",
+    field: "权限配置",
     maxLength: MAX_PERMISSION_PROFILE_LENGTH,
   });
 }
@@ -88,7 +88,7 @@ export function validateRuntimePermissionProfileInput(rawProfile: unknown): stri
 export function validateRuntimeCwdInput(rawCwd: unknown): string {
   const cwd = validateBoundedText({
     value: rawCwd,
-    field: "Working directory",
+    field: "工作目录",
     maxLength: MAX_CWD_LENGTH,
   });
   if (!isAbsolute(cwd)) {
@@ -99,7 +99,7 @@ export function validateRuntimeCwdInput(rawCwd: unknown): string {
 
 export function validateRuntimeTimeoutSecondsInput(rawTimeout: unknown): number {
   if (typeof rawTimeout !== "number" || !Number.isFinite(rawTimeout)) {
-    failInvalidOption("Timeout must be a positive integer in seconds.");
+    failInvalidOption("超时必须是正整数（秒）。");
   }
   const timeout = Math.round(rawTimeout);
   if (timeout < MIN_TIMEOUT_SECONDS || timeout > MAX_TIMEOUT_SECONDS) {
@@ -193,7 +193,7 @@ export function validateRuntimeOptionPatch(
     if (rawExtras === undefined) {
       next.backendExtras = undefined;
     } else if (!rawExtras || typeof rawExtras !== "object" || Array.isArray(rawExtras)) {
-      failInvalidOption("Backend extras must be a key/value object.");
+      failInvalidOption("后端额外参数必须是键/值对象。");
     } else {
       const entries = Object.entries(rawExtras);
       if (entries.length > MAX_BACKEND_EXTRAS) {

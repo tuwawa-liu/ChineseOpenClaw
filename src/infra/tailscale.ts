@@ -192,7 +192,7 @@ export async function ensureGoInstalled(
     true,
   );
   if (!install) {
-    runtime.error("Go is required to build tailscaled from source. Aborting.");
+    runtime.error("需要 Go 才能从源码构建 tailscaled。正在中止。");
     runtime.exit(1);
   }
   logVerbose("Installing Go via Homebrew…");
@@ -311,7 +311,7 @@ export async function ensureFunnel(
     const statusOut = (await exec(tailscaleBin, ["funnel", "status", "--json"])).stdout.trim();
     const parsed = statusOut ? (JSON.parse(statusOut) as Record<string, unknown>) : {};
     if (!parsed || Object.keys(parsed).length === 0) {
-      runtime.error(danger("Tailscale Funnel is not enabled on this tailnet/device."));
+      runtime.error(danger("未在此 tailnet/设备上启用 Tailscale Funnel。"));
       runtime.error(
         info(
           "Enable in admin console: https://login.tailscale.com/admin (see https://tailscale.com/kb/1223/funnel)",
@@ -350,7 +350,7 @@ export async function ensureFunnel(
     const stdout = typeof errOutput.stdout === "string" ? errOutput.stdout : "";
     const stderr = typeof errOutput.stderr === "string" ? errOutput.stderr : "";
     if (stdout.includes("Funnel is not enabled")) {
-      console.error(danger("Funnel is not enabled on this tailnet/device."));
+      console.error(danger("未在此 tailnet/设备上启用 Funnel。"));
       const linkMatch = stdout.match(/https?:\/\/\S+/);
       if (linkMatch) {
         console.error(info(`Enable it here: ${linkMatch[0]}`));
@@ -369,7 +369,7 @@ export async function ensureFunnel(
         ),
       );
     }
-    runtime.error("Failed to enable Tailscale Funnel. Is it allowed on your tailnet?");
+    runtime.error("启用 Tailscale Funnel 失败。是否在你的 tailnet 上允许了？");
     runtime.error(
       info(
         `Tip: Funnel is optional for OpenClaw. You can keep running the web gateway without it: \`${formatCliCommand("openclaw gateway")}\``,

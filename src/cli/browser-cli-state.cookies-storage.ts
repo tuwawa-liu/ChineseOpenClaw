@@ -94,7 +94,7 @@ export function registerBrowserCookiesAndStorageCommands(
       const targetId = resolveTargetId(opts.targetId, cmd);
       const url = resolveUrl(opts, cmd);
       if (!url) {
-        defaultRuntime.error(danger("Missing required --url option for cookies set"));
+        defaultRuntime.error(danger(t("browserStateCli.missingCookiesUrl")));
         defaultRuntime.exit(1);
         return;
       }

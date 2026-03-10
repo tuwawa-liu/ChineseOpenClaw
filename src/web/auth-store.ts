@@ -4,6 +4,7 @@ import path from "node:path";
 import { formatCliCommand } from "../cli/command-format.js";
 import { resolveOAuthDir } from "../config/paths.js";
 import { info, success } from "../globals.js";
+import { t } from "../i18n/index.js";
 import { getChildLogger } from "../logging.js";
 import { DEFAULT_ACCOUNT_ID } from "../routing/session-key.js";
 import { defaultRuntime, type RuntimeEnv } from "../runtime.js";
@@ -145,7 +146,7 @@ export async function logoutWeb(params: {
   } else {
     await fs.rm(resolvedAuthDir, { recursive: true, force: true });
   }
-  runtime.log(success("Cleared WhatsApp Web credentials."));
+  runtime.log(success(t("webAuthStore.credentialsCleared")));
   return true;
 }
 

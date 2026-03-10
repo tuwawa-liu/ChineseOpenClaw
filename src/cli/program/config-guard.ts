@@ -98,14 +98,14 @@ export async function ensureConfigReady(params: {
   const heading = (value: string) => colorize(rich, theme.heading, value);
   const commandText = (value: string) => colorize(rich, theme.command, value);
 
-  params.runtime.error(heading("Config invalid"));
+  params.runtime.error(heading("配置无效"));
   params.runtime.error(`${muted("File:")} ${muted(shortenHomePath(snapshot.path))}`);
   if (issues.length > 0) {
     params.runtime.error(muted("Problem:"));
     params.runtime.error(issues.map((issue) => `  ${error(issue)}`).join("\n"));
   }
   if (legacyIssues.length > 0) {
-    params.runtime.error(muted("Legacy config keys detected:"));
+    params.runtime.error(muted("检测到旧版配置键："));
     params.runtime.error(legacyIssues.map((issue) => `  ${error(issue)}`).join("\n"));
   }
   params.runtime.error("");

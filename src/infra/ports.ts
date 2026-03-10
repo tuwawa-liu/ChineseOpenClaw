@@ -54,18 +54,18 @@ export async function handlePortError(
         : await describePortOwner(port);
     runtime.error(danger(`${context} failed: port ${port} is already in use.`));
     if (details) {
-      runtime.error(info("Port listener details:"));
+      runtime.error(info("端口监听详情："));
       runtime.error(details);
       if (/openclaw|src\/index\.ts|dist\/index\.js/.test(details)) {
         runtime.error(
           warn(
-            "It looks like another OpenClaw instance is already running. Stop it or pick a different port.",
+            "似乎另一个 OpenClaw 实例正在运行。请停止它或选择其他端口。",
           ),
         );
       }
     }
     runtime.error(
-      info("Resolve by stopping the process using the port or passing --port <free-port>."),
+      info("通过停止使用该端口的进程或传入 --port <空闲端口> 解决。"),
     );
     runtime.exit(1);
   }

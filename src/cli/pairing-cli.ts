@@ -159,7 +159,7 @@ export function registerPairingCli(program: Command) {
       }
 
       defaultRuntime.log(
-        `${theme.success("Approved")} ${theme.muted(channel)} sender ${theme.command(approved.id)}.`,
+        `${theme.success(t("pairingCli.approved"))} ${theme.muted(channel)} sender ${theme.command(approved.id)}.`,
       );
 
       if (!opts.notify) {

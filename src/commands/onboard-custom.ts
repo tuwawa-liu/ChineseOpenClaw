@@ -200,7 +200,7 @@ function resolveAliasError(params: {
   try {
     normalized = normalizeAlias(trimmed);
   } catch (err) {
-    return err instanceof Error ? err.message : "Alias is invalid.";
+    return err instanceof Error ? err.message : "别名无效。";
   }
   const aliasIndex = buildModelAliasIndex({
     cfg: params.cfg,
@@ -501,7 +501,7 @@ export function resolveCustomProviderId(
   if (explicitProviderId && !normalizeEndpointId(explicitProviderId)) {
     throw new CustomApiError(
       "invalid_provider_id",
-      "Custom provider ID must include letters, numbers, or hyphens.",
+      "自定义提供者 ID 必须包含字母、数字或连字符。",
     );
   }
   const requestedProviderId = explicitProviderId || buildEndpointIdFromUrl(baseUrl);
@@ -531,7 +531,7 @@ export function parseNonInteractiveCustomApiFlags(
       "missing_required",
       [
         'Auth choice "custom-api-key" requires a base URL and model ID.',
-        "Use --custom-base-url and --custom-model-id.",
+        "使用 --custom-base-url 和 --custom-model-id。",
       ].join("\n"),
     );
   }
@@ -558,7 +558,7 @@ export function applyCustomApiConfig(params: ApplyCustomApiConfigParams): Custom
   try {
     new URL(baseUrl);
   } catch {
-    throw new CustomApiError("invalid_base_url", "Custom provider base URL must be a valid URL.");
+    throw new CustomApiError("invalid_base_url", "自定义提供者基础 URL 必须是有效的 URL。");
   }
 
   if (params.compatibility !== "openai" && params.compatibility !== "anthropic") {
@@ -570,7 +570,7 @@ export function applyCustomApiConfig(params: ApplyCustomApiConfigParams): Custom
 
   const modelId = params.modelId.trim();
   if (!modelId) {
-    throw new CustomApiError("invalid_model_id", "Custom provider model ID is required.");
+    throw new CustomApiError("invalid_model_id", "需要自定义提供者模型 ID。");
   }
 
   // Transform Azure URLs to include the deployment path for API calls

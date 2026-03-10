@@ -325,9 +325,9 @@ export async function monitorWebChannel(
       }, WATCHDOG_CHECK_MS);
     }
 
-    whatsappLog.info("Listening for personal WhatsApp inbound messages.");
+    whatsappLog.info("正在监听个人 WhatsApp 入站消息。");
     if (process.stdout.isTTY || process.stderr.isTTY) {
-      whatsappLog.raw("Ctrl+C to stop.");
+      whatsappLog.raw("Ctrl+C 停止。");
     }
 
     if (!keepAlive) {

@@ -14,7 +14,7 @@ export async function probeGatewayStatus(opts: {
   try {
     await withProgress(
       {
-        label: "Checking gateway status...",
+        label: "正在检查网关状态...",
         indeterminate: true,
         enabled: opts.json !== true,
       },

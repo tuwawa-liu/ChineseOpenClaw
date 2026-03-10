@@ -98,7 +98,7 @@ export function registerBrowserExtensionCommands(
       defaultRuntime.error(
         info(
           [
-            copied ? "Copied to clipboard." : "Copy to clipboard unavailable.",
+            copied ? "已复制到剪贴板。" : "复制到剪贴板不可用。",
             "Next:",
             `- Chrome → chrome://extensions → enable “Developer mode”`,
             `- “Load unpacked” → select: ${displayPath}`,

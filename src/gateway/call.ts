@@ -179,7 +179,7 @@ export function buildGatewayConnectionDetails(
         : "local loopback";
   const bindDetail = !urlOverride && !remoteUrl ? `Bind: ${bindMode}` : undefined;
   const remoteFallbackNote = remoteMisconfigured
-    ? "Warn: gateway.mode=remote but gateway.remote.url is missing; set gateway.remote.url or switch gateway.mode=local."
+    ? "警告：gateway.mode=remote 但缺少 gateway.remote.url；设置 gateway.remote.url 或切换 gateway.mode=local。"
     : undefined;
 
   const allowPrivateWs = process.env.OPENCLAW_ALLOW_INSECURE_PRIVATE_WS === "1";
@@ -193,7 +193,7 @@ export function buildGatewayConnectionDetails(
         "Both credentials and chat data would be exposed to network interception.",
         `Source: ${urlSource}`,
         `Config: ${configPath}`,
-        "Fix: Use wss:// for remote gateway URLs.",
+        "修复：远程网关 URL 请使用 wss://。",
         "Safe remote access defaults:",
         "- keep gateway.bind=loopback and use an SSH tunnel (ssh -N -L 18789:127.0.0.1:18789 user@gateway-host)",
         "- or use Tailscale Serve/Funnel for HTTPS remote access",
@@ -296,9 +296,9 @@ function ensureRemoteModeUrlConfigured(context: ResolvedGatewayCallContext): voi
   }
   throw new Error(
     [
-      "gateway remote mode misconfigured: gateway.remote.url missing",
+      "网关远程模式配置错误：缺少 gateway.remote.url",
       `Config: ${context.configPath}`,
-      "Fix: set gateway.remote.url, or set gateway.mode=local.",
+      "修复：设置 gateway.remote.url，或设置 gateway.mode=local。",
     ].join("\n"),
   );
 }
@@ -770,7 +770,7 @@ function ensureGatewaySupportsRequiredMethods(params: {
     throw new Error(
       [
         `active gateway does not support required method "${method}" for "${params.attemptedMethod}".`,
-        "Update the gateway or run without SecretRefs.",
+        "更新网关或不使用 SecretRefs 运行。",
       ].join(" "),
     );
   }
@@ -872,7 +872,7 @@ async function callGatewayWithScopes<T = Record<string, unknown>>(
     urlOverrideSource: context.urlOverrideSource,
     explicitAuth: context.explicitAuth,
     resolvedAuth: resolvedCredentials,
-    errorHint: "Fix: pass --token or --password (or gatewayToken in tools).",
+    errorHint: "修复：传入 --token 或 --password（或工具中的 gatewayToken）。",
     configPath: context.configPath,
   });
   ensureRemoteModeUrlConfigured(context);

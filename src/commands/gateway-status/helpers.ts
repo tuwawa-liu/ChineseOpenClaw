@@ -325,14 +325,14 @@ export function buildNetworkHints(cfg: OpenClawConfig) {
 export function renderTargetHeader(target: GatewayStatusTarget, rich: boolean) {
   const kindLabel =
     target.kind === "localLoopback"
-      ? "Local loopback"
+      ? "本地回环"
       : target.kind === "sshTunnel"
-        ? "Remote over SSH"
+        ? "通过 SSH 远程"
         : target.kind === "configRemote"
           ? target.active
-            ? "Remote (configured)"
-            : "Remote (configured, inactive)"
-          : "URL (explicit)";
+            ? "远程（已配置）"
+            : "远程（已配置，未激活）"
+          : "URL（显式）";
   return `${colorize(rich, theme.heading, kindLabel)} ${colorize(rich, theme.muted, target.url)}`;
 }
 
@@ -340,15 +340,15 @@ export function renderProbeSummaryLine(probe: GatewayProbeResult, rich: boolean)
   if (probe.ok) {
     const latency =
       typeof probe.connectLatencyMs === "number" ? `${probe.connectLatencyMs}ms` : "unknown";
-    return `${colorize(rich, theme.success, "Connect: ok")} (${latency}) · ${colorize(rich, theme.success, "RPC: ok")}`;
+    return `${colorize(rich, theme.success, "连接：成功")} (${latency}) · ${colorize(rich, theme.success, "RPC：成功")}`;
   }
 
   const detail = probe.error ? ` - ${probe.error}` : "";
   if (probe.connectLatencyMs != null) {
     const latency =
       typeof probe.connectLatencyMs === "number" ? `${probe.connectLatencyMs}ms` : "unknown";
-    return `${colorize(rich, theme.success, "Connect: ok")} (${latency}) · ${colorize(rich, theme.error, "RPC: failed")}${detail}`;
+    return `${colorize(rich, theme.success, "Connect: ok")} (${latency}) · ${colorize(rich, theme.error, "RPC：失败")}${detail}`;
   }
 
-  return `${colorize(rich, theme.error, "Connect: failed")}${detail}`;
+  return `${colorize(rich, theme.error, "连接：失败")}${detail}`;
 }

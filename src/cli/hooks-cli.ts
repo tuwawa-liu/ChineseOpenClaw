@@ -119,12 +119,12 @@ function buildConfigWithHookEnabled(params: {
 
 function formatHookStatus(hook: HookStatusEntry): string {
   if (hook.eligible) {
-    return theme.success("✓ ready");
+    return theme.success(t("hooksFormat.readyLower"));
   }
   if (hook.disabled) {
-    return theme.warn("⏸ disabled");
+    return theme.warn(t("hooksFormat.disabledLower"));
   }
-  return theme.error("✗ missing");
+  return theme.error(t("hooksFormat.missingLower"));
 }
 
 function formatHookName(hook: HookStatusEntry): string {
@@ -298,7 +298,7 @@ export function formatHooksList(report: HookStatusReport, opts: HooksListOptions
 
   const lines: string[] = [];
   lines.push(
-    `${theme.heading("Hooks")} ${theme.muted(`(${eligible.length}/${hooks.length} ready)`)}`,
+    `${theme.heading("钩子")} ${theme.muted(`(${eligible.length}/${hooks.length} ready)`)}`,
   );
   lines.push(
     renderTable({
@@ -334,10 +334,10 @@ export function formatHookInfo(
   const lines: string[] = [];
   const emoji = hook.emoji ?? "🔗";
   const status = hook.eligible
-    ? theme.success("✓ Ready")
+    ? theme.success(t("hooksFormat.readyUpper"))
     : hook.disabled
-      ? theme.warn("⏸ Disabled")
-      : theme.error("✗ Missing requirements");
+      ? theme.warn(t("hooksFormat.disabledUpper"))
+      : theme.error(t("hooksFormat.missingReqsUpper"));
 
   lines.push(`${emoji} ${theme.heading(hook.name)} ${status}`);
   lines.push("");
@@ -345,22 +345,22 @@ export function formatHookInfo(
   lines.push("");
 
   // Details
-  lines.push(theme.heading("Details:"));
+  lines.push(theme.heading(t("hooksFormat.detailsHeading")));
   if (hook.managedByPlugin) {
-    lines.push(`${theme.muted("  Source:")} ${hook.source} (${hook.pluginId ?? "unknown"})`);
+    lines.push(`${theme.muted(t("hooksFormat.sourceLabel"))} ${hook.source} (${hook.pluginId ?? "unknown"})`);
   } else {
-    lines.push(`${theme.muted("  Source:")} ${hook.source}`);
+    lines.push(`${theme.muted(t("hooksFormat.sourceLabel"))} ${hook.source}`);
   }
-  lines.push(`${theme.muted("  Path:")} ${shortenHomePath(hook.filePath)}`);
-  lines.push(`${theme.muted("  Handler:")} ${shortenHomePath(hook.handlerPath)}`);
+  lines.push(`${theme.muted(t("hooksFormat.pathLabel"))} ${shortenHomePath(hook.filePath)}`);
+  lines.push(`${theme.muted(t("hooksFormat.handlerLabel"))} ${shortenHomePath(hook.handlerPath)}`);
   if (hook.homepage) {
-    lines.push(`${theme.muted("  Homepage:")} ${hook.homepage}`);
+    lines.push(`${theme.muted(t("hooksFormat.homepageLabel"))} ${hook.homepage}`);
   }
   if (hook.events.length > 0) {
-    lines.push(`${theme.muted("  Events:")} ${hook.events.join(", ")}`);
+    lines.push(`${theme.muted(t("hooksFormat.eventsLabel"))} ${hook.events.join(", ")}`);
   }
   if (hook.managedByPlugin) {
-    lines.push(theme.muted("  Managed by plugin; enable/disable via hooks CLI not available."));
+    lines.push(theme.muted(t("hooksFormat.managedByPlugin")));
   }
 
   // Requirements
@@ -373,40 +373,40 @@ export function formatHookInfo(
 
   if (hasRequirements) {
     lines.push("");
-    lines.push(theme.heading("Requirements:"));
+    lines.push(theme.heading(t("hooksFormat.requirementsHeading")));
     if (hook.requirements.bins.length > 0) {
       const binsStatus = hook.requirements.bins.map((bin) => {
         const missing = hook.missing.bins.includes(bin);
         return missing ? theme.error(`✗ ${bin}`) : theme.success(`✓ ${bin}`);
       });
-      lines.push(`${theme.muted("  Binaries:")} ${binsStatus.join(", ")}`);
+      lines.push(`${theme.muted(t("hooksFormat.binariesLabel"))} ${binsStatus.join(", ")}`);
     }
     if (hook.requirements.anyBins.length > 0) {
       const anyBinsStatus =
         hook.missing.anyBins.length > 0
-          ? theme.error(`✗ (any of: ${hook.requirements.anyBins.join(", ")})`)
-          : theme.success(`✓ (any of: ${hook.requirements.anyBins.join(", ")})`);
-      lines.push(`${theme.muted("  Any binary:")} ${anyBinsStatus}`);
+          ? theme.error(`✗ (任一: ${hook.requirements.anyBins.join(", ")})`)
+          : theme.success(`✓ (任一: ${hook.requirements.anyBins.join(", ")})`);
+      lines.push(`${theme.muted(t("hooksFormat.anyBinaryLabel"))} ${anyBinsStatus}`);
     }
     if (hook.requirements.env.length > 0) {
       const envStatus = hook.requirements.env.map((env) => {
         const missing = hook.missing.env.includes(env);
         return missing ? theme.error(`✗ ${env}`) : theme.success(`✓ ${env}`);
       });
-      lines.push(`${theme.muted("  Environment:")} ${envStatus.join(", ")}`);
+      lines.push(`${theme.muted(t("hooksFormat.environmentLabel"))} ${envStatus.join(", ")}`);
     }
     if (hook.requirements.config.length > 0) {
       const configStatus = hook.configChecks.map((check) => {
         return check.satisfied ? theme.success(`✓ ${check.path}`) : theme.error(`✗ ${check.path}`);
       });
-      lines.push(`${theme.muted("  Config:")} ${configStatus.join(", ")}`);
+      lines.push(`${theme.muted(t("hooksFormat.configLabel"))} ${configStatus.join(", ")}`);
     }
     if (hook.requirements.os.length > 0) {
       const osStatus =
         hook.missing.os.length > 0
           ? theme.error(`✗ (${hook.requirements.os.join(", ")})`)
           : theme.success(`✓ (${hook.requirements.os.join(", ")})`);
-      lines.push(`${theme.muted("  OS:")} ${osStatus}`);
+      lines.push(`${theme.muted(t("hooksFormat.osLabel"))} ${osStatus}`);
     }
   }
 
@@ -442,15 +442,15 @@ export function formatHooksCheck(report: HookStatusReport, opts: HooksCheckOptio
   const notEligible = report.hooks.filter((h) => !h.eligible);
 
   const lines: string[] = [];
-  lines.push(theme.heading("Hooks Status"));
+  lines.push(theme.heading(t("hooksFormat.hooksStatusHeading")));
   lines.push("");
-  lines.push(`${theme.muted("Total hooks:")} ${report.hooks.length}`);
-  lines.push(`${theme.success("Ready:")} ${eligible.length}`);
-  lines.push(`${theme.warn("Not ready:")} ${notEligible.length}`);
+  lines.push(`${theme.muted(t("hooksFormat.totalHooks"))} ${report.hooks.length}`);
+  lines.push(`${theme.success(t("hooksFormat.readyCount"))} ${eligible.length}`);
+  lines.push(`${theme.warn(t("hooksFormat.notReadyCount"))} ${notEligible.length}`);
 
   if (notEligible.length > 0) {
     lines.push("");
-    lines.push(theme.heading("Hooks not ready:"));
+    lines.push(theme.heading(t("hooksFormat.hooksNotReadyHeading")));
     for (const hook of notEligible) {
       const reasons = [];
       if (hook.disabled) {
@@ -490,7 +490,7 @@ export async function enableHook(hookName: string): Promise<void> {
 
   await writeConfigFile(nextConfig);
   defaultRuntime.log(
-    `${theme.success("✓")} Enabled hook: ${hook.emoji ?? "🔗"} ${theme.command(hookName)}`,
+    `${theme.success(t("hooksFormat.enabledHook"))} ${hook.emoji ?? "🔗"} ${theme.command(hookName)}`,
   );
 }
 
@@ -501,7 +501,7 @@ export async function disableHook(hookName: string): Promise<void> {
 
   await writeConfigFile(nextConfig);
   defaultRuntime.log(
-    `${theme.warn("⏸")} Disabled hook: ${hook.emoji ?? "🔗"} ${theme.command(hookName)}`,
+    `${theme.warn("⏸")} ${t("hooksFormat.disabledHook")} ${hook.emoji ?? "🔗"} ${theme.command(hookName)}`,
   );
 }
 

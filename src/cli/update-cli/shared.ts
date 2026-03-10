@@ -18,6 +18,7 @@ import {
 import type { UpdateStepProgress, UpdateStepResult } from "../../infra/update-runner.js";
 import { runCommandWithTimeout } from "../../process/exec.js";
 import { defaultRuntime } from "../../runtime.js";
+import { t } from "../../i18n/index.js";
 import { theme } from "../../terminal/theme.js";
 import { pathExists } from "../../utils.js";
 
@@ -40,7 +41,7 @@ export type UpdateWizardOptions = {
   timeout?: string;
 };
 
-const INVALID_TIMEOUT_ERROR = "--timeout must be a positive integer (seconds)";
+const INVALID_TIMEOUT_ERROR = t("updateShared.invalidTimeout");
 
 export function parseTimeoutMsOrExit(timeout?: string): number | undefined | null {
   const timeoutMs = timeout ? Number.parseInt(timeout, 10) * 1000 : undefined;

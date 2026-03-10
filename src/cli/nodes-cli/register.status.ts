@@ -198,12 +198,12 @@ export function registerNodesStatusCommands(nodes: Command) {
             renderTable({
               width: tableWidth,
               columns: [
-                { key: "Node", header: "Node", minWidth: 14, flex: true },
+                { key: "节点", header: "Node", minWidth: 14, flex: true },
                 { key: "ID", header: "ID", minWidth: 10 },
                 { key: "IP", header: "IP", minWidth: 10 },
-                { key: "Detail", header: "Detail", minWidth: 18, flex: true },
-                { key: "Status", header: "Status", minWidth: 18 },
-                { key: "Caps", header: "Caps", minWidth: 12, flex: true },
+                { key: "详情", header: "Detail", minWidth: 18, flex: true },
+                { key: "状态", header: "Status", minWidth: 18 },
+                { key: "能力", header: "Caps", minWidth: 12, flex: true },
               ],
               rows,
             }).trimEnd(),
@@ -260,12 +260,12 @@ export function registerNodesStatusCommands(nodes: Command) {
           const tableWidth = Math.max(60, (process.stdout.columns ?? 120) - 1);
           const rows = [
             { Field: "ID", Value: nodeId },
-            displayName ? { Field: "Name", Value: displayName } : null,
+            displayName ? { Field: "名称", Value: displayName } : null,
             ip ? { Field: "IP", Value: ip } : null,
-            family ? { Field: "Device", Value: family } : null,
-            model ? { Field: "Model", Value: model } : null,
-            perms ? { Field: "Perms", Value: perms } : null,
-            versions ? { Field: "Version", Value: versions } : null,
+            family ? { Field: "设备", Value: family } : null,
+            model ? { Field: "型号", Value: model } : null,
+            perms ? { Field: "权限", Value: perms } : null,
+            versions ? { Field: "版本", Value: versions } : null,
             pathEnv ? { Field: "PATH", Value: pathEnv } : null,
             { Field: "Status", Value: status },
             { Field: "Caps", Value: caps ? caps.join(", ") : "?" },
@@ -283,7 +283,7 @@ export function registerNodesStatusCommands(nodes: Command) {
             }).trimEnd(),
           );
           defaultRuntime.log("");
-          defaultRuntime.log(heading("Commands"));
+          defaultRuntime.log(heading("命令"));
           if (commands.length === 0) {
             defaultRuntime.log(muted("- (none reported)"));
             return;
@@ -389,7 +389,7 @@ export function registerNodesStatusCommands(nodes: Command) {
               };
             });
             defaultRuntime.log("");
-            defaultRuntime.log(heading("Paired"));
+            defaultRuntime.log(heading("已配对"));
             defaultRuntime.log(
               renderTable({
                 width: tableWidth,
@@ -397,7 +397,7 @@ export function registerNodesStatusCommands(nodes: Command) {
                   { key: "Node", header: "Node", minWidth: 14, flex: true },
                   { key: "Id", header: "ID", minWidth: 10 },
                   { key: "IP", header: "IP", minWidth: 10 },
-                  { key: "LastConnect", header: "Last Connect", minWidth: 14 },
+                  { key: "LastConnect", header: "最后连接", minWidth: 14 },
                 ],
                 rows: pairedRows,
               }).trimEnd(),

@@ -299,7 +299,7 @@ export function registerDevicesCli(program: Command) {
           defaultRuntime.log(JSON.stringify(result, null, 2));
           return;
         }
-        defaultRuntime.log(`${theme.warn("Removed")} ${theme.command(trimmed)}`);
+        defaultRuntime.log(`${theme.warn("已移除")} ${theme.command(trimmed)}`);
       }),
   );
 
@@ -356,7 +356,7 @@ export function registerDevicesCli(program: Command) {
         );
         if (opts.pending) {
           defaultRuntime.log(
-            `${theme.warn("Rejected")} ${rejectedRequestIds.length} pending request${rejectedRequestIds.length === 1 ? "" : "s"}`,
+            `${theme.warn("已拒绝")} ${rejectedRequestIds.length} pending request${rejectedRequestIds.length === 1 ? "" : "s"}`,
           );
         }
       }),
@@ -391,7 +391,7 @@ export function registerDevicesCli(program: Command) {
         }
         const deviceId = (result as { device?: { deviceId?: string } })?.device?.deviceId;
         defaultRuntime.log(
-          `${theme.success("Approved")} ${theme.command(deviceId ?? "ok")} ${theme.muted(`(${resolvedRequestId})`)}`,
+          `${theme.success(t("devicesCli.approved"))} ${theme.command(deviceId ?? "ok")} ${theme.muted(`(${resolvedRequestId})`)}`,
         );
       }),
   );

@@ -78,21 +78,21 @@ export function registerCronEditCommand(cron: Command) {
         try {
           if (opts.session === "main" && opts.message) {
             throw new Error(
-              "Main jobs cannot use --message; use --system-event or --session isolated.",
+              t("cronEdit.mainJobsCannotUseMessage"),
             );
           }
           if (opts.session === "isolated" && opts.systemEvent) {
             throw new Error(
-              "Isolated jobs cannot use --system-event; use --message or --session main.",
+              t("cronEdit.isolatedJobsCannotUseSystemEvent"),
             );
           }
           if (opts.announce && typeof opts.deliver === "boolean") {
-            throw new Error("Choose --announce or --no-deliver (not multiple).");
+            throw new Error(t("cronEdit.chooseAnnounceOrNoDeliver"));
           }
           const staggerRaw = typeof opts.stagger === "string" ? opts.stagger.trim() : "";
           const useExact = Boolean(opts.exact);
           if (staggerRaw && useExact) {
-            throw new Error("Choose either --stagger or --exact, not both");
+            throw new Error(t("cronEdit.chooseStaggerOrExact"));
           }
           const requestedStaggerMs = parseCronStaggerMs({ staggerRaw, useExact });
 

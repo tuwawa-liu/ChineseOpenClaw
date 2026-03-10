@@ -118,7 +118,7 @@ function escapeMarkdown(text: string): string {
 }
 
 function buildMarkdown(query: string, results: DocResult[]): string {
-  const lines: string[] = [`# Docs search: ${escapeMarkdown(query)}`, ""];
+  const lines: string[] = [`# 文档搜索：${escapeMarkdown(query)}`, ""];
   if (results.length === 0) {
     lines.push(t("commands.docs.noResultsMd"));
     return lines.join("\n");
@@ -137,7 +137,7 @@ function formatLinkLabel(link: string): string {
 }
 
 function renderRichResults(query: string, results: DocResult[], runtime: RuntimeEnv) {
-  runtime.log(`${theme.heading("Docs search:")} ${theme.info(query)}`);
+  runtime.log(`${theme.heading("文档搜索：")} ${theme.info(query)}`);
   if (results.length === 0) {
     runtime.log(theme.muted(t("commands.docs.noResults")));
     return;

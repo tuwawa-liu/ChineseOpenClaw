@@ -40,7 +40,7 @@ export function describeUnknownError(err: unknown): string {
     try {
       return JSON.stringify(err);
     } catch {
-      return "Unknown error";
+      return "未知错误";
     }
   }
   return "Unknown error";
@@ -101,7 +101,7 @@ export async function maybeExplainGatewayServiceStop() {
   defaultRuntime.error(
     loaded
       ? `Gateway service appears ${service.loadedText}. Stop it first.`
-      : "Gateway service status unknown; if supervised, stop it first.",
+      : "网关服务状态未知；如果受监控，请先停止它。",
   );
   for (const hint of renderGatewayServiceStopHints()) {
     defaultRuntime.error(hint);

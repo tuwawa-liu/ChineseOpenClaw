@@ -487,7 +487,7 @@ async function ensureDmComponentAuthorized(params: {
     logVerbose(`agent ${componentLabel}: blocked (DM policy disabled)`);
     try {
       await interaction.reply({
-        content: "DM interactions are disabled.",
+        content: "私信交互已禁用。",
         ...replyOpts,
       });
     } catch {
@@ -547,7 +547,7 @@ async function ensureDmComponentAuthorized(params: {
     if (!pairingResult.created) {
       try {
         await interaction.reply({
-          content: "Pairing already requested. Ask the bot owner to approve your code.",
+          content: "已请求配对。请向机器人所有者询问批准你的代码。",
           ...replyOpts,
         });
       } catch {

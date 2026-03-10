@@ -85,10 +85,10 @@ function resolveFileNpmSpecToLocalPath(
 function formatPluginLine(plugin: PluginRecord, verbose = false): string {
   const status =
     plugin.status === "loaded"
-      ? theme.success("loaded")
+      ? theme.success(t("pluginsFormat.loaded"))
       : plugin.status === "disabled"
-        ? theme.warn("disabled")
-        : theme.error("error");
+        ? theme.warn(t("pluginsFormat.disabled"))
+        : theme.error(t("pluginsFormat.errorStatus"));
   const name = theme.command(plugin.name || plugin.id);
   const idSuffix = plugin.name && plugin.name !== plugin.id ? theme.muted(` (${plugin.id})`) : "";
   const desc = plugin.description
@@ -401,7 +401,7 @@ export function registerPluginsCli(program: Command) {
 
       const loaded = list.filter((p) => p.status === "loaded").length;
       defaultRuntime.log(
-        `${theme.heading("Plugins")} ${theme.muted(`(${loaded}/${list.length} loaded)`)}`,
+        `${theme.heading("插件")} ${theme.muted(`(${loaded}/${list.length} loaded)`)}`,
       );
 
       if (!opts.verbose) {
@@ -432,7 +432,7 @@ export function registerPluginsCli(program: Command) {
         });
 
         if (usedRoots.size > 0) {
-          defaultRuntime.log(theme.muted("Source roots:"));
+          defaultRuntime.log(theme.muted("源根目录："));
           for (const key of ["stock", "workspace", "global"] as const) {
             if (!usedRoots.has(key)) {
               continue;
@@ -450,11 +450,11 @@ export function registerPluginsCli(program: Command) {
           renderTable({
             width: tableWidth,
             columns: [
-              { key: "Name", header: "Name", minWidth: 14, flex: true },
+              { key: "Name", header: "名称", minWidth: 14, flex: true },
               { key: "ID", header: "ID", minWidth: 10, flex: true },
-              { key: "Status", header: "Status", minWidth: 10 },
-              { key: "Source", header: "Source", minWidth: 26, flex: true },
-              { key: "Version", header: "Version", minWidth: 8 },
+              { key: "Status", header: "状态", minWidth: 10 },
+              { key: "Source", header: "来源", minWidth: 26, flex: true },
+              { key: "Version", header: "版本", minWidth: 8 },
             ],
             rows,
           }).trimEnd(),
@@ -499,50 +499,50 @@ export function registerPluginsCli(program: Command) {
         lines.push(plugin.description);
       }
       lines.push("");
-      lines.push(`${theme.muted("Status:")} ${plugin.status}`);
-      lines.push(`${theme.muted("Source:")} ${shortenHomeInString(plugin.source)}`);
-      lines.push(`${theme.muted("Origin:")} ${plugin.origin}`);
+      lines.push(`${theme.muted("状态：")} ${plugin.status}`);
+      lines.push(`${theme.muted("来源：")} ${shortenHomeInString(plugin.source)}`);
+      lines.push(`${theme.muted("来源地：")} ${plugin.origin}`);
       if (plugin.version) {
-        lines.push(`${theme.muted("Version:")} ${plugin.version}`);
+        lines.push(`${theme.muted("版本：")} ${plugin.version}`);
       }
       if (plugin.toolNames.length > 0) {
-        lines.push(`${theme.muted("Tools:")} ${plugin.toolNames.join(", ")}`);
+        lines.push(`${theme.muted("工具：")} ${plugin.toolNames.join(", ")}`);
       }
       if (plugin.hookNames.length > 0) {
-        lines.push(`${theme.muted("Hooks:")} ${plugin.hookNames.join(", ")}`);
+        lines.push(`${theme.muted("钩子：")} ${plugin.hookNames.join(", ")}`);
       }
       if (plugin.gatewayMethods.length > 0) {
-        lines.push(`${theme.muted("Gateway methods:")} ${plugin.gatewayMethods.join(", ")}`);
+        lines.push(`${theme.muted("网关方法：")} ${plugin.gatewayMethods.join(", ")}`);
       }
       if (plugin.providerIds.length > 0) {
-        lines.push(`${theme.muted("Providers:")} ${plugin.providerIds.join(", ")}`);
+        lines.push(`${theme.muted("提供者：")} ${plugin.providerIds.join(", ")}`);
       }
       if (plugin.cliCommands.length > 0) {
-        lines.push(`${theme.muted("CLI commands:")} ${plugin.cliCommands.join(", ")}`);
+        lines.push(`${theme.muted("CLI 命令：")} ${plugin.cliCommands.join(", ")}`);
       }
       if (plugin.services.length > 0) {
-        lines.push(`${theme.muted("Services:")} ${plugin.services.join(", ")}`);
+        lines.push(`${theme.muted("服务：")} ${plugin.services.join(", ")}`);
       }
       if (plugin.error) {
         lines.push(`${theme.error("Error:")} ${plugin.error}`);
       }
       if (install) {
         lines.push("");
-        lines.push(`${theme.muted("Install:")} ${install.source}`);
+        lines.push(`${theme.muted("安装：")} ${install.source}`);
         if (install.spec) {
-          lines.push(`${theme.muted("Spec:")} ${install.spec}`);
+          lines.push(`${theme.muted("规范：")} ${install.spec}`);
         }
         if (install.sourcePath) {
-          lines.push(`${theme.muted("Source path:")} ${shortenHomePath(install.sourcePath)}`);
+          lines.push(`${theme.muted("源路径：")} ${shortenHomePath(install.sourcePath)}`);
         }
         if (install.installPath) {
-          lines.push(`${theme.muted("Install path:")} ${shortenHomePath(install.installPath)}`);
+          lines.push(`${theme.muted("安装路径：")} ${shortenHomePath(install.installPath)}`);
         }
         if (install.version) {
-          lines.push(`${theme.muted("Recorded version:")} ${install.version}`);
+          lines.push(`${theme.muted("记录版本：")} ${install.version}`);
         }
         if (install.installedAt) {
-          lines.push(`${theme.muted("Installed at:")} ${install.installedAt}`);
+          lines.push(`${theme.muted("安装时间：")} ${install.installedAt}`);
         }
       }
       defaultRuntime.log(lines.join("\n"));

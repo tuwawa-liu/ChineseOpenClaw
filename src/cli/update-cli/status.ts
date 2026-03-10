@@ -98,23 +98,23 @@ export async function updateStatusCommand(opts: UpdateStatusOptions): Promise<vo
         : "unknown";
 
   const rows = [
-    { Item: "Install", Value: installLabel },
-    { Item: "Channel", Value: channelLabel },
+    { Item: "安装", Value: installLabel },
+    { Item: "通道", Value: channelLabel },
     ...(gitLabel ? [{ Item: "Git", Value: gitLabel }] : []),
     {
-      Item: "Update",
+      Item: "更新",
       Value: updateAvailability.available ? theme.warn(`available · ${updateLine}`) : updateLine,
     },
   ];
 
-  defaultRuntime.log(theme.heading("OpenClaw update status"));
+  defaultRuntime.log(theme.heading("OpenClaw 更新状态"));
   defaultRuntime.log("");
   defaultRuntime.log(
     renderTable({
       width: tableWidth,
       columns: [
-        { key: "Item", header: "Item", minWidth: 10 },
-        { key: "Value", header: "Value", flex: true, minWidth: 24 },
+        { key: "项目", header: "Item", minWidth: 10 },
+        { key: "值", header: "Value", flex: true, minWidth: 24 },
       ],
       rows,
     }).trimEnd(),

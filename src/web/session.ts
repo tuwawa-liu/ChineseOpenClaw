@@ -10,6 +10,7 @@ import {
 import qrcode from "qrcode-terminal";
 import { formatCliCommand } from "../cli/command-format.js";
 import { danger, success } from "../globals.js";
+import { t } from "../i18n/index.js";
 import { getChildLogger, toPinoLikeLogger } from "../logging.js";
 import { ensureDir, resolveUserPath } from "../utils.js";
 import { VERSION } from "../version.js";
@@ -142,7 +143,7 @@ export async function createWaSocket(
           }
         }
         if (connection === "open" && verbose) {
-          console.log(success("WhatsApp Web connected."));
+          console.log(success(t("webSession.connected")));
         }
       } catch (err) {
         sessionLogger.error({ error: String(err) }, "connection.update handler error");

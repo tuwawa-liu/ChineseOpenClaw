@@ -88,7 +88,7 @@ export function registerBrowserStateCommands(
       const parent = parentOpts(cmd);
       const offline = parseOnOff(value);
       if (offline === null) {
-        defaultRuntime.error(danger("Expected on|off"));
+        defaultRuntime.error(danger(t("browserStateCli.expectedOnOff")));
         defaultRuntime.exit(1);
         return;
       }
@@ -116,11 +116,11 @@ export function registerBrowserStateCommands(
           (typeof opts.headersJson === "string" && opts.headersJson.trim()) ||
           (headersJson?.trim() ? headersJson.trim() : undefined);
         if (!headersJsonValue) {
-          throw new Error("Missing headers JSON (pass --headers-json or positional JSON argument)");
+          throw new Error(t("browserStateCli.missingHeadersJson"));
         }
         const parsed = JSON.parse(String(headersJsonValue)) as unknown;
         if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-          throw new Error("Headers JSON must be a JSON object");
+          throw new Error(t("browserStateCli.headersJsonMustBeObject"));
         }
         const headers: Record<string, string> = {};
         for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
@@ -213,7 +213,7 @@ export function registerBrowserStateCommands(
       const colorScheme =
         v === "dark" ? "dark" : v === "light" ? "light" : v === "none" ? "none" : null;
       if (!colorScheme) {
-        defaultRuntime.error(danger("Expected dark|light|none"));
+        defaultRuntime.error(danger(t("browserStateCli.expectedDarkLightNone")));
         defaultRuntime.exit(1);
         return;
       }

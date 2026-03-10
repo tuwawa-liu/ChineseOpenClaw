@@ -22,7 +22,7 @@ export function registerNodesPairingCommands(nodes: Command) {
           }
           if (pending.length === 0) {
             const { muted } = getNodesTheme();
-            defaultRuntime.log(muted("No pending pairing requests."));
+            defaultRuntime.log(muted("没有待处理的配对请求。"));
             return;
           }
           const { heading, warn, muted } = getNodesTheme();

@@ -40,15 +40,15 @@ export const MEDIA_AUDIO_FIELD_HELP: Record<MediaAudioFieldKey, string> = {
 };
 
 export const MEDIA_AUDIO_FIELD_LABELS: Record<MediaAudioFieldKey, string> = {
-  "tools.media.audio.enabled": "Enable Audio Understanding",
-  "tools.media.audio.maxBytes": "Audio Understanding Max Bytes",
-  "tools.media.audio.maxChars": "Audio Understanding Max Chars",
-  "tools.media.audio.prompt": "Audio Understanding Prompt",
-  "tools.media.audio.timeoutSeconds": "Audio Understanding Timeout (sec)",
-  "tools.media.audio.language": "Audio Understanding Language",
-  "tools.media.audio.attachments": "Audio Understanding Attachment Policy",
-  "tools.media.audio.models": "Audio Understanding Models",
-  "tools.media.audio.scope": "Audio Understanding Scope",
-  "tools.media.audio.echoTranscript": "Echo Transcript to Chat",
-  "tools.media.audio.echoFormat": "Transcript Echo Format",
+  "tools.media.audio.enabled": "启用音频理解",
+  "tools.media.audio.maxBytes": "音频理解最大字节数",
+  "tools.media.audio.maxChars": "音频理解最大字符数",
+  "tools.media.audio.prompt": "音频理解提示词",
+  "tools.media.audio.timeoutSeconds": "音频理解超时（秒）",
+  "tools.media.audio.language": "音频理解语言",
+  "tools.media.audio.attachments": "音频理解附件策略",
+  "tools.media.audio.models": "音频理解模型",
+  "tools.media.audio.scope": "音频理解范围",
+  "tools.media.audio.echoTranscript": "转录回显到聊天",
+  "tools.media.audio.echoFormat": "转录回显格式",
 };

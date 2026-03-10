@@ -162,19 +162,19 @@ class ExecApprovalActionRow extends Row<Button> {
       new ExecApprovalActionButton({
         approvalId,
         action: "allow-once",
-        label: "Allow once",
+        label: "允许一次",
         style: ButtonStyle.Success,
       }),
       new ExecApprovalActionButton({
         approvalId,
         action: "allow-always",
-        label: "Always allow",
+        label: "始终允许",
         style: ButtonStyle.Primary,
       }),
       new ExecApprovalActionButton({
         approvalId,
         action: "deny",
-        label: "Deny",
+        label: "拒绝",
         style: ButtonStyle.Danger,
       }),
     ]);
@@ -208,16 +208,16 @@ function resolveExecApprovalAccountId(params: {
 function buildExecApprovalMetadataLines(request: ExecApprovalRequest): string[] {
   const lines: string[] = [];
   if (request.request.cwd) {
-    lines.push(`- Working Directory: ${request.request.cwd}`);
+    lines.push(`- 工作目录：${request.request.cwd}`);
   }
   if (request.request.host) {
-    lines.push(`- Host: ${request.request.host}`);
+    lines.push(`- 主机：${request.request.host}`);
   }
   if (Array.isArray(request.request.envKeys) && request.request.envKeys.length > 0) {
-    lines.push(`- Env Overrides: ${request.request.envKeys.join(", ")}`);
+    lines.push(`- 环境覆盖：${request.request.envKeys.join(", ")}`);
   }
   if (request.request.agentId) {
-    lines.push(`- Agent: ${request.request.agentId}`);
+    lines.push(`- 代理：${request.request.agentId}`);
   }
   return lines;
 }
@@ -246,8 +246,8 @@ function createExecApprovalRequestContainer(params: {
   return new ExecApprovalContainer({
     cfg: params.cfg,
     accountId: params.accountId,
-    title: "Exec Approval Required",
-    description: "A command needs your approval.",
+    title: "需要执行审批",
+    description: "一个命令需要你的审批。",
     commandPreview,
     metadataLines: buildExecApprovalMetadataLines(params.request),
     actionRow: params.actionRow,
@@ -268,10 +268,10 @@ function createResolvedContainer(params: {
 
   const decisionLabel =
     params.decision === "allow-once"
-      ? "Allowed (once)"
+      ? "已允许（一次）"
       : params.decision === "allow-always"
-        ? "Allowed (always)"
-        : "Denied";
+        ? "已允许（始终）"
+        : "已拒绝";
 
   const accentColor =
     params.decision === "deny"
@@ -284,7 +284,7 @@ function createResolvedContainer(params: {
     cfg: params.cfg,
     accountId: params.accountId,
     title: `Exec Approval: ${decisionLabel}`,
-    description: params.resolvedBy ? `Resolved by ${params.resolvedBy}` : "Resolved",
+    description: params.resolvedBy ? `Resolved by ${params.resolvedBy}` : "已处理",
     commandPreview,
     footer: `ID: ${params.request.id}`,
     accentColor,
@@ -302,8 +302,8 @@ function createExpiredContainer(params: {
   return new ExecApprovalContainer({
     cfg: params.cfg,
     accountId: params.accountId,
-    title: "Exec Approval: Expired",
-    description: "This approval request has expired.",
+    title: "执行审批：已过期",
+    description: "此审批请求已过期。",
     commandPreview,
     footer: `ID: ${params.request.id}`,
     accentColor: "#99AAB5",

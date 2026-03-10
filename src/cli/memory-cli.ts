@@ -157,7 +157,7 @@ async function checkReadableFile(pathname: string): Promise<{ exists: boolean; i
     }
     return {
       exists: true,
-      issue: `${shortenHomePath(pathname)} not readable (${code ?? "error"})`,
+      issue: t("memoryCli.notReadable", { path: shortenHomePath(pathname), code: code ?? "error" }),
     };
   }
 }
@@ -174,11 +174,11 @@ async function scanSessionFiles(agentId: string): Promise<SourceScan> {
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;
     if (code === "ENOENT") {
-      issues.push(`sessions directory missing (${shortenHomePath(sessionsDir)})`);
+      issues.push(t("memoryCli.sessionsDirectoryMissing", { path: shortenHomePath(sessionsDir) }));
       return { source: "sessions", totalFiles: 0, issues };
     }
     issues.push(
-      `sessions directory not accessible (${shortenHomePath(sessionsDir)}): ${code ?? "error"}`,
+      t("memoryCli.sessionsNotAccessible", { path: shortenHomePath(sessionsDir), code: code ?? "error" }),
     );
     return { source: "sessions", totalFiles: null, issues };
   }
@@ -216,10 +216,10 @@ async function scanMemoryFiles(
     } catch (err) {
       const code = (err as NodeJS.ErrnoException).code;
       if (code === "ENOENT") {
-        issues.push(`additional memory path missing (${shortenHomePath(extraPath)})`);
+        issues.push(t("memoryCli.additionalMemoryMissing", { path: shortenHomePath(extraPath) }));
       } else {
         issues.push(
-          `additional memory path not accessible (${shortenHomePath(extraPath)}): ${code ?? "error"}`,
+          t("memoryCli.additionalMemoryNotAccessible", { path: shortenHomePath(extraPath), code: code ?? "error" }),
         );
       }
     }
@@ -232,11 +232,11 @@ async function scanMemoryFiles(
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;
     if (code === "ENOENT") {
-      issues.push(`memory directory missing (${shortenHomePath(memoryDir)})`);
+      issues.push(t("memoryCli.memoryDirectoryMissing", { path: shortenHomePath(memoryDir) }));
       dirReadable = false;
     } else {
       issues.push(
-        `memory directory not accessible (${shortenHomePath(memoryDir)}): ${code ?? "error"}`,
+        t("memoryCli.memoryDirNotAccessible", { path: shortenHomePath(memoryDir), code: code ?? "error" }),
       );
       dirReadable = null;
     }
@@ -251,7 +251,7 @@ async function scanMemoryFiles(
     const code = (err as NodeJS.ErrnoException).code;
     if (dirReadable !== null) {
       issues.push(
-        `memory directory scan failed (${shortenHomePath(memoryDir)}): ${code ?? "error"}`,
+        t("memoryCli.memoryScanFailed", { path: shortenHomePath(memoryDir), code: code ?? "error" }),
       );
       dirReadable = null;
     }

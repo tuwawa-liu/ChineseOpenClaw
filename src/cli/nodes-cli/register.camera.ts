@@ -67,7 +67,7 @@ export function registerNodesCameraCommands(nodes: Command) {
 
           if (devices.length === 0) {
             const { muted } = getNodesTheme();
-            defaultRuntime.log(muted("No cameras reported."));
+            defaultRuntime.log(muted("没有报告摄像头。"));
             return;
           }
 
@@ -78,13 +78,13 @@ export function registerNodesCameraCommands(nodes: Command) {
             Position: typeof device.position === "string" ? device.position : muted("unspecified"),
             ID: typeof device.id === "string" ? device.id : "",
           }));
-          defaultRuntime.log(heading("Cameras"));
+          defaultRuntime.log(heading("摄像头"));
           defaultRuntime.log(
             renderTable({
               width: tableWidth,
               columns: [
-                { key: "Name", header: "Name", minWidth: 14, flex: true },
-                { key: "Position", header: "Position", minWidth: 10 },
+                { key: "名称", header: "Name", minWidth: 14, flex: true },
+                { key: "位置", header: "Position", minWidth: 10 },
                 { key: "ID", header: "ID", minWidth: 10, flex: true },
               ],
               rows,

@@ -1,10 +1,8 @@
-import { en } from "../locales/en.ts";
+import { zh_CN } from "../locales/zh-CN.ts";
 import {
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
   isSupportedLocale,
-  loadLazyLocaleTranslation,
-  resolveNavigatorLocale,
 } from "./registry.ts";
 import type { Locale, TranslationMap } from "./types.ts";
 
@@ -14,62 +12,15 @@ export { SUPPORTED_LOCALES, isSupportedLocale };
 
 class I18nManager {
   private locale: Locale = DEFAULT_LOCALE;
-  private translations: Partial<Record<Locale, TranslationMap>> = { [DEFAULT_LOCALE]: en };
+  private translations: Record<Locale, TranslationMap> = { "zh-CN": zh_CN };
   private subscribers: Set<Subscriber> = new Set();
-
-  constructor() {
-    this.loadLocale();
-  }
-
-  private resolveInitialLocale(): Locale {
-    const saved = localStorage.getItem("openclaw.i18n.locale");
-    if (isSupportedLocale(saved)) {
-      return saved;
-    }
-    return resolveNavigatorLocale(navigator.language);
-  }
-
-  private loadLocale() {
-    const initialLocale = this.resolveInitialLocale();
-    if (initialLocale === DEFAULT_LOCALE) {
-      this.locale = DEFAULT_LOCALE;
-      return;
-    }
-    // Use the normal locale setter so startup locale loading follows the same
-    // translation-loading + notify path as manual locale changes.
-    void this.setLocale(initialLocale);
-  }
 
   public getLocale(): Locale {
     return this.locale;
   }
 
-  public async setLocale(locale: Locale) {
-    const needsTranslationLoad = locale !== DEFAULT_LOCALE && !this.translations[locale];
-    if (this.locale === locale && !needsTranslationLoad) {
-      return;
-    }
-
-    if (needsTranslationLoad) {
-      try {
-        const translation = await loadLazyLocaleTranslation(locale);
-        if (!translation) {
-          return;
-        }
-        this.translations[locale] = translation;
-      } catch (e) {
-        console.error(`Failed to load locale: ${locale}`, e);
-        return;
-      }
-    }
-
-    this.locale = locale;
-    localStorage.setItem("openclaw.i18n.locale", locale);
-    this.notify();
-  }
-
-  public registerTranslation(locale: Locale, map: TranslationMap) {
-    this.translations[locale] = map;
+  public async setLocale(_locale: Locale) {
+    // 只有中文，无需切换
   }
 
   public subscribe(sub: Subscriber) {
@@ -77,13 +28,9 @@ class I18nManager {
     return () => this.subscribers.delete(sub);
   }
 
-  private notify() {
-    this.subscribers.forEach((sub) => sub(this.locale));
-  }
-
   public t(key: string, params?: Record<string, string>): string {
     const keys = key.split(".");
-    let value: unknown = this.translations[this.locale] || this.translations[DEFAULT_LOCALE];
+    let value: unknown = this.translations[this.locale];
 
     for (const k of keys) {
       if (value && typeof value === "object") {
@@ -91,19 +38,6 @@ class I18nManager {
       } else {
         value = undefined;
         break;
-      }
-    }
-
-    // Fallback to English.
-    if (value === undefined && this.locale !== DEFAULT_LOCALE) {
-      value = this.translations[DEFAULT_LOCALE];
-      for (const k of keys) {
-        if (value && typeof value === "object") {
-          value = (value as Record<string, unknown>)[k];
-        } else {
-          value = undefined;
-          break;
-        }
       }
     }
 

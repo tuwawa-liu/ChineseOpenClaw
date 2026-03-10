@@ -19,7 +19,7 @@ export async function applyAuthChoiceOAuth(
       process.env.CHUTES_CLIENT_ID?.trim() ||
       String(
         await params.prompter.text({
-          message: "Enter Chutes OAuth client id",
+          message: "输入 Chutes OAuth 客户端 ID",
           placeholder: "cid_xxx",
           validate: (value) => (value?.trim() ? undefined : t("commands.authApiKey.required")),
         }),

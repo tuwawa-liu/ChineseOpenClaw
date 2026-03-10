@@ -181,7 +181,7 @@ export function formatThreadBindingDisabledError(params: {
   kind: ThreadBindingSpawnKind;
 }): string {
   if (params.channel === DISCORD_THREAD_BINDING_CHANNEL) {
-    return "Discord thread bindings are disabled (set channels.discord.threadBindings.enabled=true to override for this account, or session.threadBindings.enabled=true globally).";
+    return "Discord 线程绑定已禁用（设置 channels.discord.threadBindings.enabled=true 为此账户覆盖，或设置 session.threadBindings.enabled=true 全局启用）。";
   }
   return `Thread bindings are disabled for ${params.channel} (set session.threadBindings.enabled=true to enable).`;
 }
@@ -192,10 +192,10 @@ export function formatThreadBindingSpawnDisabledError(params: {
   kind: ThreadBindingSpawnKind;
 }): string {
   if (params.channel === DISCORD_THREAD_BINDING_CHANNEL && params.kind === "acp") {
-    return "Discord thread-bound ACP spawns are disabled for this account (set channels.discord.threadBindings.spawnAcpSessions=true to enable).";
+    return "Discord 线程绑定 ACP 生成已在此账户上禁用（设置 channels.discord.threadBindings.spawnAcpSessions=true 启用）。";
   }
   if (params.channel === DISCORD_THREAD_BINDING_CHANNEL && params.kind === "subagent") {
-    return "Discord thread-bound subagent spawns are disabled for this account (set channels.discord.threadBindings.spawnSubagentSessions=true to enable).";
+    return "Discord 线程绑定子代理生成已在此账户上禁用（设置 channels.discord.threadBindings.spawnSubagentSessions=true 启用）。";
   }
   return `Thread-bound ${params.kind} spawns are disabled for ${params.channel}.`;
 }

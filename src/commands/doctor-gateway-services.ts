@@ -193,7 +193,7 @@ export async function maybeRepairGatewayServiceConfig(
   prompter: DoctorPrompter,
 ) {
   if (resolveIsNixMode(process.env)) {
-    note(t("doctorGateway.nixModeSkip"), "Gateway");
+    note(t("doctorGateway.nixModeSkip"), "网关");
     return;
   }
 
@@ -223,7 +223,7 @@ export async function maybeRepairGatewayServiceConfig(
   if (gatewayTokenResolution.unavailableReason) {
     note(
       t("doctorGateway.tokenDriftVerifyFailed", { reason: gatewayTokenResolution.unavailableReason }),
-      "Gateway service config",
+      "网关服务配置",
     );
   }
   const expectedGatewayToken = tokenRefConfigured ? undefined : gatewayTokenResolution.token;
@@ -250,7 +250,7 @@ export async function maybeRepairGatewayServiceConfig(
   if (needsNodeRuntime && !systemNodePath) {
     const warning = renderSystemNodeWarning(systemNodeInfo);
     if (warning) {
-      note(warning, "Gateway runtime");
+      note(warning, "网关运行时");
     }
     note(
       t("doctorGateway.systemNodeNotFound"),
@@ -388,7 +388,7 @@ export async function maybeScanExtraGatewayServices(
 
   note(
     extraServices.map((svc) => `- ${svc.label} (${svc.scope}, ${svc.detail})`).join("\n"),
-    "Other gateway-like services detected",
+    "检测到其他类似网关的服务",
   );
 
   const legacyServices = extraServices.filter((svc) => svc.legacy === true);
@@ -437,6 +437,6 @@ export async function maybeScanExtraGatewayServices(
       t("doctorGateway.oneGatewayMultipleAgents"),
       t("doctorGateway.multipleGatewaysHint"),
     ].join("\n"),
-    "Gateway recommendation",
+    "网关建议",
   );
 }
