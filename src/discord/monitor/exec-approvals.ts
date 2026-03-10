@@ -17,6 +17,7 @@ import { buildGatewayConnectionDetails } from "../../gateway/call.js";
 import { GatewayClient } from "../../gateway/client.js";
 import { resolveGatewayConnectionAuth } from "../../gateway/connection-auth.js";
 import type { EventFrame } from "../../gateway/protocol/index.js";
+import { getExecApprovalApproverDmNoticeText } from "../../infra/exec-approval-reply.js";
 import type {
   ExecApprovalDecision,
   ExecApprovalRequest,
@@ -45,6 +46,12 @@ export function extractDiscordChannelId(sessionKey?: string | null): string | nu
   // Session key format: agent:<id>:discord:channel:<channelId> or agent:<id>:discord:group:<channelId>
   const match = sessionKey.match(/discord:(?:channel|group):(\d+)/);
   return match ? match[1] : null;
+}
+
+function buildDiscordApprovalDmRedirectNotice(): { content: string } {
+  return {
+    content: getExecApprovalApproverDmNoticeText(),
+  };
 }
 
 type PendingApproval = {
@@ -423,7 +430,7 @@ export class DiscordExecApprovalHandler {
       token: auth.token,
       password: auth.password,
       clientName: GATEWAY_CLIENT_NAMES.GATEWAY_CLIENT,
-      clientDisplayName: "Discord Exec Approvals",
+      clientDisplayName: "Discord 执行审批",
       mode: GATEWAY_CLIENT_MODES.BACKEND,
       scopes: ["operator.approvals"],
       onEvent: (evt) => this.handleGatewayEvent(evt),
@@ -498,6 +505,24 @@ export class DiscordExecApprovalHandler {
     const sendToDm = target === "dm" || target === "both";
     const sendToChannel = target === "channel" || target === "both";
     let fallbackToDm = false;
+    const originatingChannelId =
+      request.request.sessionKey && target === "dm"
+        ? extractDiscordChannelId(request.request.sessionKey)
+        : null;
+
+    if (target === "dm" && originatingChannelId) {
+      try {
+        await discordRequest(
+          () =>
+            rest.post(Routes.channelMessages(originatingChannelId), {
+              body: buildDiscordApprovalDmRedirectNotice(),
+            }) as Promise<{ id: string; channel_id: string }>,
+          "send-approval-dm-redirect-notice",
+        );
+      } catch (err) {
+        logError(`discord exec approvals: failed to send DM redirect notice: ${String(err)}`);
+      }
+    }
 
     // Send to originating channel if configured
     if (sendToChannel) {
@@ -768,9 +793,9 @@ export class ExecApprovalButton extends Button {
     const parsed = parseExecApprovalData(data);
     if (!parsed) {
       try {
-        await interaction.update({
-          content: "This approval is no longer valid.",
-          components: [],
+        await interaction.reply({
+          content: "此审批已失效。",
+          ephemeral: true,
         });
       } catch {
         // Interaction may have expired
@@ -784,7 +809,7 @@ export class ExecApprovalButton extends Button {
     if (!approvers.some((id) => String(id) === userId)) {
       try {
         await interaction.reply({
-          content: "⛔ You are not authorized to approve exec requests.",
+          content: "⛔ 您无权审批执行请求。",
           ephemeral: true,
         });
       } catch {
@@ -795,17 +820,16 @@ export class ExecApprovalButton extends Button {
 
     const decisionLabel =
       parsed.action === "allow-once"
-        ? "Allowed (once)"
+        ? "已允许（一次）"
         : parsed.action === "allow-always"
-          ? "Allowed (always)"
-          : "Denied";
+          ? "已允许（始终）"
+          : "已拒绝";
 
-    // Update the message immediately to show the decision
+    // Acknowledge immediately so Discord does not fail the interaction while
+    // the gateway resolve roundtrip completes. The resolved event will update
+    // the approval card in-place with the final state.
     try {
-      await interaction.update({
-        content: `Submitting decision: **${decisionLabel}**...`,
-        components: [], // Remove buttons
-      });
+      await interaction.acknowledge();
     } catch {
       // Interaction may have expired, try to continue anyway
     }
@@ -815,8 +839,7 @@ export class ExecApprovalButton extends Button {
     if (!ok) {
       try {
         await interaction.followUp({
-          content:
-            "Failed to submit approval decision. The request may have expired or already been resolved.",
+          content: `提交审批决定 **${decisionLabel}** 失败。请求可能已过期或已被处理。`,
           ephemeral: true,
         });
       } catch {
