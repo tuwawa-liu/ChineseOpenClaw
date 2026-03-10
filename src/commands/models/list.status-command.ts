@@ -26,6 +26,7 @@ import {
 import { formatCliCommand } from "../../cli/command-format.js";
 import { withProgressTotals } from "../../cli/progress.js";
 import { createConfigIO } from "../../config/config.js";
+import { t } from "../../i18n/index.js";
 import {
   resolveAgentModelFallbackValues,
   resolveAgentModelPrimaryValue,
@@ -237,7 +238,7 @@ export async function modelsStatusCommand(
   let probeSummary: AuthProbeSummary | undefined;
   if (opts.probe) {
     probeSummary = await withProgressTotals(
-      { label: "Probing auth profiles…", total: 1 },
+      { label: t("statusCli.probingAuthProfiles"), total: 1 },
       async (update) => {
         return await runAuthProbes({
           cfg,
@@ -390,17 +391,17 @@ export async function modelsStatusCommand(
     rawModel && rawModel !== resolvedLabel ? `${resolvedLabel} (from ${rawModel})` : resolvedLabel;
 
   runtime.log(
-    `${label("Config")}${colorize(rich, theme.muted, ":")} ${colorize(rich, theme.info, shortenHomePath(configPath))}`,
+    `${label(t("statusCli.labelConfig"))}${colorize(rich, theme.muted, ":")} ${colorize(rich, theme.info, shortenHomePath(configPath))}`,
   );
   runtime.log(
-    `${label("Agent dir")}${colorize(rich, theme.muted, ":")} ${colorize(
+    `${label(t("statusCli.labelAgentDir"))}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
       theme.info,
       shortenHomePath(agentDir),
     )}`,
   );
   runtime.log(
-    `${labelWithSource("Default", agentId ? (agentModelPrimary ? "agent" : "defaults") : undefined)}${colorize(
+    `${labelWithSource(t("statusCli.labelDefault"), agentId ? (agentModelPrimary ? "agent" : "defaults") : undefined)}${colorize(
       rich,
       theme.muted,
       ":",
@@ -408,7 +409,7 @@ export async function modelsStatusCommand(
   );
   runtime.log(
     `${labelWithSource(
-      `Fallbacks (${fallbacks.length || 0})`,
+      `${t("statusCli.labelFallbacks")} (${fallbacks.length || 0})`,
       agentId ? (agentFallbacksOverride !== undefined ? "agent" : "defaults") : undefined,
     )}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
@@ -417,7 +418,7 @@ export async function modelsStatusCommand(
     )}`,
   );
   runtime.log(
-    `${labelWithSource("Image model", agentId ? "defaults" : undefined)}${colorize(
+    `${labelWithSource(t("statusCli.labelImageModel"), agentId ? "defaults" : undefined)}${colorize(
       rich,
       theme.muted,
       ":",
@@ -425,7 +426,7 @@ export async function modelsStatusCommand(
   );
   runtime.log(
     `${labelWithSource(
-      `Image fallbacks (${imageFallbacks.length || 0})`,
+      `${t("statusCli.labelImageFallbacks")} (${imageFallbacks.length || 0})`,
       agentId ? "defaults" : undefined,
     )}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
@@ -434,7 +435,7 @@ export async function modelsStatusCommand(
     )}`,
   );
   runtime.log(
-    `${label(`Aliases (${Object.keys(aliases).length || 0})`)}${colorize(rich, theme.muted, ":")} ${colorize(
+    `${label(`${t("statusCli.labelAliases")} (${Object.keys(aliases).length || 0})`)}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
       Object.keys(aliases).length ? theme.accent : theme.muted,
       Object.keys(aliases).length
@@ -449,31 +450,31 @@ export async function modelsStatusCommand(
     )}`,
   );
   runtime.log(
-    `${label(`Configured models (${allowed.length || 0})`)}${colorize(rich, theme.muted, ":")} ${colorize(
+    `${label(`${t("statusCli.labelConfiguredModels")} (${allowed.length || 0})`)}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
       allowed.length ? theme.info : theme.muted,
-      allowed.length ? allowed.join(", ") : "all",
+      allowed.length ? allowed.join(", ") : t("statusCli.allModels"),
     )}`,
   );
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "Auth overview"));
+  runtime.log(colorize(rich, theme.heading, t("statusCli.authOverview")));
   runtime.log(
-    `${label("Auth store")}${colorize(rich, theme.muted, ":")} ${colorize(
+    `${label(t("statusCli.labelAuthStore"))}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
       theme.info,
       shortenHomePath(resolveAuthStorePathForDisplay(agentDir)),
     )}`,
   );
   runtime.log(
-    `${label("Shell env")}${colorize(rich, theme.muted, ":")} ${colorize(
+    `${label(t("statusCli.labelShellEnv"))}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
       shellFallbackEnabled ? theme.success : theme.muted,
-      shellFallbackEnabled ? "on" : "off",
+      shellFallbackEnabled ? t("statusCli.on") : t("statusCli.off"),
     )}${applied.length ? colorize(rich, theme.muted, ` (applied: ${applied.join(", ")})`) : ""}`,
   );
   runtime.log(
-    `${label(`Providers w/ OAuth/tokens (${providersWithOauth.length || 0})`)}${colorize(
+    `${label(`${t("statusCli.labelProvidersOAuth")} (${providersWithOauth.length || 0})`)}${colorize(
       rich,
       theme.muted,
       ":",
@@ -534,7 +535,7 @@ export async function modelsStatusCommand(
 
   if (missingProvidersInUse.length > 0) {
     runtime.log("");
-    runtime.log(colorize(rich, theme.heading, "Missing auth"));
+    runtime.log(colorize(rich, theme.heading, t("statusCli.missingAuth")));
     for (const provider of missingProvidersInUse) {
       const hint =
         provider === "anthropic"
@@ -545,9 +546,9 @@ export async function modelsStatusCommand(
   }
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "OAuth/token status"));
+  runtime.log(colorize(rich, theme.heading, t("statusCli.oauthTokenStatus")));
   if (oauthProfiles.length === 0) {
-    runtime.log(colorize(rich, theme.muted, "- none"));
+    runtime.log(colorize(rich, theme.muted, t("statusCli.none")));
   } else {
     const usageByProvider = new Map<string, string>();
     const usageProviders = Array.from(
@@ -627,9 +628,9 @@ export async function modelsStatusCommand(
 
   if (probeSummary) {
     runtime.log("");
-    runtime.log(colorize(rich, theme.heading, "Auth probes"));
+    runtime.log(colorize(rich, theme.heading, t("statusCli.authProbes")));
     if (probeSummary.results.length === 0) {
-      runtime.log(colorize(rich, theme.muted, "- none"));
+      runtime.log(colorize(rich, theme.muted, t("statusCli.none")));
     } else {
       const tableWidth = Math.max(60, (process.stdout.columns ?? 120) - 1);
       const sorted = sortProbeResults(probeSummary.results);
@@ -670,9 +671,9 @@ export async function modelsStatusCommand(
         renderTable({
           width: tableWidth,
           columns: [
-            { key: "Model", header: "Model", minWidth: 18 },
-            { key: "Profile", header: "Profile", minWidth: 24 },
-            { key: "Status", header: "Status", minWidth: 12 },
+            { key: "Model", header: t("modelsCli.headerModel"), minWidth: 18 },
+            { key: "Profile", header: t("modelsCli.headerProfile"), minWidth: 24 },
+            { key: "Status", header: t("modelsCli.headerStatus"), minWidth: 12 },
           ],
           rows,
         }).trimEnd(),

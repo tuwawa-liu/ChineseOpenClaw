@@ -20,6 +20,7 @@ import {
 } from "../daemon/service-audit.js";
 import { resolveGatewayService } from "../daemon/service.js";
 import { uninstallLegacySystemdUnits } from "../daemon/systemd.js";
+import { t } from "../i18n/index.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { note } from "../terminal/note.js";
 import { buildGatewayInstallPlan } from "./daemon-install-helpers.js";
@@ -176,7 +177,7 @@ async function cleanupLegacyLinuxUserServices(
       removed.push(`${svc.label} -> ${removedUnit.unitPath}`);
     }
   } catch (err) {
-    runtime.error(`Legacy Linux gateway cleanup failed: ${String(err)}`);
+    runtime.error(t("doctorGateway.legacyCleanupFailed", { error: String(err) }));
     for (const svc of services) {
       failed.push(`${svc.label} (linux cleanup failed)`);
     }
@@ -192,12 +193,12 @@ export async function maybeRepairGatewayServiceConfig(
   prompter: DoctorPrompter,
 ) {
   if (resolveIsNixMode(process.env)) {
-    note("Nix mode detected; skip service updates.", "Gateway");
+    note(t("doctorGateway.nixModeSkip"), "Gateway");
     return;
   }
 
   if (mode === "remote") {
-    note("Gateway mode is remote; skipped local service audit.", "Gateway");
+    note(t("doctorGateway.remoteModeSkip"), "Gateway");
     return;
   }
 
@@ -221,7 +222,7 @@ export async function maybeRepairGatewayServiceConfig(
   const gatewayTokenResolution = await resolveGatewayAuthTokenForService(cfg, process.env);
   if (gatewayTokenResolution.unavailableReason) {
     note(
-      `Unable to verify gateway service token drift: ${gatewayTokenResolution.unavailableReason}`,
+      t("doctorGateway.tokenDriftVerifyFailed", { reason: gatewayTokenResolution.unavailableReason }),
       "Gateway service config",
     );
   }
@@ -252,7 +253,7 @@ export async function maybeRepairGatewayServiceConfig(
       note(warning, "Gateway runtime");
     }
     note(
-      "System Node 22+ not found. Install via Homebrew/apt/choco and rerun doctor to migrate off Bun/version managers.",
+      t("doctorGateway.systemNodeNotFound"),
       "Gateway runtime",
     );
   }
@@ -300,18 +301,18 @@ export async function maybeRepairGatewayServiceConfig(
 
   if (needsAggressive && !prompter.shouldForce) {
     note(
-      "Custom or unexpected service edits detected. Rerun with --force to overwrite.",
+      t("doctorGateway.customServiceEdits"),
       "Gateway service config",
     );
   }
 
   const repair = needsAggressive
     ? await prompter.confirmAggressive({
-        message: "Overwrite gateway service config with current defaults now?",
+        message: t("doctorGateway.confirmOverwrite"),
         initialValue: Boolean(prompter.shouldForce),
       })
     : await prompter.confirmRepair({
-        message: "Update gateway service config to the recommended defaults now?",
+        message: t("doctorGateway.confirmUpdate"),
         initialValue: true,
       });
   if (!repair) {
@@ -341,12 +342,12 @@ export async function maybeRepairGatewayServiceConfig(
       cfgForServiceInstall = nextCfg;
       note(
         expectedGatewayToken
-          ? "Persisted gateway.auth.token from environment before reinstalling service."
-          : "Persisted gateway.auth.token from existing service definition before reinstalling service.",
+          ? t("doctorGateway.persistedTokenFromEnv")
+          : t("doctorGateway.persistedTokenFromService"),
         "Gateway",
       );
     } catch (err) {
-      runtime.error(`Failed to persist gateway.auth.token before service repair: ${String(err)}`);
+      runtime.error(t("doctorGateway.persistTokenFailed", { error: String(err) }));
       return;
     }
   }
@@ -369,7 +370,7 @@ export async function maybeRepairGatewayServiceConfig(
       environment: updatedPlan.environment,
     });
   } catch (err) {
-    runtime.error(`Gateway service update failed: ${String(err)}`);
+    runtime.error(t("doctorGateway.serviceUpdateFailed", { error: String(err) }));
   }
 }
 
@@ -393,7 +394,7 @@ export async function maybeScanExtraGatewayServices(
   const legacyServices = extraServices.filter((svc) => svc.legacy === true);
   if (legacyServices.length > 0) {
     const shouldRemove = await prompter.confirmSkipInNonInteractive({
-      message: "Remove legacy gateway services (clawdbot/moltbot) now?",
+      message: t("doctorGateway.confirmRemoveLegacy"),
       initialValue: true,
     });
     if (shouldRemove) {
@@ -420,7 +421,7 @@ export async function maybeScanExtraGatewayServices(
         note(failed.map((line) => `- ${line}`).join("\n"), "Legacy gateway cleanup skipped");
       }
       if (removed.length > 0) {
-        runtime.log("Legacy gateway services removed. Installing OpenClaw gateway next.");
+        runtime.log(t("doctorGateway.legacyRemoved"));
       }
     }
   }
@@ -432,9 +433,9 @@ export async function maybeScanExtraGatewayServices(
 
   note(
     [
-      "Recommendation: run a single gateway per machine for most setups.",
-      "One gateway supports multiple agents.",
-      "If you need multiple gateways (e.g., a rescue bot on the same host), isolate ports + config/state (see docs: /gateway#multiple-gateways-same-host).",
+      t("doctorGateway.singleGatewayRecommendation"),
+      t("doctorGateway.oneGatewayMultipleAgents"),
+      t("doctorGateway.multipleGatewaysHint"),
     ].join("\n"),
     "Gateway recommendation",
   );

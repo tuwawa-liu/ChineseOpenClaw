@@ -5,6 +5,7 @@ import {
   setAuthProfileOrder,
 } from "../../agents/auth-profiles.js";
 import { normalizeProviderId } from "../../agents/model-selection.js";
+import { t } from "../../i18n/index.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { normalizeStringEntries } from "../../shared/string-normalization.js";
 import { shortenHomePath } from "../../utils.js";
@@ -70,10 +71,10 @@ export async function modelsAuthOrderGetCommand(
     return;
   }
 
-  runtime.log(`Agent: ${agentId}`);
-  runtime.log(`Provider: ${provider}`);
-  runtime.log(`Auth file: ${shortenHomePath(`${agentDir}/auth-profiles.json`)}`);
-  runtime.log(order.length > 0 ? `Order override: ${order.join(", ")}` : "Order override: (none)");
+  runtime.log(t("modelsCli.agentLabel", { id: agentId }));
+  runtime.log(t("modelsCli.providerLabel", { provider }));
+  runtime.log(t("modelsCli.authFileLabel", { path: shortenHomePath(`${agentDir}/auth-profiles.json`) }));
+  runtime.log(order.length > 0 ? t("modelsCli.orderOverride", { order: order.join(", ") }) : t("modelsCli.orderOverrideNone"));
 }
 
 export async function modelsAuthOrderClearCommand(
@@ -90,9 +91,9 @@ export async function modelsAuthOrderClearCommand(
     throw new Error("Failed to update auth-profiles.json (lock busy?).");
   }
 
-  runtime.log(`Agent: ${agentId}`);
-  runtime.log(`Provider: ${provider}`);
-  runtime.log("Cleared per-agent order override.");
+  runtime.log(t("modelsCli.agentLabel", { id: agentId }));
+  runtime.log(t("modelsCli.providerLabel", { provider }));
+  runtime.log(t("modelsCli.orderCleared"));
 }
 
 export async function modelsAuthOrderSetCommand(
@@ -129,7 +130,7 @@ export async function modelsAuthOrderSetCommand(
     throw new Error("Failed to update auth-profiles.json (lock busy?).");
   }
 
-  runtime.log(`Agent: ${agentId}`);
-  runtime.log(`Provider: ${provider}`);
-  runtime.log(`Order override: ${describeOrder(updated, provider).join(", ")}`);
+  runtime.log(t("modelsCli.agentLabel", { id: agentId }));
+  runtime.log(t("modelsCli.providerLabel", { provider }));
+  runtime.log(t("modelsCli.orderOverride", { order: describeOrder(updated, provider).join(", ") }));
 }

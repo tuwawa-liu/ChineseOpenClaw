@@ -74,7 +74,7 @@ async function runBrowserToggle(
     return;
   }
   const name = status.profile ?? "openclaw";
-  defaultRuntime.log(info(`🦞 browser [${name}] running: ${status.running}`));
+  defaultRuntime.log(info(t("browserManageCli.browserRunning", { name, running: String(status.running) })));
 }
 
 function runBrowserCommand(action: () => Promise<void>) {
@@ -90,7 +90,7 @@ function logBrowserTabs(tabs: BrowserTab[], json?: boolean) {
     return;
   }
   if (tabs.length === 0) {
-    defaultRuntime.log("No tabs (browser closed or no targets).");
+    defaultRuntime.log(t("browserManageCli.noTabs"));
     return;
   }
   defaultRuntime.log(
@@ -175,11 +175,11 @@ export function registerBrowserManageCommands(
           return;
         }
         if (!result.moved) {
-          defaultRuntime.log(info(`🦞 browser profile already missing.`));
+          defaultRuntime.log(info(t("browserManageCli.profileAlreadyMissing")));
           return;
         }
         const dest = result.to ?? result.from;
-        defaultRuntime.log(info(`🦞 browser profile moved to Trash (${dest})`));
+        defaultRuntime.log(info(t("browserManageCli.profileMovedToTrash", { dest })));
       });
     });
 
@@ -239,7 +239,7 @@ export function registerBrowserManageCommands(
         if (printJsonResult(parent, result)) {
           return;
         }
-        defaultRuntime.log("opened new tab");
+        defaultRuntime.log(t("browserManageCli.openedNewTab"));
       });
     });
 
@@ -251,7 +251,7 @@ export function registerBrowserManageCommands(
       const parent = parentOpts(cmd);
       const profile = parent?.browserProfile;
       if (!Number.isFinite(index) || index < 1) {
-        defaultRuntime.error(danger("index must be a positive number"));
+        defaultRuntime.error(danger(t("browserManageCli.indexMustBePositive")));
         defaultRuntime.exit(1);
         return;
       }
@@ -263,7 +263,7 @@ export function registerBrowserManageCommands(
         if (printJsonResult(parent, result)) {
           return;
         }
-        defaultRuntime.log(`selected tab ${Math.floor(index)}`);
+        defaultRuntime.log(t("browserManageCli.selectedTab", { index: String(Math.floor(index)) }));
       });
     });
 
@@ -277,7 +277,7 @@ export function registerBrowserManageCommands(
       const idx =
         typeof index === "number" && Number.isFinite(index) ? Math.floor(index) - 1 : undefined;
       if (typeof idx === "number" && idx < 0) {
-        defaultRuntime.error(danger("index must be >= 1"));
+        defaultRuntime.error(danger(t("browserManageCli.indexMustBeGte1")));
         defaultRuntime.exit(1);
         return;
       }
@@ -286,7 +286,7 @@ export function registerBrowserManageCommands(
         if (printJsonResult(parent, result)) {
           return;
         }
-        defaultRuntime.log("closed tab");
+        defaultRuntime.log(t("browserManageCli.closedTab"));
       });
     });
 
@@ -311,7 +311,7 @@ export function registerBrowserManageCommands(
         if (printJsonResult(parent, tab)) {
           return;
         }
-        defaultRuntime.log(`opened: ${tab.url}\nid: ${tab.targetId}`);
+        defaultRuntime.log(t("browserManageCli.openedTab", { url: tab.url, targetId: tab.targetId }));
       });
     });
 
@@ -336,7 +336,7 @@ export function registerBrowserManageCommands(
         if (printJsonResult(parent, { ok: true })) {
           return;
         }
-        defaultRuntime.log(`focused tab ${targetId}`);
+        defaultRuntime.log(t("browserManageCli.focusedTab", { targetId }));
       });
     });
 
@@ -373,7 +373,7 @@ export function registerBrowserManageCommands(
         if (printJsonResult(parent, { ok: true })) {
           return;
         }
-        defaultRuntime.log("closed tab");
+        defaultRuntime.log(t("browserManageCli.closedTab"));
       });
     });
 
@@ -397,7 +397,7 @@ export function registerBrowserManageCommands(
           return;
         }
         if (profiles.length === 0) {
-          defaultRuntime.log("No profiles configured.");
+          defaultRuntime.log(t("browserManageCli.noProfiles"));
           return;
         }
         defaultRuntime.log(
@@ -446,9 +446,7 @@ export function registerBrowserManageCommands(
           const loc = result.isRemote ? `  cdpUrl: ${result.cdpUrl}` : `  port: ${result.cdpPort}`;
           defaultRuntime.log(
             info(
-              `🦞 Created profile "${result.profile}"\n${loc}\n  color: ${result.color}${
-                opts.driver === "extension" ? "\n  driver: extension" : ""
-              }`,
+              t("browserManageCli.createdProfile", { profile: result.profile, loc, color: result.color, driverExt: opts.driver === "extension" ? "\n  driver: extension" : "" }),
             ),
           );
         });
@@ -474,8 +472,8 @@ export function registerBrowserManageCommands(
           return;
         }
         const msg = result.deleted
-          ? `🦞 Deleted profile "${result.profile}" (user data removed)`
-          : `🦞 Deleted profile "${result.profile}" (no user data found)`;
+          ? t("browserManageCli.deletedProfileRemoved", { profile: result.profile })
+          : t("browserManageCli.deletedProfileNoData", { profile: result.profile });
         defaultRuntime.log(info(msg));
       });
     });

@@ -5,6 +5,7 @@ import {
   normalizeBrowserFormFieldValue,
 } from "../../browser/form-fields.js";
 import { danger } from "../../globals.js";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { callBrowserRequest, type BrowserParentOpts } from "../browser-cli-shared.js";
 
@@ -55,7 +56,7 @@ export function logBrowserActionResult(
 export function requireRef(ref: string | undefined) {
   const refValue = typeof ref === "string" ? ref.trim() : "";
   if (!refValue) {
-    defaultRuntime.error(danger("ref is required"));
+    defaultRuntime.error(danger(t("browserActionInput.refRequired")));
     defaultRuntime.exit(1);
     return null;
   }

@@ -1,5 +1,6 @@
 import { resolveCommandSecretRefsViaGateway } from "../../cli/command-secret-gateway.js";
 import { getModelsCommandSecretTargetIds } from "../../cli/command-secret-targets.js";
+import { t } from "../../i18n/index.js";
 import {
   loadConfig,
   readConfigFileSnapshotForWrite,
@@ -39,7 +40,7 @@ export async function loadModelsConfigWithSource(params: {
   });
   if (params.runtime) {
     for (const entry of diagnostics) {
-      params.runtime.log(`[secrets] ${entry}`);
+      params.runtime.log(t("modelsCli.secretsLog", { entry }));
     }
   }
   setRuntimeConfigSnapshot(resolvedConfig, sourceConfig);

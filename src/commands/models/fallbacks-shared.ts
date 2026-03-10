@@ -2,6 +2,7 @@ import { buildModelAliasIndex, resolveModelRefFromString } from "../../agents/mo
 import type { OpenClawConfig } from "../../config/config.js";
 import { logConfigUpdated } from "../../config/logging.js";
 import { resolveAgentModelFallbackValues, toAgentModelListLike } from "../../config/model-input.js";
+import { t } from "../../i18n/index.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { loadModelsConfig } from "./load-config.js";
 import {
@@ -60,7 +61,7 @@ export async function listFallbacksCommand(
 
   runtime.log(`${params.label} (${fallbacks.length}):`);
   if (fallbacks.length === 0) {
-    runtime.log("- none");
+    runtime.log(t("modelsCli.noFallbacks"));
     return;
   }
   for (const entry of fallbacks) {

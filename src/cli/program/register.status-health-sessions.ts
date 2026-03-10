@@ -19,7 +19,7 @@ function resolveVerbose(opts: { verbose?: boolean; debug?: boolean }): boolean {
 function parseTimeoutMs(timeout: unknown): number | null | undefined {
   const parsed = parsePositiveIntOrUndefined(timeout);
   if (timeout !== undefined && parsed === undefined) {
-    defaultRuntime.error("--timeout must be a positive integer (milliseconds)");
+    defaultRuntime.error(t("statusCli.timeoutMustBePositiveInt"));
     defaultRuntime.exit(1);
     return null;
   }
@@ -55,22 +55,22 @@ export function registerStatusHealthSessionsCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["openclaw status", "Show channel health + session summary."],
-          ["openclaw status --all", "Full diagnosis (read-only)."],
-          ["openclaw status --json", "Machine-readable output."],
-          ["openclaw status --usage", "Show model provider usage/quota snapshots."],
+        `\n${theme.heading(t("statusCli.examplesHeading"))}\n${formatHelpExamples([
+          ["openclaw status", t("statusCli.exStatusBasic")],
+          ["openclaw status --all", t("statusCli.exStatusAll")],
+          ["openclaw status --json", t("statusCli.exStatusJson")],
+          ["openclaw status --usage", t("statusCli.exStatusUsage")],
           [
             "openclaw status --deep",
-            "Run channel probes (WA + Telegram + Discord + Slack + Signal).",
+            t("statusCli.exStatusDeep"),
           ],
-          ["openclaw status --deep --timeout 5000", "Tighten probe timeout."],
+          ["openclaw status --deep --timeout 5000", t("statusCli.exStatusTimeout")],
         ])}`,
     )
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/status", "docs.openclaw.ai/cli/status")}\n`,
+        `\n${theme.muted(t("statusCli.docsLabel"))} ${formatDocsLink("/cli/status", "docs.openclaw.ai/cli/status")}\n`,
     )
     .action(async (opts) => {
       await runWithVerboseAndTimeout(opts, async ({ verbose, timeoutMs }) => {
@@ -98,7 +98,7 @@ export function registerStatusHealthSessionsCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/health", "docs.openclaw.ai/cli/health")}\n`,
+        `\n${theme.muted(t("statusCli.docsLabel"))} ${formatDocsLink("/cli/health", "docs.openclaw.ai/cli/health")}\n`,
     )
     .action(async (opts) => {
       await runWithVerboseAndTimeout(opts, async ({ verbose, timeoutMs }) => {
@@ -125,21 +125,21 @@ export function registerStatusHealthSessionsCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["openclaw sessions", "List all sessions."],
-          ["openclaw sessions --agent work", "List sessions for one agent."],
-          ["openclaw sessions --all-agents", "Aggregate sessions across agents."],
-          ["openclaw sessions --active 120", "Only last 2 hours."],
-          ["openclaw sessions --json", "Machine-readable output."],
-          ["openclaw sessions --store ./tmp/sessions.json", "Use a specific session store."],
+        `\n${theme.heading(t("statusCli.examplesHeading"))}\n${formatHelpExamples([
+          ["openclaw sessions", t("statusCli.exSessionsList")],
+          ["openclaw sessions --agent work", t("statusCli.exSessionsAgent")],
+          ["openclaw sessions --all-agents", t("statusCli.exSessionsAllAgents")],
+          ["openclaw sessions --active 120", t("statusCli.exSessionsActive")],
+          ["openclaw sessions --json", t("statusCli.exSessionsJson")],
+          ["openclaw sessions --store ./tmp/sessions.json", t("statusCli.exSessionsStore")],
         ])}\n\n${theme.muted(
-          "Shows token usage per session when the agent reports it; set agents.defaults.contextTokens to cap the window and show %.",
+          t("statusCli.sessionsTokenUsageHint"),
         )}`,
     )
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/sessions", "docs.openclaw.ai/cli/sessions")}\n`,
+        `\n${theme.muted(t("statusCli.docsLabel"))} ${formatDocsLink("/cli/sessions", "docs.openclaw.ai/cli/sessions")}\n`,
     )
     .action(async (opts) => {
       setVerbose(Boolean(opts.verbose));
@@ -170,18 +170,18 @@ export function registerStatusHealthSessionsCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.heading("Examples:")}\n${formatHelpExamples([
-          ["openclaw sessions cleanup --dry-run", "Preview stale/cap cleanup."],
+        `\n${theme.heading(t("statusCli.examplesHeading"))}\n${formatHelpExamples([
+          ["openclaw sessions cleanup --dry-run", t("statusCli.exCleanupDryRun")],
           [
             "openclaw sessions cleanup --dry-run --fix-missing",
-            "Also preview pruning entries with missing transcript files.",
+            t("statusCli.exCleanupFixMissing"),
           ],
-          ["openclaw sessions cleanup --enforce", "Apply maintenance now."],
-          ["openclaw sessions cleanup --agent work --dry-run", "Preview one agent store."],
-          ["openclaw sessions cleanup --all-agents --dry-run", "Preview all agent stores."],
+          ["openclaw sessions cleanup --enforce", t("statusCli.exCleanupEnforce")],
+          ["openclaw sessions cleanup --agent work --dry-run", t("statusCli.exCleanupAgent")],
+          ["openclaw sessions cleanup --all-agents --dry-run", t("statusCli.exCleanupAllAgents")],
           [
             "openclaw sessions cleanup --enforce --store ./tmp/sessions.json",
-            "Use a specific store.",
+            t("statusCli.exCleanupStore"),
           ],
         ])}`,
     )

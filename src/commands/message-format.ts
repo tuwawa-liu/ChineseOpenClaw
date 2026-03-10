@@ -1,5 +1,6 @@
 import { getChannelPlugin } from "../channels/plugins/index.js";
 import type { ChannelId, ChannelMessageActionName } from "../channels/plugins/types.js";
+import { t } from "../i18n/index.js";
 import type { OutboundDeliveryResult } from "../infra/outbound/deliver.js";
 import { formatGatewaySummary, formatOutboundDeliverySummary } from "../infra/outbound/format.js";
 import type { MessageActionRunResult } from "../infra/outbound/message-action-runner.js";
@@ -91,8 +92,8 @@ function renderObjectSummary(payload: unknown, opts: FormatOpts): string[] {
     renderTable({
       width: opts.width,
       columns: [
-        { key: "Key", header: "Key", minWidth: 16 },
-        { key: "Value", header: "Value", flex: true, minWidth: 24 },
+        { key: "Key", header: t("messageFormat.headerKey"), minWidth: 16 },
+        { key: "Value", header: t("messageFormat.headerValue"), flex: true, minWidth: 24 },
       ],
       rows,
     }).trimEnd(),
@@ -137,10 +138,10 @@ function renderMessageList(messages: unknown[], opts: FormatOpts, emptyLabel: st
     renderTable({
       width: opts.width,
       columns: [
-        { key: "Time", header: "Time", minWidth: 14 },
-        { key: "Author", header: "Author", minWidth: 10 },
-        { key: "Text", header: "Text", flex: true, minWidth: 24 },
-        { key: "Id", header: "Id", minWidth: 10 },
+        { key: "Time", header: t("messageFormat.headerTime"), minWidth: 14 },
+        { key: "Author", header: t("messageFormat.headerAuthor"), minWidth: 10 },
+        { key: "Text", header: t("messageFormat.headerText"), flex: true, minWidth: 24 },
+        { key: "Id", header: t("messageFormat.headerId"), minWidth: 10 },
       ],
       rows,
     }).trimEnd(),
@@ -155,7 +156,7 @@ function renderMessagesFromPayload(payload: unknown, opts: FormatOpts): string[]
   if (!Array.isArray(messages)) {
     return null;
   }
-  return renderMessageList(messages, opts, "No messages.");
+  return renderMessageList(messages, opts, t("messageFormat.noMessages"));
 }
 
 function renderPinsFromPayload(payload: unknown, opts: FormatOpts): string[] | null {
@@ -166,7 +167,7 @@ function renderPinsFromPayload(payload: unknown, opts: FormatOpts): string[] | n
   if (!Array.isArray(pins)) {
     return null;
   }
-  return renderMessageList(pins, opts, "No pins.");
+  return renderMessageList(pins, opts, t("messageFormat.noPins"));
 }
 
 function extractDiscordSearchResultsMessages(results: unknown): unknown[] | null {
@@ -235,16 +236,16 @@ function renderReactions(payload: unknown, opts: FormatOpts): string[] | null {
   });
 
   if (rows.length === 0) {
-    return [theme.muted("No reactions.")];
+    return [theme.muted(t("messageFormat.noReactions"))];
   }
 
   return [
     renderTable({
       width: opts.width,
       columns: [
-        { key: "Emoji", header: "Emoji", minWidth: 8 },
-        { key: "Count", header: "Count", align: "right", minWidth: 6 },
-        { key: "Users", header: "Users", flex: true, minWidth: 20 },
+        { key: "Emoji", header: t("messageFormat.headerEmoji"), minWidth: 8 },
+        { key: "Count", header: t("messageFormat.headerCount"), align: "right", minWidth: 6 },
+        { key: "Users", header: t("messageFormat.headerUsers"), flex: true, minWidth: 20 },
       ],
       rows,
     }).trimEnd(),
@@ -261,7 +262,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
   const opts: FormatOpts = { width };
 
   if (result.handledBy === "dry-run") {
-    return [muted(`[dry-run] would run ${result.action} via ${result.channel}`)];
+    return [muted(t("messageFormat.dryRun", { action: result.action, channel: result.channel }))];
   }
 
   if (result.kind === "broadcast") {
@@ -275,17 +276,17 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
     const okCount = results.filter((entry) => entry.ok).length;
     const total = results.length;
     const headingLine = ok(
-      `✅ Broadcast complete (${okCount}/${total} succeeded, ${total - okCount} failed)`,
+      t("messageFormat.broadcastComplete", { okCount: String(okCount), total: String(total), failed: String(total - okCount) }),
     );
     return [
       headingLine,
       renderTable({
         width: opts.width,
         columns: [
-          { key: "Channel", header: "Channel", minWidth: 10 },
-          { key: "Target", header: "Target", minWidth: 12, flex: true },
-          { key: "Status", header: "Status", minWidth: 6 },
-          { key: "Error", header: "Error", minWidth: 20, flex: true },
+          { key: "Channel", header: t("messageFormat.headerChannel"), minWidth: 10 },
+          { key: "Target", header: t("messageFormat.headerTarget"), minWidth: 12, flex: true },
+          { key: "Status", header: t("messageFormat.headerStatus"), minWidth: 6 },
+          { key: "Error", header: t("messageFormat.headerError"), minWidth: 20, flex: true },
         ],
         rows: rows.slice(0, 50),
       }).trimEnd(),
@@ -312,7 +313,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
 
     const label = resolveChannelLabel(result.channel);
     const msgId = extractMessageId(result.payload);
-    return [ok(`✅ Sent via ${label}.${msgId ? ` Message ID: ${msgId}` : ""}`)];
+    return [ok(t("messageFormat.sentVia", { label, msgId: msgId ?? "" }))];
   }
 
   if (result.kind === "poll") {
@@ -323,21 +324,21 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
       const lines = [
         ok(
           formatGatewaySummary({
-            action: "Poll sent",
+            action: t("messageFormat.pollSent"),
             channel: poll.channel,
             messageId: msgId,
           }),
         ),
       ];
       if (pollId) {
-        lines.push(ok(`Poll id: ${pollId}`));
+        lines.push(ok(t("messageFormat.pollId", { pollId })));
       }
       return lines;
     }
 
     const label = resolveChannelLabel(result.channel);
     const msgId = extractMessageId(result.payload);
-    return [ok(`✅ Poll sent via ${label}.${msgId ? ` Message ID: ${msgId}` : ""}`)];
+    return [ok(t("messageFormat.pollSentVia", { label, msgId: msgId ?? "" }))];
   }
 
   // channel actions (non-send/poll)
@@ -348,11 +349,11 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
     const added = (payload as { added?: unknown }).added;
     const removed = (payload as { removed?: unknown }).removed;
     if (typeof added === "string" && added.trim()) {
-      lines.push(ok(`✅ Reaction added: ${added.trim()}`));
+      lines.push(ok(t("messageFormat.reactionAdded", { emoji: added.trim() })));
       return lines;
     }
     if (typeof removed === "string" && removed.trim()) {
-      lines.push(ok(`✅ Reaction removed: ${removed.trim()}`));
+      lines.push(ok(t("messageFormat.reactionRemoved", { emoji: removed.trim() })));
       return lines;
     }
     if (Array.isArray(removed)) {
@@ -360,16 +361,16 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
         .map((x) => String(x).trim())
         .filter(Boolean)
         .join(", ");
-      lines.push(ok(`✅ Reactions removed${list ? `: ${list}` : ""}`));
+      lines.push(ok(t("messageFormat.reactionsRemoved", { list })));
       return lines;
     }
-    lines.push(ok("✅ Reaction updated."));
+    lines.push(ok(t("messageFormat.reactionUpdated")));
     return lines;
   }
 
   const reactionsTable = renderReactions(payload, opts);
   if (reactionsTable && result.action === "reactions") {
-    lines.push(heading("Reactions"));
+    lines.push(heading(t("messageFormat.reactions")));
     lines.push(reactionsTable[0] ?? "");
     return lines;
   }
@@ -377,7 +378,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
   if (result.action === "read") {
     const messagesTable = renderMessagesFromPayload(payload, opts);
     if (messagesTable) {
-      lines.push(heading("Messages"));
+      lines.push(heading(t("messageFormat.messages")));
       lines.push(messagesTable[0] ?? "");
       return lines;
     }
@@ -386,7 +387,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
   if (result.action === "list-pins") {
     const pinsTable = renderPinsFromPayload(payload, opts);
     if (pinsTable) {
-      lines.push(heading("Pinned messages"));
+      lines.push(heading(t("messageFormat.pinnedMessages")));
       lines.push(pinsTable[0] ?? "");
       return lines;
     }
@@ -396,20 +397,20 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
     const results = (payload as { results?: unknown }).results;
     const list = extractDiscordSearchResultsMessages(results);
     if (list) {
-      lines.push(heading("Search results"));
-      lines.push(renderMessageList(list, opts, "No results.")[0] ?? "");
+      lines.push(heading(t("messageFormat.searchResults")));
+      lines.push(renderMessageList(list, opts, t("messageFormat.noResults"))[0] ?? "");
       return lines;
     }
   }
 
   // Generic success + compact details table.
-  lines.push(ok(`✅ ${result.action} via ${resolveChannelLabel(result.channel)}.`));
+  lines.push(ok(t("messageFormat.actionVia", { action: result.action, label: resolveChannelLabel(result.channel) })));
   const summary = renderObjectSummary(payload, opts);
   if (summary.length) {
     lines.push("");
     lines.push(...summary);
     lines.push("");
-    lines.push(muted("Tip: use --json for full output."));
+    lines.push(muted(t("messageFormat.tipJson")));
   }
   return lines;
 }

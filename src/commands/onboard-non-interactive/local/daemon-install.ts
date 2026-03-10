@@ -1,6 +1,7 @@
 import type { OpenClawConfig } from "../../../config/config.js";
 import { resolveGatewayService } from "../../../daemon/service.js";
 import { isSystemdUserServiceAvailable } from "../../../daemon/systemd.js";
+import { t } from "../../../i18n/index.js";
 import type { RuntimeEnv } from "../../../runtime.js";
 import { buildGatewayInstallPlan, gatewayInstallErrorHint } from "../../daemon-install-helpers.js";
 import { DEFAULT_GATEWAY_DAEMON_RUNTIME, isGatewayDaemonRuntime } from "../../daemon-runtime.js";
@@ -23,12 +24,12 @@ export async function installGatewayDaemonNonInteractive(params: {
   const systemdAvailable =
     process.platform === "linux" ? await isSystemdUserServiceAvailable() : true;
   if (process.platform === "linux" && !systemdAvailable) {
-    runtime.log("Systemd user services are unavailable; skipping service install.");
+    runtime.log(t("onboardNonInteractive.systemdUnavailable"));
     return;
   }
 
   if (!isGatewayDaemonRuntime(daemonRuntimeRaw)) {
-    runtime.error("Invalid --daemon-runtime (use node or bun)");
+    runtime.error(t("onboardNonInteractive.invalidDaemonRuntime"));
     runtime.exit(1);
     return;
   }
@@ -44,9 +45,9 @@ export async function installGatewayDaemonNonInteractive(params: {
   if (tokenResolution.unavailableReason) {
     runtime.error(
       [
-        "Gateway install blocked:",
+        t("onboardNonInteractive.gatewayInstallBlocked"),
         tokenResolution.unavailableReason,
-        "Fix gateway auth config/token input and rerun onboarding.",
+        t("onboardNonInteractive.fixGatewayAuthAndRerun"),
       ].join(" "),
     );
     runtime.exit(1);
@@ -68,7 +69,7 @@ export async function installGatewayDaemonNonInteractive(params: {
       environment,
     });
   } catch (err) {
-    runtime.error(`Gateway service install failed: ${String(err)}`);
+    runtime.error(t("onboardNonInteractive.gatewayServiceInstallFailed", { error: String(err) }));
     runtime.log(gatewayInstallErrorHint());
     return;
   }

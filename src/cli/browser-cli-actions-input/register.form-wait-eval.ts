@@ -36,7 +36,7 @@ export function registerBrowserFormWaitEvalCommands(
             targetId: opts.targetId?.trim() || undefined,
           },
         });
-        logBrowserActionResult(parent, result, `filled ${fields.length} field(s)`);
+        logBrowserActionResult(parent, result, t("browserFormCli.filledFields", { count: String(fields.length) }));
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
         defaultRuntime.exit(1);
@@ -81,7 +81,7 @@ export function registerBrowserFormWaitEvalCommands(
           },
           timeoutMs,
         });
-        logBrowserActionResult(parent, result, "wait complete");
+        logBrowserActionResult(parent, result, t("browserFormCli.waitComplete"));
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
         defaultRuntime.exit(1);
@@ -97,7 +97,7 @@ export function registerBrowserFormWaitEvalCommands(
     .action(async (opts, cmd) => {
       const { parent, profile } = resolveBrowserActionContext(cmd, parentOpts);
       if (!opts.fn) {
-        defaultRuntime.error(danger("Missing --fn"));
+        defaultRuntime.error(danger(t("browserFormCli.missingFn")));
         defaultRuntime.exit(1);
         return;
       }

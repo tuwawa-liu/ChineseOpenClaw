@@ -3,6 +3,7 @@ import { getChannelPlugin, normalizeChannelId } from "../../channels/plugins/ind
 import { createOutboundSendDeps, type CliDeps } from "../../cli/outbound-send-deps.js";
 import type { OpenClawConfig } from "../../config/config.js";
 import type { SessionEntry } from "../../config/sessions.js";
+import { t } from "../../i18n/index.js";
 import {
   resolveAgentDeliveryPlan,
   resolveAgentOutboundTarget,
@@ -145,7 +146,7 @@ export async function deliverAgentCommandResult(params: {
   const resolvedThreadTarget = deliveryChannel === "slack" ? undefined : resolvedThreadId;
 
   const logDeliveryError = (err: unknown) => {
-    const message = `Delivery failed (${deliveryChannel}${deliveryTarget ? ` to ${deliveryTarget}` : ""}): ${String(err)}`;
+    const message = t("agentDelivery.deliveryFailed", { channel: String(deliveryChannel), target: deliveryTarget ? ` to ${deliveryTarget}` : "", error: String(err) });
     runtime.error?.(message);
     if (!runtime.error) {
       runtime.log(message);
@@ -155,14 +156,14 @@ export async function deliverAgentCommandResult(params: {
   if (deliver) {
     if (isInternalMessageChannel(deliveryChannel)) {
       const err = new Error(
-        "delivery channel is required: pass --channel/--reply-channel or use a main session with a previous channel",
+        t("agentDelivery.channelRequired"),
       );
       if (!bestEffortDeliver) {
         throw err;
       }
       logDeliveryError(err);
     } else if (!isDeliveryChannelKnown) {
-      const err = new Error(`Unknown channel: ${deliveryChannel}`);
+      const err = new Error(t("agentDelivery.unknownChannel", { channel: String(deliveryChannel) }));
       if (!bestEffortDeliver) {
         throw err;
       }
@@ -193,7 +194,7 @@ export async function deliverAgentCommandResult(params: {
   }
 
   if (!payloads || payloads.length === 0) {
-    runtime.log("No reply from agent.");
+    runtime.log(t("agentDelivery.noReply"));
     return { payloads: [], meta: result.meta };
   }
 

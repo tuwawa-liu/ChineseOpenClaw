@@ -1,6 +1,7 @@
 import type { Command } from "commander";
 import { DEFAULT_UPLOAD_DIR, resolveExistingPathsWithinRoot } from "../../browser/paths.js";
 import { danger } from "../../globals.js";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { shortenHomePath } from "../../utils.js";
 import { callBrowserRequest, type BrowserParentOpts } from "../browser-cli-shared.js";
@@ -82,18 +83,18 @@ export function registerBrowserFilesAndDownloadsCommands(
 
   browser
     .command("upload")
-    .description("Arm file upload for the next file chooser")
+    .description(t("browserFilesCli.uploadDescription"))
     .argument(
       "<paths...>",
-      "File paths to upload (must be within OpenClaw temp uploads dir, e.g. /tmp/openclaw/uploads/file.pdf)",
+      t("browserFilesCli.uploadPathsArg"),
     )
-    .option("--ref <ref>", "Ref id from snapshot to click after arming")
-    .option("--input-ref <ref>", "Ref id for <input type=file> to set directly")
-    .option("--element <selector>", "CSS selector for <input type=file>")
-    .option("--target-id <id>", "CDP target id (or unique prefix)")
+    .option("--ref <ref>", t("browserFilesCli.refClickOpt"))
+    .option("--input-ref <ref>", t("browserFilesCli.inputRefOpt"))
+    .option("--element <selector>", t("browserFilesCli.elementSelectorOpt"))
+    .option("--target-id <id>", t("browserNavCli.cdpTargetIdOpt"))
     .option(
       "--timeout-ms <ms>",
-      "How long to wait for the next file chooser (default: 120000)",
+      t("browserFilesCli.fileChooserTimeoutOpt"),
       (v: string) => Number(v),
     )
     .action(async (paths: string[], opts, cmd) => {
@@ -113,21 +114,21 @@ export function registerBrowserFilesAndDownloadsCommands(
           timeoutMs,
         },
         timeoutMs: timeoutMs ?? 20000,
-        describeSuccess: () => `upload armed for ${paths.length} file(s)`,
+        describeSuccess: () => t("browserFilesCli.uploadArmed", { count: String(paths.length) }),
       });
     });
 
   browser
     .command("waitfordownload")
-    .description("Wait for the next download (and save it)")
+    .description(t("browserFilesCli.waitForDownloadDescription"))
     .argument(
       "[path]",
-      "Save path within openclaw temp downloads dir (default: /tmp/openclaw/downloads/...; fallback: os.tmpdir()/openclaw/downloads/...)",
+      t("browserFilesCli.downloadSavePathArg"),
     )
-    .option("--target-id <id>", "CDP target id (or unique prefix)")
+    .option("--target-id <id>", t("browserNavCli.cdpTargetIdOpt"))
     .option(
       "--timeout-ms <ms>",
-      "How long to wait for the next download (default: 120000)",
+      t("browserFilesCli.downloadTimeoutOpt"),
       (v: string) => Number(v),
     )
     .action(async (outPath: string | undefined, opts, cmd) => {
@@ -141,16 +142,16 @@ export function registerBrowserFilesAndDownloadsCommands(
 
   browser
     .command("download")
-    .description("Click a ref and save the resulting download")
-    .argument("<ref>", "Ref id from snapshot to click")
+    .description(t("browserFilesCli.downloadDescription"))
+    .argument("<ref>", t("browserFilesCli.downloadRefArg"))
     .argument(
       "<path>",
-      "Save path within openclaw temp downloads dir (e.g. report.pdf or /tmp/openclaw/downloads/report.pdf)",
+      t("browserFilesCli.downloadPathArg"),
     )
-    .option("--target-id <id>", "CDP target id (or unique prefix)")
+    .option("--target-id <id>", t("browserNavCli.cdpTargetIdOpt"))
     .option(
       "--timeout-ms <ms>",
-      "How long to wait for the download to start (default: 120000)",
+      t("browserFilesCli.downloadStartTimeoutOpt"),
       (v: string) => Number(v),
     )
     .action(async (ref: string, outPath: string, opts, cmd) => {
@@ -165,21 +166,21 @@ export function registerBrowserFilesAndDownloadsCommands(
 
   browser
     .command("dialog")
-    .description("Arm the next modal dialog (alert/confirm/prompt)")
-    .option("--accept", "Accept the dialog", false)
-    .option("--dismiss", "Dismiss the dialog", false)
-    .option("--prompt <text>", "Prompt response text")
-    .option("--target-id <id>", "CDP target id (or unique prefix)")
+    .description(t("browserFilesCli.dialogDescription"))
+    .option("--accept", t("browserFilesCli.dialogAcceptOpt"), false)
+    .option("--dismiss", t("browserFilesCli.dialogDismissOpt"), false)
+    .option("--prompt <text>", t("browserFilesCli.dialogPromptOpt"))
+    .option("--target-id <id>", t("browserNavCli.cdpTargetIdOpt"))
     .option(
       "--timeout-ms <ms>",
-      "How long to wait for the next dialog (default: 120000)",
+      t("browserFilesCli.dialogTimeoutOpt"),
       (v: string) => Number(v),
     )
     .action(async (opts, cmd) => {
       const { parent, profile } = resolveBrowserActionContext(cmd, parentOpts);
       const accept = opts.accept ? true : opts.dismiss ? false : undefined;
       if (accept === undefined) {
-        defaultRuntime.error(danger("Specify --accept or --dismiss"));
+        defaultRuntime.error(danger(t("browserFilesCli.specifyAcceptOrDismiss")));
         defaultRuntime.exit(1);
         return;
       }
@@ -195,7 +196,7 @@ export function registerBrowserFilesAndDownloadsCommands(
           timeoutMs,
         },
         timeoutMs: timeoutMs ?? 20000,
-        describeSuccess: () => "dialog armed",
+        describeSuccess: () => t("browserFilesCli.dialogArmed"),
       });
     });
 }

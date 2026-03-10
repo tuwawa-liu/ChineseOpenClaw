@@ -138,7 +138,7 @@ async function withMemoryManagerForAgent(params: {
     getManager: () => getMemorySearchManager(managerParams),
     onMissing: (error) => defaultRuntime.log(error ?? t("memoryCli.searchDisabled")),
     onCloseError: (err) =>
-      defaultRuntime.error(`Memory manager close failed: ${formatErrorMessage(err)}`),
+      defaultRuntime.error(t("memoryCli.managerCloseFailed", { error: formatErrorMessage(err) })),
     close: async (manager) => {
       await manager.close?.();
     },
@@ -399,7 +399,7 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
               },
             );
           } else if (opts.index && !syncFn) {
-            defaultRuntime.log("Memory backend does not support manual reindex.");
+            defaultRuntime.log(t("memoryCli.noManualReindex"));
           }
         } else {
           await manager.probeVectorAvailability();
@@ -458,26 +458,26 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
       ? formatExtraPaths(status.workspaceDir, status.extraPaths ?? [])
       : [];
     const lines = [
-      `${heading("Memory Search")} ${muted(`(${agentId})`)}`,
-      `${label("Provider")} ${info(status.provider)} ${muted(`(requested: ${requestedProvider})`)}`,
-      `${label("Model")} ${info(modelLabel)}`,
-      sourceList ? `${label("Sources")} ${info(sourceList)}` : null,
-      extraPaths.length ? `${label("Extra paths")} ${info(extraPaths.join(", "))}` : null,
-      `${label("Indexed")} ${success(indexedLabel)}`,
-      `${label("Dirty")} ${status.dirty ? warn("yes") : muted("no")}`,
-      `${label("Store")} ${info(storePath)}`,
-      `${label("Workspace")} ${info(workspacePath)}`,
+      `${heading(t("memoryCli.memorySearch"))} ${muted(`(${agentId})`)}`,
+      `${label(t("memoryCli.labelProvider"))} ${info(status.provider)} ${muted(`(requested: ${requestedProvider})`)}`,
+      `${label(t("memoryCli.labelModel"))} ${info(modelLabel)}`,
+      sourceList ? `${label(t("memoryCli.labelSources"))} ${info(sourceList)}` : null,
+      extraPaths.length ? `${label(t("memoryCli.labelExtraPaths"))} ${info(extraPaths.join(", "))}` : null,
+      `${label(t("memoryCli.labelIndexed"))} ${success(indexedLabel)}`,
+      `${label(t("memoryCli.labelDirty"))} ${status.dirty ? warn("yes") : muted("no")}`,
+      `${label(t("memoryCli.labelStore"))} ${info(storePath)}`,
+      `${label(t("memoryCli.labelWorkspace"))} ${info(workspacePath)}`,
     ].filter(Boolean) as string[];
     if (embeddingProbe) {
       const state = embeddingProbe.ok ? "ready" : "unavailable";
       const stateColor = embeddingProbe.ok ? theme.success : theme.warn;
-      lines.push(`${label("Embeddings")} ${colorize(rich, stateColor, state)}`);
+      lines.push(`${label(t("memoryCli.labelEmbeddings"))} ${colorize(rich, stateColor, state)}`);
       if (embeddingProbe.error) {
-        lines.push(`${label("Embeddings error")} ${warn(embeddingProbe.error)}`);
+        lines.push(`${label(t("memoryCli.labelEmbeddingsError"))} ${warn(embeddingProbe.error)}`);
       }
     }
     if (status.sourceCounts?.length) {
-      lines.push(label("By source"));
+      lines.push(label(t("memoryCli.labelBySource")));
       for (const entry of status.sourceCounts) {
         const total = scan?.sources?.find(
           (scanEntry) => scanEntry.source === entry.source,
@@ -490,7 +490,7 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
       }
     }
     if (status.fallback) {
-      lines.push(`${label("Fallback")} ${warn(status.fallback.from)}`);
+      lines.push(`${label(t("memoryCli.labelFallback"))} ${warn(status.fallback.from)}`);
     }
     if (status.vector) {
       const vectorState = status.vector.enabled
@@ -506,15 +506,15 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
           : vectorState === "unavailable"
             ? theme.warn
             : theme.muted;
-      lines.push(`${label("Vector")} ${colorize(rich, vectorColor, vectorState)}`);
+      lines.push(`${label(t("memoryCli.labelVector"))} ${colorize(rich, vectorColor, vectorState)}`);
       if (status.vector.dims) {
-        lines.push(`${label("Vector dims")} ${info(String(status.vector.dims))}`);
+        lines.push(`${label(t("memoryCli.labelVectorDims"))} ${info(String(status.vector.dims))}`);
       }
       if (status.vector.extensionPath) {
-        lines.push(`${label("Vector path")} ${info(shortenHomePath(status.vector.extensionPath))}`);
+        lines.push(`${label(t("memoryCli.labelVectorPath"))} ${info(shortenHomePath(status.vector.extensionPath))}`);
       }
       if (status.vector.loadError) {
-        lines.push(`${label("Vector error")} ${warn(status.vector.loadError)}`);
+        lines.push(`${label(t("memoryCli.labelVectorError"))} ${warn(status.vector.loadError)}`);
       }
     }
     if (status.fts) {
@@ -529,9 +529,9 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
           : ftsState === "unavailable"
             ? theme.warn
             : theme.muted;
-      lines.push(`${label("FTS")} ${colorize(rich, ftsColor, ftsState)}`);
+      lines.push(`${label(t("memoryCli.labelFts"))} ${colorize(rich, ftsColor, ftsState)}`);
       if (status.fts.error) {
-        lines.push(`${label("FTS error")} ${warn(status.fts.error)}`);
+        lines.push(`${label(t("memoryCli.labelFtsError"))} ${warn(status.fts.error)}`);
       }
     }
     if (status.cache) {
@@ -541,9 +541,9 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
         status.cache.enabled && typeof status.cache.entries === "number"
           ? ` (${status.cache.entries} entries)`
           : "";
-      lines.push(`${label("Embedding cache")} ${colorize(rich, cacheColor, cacheState)}${suffix}`);
+      lines.push(`${label(t("memoryCli.labelEmbeddingCache"))} ${colorize(rich, cacheColor, cacheState)}${suffix}`);
       if (status.cache.enabled && typeof status.cache.maxEntries === "number") {
-        lines.push(`${label("Cache cap")} ${info(String(status.cache.maxEntries))}`);
+        lines.push(`${label(t("memoryCli.labelCacheCap"))} ${info(String(status.cache.maxEntries))}`);
       }
     }
     if (status.batch) {
@@ -551,20 +551,20 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
       const batchColor = status.batch.enabled ? theme.success : theme.warn;
       const batchSuffix = ` (failures ${status.batch.failures}/${status.batch.limit})`;
       lines.push(
-        `${label("Batch")} ${colorize(rich, batchColor, batchState)}${muted(batchSuffix)}`,
+        `${label(t("memoryCli.labelBatch"))} ${colorize(rich, batchColor, batchState)}${muted(batchSuffix)}`,
       );
       if (status.batch.lastError) {
-        lines.push(`${label("Batch error")} ${warn(status.batch.lastError)}`);
+        lines.push(`${label(t("memoryCli.labelBatchError"))} ${warn(status.batch.lastError)}`);
       }
     }
     if (status.fallback?.reason) {
       lines.push(muted(status.fallback.reason));
     }
     if (indexError) {
-      lines.push(`${label("Index error")} ${warn(indexError)}`);
+      lines.push(`${label(t("memoryCli.labelIndexError"))} ${warn(indexError)}`);
     }
     if (scan?.issues.length) {
-      lines.push(label("Issues"));
+      lines.push(label(t("memoryCli.labelIssues")));
       for (const issue of scan.issues) {
         lines.push(`  ${warn(issue)}`);
       }
@@ -641,20 +641,20 @@ export function registerMemoryCli(program: Command) {
                 const requestedProvider = status.requestedProvider ?? status.provider;
                 const modelLabel = status.model ?? status.provider;
                 const lines = [
-                  `${heading("Memory Index")} ${muted(`(${agentId})`)}`,
-                  `${label("Provider")} ${info(status.provider)} ${muted(
+                  `${heading(t("memoryCli.memoryIndex"))} ${muted(`(${agentId})`)}`,
+                  `${label(t("memoryCli.labelProvider"))} ${info(status.provider)} ${muted(
                     `(requested: ${requestedProvider})`,
                   )}`,
-                  `${label("Model")} ${info(modelLabel)}`,
+                  `${label(t("memoryCli.labelModel"))} ${info(modelLabel)}`,
                   sourceLabels.length
-                    ? `${label("Sources")} ${info(sourceLabels.join(", "))}`
+                    ? `${label(t("memoryCli.labelSources"))} ${info(sourceLabels.join(", "))}`
                     : null,
                   extraPaths.length
-                    ? `${label("Extra paths")} ${info(extraPaths.join(", "))}`
+                    ? `${label(t("memoryCli.labelExtraPaths"))} ${info(extraPaths.join(", "))}`
                     : null,
                 ].filter(Boolean) as string[];
                 if (status.fallback) {
-                  lines.push(`${label("Fallback")} ${warn(status.fallback.from)}`);
+                  lines.push(`${label(t("memoryCli.labelFallback"))} ${warn(status.fallback.from)}`);
                 }
                 defaultRuntime.log(lines.join("\n"));
                 defaultRuntime.log("");
@@ -698,7 +698,7 @@ export function registerMemoryCli(program: Command) {
               }
               await withProgressTotals(
                 {
-                  label: "Indexing memory…",
+                  label: t("memoryCli.indexingMemory"),
                   total: 0,
                   fallback: opts.verbose ? "line" : undefined,
                 },

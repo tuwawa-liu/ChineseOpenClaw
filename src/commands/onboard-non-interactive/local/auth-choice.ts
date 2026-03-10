@@ -3,6 +3,7 @@ import { normalizeProviderId } from "../../../agents/model-selection.js";
 import { parseDurationMs } from "../../../cli/parse-duration.js";
 import type { OpenClawConfig } from "../../../config/config.js";
 import type { SecretInput } from "../../../config/types.secrets.js";
+import { t } from "../../../i18n/index.js";
 import type { RuntimeEnv } from "../../../runtime.js";
 import { resolveDefaultSecretProviderAlias } from "../../../secrets/ref-contract.js";
 import { normalizeSecretInput } from "../../../utils/normalize-secret-input.js";
@@ -83,7 +84,7 @@ export async function applyNonInteractiveAuthChoice(params: {
   let nextConfig = params.nextConfig;
   const requestedSecretInputMode = normalizeSecretInputModeInput(opts.secretInputMode);
   if (opts.secretInputMode && !requestedSecretInputMode) {
-    runtime.error('Invalid --secret-input-mode. Use "plaintext" or "ref".');
+    runtime.error(t("onboardNonInteractive.invalidSecretInputMode"));
     runtime.exit(1);
     return null;
   }
@@ -101,8 +102,8 @@ export async function applyNonInteractiveAuthChoice(params: {
     if (!resolved.envVarName) {
       runtime.error(
         [
-          `Unable to determine which environment variable to store as a ref for provider "${authChoice}".`,
-          "Set an explicit provider env var and retry, or use --secret-input-mode plaintext.",
+          t("onboardNonInteractive.envVarRefUnknown", { provider: String(authChoice) }),
+          t("onboardNonInteractive.setExplicitEnvVar"),
         ].join("\n"),
       );
       runtime.exit(1);
@@ -139,8 +140,8 @@ export async function applyNonInteractiveAuthChoice(params: {
   if (authChoice === "claude-cli" || authChoice === "codex-cli") {
     runtime.error(
       [
-        `Auth choice "${authChoice}" is deprecated.`,
-        'Use "--auth-choice token" (Anthropic setup-token) or "--auth-choice openai-codex".',
+        t("onboardNonInteractive.authChoiceDeprecated", { choice: String(authChoice) }),
+        t("onboardNonInteractive.useTokenOrCodex"),
       ].join("\n"),
     );
     runtime.exit(1);
@@ -150,8 +151,8 @@ export async function applyNonInteractiveAuthChoice(params: {
   if (authChoice === "setup-token") {
     runtime.error(
       [
-        'Auth choice "setup-token" requires interactive mode.',
-        'Use "--auth-choice token" with --token and --token-provider anthropic.',
+        t("onboardNonInteractive.setupTokenInteractive"),
+        t("onboardNonInteractive.useTokenWithFlags"),
       ].join("\n"),
     );
     runtime.exit(1);
@@ -161,8 +162,8 @@ export async function applyNonInteractiveAuthChoice(params: {
   if (authChoice === "vllm") {
     runtime.error(
       [
-        'Auth choice "vllm" requires interactive mode.',
-        "Use interactive onboard/configure to enter base URL, API key, and model ID.",
+        t("onboardNonInteractive.vllmInteractive"),
+        t("onboardNonInteractive.useInteractiveOnboard"),
       ].join("\n"),
     );
     runtime.exit(1);
@@ -198,19 +199,19 @@ export async function applyNonInteractiveAuthChoice(params: {
   if (authChoice === "token") {
     const providerRaw = opts.tokenProvider?.trim();
     if (!providerRaw) {
-      runtime.error("Missing --token-provider for --auth-choice token.");
+      runtime.error(t("onboardNonInteractive.missingTokenProvider"));
       runtime.exit(1);
       return null;
     }
     const provider = normalizeProviderId(providerRaw);
     if (provider !== "anthropic") {
-      runtime.error("Only --token-provider anthropic is supported for --auth-choice token.");
+      runtime.error(t("onboardNonInteractive.onlyAnthropicTokenProvider"));
       runtime.exit(1);
       return null;
     }
     const tokenRaw = normalizeSecretInput(opts.token);
     if (!tokenRaw) {
-      runtime.error("Missing --token for --auth-choice token.");
+      runtime.error(t("onboardNonInteractive.missingToken"));
       runtime.exit(1);
       return null;
     }
@@ -227,7 +228,7 @@ export async function applyNonInteractiveAuthChoice(params: {
       try {
         expires = Date.now() + parseDurationMs(expiresInRaw, { defaultUnit: "d" });
       } catch (err) {
-        runtime.error(`Invalid --token-expires-in: ${String(err)}`);
+        runtime.error(t("onboardNonInteractive.invalidTokenExpiresIn", { error: String(err) }));
         runtime.exit(1);
         return null;
       }
@@ -639,8 +640,8 @@ export async function applyNonInteractiveAuthChoice(params: {
     if (!accountId || !gatewayId) {
       runtime.error(
         [
-          'Auth choice "cloudflare-ai-gateway-api-key" requires Account ID and Gateway ID.',
-          "Use --cloudflare-ai-gateway-account-id and --cloudflare-ai-gateway-gateway-id.",
+          t("onboardNonInteractive.cloudflareRequiresIds"),
+          t("onboardNonInteractive.cloudflareUseFlags"),
         ].join("\n"),
       );
       runtime.exit(1);
@@ -970,7 +971,7 @@ export async function applyNonInteractiveAuthChoice(params: {
       });
       if (result.providerIdRenamedFrom && result.providerId) {
         runtime.log(
-          `Custom provider ID "${result.providerIdRenamedFrom}" already exists for a different base URL. Using "${result.providerId}".`,
+          t("onboardNonInteractive.customProviderRenamed", { from: result.providerIdRenamedFrom, to: result.providerId }),
         );
       }
       return result.config;
@@ -982,14 +983,14 @@ export async function applyNonInteractiveAuthChoice(params: {
             runtime.error(err.message);
             break;
           default:
-            runtime.error(`Invalid custom provider config: ${err.message}`);
+            runtime.error(`${t("onboardNonInteractive.invalidCustomConfig")}: ${err.message}`);
             break;
         }
         runtime.exit(1);
         return null;
       }
       const reason = err instanceof Error ? err.message : String(err);
-      runtime.error(`Invalid custom provider config: ${reason}`);
+      runtime.error(`${t("onboardNonInteractive.invalidCustomConfig")}: ${reason}`);
       runtime.exit(1);
       return null;
     }
@@ -1002,7 +1003,7 @@ export async function applyNonInteractiveAuthChoice(params: {
     authChoice === "qwen-portal" ||
     authChoice === "minimax-portal"
   ) {
-    runtime.error("OAuth requires interactive mode.");
+    runtime.error(t("onboardNonInteractive.oauthInteractive"));
     runtime.exit(1);
     return null;
   }

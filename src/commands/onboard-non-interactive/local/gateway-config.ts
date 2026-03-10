@@ -1,5 +1,6 @@
 import type { OpenClawConfig } from "../../../config/config.js";
 import { isValidEnvSecretRefId } from "../../../config/types.secrets.js";
+import { t } from "../../../i18n/index.js";
 import type { RuntimeEnv } from "../../../runtime.js";
 import { resolveDefaultSecretProviderAlias } from "../../../secrets/ref-contract.js";
 import { normalizeGatewayTokenInput, randomToken } from "../../onboard-helpers.js";
@@ -23,7 +24,7 @@ export function applyNonInteractiveGatewayConfig(params: {
 
   const hasGatewayPort = opts.gatewayPort !== undefined;
   if (hasGatewayPort && (!Number.isFinite(opts.gatewayPort) || (opts.gatewayPort ?? 0) <= 0)) {
-    runtime.error("Invalid --gateway-port");
+    runtime.error(t("onboardNonInteractive.invalidGatewayPort"));
     runtime.exit(1);
     return null;
   }
@@ -32,7 +33,7 @@ export function applyNonInteractiveGatewayConfig(params: {
   let bind = opts.gatewayBind ?? "loopback";
   const authModeRaw = opts.gatewayAuth ?? "token";
   if (authModeRaw !== "token" && authModeRaw !== "password") {
-    runtime.error("Invalid --gateway-auth (use token|password).");
+    runtime.error(t("onboardNonInteractive.invalidGatewayAuth"));
     runtime.exit(1);
     return null;
   }
@@ -60,19 +61,19 @@ export function applyNonInteractiveGatewayConfig(params: {
     if (gatewayTokenRefEnv) {
       if (!isValidEnvSecretRefId(gatewayTokenRefEnv)) {
         runtime.error(
-          "Invalid --gateway-token-ref-env (use env var name like OPENCLAW_GATEWAY_TOKEN).",
+          t("onboardNonInteractive.invalidGatewayTokenRefEnv"),
         );
         runtime.exit(1);
         return null;
       }
       if (explicitGatewayToken) {
-        runtime.error("Use either --gateway-token or --gateway-token-ref-env, not both.");
+        runtime.error(t("onboardNonInteractive.gatewayTokenConflict"));
         runtime.exit(1);
         return null;
       }
       const resolvedFromEnv = process.env[gatewayTokenRefEnv]?.trim();
       if (!resolvedFromEnv) {
-        runtime.error(`Environment variable "${gatewayTokenRefEnv}" is missing or empty.`);
+        runtime.error(t("onboardNonInteractive.envVarMissing", { name: gatewayTokenRefEnv }));
         runtime.exit(1);
         return null;
       }
@@ -115,7 +116,7 @@ export function applyNonInteractiveGatewayConfig(params: {
   if (authMode === "password") {
     const password = opts.gatewayPassword?.trim();
     if (!password) {
-      runtime.error("Missing --gateway-password for password auth.");
+      runtime.error(t("onboardNonInteractive.missingGatewayPassword"));
       runtime.exit(1);
       return null;
     }

@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { colorize, theme } from "../../terminal/theme.js";
 import { formatTag, isRich, pad, truncate } from "./list.format.js";
@@ -38,12 +39,12 @@ export function printModelTable(
 
   const rich = isRich(opts);
   const header = [
-    pad("Model", MODEL_PAD),
-    pad("Input", INPUT_PAD),
-    pad("Ctx", CTX_PAD),
-    pad("Local", LOCAL_PAD),
-    pad("Auth", AUTH_PAD),
-    "Tags",
+    pad(t("modelsCli.headerModel"), MODEL_PAD),
+    pad(t("modelsCli.headerInput"), INPUT_PAD),
+    pad(t("modelsCli.headerCtx"), CTX_PAD),
+    pad(t("modelsCli.headerLocal"), LOCAL_PAD),
+    pad(t("modelsCli.headerAuth"), AUTH_PAD),
+    t("modelsCli.headerTags"),
   ].join(" ");
   runtime.log(rich ? theme.heading(header) : header);
 

@@ -1,5 +1,6 @@
 import type { Command } from "commander";
 import { danger } from "../../globals.js";
+import { t } from "../../i18n/index.js";
 import { defaultRuntime } from "../../runtime.js";
 import { runBrowserResizeWithOutput } from "../browser-cli-resize.js";
 import { callBrowserRequest, type BrowserParentOpts } from "../browser-cli-shared.js";
@@ -11,9 +12,9 @@ export function registerBrowserNavigationCommands(
 ) {
   browser
     .command("navigate")
-    .description("Navigate the current tab to a URL")
-    .argument("<url>", "URL to navigate to")
-    .option("--target-id <id>", "CDP target id (or unique prefix)")
+    .description(t("browserNavCli.navigateDescription"))
+    .argument("<url>", t("browserNavCli.urlArg"))
+    .option("--target-id <id>", t("browserNavCli.cdpTargetIdOpt"))
     .action(async (url: string, opts, cmd) => {
       const { parent, profile } = resolveBrowserActionContext(cmd, parentOpts);
       try {
@@ -34,7 +35,7 @@ export function registerBrowserNavigationCommands(
           defaultRuntime.log(JSON.stringify(result, null, 2));
           return;
         }
-        defaultRuntime.log(`navigated to ${result.url ?? url}`);
+        defaultRuntime.log(t("browserNavCli.navigatedTo", { url: result.url ?? url }));
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
         defaultRuntime.exit(1);
@@ -43,10 +44,10 @@ export function registerBrowserNavigationCommands(
 
   browser
     .command("resize")
-    .description("Resize the viewport")
-    .argument("<width>", "Viewport width", (v: string) => Number(v))
-    .argument("<height>", "Viewport height", (v: string) => Number(v))
-    .option("--target-id <id>", "CDP target id (or unique prefix)")
+    .description(t("browserNavCli.resizeDescription"))
+    .argument("<width>", t("browserNavCli.widthArg"), (v: string) => Number(v))
+    .argument("<height>", t("browserNavCli.heightArg"), (v: string) => Number(v))
+    .option("--target-id <id>", t("browserNavCli.cdpTargetIdOpt"))
     .action(async (width: number, height: number, opts, cmd) => {
       const { parent, profile } = resolveBrowserActionContext(cmd, parentOpts);
       try {
@@ -57,7 +58,7 @@ export function registerBrowserNavigationCommands(
           height,
           targetId: opts.targetId,
           timeoutMs: 20000,
-          successMessage: `resized to ${width}x${height}`,
+          successMessage: t("browserNavCli.resizedTo", { width: String(width), height: String(height) }),
         });
       } catch (err) {
         defaultRuntime.error(danger(String(err)));

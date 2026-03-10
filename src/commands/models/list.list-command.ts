@@ -1,5 +1,6 @@
 import type { ModelRegistry } from "@mariozechner/pi-coding-agent";
 import { parseModelRef } from "../../agents/model-selection.js";
+import { t } from "../../i18n/index.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { resolveConfiguredEntries } from "./list.configured.js";
 import { formatErrorWithStack } from "./list.errors.js";
@@ -55,13 +56,13 @@ export async function modelsListCommand(
     availableKeys = loaded.availableKeys;
     availabilityErrorMessage = loaded.availabilityErrorMessage;
   } catch (err) {
-    runtime.error(`Model registry unavailable:\n${formatErrorWithStack(err)}`);
+    runtime.error(t("modelsCli.registryUnavailableDetail", { error: formatErrorWithStack(err) }));
     process.exitCode = 1;
     return;
   }
   if (availabilityErrorMessage !== undefined) {
     runtime.error(
-      `Model availability lookup failed; falling back to auth heuristics for discovered models: ${availabilityErrorMessage}`,
+      t("modelsCli.availabilityLookupFailed", { error: availabilityErrorMessage }),
     );
   }
   const { entries } = resolveConfiguredEntries(cfg);
@@ -98,7 +99,7 @@ export async function modelsListCommand(
   } else {
     const registry = modelRegistry;
     if (!registry) {
-      runtime.error("Model registry unavailable.");
+      runtime.error(t("modelsCli.registryUnavailable"));
       process.exitCode = 1;
       return;
     }
@@ -111,7 +112,7 @@ export async function modelsListCommand(
   }
 
   if (rows.length === 0) {
-    runtime.log("No models found.");
+    runtime.log(t("modelsCli.noModelsFound"));
     return;
   }
 

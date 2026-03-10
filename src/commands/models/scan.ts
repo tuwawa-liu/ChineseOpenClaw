@@ -4,6 +4,7 @@ import { type ModelScanResult, scanOpenRouterModels } from "../../agents/model-s
 import { withProgressTotals } from "../../cli/progress.js";
 import { logConfigUpdated } from "../../config/logging.js";
 import { toAgentModelListLike } from "../../config/model-input.js";
+import { t } from "../../i18n/index.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import {
   stylePromptHint,
@@ -28,7 +29,7 @@ const multiselect = <T>(params: Parameters<typeof clackMultiselect<T>>[0]) =>
 
 function guardPromptCancel<T>(value: T | symbol, runtime: RuntimeEnv): T {
   if (isCancel(value)) {
-    cancel(stylePromptTitle("Model scan cancelled.") ?? "Model scan cancelled.");
+    cancel(stylePromptTitle(t("scanCli.cancelled")) ?? t("scanCli.cancelled"));
     runtime.exit(0);
     throw new Error("unreachable");
   }
@@ -82,13 +83,13 @@ function compareScanMetadata(a: ModelScanResult, b: ModelScanResult): number {
 }
 
 function buildScanHint(result: ModelScanResult): string {
-  const toolLabel = result.tool.ok ? `tool ${formatMs(result.tool.latencyMs)}` : "tool fail";
+  const toolLabel = result.tool.ok ? `${t("scanCli.hintTool")} ${formatMs(result.tool.latencyMs)}` : t("scanCli.hintToolFail");
   const imageLabel = result.image.skipped
-    ? "img skip"
+    ? t("scanCli.hintImgSkip")
     : result.image.ok
-      ? `img ${formatMs(result.image.latencyMs)}`
-      : "img fail";
-  const ctxLabel = result.contextLength ? `ctx ${formatTokenK(result.contextLength)}` : "ctx ?";
+      ? `${t("scanCli.hintImg")} ${formatMs(result.image.latencyMs)}`
+      : t("scanCli.hintImgFail");
+  const ctxLabel = result.contextLength ? `${t("scanCli.hintCtx")} ${formatTokenK(result.contextLength)}` : t("scanCli.hintCtxUnknown");
   const paramLabel = result.inferredParamB ? `${result.inferredParamB}b` : null;
   return [toolLabel, imageLabel, ctxLabel, paramLabel].filter(Boolean).join(" | ");
 }
@@ -99,26 +100,26 @@ function printScanSummary(results: ModelScanResult[], runtime: RuntimeEnv) {
   const toolImageOk = results.filter((r) => r.tool.ok && r.image.ok);
   const imageOnly = imageOk.filter((r) => !r.tool.ok);
   runtime.log(
-    `Scan results: tested ${results.length}, tool ok ${toolOk.length}, image ok ${imageOk.length}, tool+image ok ${toolImageOk.length}, image only ${imageOnly.length}`,
+    t("scanCli.scanResults", { tested: String(results.length), toolOk: String(toolOk.length), imageOk: String(imageOk.length), toolImageOk: String(toolImageOk.length), imageOnly: String(imageOnly.length) }),
   );
 }
 
 function printScanTable(results: ModelScanResult[], runtime: RuntimeEnv) {
   const header = [
-    pad("Model", MODEL_PAD),
-    pad("Tool", 10),
-    pad("Image", 10),
-    pad("Ctx", CTX_PAD),
-    pad("Params", 8),
-    "Notes",
+    pad(t("scanCli.headerModel"), MODEL_PAD),
+    pad(t("scanCli.headerTool"), 10),
+    pad(t("scanCli.headerImage"), 10),
+    pad(t("scanCli.headerCtx"), CTX_PAD),
+    pad(t("scanCli.headerParams"), 8),
+    t("scanCli.headerNotes"),
   ].join(" ");
   runtime.log(header);
 
   for (const entry of results) {
     const modelLabel = pad(truncate(entry.modelRef, MODEL_PAD), MODEL_PAD);
-    const toolLabel = pad(entry.tool.ok ? formatMs(entry.tool.latencyMs) : "fail", 10);
+    const toolLabel = pad(entry.tool.ok ? formatMs(entry.tool.latencyMs) : t("scanCli.fail"), 10);
     const imageLabel = pad(
-      entry.image.ok ? formatMs(entry.image.latencyMs) : entry.image.skipped ? "skip" : "fail",
+      entry.image.ok ? formatMs(entry.image.latencyMs) : entry.image.skipped ? t("scanCli.skip") : t("scanCli.fail"),
       10,
     );
     const ctxLabel = pad(formatTokenK(entry.contextLength), CTX_PAD);
@@ -183,7 +184,7 @@ export async function modelsScanCommand(
   }
   const results = await withProgressTotals(
     {
-      label: "Scanning OpenRouter models...",
+      label: t("scanCli.scanning"),
       indeterminate: false,
       enabled: opts.json !== true,
     },
@@ -200,7 +201,7 @@ export async function modelsScanCommand(
           if (phase !== "probe") {
             return;
           }
-          const labelBase = probe ? "Probing models" : "Scanning models";
+          const labelBase = probe ? t("scanCli.probing") : t("scanCli.scanningModels");
           update({
             completed,
             total,
@@ -213,7 +214,7 @@ export async function modelsScanCommand(
   if (!probe) {
     if (!opts.json) {
       runtime.log(
-        `Found ${results.length} OpenRouter free models (metadata only; pass --probe to test tools/images).`,
+        t("scanCli.foundModels", { count: String(results.length) }),
       );
       printScanTable(sortScanResults(results), runtime);
     } else {
@@ -224,7 +225,7 @@ export async function modelsScanCommand(
 
   const toolOk = results.filter((entry) => entry.tool.ok);
   if (toolOk.length === 0) {
-    throw new Error("No tool-capable OpenRouter free models found.");
+    throw new Error(t("scanCli.noToolModels"));
   }
 
   const sorted = sortScanResults(results);
@@ -252,7 +253,7 @@ export async function modelsScanCommand(
 
   if (canPrompt) {
     const selection = await multiselect({
-      message: "Select fallback models (ordered)",
+      message: t("scanCli.selectFallbacks"),
       options: toolSorted.map((entry) => ({
         value: entry.modelRef,
         label: entry.modelRef,
@@ -264,7 +265,7 @@ export async function modelsScanCommand(
     selected = guardPromptCancel(selection, runtime);
     if (imageSorted.length > 0) {
       const imageSelection = await multiselect({
-        message: "Select image fallback models (ordered)",
+        message: t("scanCli.selectImageFallbacks"),
         options: imageSorted.map((entry) => ({
           value: entry.modelRef,
           label: entry.modelRef,
@@ -276,14 +277,14 @@ export async function modelsScanCommand(
       selectedImages = guardPromptCancel(imageSelection, runtime);
     }
   } else if (!process.stdin.isTTY && !opts.yes && !noInput && !opts.json) {
-    throw new Error("Non-interactive scan: pass --yes to apply defaults.");
+    throw new Error(t("scanCli.nonInteractiveError"));
   }
 
   if (selected.length === 0) {
-    throw new Error("No models selected for fallbacks.");
+    throw new Error(t("scanCli.noModelsSelected"));
   }
   if (opts.setImage && selectedImages.length === 0) {
-    throw new Error("No image-capable models selected for image model.");
+    throw new Error(t("scanCli.noImageModels"));
   }
 
   const _updated = await updateConfig((cfg) => {
@@ -346,14 +347,14 @@ export async function modelsScanCommand(
   }
 
   logConfigUpdated(runtime);
-  runtime.log(`Fallbacks: ${selected.join(", ")}`);
+  runtime.log(t("scanCli.fallbacksResult", { models: selected.join(", ") }));
   if (selectedImages.length > 0) {
-    runtime.log(`Image fallbacks: ${selectedImages.join(", ")}`);
+    runtime.log(t("scanCli.imageFallbacksResult", { models: selectedImages.join(", ") }));
   }
   if (opts.setDefault) {
-    runtime.log(`Default model: ${selected[0]}`);
+    runtime.log(t("scanCli.defaultModelResult", { model: selected[0] }));
   }
   if (opts.setImage && selectedImages.length > 0) {
-    runtime.log(`Image model: ${selectedImages[0]}`);
+    runtime.log(t("scanCli.imageModelResult", { model: selectedImages[0] }));
   }
 }

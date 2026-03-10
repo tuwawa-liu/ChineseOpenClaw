@@ -1,4 +1,5 @@
 import type { OpenClawConfig } from "../../../config/config.js";
+import { t } from "../../../i18n/index.js";
 import type { RuntimeEnv } from "../../../runtime.js";
 import type { OnboardOptions } from "../../onboard-types.js";
 
@@ -14,7 +15,7 @@ export function applyNonInteractiveSkillsConfig(params: {
 
   const nodeManager = opts.nodeManager ?? "npm";
   if (!["npm", "pnpm", "bun"].includes(nodeManager)) {
-    runtime.error("Invalid --node-manager (use npm, pnpm, or bun)");
+    runtime.error(t("onboardNonInteractive.invalidNodeManager"));
     runtime.exit(1);
     return nextConfig;
   }
