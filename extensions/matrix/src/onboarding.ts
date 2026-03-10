@@ -44,13 +44,13 @@ function setMatrixDmPolicy(cfg: CoreConfig, policy: DmPolicy) {
 async function noteMatrixAuthHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "Matrix requires a homeserver URL.",
-      "Use an access token (recommended) or a password (logs in and stores a token).",
-      "With access token: user ID is fetched automatically.",
-      "Env vars supported: MATRIX_HOMESERVER, MATRIX_USER_ID, MATRIX_ACCESS_TOKEN, MATRIX_PASSWORD.",
+      "Matrix 需要一个主服务器 URL。",
+      "使用访问令牌（推荐）或密码（登录并存储令牌）。",
+      "使用访问令牌时：用户 ID 会自动获取。",
+      "支持的环境变量：MATRIX_HOMESERVER, MATRIX_USER_ID, MATRIX_ACCESS_TOKEN, MATRIX_PASSWORD。",
       `Docs: ${formatDocsLink("/channels/matrix", "channels/matrix")}`,
     ].join("\n"),
-    "Matrix setup",
+    "Matrix 设置",
   );
 }
 
@@ -73,10 +73,10 @@ async function promptMatrixAllowFrom(params: {
 
   while (true) {
     const entry = await prompter.text({
-      message: "Matrix allowFrom (full @user:server; display name only if unique)",
+      message: "Matrix allowFrom（完整 @user:server；仅当唯一时可用显示名称）",
       placeholder: "@user:server",
       initialValue: existingAllowFrom[0] ? String(existingAllowFrom[0]) : undefined,
-      validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+      validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
     });
     const parts = parseInput(String(entry));
     const resolvedIds: string[] = [];
@@ -120,7 +120,7 @@ async function promptMatrixAllowFrom(params: {
       const details = unresolvedNotes.length > 0 ? unresolvedNotes : unresolved;
       await prompter.note(
         `Could not resolve:\n${details.join("\n")}\nUse full @user:server IDs.`,
-        "Matrix allowlist",
+        "Matrix 白名单",
       );
       continue;
     }
@@ -188,13 +188,13 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
       channel,
       configured,
       statusLines: [
-        `Matrix: ${configured ? "configured" : "needs homeserver + access token or password"}`,
+        `Matrix：${configured ? "已配置" : "需要主服务器 + 访问令牌或密码"}`,
       ],
       selectionHint: !sdkReady
-        ? "install @vector-im/matrix-bot-sdk"
+        ? "安装 @vector-im/matrix-bot-sdk"
         : configured
-          ? "configured"
-          : "needs auth",
+          ? "已配置"
+          : "需要认证",
     };
   },
   configure: async ({ cfg, runtime, prompter, forceAllowFrom }) => {
@@ -227,7 +227,7 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
       !existing.password
     ) {
       const useEnv = await prompter.confirm({
-        message: "Matrix env vars detected. Use env values?",
+        message: "检测到 Matrix 环境变量。使用环境变量值？",
         initialValue: true,
       });
       if (useEnv) {
@@ -250,15 +250,15 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
 
     const homeserver = String(
       await prompter.text({
-        message: "Matrix homeserver URL",
+        message: "Matrix 主服务器 URL",
         initialValue: existing.homeserver ?? envHomeserver,
         validate: (value) => {
           const raw = String(value ?? "").trim();
           if (!raw) {
-            return "Required";
+            return "必填";
           }
           if (!/^https?:\/\//i.test(raw)) {
-            return "Use a full URL (https://...)";
+            return "请使用完整 URL (https://...)";
           }
           return undefined;
         },
@@ -273,7 +273,7 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
 
     if (accessToken || passwordConfigured()) {
       const keep = await prompter.confirm({
-        message: "Matrix credentials already configured. Keep them?",
+        message: "Matrix 凭据已配置。保留吗？",
         initialValue: true,
       });
       if (!keep) {
@@ -286,18 +286,18 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
     if (!accessToken && !passwordConfigured()) {
       // Ask auth method FIRST before asking for user ID
       const authMode = await prompter.select({
-        message: "Matrix auth method",
+        message: "Matrix 认证方式",
         options: [
-          { value: "token", label: "Access token (user ID fetched automatically)" },
-          { value: "password", label: "Password (requires user ID)" },
+          { value: "token", label: "访问令牌（自动获取用户 ID）" },
+          { value: "password", label: "密码（需要用户 ID）" },
         ],
       });
 
       if (authMode === "token") {
         accessToken = String(
           await prompter.text({
-            message: "Matrix access token",
-            validate: (value) => (value?.trim() ? undefined : "Required"),
+            message: "Matrix 访问令牌",
+            validate: (value) => (value?.trim() ? undefined : "必填"),
           }),
         ).trim();
         // With access token, we can fetch the userId automatically - don't prompt for it
@@ -307,18 +307,18 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
         // Password auth requires user ID upfront
         userId = String(
           await prompter.text({
-            message: "Matrix user ID",
+            message: "Matrix 用户 ID",
             initialValue: existing.userId ?? envUserId,
             validate: (value) => {
               const raw = String(value ?? "").trim();
               if (!raw) {
-                return "Required";
+                return "必填";
               }
               if (!raw.startsWith("@")) {
-                return "Matrix user IDs should start with @";
+                return "Matrix 用户 ID 应以 @ 开头";
               }
               if (!raw.includes(":")) {
-                return "Matrix user IDs should include a server (:server)";
+                return "Matrix 用户 ID 应包含服务器 (:server)";
               }
               return undefined;
             },
@@ -339,8 +339,8 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
           canUseEnv: passwordPromptState.canUseEnv,
           hasConfigToken: passwordPromptState.hasConfigToken,
           envPrompt: "MATRIX_PASSWORD detected. Use env var?",
-          keepPrompt: "Matrix password already configured. Keep it?",
-          inputPrompt: "Matrix password",
+          keepPrompt: "Matrix 密码已配置。保留吗？",
+          inputPrompt: "Matrix 密码",
           preferredEnvVar: "MATRIX_PASSWORD",
         });
         if (passwordResult.action === "set") {
@@ -354,14 +354,14 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
 
     const deviceName = String(
       await prompter.text({
-        message: "Matrix device name (optional)",
+        message: "Matrix 设备名称（可选）",
         initialValue: existing.deviceName ?? "OpenClaw Gateway",
       }),
     ).trim();
 
     // Ask about E2EE encryption
     const enableEncryption = await prompter.confirm({
-      message: "Enable end-to-end encryption (E2EE)?",
+      message: "启用端到端加密 (E2EE)？",
       initialValue: existing.encryption ?? false,
     });
 
@@ -389,7 +389,7 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
     const existingGroups = next.channels?.matrix?.groups ?? next.channels?.matrix?.rooms;
     const accessConfig = await promptChannelAccessConfig({
       prompter,
-      label: "Matrix rooms",
+      label: "Matrix 房间",
       currentPolicy: next.channels?.matrix?.groupPolicy ?? "allowlist",
       currentEntries: Object.keys(existingGroups ?? {}),
       placeholder: "!roomId:server, #alias:server, Project Room",
@@ -440,7 +440,7 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
           } catch (err) {
             await prompter.note(
               `Room lookup failed; keeping entries as typed. ${String(err)}`,
-              "Matrix rooms",
+              "Matrix 房间",
             );
           }
         }

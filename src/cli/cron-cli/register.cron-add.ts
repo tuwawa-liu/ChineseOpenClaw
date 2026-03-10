@@ -89,7 +89,7 @@ export function registerCronAddCommand(cron: Command) {
       .option("--announce", t("cronCli.addAnnounceOpt"), false)
       .option("--deliver", t("cronCli.addDeliverOpt"))
       .option("--no-deliver", t("cronCli.addNoDeliverOpt"))
-      .option("--channel <channel>", `Delivery channel (${getCronChannelOptions()})`, "last")
+      .option("--channel <channel>", `投递渠道 (${getCronChannelOptions()})`, "last")
       .option("--to <dest>", t("cronCli.addToOpt"))
       .option("--account <id>", t("cronCli.addAccountOpt"))
       .option("--best-effort-deliver", t("cronCli.addBestEffortDeliverOpt"), false)

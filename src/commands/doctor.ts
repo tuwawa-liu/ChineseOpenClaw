@@ -126,8 +126,8 @@ export async function doctorCommand(
       [
         t("commands.doctor.authConflict"),
         t("commands.doctor.authConflictFix"),
-        `Set token mode: ${formatCliCommand("openclaw config set gateway.auth.mode token")}`,
-        `Set password mode: ${formatCliCommand("openclaw config set gateway.auth.mode password")}`,
+        `设置令牌模式：${formatCliCommand("openclaw config set gateway.auth.mode token")}`,
+        `设置密码模式：${formatCliCommand("openclaw config set gateway.auth.mode password")}`,
       ].join("\n"),
       t("commands.doctor.gatewayAuthTitle"),
     );
@@ -248,7 +248,7 @@ export async function doctorCommand(
       defaultProvider: DEFAULT_PROVIDER,
     });
     if (!hooksModelRef) {
-      note(`- hooks.gmail.model "${cfg.hooks.gmail.model}" could not be resolved`, t("commands.doctor.hooksTitle"));
+      note(`- hooks.gmail.model "${cfg.hooks.gmail.model}" 无法解析`, t("commands.doctor.hooksTitle"));
     } else {
       const { provider: defaultProvider, model: defaultModel } = resolveConfiguredModelRef({
         cfg,
@@ -266,12 +266,12 @@ export async function doctorCommand(
       const warnings: string[] = [];
       if (!status.allowed) {
         warnings.push(
-          `- hooks.gmail.model "${status.key}" not in agents.defaults.models allowlist (will use primary instead)`,
+          `- hooks.gmail.model "${status.key}" 不在 agents.defaults.models 允许列表中（将使用主模型代替）`,
         );
       }
       if (!status.inCatalog) {
         warnings.push(
-          `- hooks.gmail.model "${status.key}" not in the model catalog (may fail at runtime)`,
+          `- hooks.gmail.model "${status.key}" 不在模型目录中（可能在运行时失败）`,
         );
       }
       if (warnings.length > 0) {
@@ -343,7 +343,7 @@ export async function doctorCommand(
     logConfigUpdated(runtime);
     const backupPath = `${CONFIG_PATH}.bak`;
     if (fs.existsSync(backupPath)) {
-      runtime.log(`Backup: ${shortenHomePath(backupPath)}`);
+      runtime.log(`备份：${shortenHomePath(backupPath)}`);
     }
   } else if (!prompter.shouldRepair) {
     runtime.log(t("commands.doctor.fixHint", { cmd: formatCliCommand("openclaw doctor --fix") }));

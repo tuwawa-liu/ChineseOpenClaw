@@ -987,7 +987,7 @@ async function handleDiscordCommandArgInteraction(
   if (!parsed) {
     await safeDiscordInteractionCall("command arg update", () =>
       interaction.update({
-        content: "Sorry, that selection is no longer available.",
+        content: "抱歉，该选项已不可用。",
         components: [],
       }),
     );
@@ -1003,7 +1003,7 @@ async function handleDiscordCommandArgInteraction(
   if (!commandDefinition) {
     await safeDiscordInteractionCall("command arg update", () =>
       interaction.update({
-        content: "Sorry, that command is no longer available.",
+        content: "抱歉，该命令已不可用。",
         components: [],
       }),
     );
@@ -1011,7 +1011,7 @@ async function handleDiscordCommandArgInteraction(
   }
   const argUpdateResult = await safeDiscordInteractionCall("command arg update", () =>
     interaction.update({
-      content: `✅ Selected ${parsed.value}.`,
+      content: `✅ 已选择 ${parsed.value}。`,
       components: [],
     }),
   );
@@ -1223,7 +1223,7 @@ export function createDiscordNativeCommand(params: {
       ? ([
           {
             name: "input",
-            description: "Command input",
+            description: "命令输入",
             type: ApplicationCommandOptionType.String,
             required: false,
           },
@@ -1413,7 +1413,7 @@ async function dispatchDiscordCommandInteraction(params: {
       channelAllowed,
     });
     if (!allowByPolicy) {
-      await respond("This channel is not allowed.");
+      await respond("此频道不被允许。");
       return;
     }
   }
@@ -1494,7 +1494,7 @@ async function dispatchDiscordCommandInteraction(params: {
       modeWhenAccessGroupsOff: "configured",
     });
     if (!commandAuthorized) {
-      await respond("You are not authorized to use this command.", { ephemeral: true });
+      await respond("您无权使用此命令。", { ephemeral: true });
       return;
     }
   }
@@ -1634,7 +1634,7 @@ async function dispatchDiscordCommandInteraction(params: {
       logVerbose(
         `discord native command: configured ACP binding unavailable for channel ${configuredBinding.spec.conversationId}: ${ensured.error}`,
       );
-      await respond("Configured ACP binding is unavailable right now. Please try again.");
+      await respond("已配置的 ACP 绑定当前不可用。请重试。");
       return;
     }
   }

@@ -83,13 +83,13 @@ function setZalouserDmPolicy(
 async function noteZalouserHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "Zalo Personal Account login via QR code.",
+      "Zalo 个人账户通过二维码登录。",
       "",
-      "This plugin uses zca-js directly (no external CLI dependency).",
+      "此插件直接使用 zca-js（无外部 CLI 依赖）。",
       "",
-      "Docs: https://docs.openclaw.ai/channels/zalouser",
+      "文档：https://docs.openclaw.ai/channels/zalouser",
     ].join("\n"),
-    "Zalo Personal Setup",
+    "Zalo 个人版设置",
   );
 }
 
@@ -109,10 +109,10 @@ async function promptZalouserAllowFrom(params: {
 
   while (true) {
     const entry = await prompter.text({
-      message: "Zalouser allowFrom (name or user id)",
+      message: "Zalouser allowFrom（名称或用户 ID）",
       placeholder: "Alice, 123456789",
       initialValue: existingAllowFrom[0] ? String(existingAllowFrom[0]) : undefined,
-      validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+      validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
     });
     const parts = parseInput(String(entry));
     const resolvedEntries = await resolveZaloAllowFromEntries({
@@ -123,8 +123,8 @@ async function promptZalouserAllowFrom(params: {
     const unresolved = resolvedEntries.filter((item) => !item.resolved).map((item) => item.input);
     if (unresolved.length > 0) {
       await prompter.note(
-        `Could not resolve: ${unresolved.join(", ")}. Use numeric user ids or exact friend names.`,
-        "Zalo Personal allowlist",
+        `无法解析：${unresolved.join(", ")}。请使用数字用户 ID 或精确的好友名称。`,
+        "Zalo 个人版白名单",
       );
       continue;
     }
@@ -138,7 +138,7 @@ async function promptZalouserAllowFrom(params: {
       .filter((item) => item.note)
       .map((item) => `${item.input} -> ${item.id} (${item.note})`);
     if (notes.length > 0) {
-      await prompter.note(notes.join("\n"), "Zalo Personal allowlist");
+      await prompter.note(notes.join("\n"), "Zalo 个人版白名单");
     }
 
     return setZalouserAccountScopedConfig(cfg, accountId, {
@@ -206,8 +206,8 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
     return {
       channel,
       configured,
-      statusLines: [`Zalo Personal: ${configured ? "logged in" : "needs QR login"}`],
-      selectionHint: configured ? "recommended · logged in" : "recommended · QR login",
+      statusLines: [`Zalo 个人版：${configured ? "已登录" : "需要二维码登录"}`],
+      selectionHint: configured ? "推荐 · 已登录" : "推荐 · 二维码登录",
       quickstartScore: configured ? 1 : 15,
     };
   },
@@ -237,7 +237,7 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
       await noteZalouserHelp(prompter);
 
       const wantsLogin = await prompter.confirm({
-        message: "Login via QR code now?",
+        message: "现在通过二维码登录？",
         initialValue: true,
       });
 
@@ -249,14 +249,14 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
             [
               start.message,
               qrPath
-                ? `QR image saved to: ${qrPath}`
-                : "Could not write QR image file; use gateway web login UI instead.",
-              "Scan + approve on phone, then continue.",
+                ? `二维码图片已保存到：${qrPath}`
+                : "无法写入二维码图片文件；请使用网关 Web 登录界面。",
+              "在手机上扫描并确认，然后继续。",
             ].join("\n"),
-            "QR Login",
+            "二维码登录",
           );
           const scanned = await prompter.confirm({
-            message: "Did you scan and approve the QR on your phone?",
+            message: "你是否已在手机上扫描并确认二维码？",
             initialValue: true,
           });
           if (scanned) {
@@ -264,15 +264,15 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
               profile: account.profile,
               timeoutMs: 120_000,
             });
-            await prompter.note(waited.message, waited.connected ? "Success" : "Login pending");
+            await prompter.note(waited.message, waited.connected ? "成功" : "登录等待中");
           }
         } else {
-          await prompter.note(start.message, "Login pending");
+          await prompter.note(start.message, "登录等待中");
         }
       }
     } else {
       const keepSession = await prompter.confirm({
-        message: "Zalo Personal already logged in. Keep session?",
+        message: "Zalo 个人版已登录。保留会话吗？",
         initialValue: true,
       });
       if (!keepSession) {
@@ -285,13 +285,13 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
         if (start.qrDataUrl) {
           const qrPath = await writeQrDataUrlToTempFile(start.qrDataUrl, account.profile);
           await prompter.note(
-            [start.message, qrPath ? `QR image saved to: ${qrPath}` : undefined]
+            [start.message, qrPath ? `二维码图片已保存到：${qrPath}` : undefined]
               .filter(Boolean)
               .join("\n"),
-            "QR Login",
+            "二维码登录",
           );
           const waited = await waitForZaloQrLogin({ profile: account.profile, timeoutMs: 120_000 });
-          await prompter.note(waited.message, waited.connected ? "Success" : "Login pending");
+          await prompter.note(waited.message, waited.connected ? "成功" : "登录等待中");
         }
       }
     }
@@ -314,7 +314,7 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
     const updatedAccount = resolveZalouserAccountSync({ cfg: next, accountId });
     const accessConfig = await promptChannelAccessConfig({
       prompter,
-      label: "Zalo groups",
+      label: "Zalo 群组",
       currentPolicy: updatedAccount.config.groupPolicy ?? "allowlist",
       currentEntries: Object.keys(updatedAccount.config.groups ?? {}),
       placeholder: "Family, Work, 123456789",
@@ -349,7 +349,7 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
           } catch (err) {
             await prompter.note(
               `Group lookup failed; keeping entries as typed. ${String(err)}`,
-              "Zalo groups",
+              "Zalo 群组",
             );
           }
         }

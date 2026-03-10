@@ -55,25 +55,25 @@ async function promptFeishuAllowFrom(params: {
   const existing = params.cfg.channels?.feishu?.allowFrom ?? [];
   await params.prompter.note(
     [
-      "Allowlist Feishu DMs by open_id or user_id.",
-      "You can find user open_id in Feishu admin console or via API.",
-      "Examples:",
+      "通过 open_id 或 user_id 将飞书私聊加入白名单。",
+      "你可以在飞书管理后台或通过 API 找到用户 open_id。",
+      "示例：",
       "- ou_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       "- on_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     ].join("\n"),
-    "Feishu allowlist",
+    "飞书白名单",
   );
 
   while (true) {
     const entry = await params.prompter.text({
-      message: "Feishu allowFrom (user open_ids)",
+      message: "飞书 allowFrom（用户 open_ids）",
       placeholder: "ou_xxxxx, ou_yyyyy",
       initialValue: existing[0] ? String(existing[0]) : undefined,
-      validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+      validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
     });
     const parts = splitOnboardingEntries(String(entry));
     if (parts.length === 0) {
-      await params.prompter.note("Enter at least one user.", "Feishu allowlist");
+      await params.prompter.note("请至少输入一个用户。", "飞书白名单");
       continue;
     }
 
@@ -85,15 +85,15 @@ async function promptFeishuAllowFrom(params: {
 async function noteFeishuCredentialHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "1) Go to Feishu Open Platform (open.feishu.cn)",
-      "2) Create a self-built app",
-      "3) Get App ID and App Secret from Credentials page",
-      "4) Enable required permissions: im:message, im:chat, contact:user.base:readonly",
-      "5) Publish the app or add it to a test group",
-      "Tip: you can also set FEISHU_APP_ID / FEISHU_APP_SECRET env vars.",
+      "1) 前往飞书开放平台 (open.feishu.cn)",
+      "2) 创建一个自建应用",
+      "3) 从凭据页面获取 App ID 和 App Secret",
+      "4) 启用必要权限：im:message, im:chat, contact:user.base:readonly",
+      "5) 发布应用或将其添加到测试群组",
+      "提示：你也可以设置 FEISHU_APP_ID / FEISHU_APP_SECRET 环境变量。",
       `Docs: ${formatDocsLink("/channels/feishu", "feishu")}`,
     ].join("\n"),
-    "Feishu credentials",
+    "飞书凭据",
   );
 }
 
@@ -103,9 +103,9 @@ async function promptFeishuAppId(params: {
 }): Promise<string> {
   const appId = String(
     await params.prompter.text({
-      message: "Enter Feishu App ID",
+      message: "输入飞书 App ID",
       initialValue: params.initialValue,
-      validate: (value) => (value?.trim() ? undefined : "Required"),
+      validate: (value) => (value?.trim() ? undefined : "必填"),
     }),
   ).trim();
   return appId;
@@ -204,20 +204,20 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
 
     const statusLines: string[] = [];
     if (!configured) {
-      statusLines.push("Feishu: needs app credentials");
+      statusLines.push("飞书：需要应用凭据");
     } else if (probeResult?.ok) {
       statusLines.push(
         `Feishu: connected as ${probeResult.botName ?? probeResult.botOpenId ?? "bot"}`,
       );
     } else {
-      statusLines.push("Feishu: configured (connection not verified)");
+      statusLines.push("飞书：已配置（连接未验证）");
     }
 
     return {
       channel,
       configured,
       statusLines,
-      selectionHint: configured ? "configured" : "needs app creds",
+      selectionHint: configured ? "已配置" : "需要应用凭据",
       quickstartScore: configured ? 2 : 0,
     };
   },
@@ -251,13 +251,13 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
       cfg: next,
       prompter,
       providerHint: "feishu",
-      credentialLabel: "App Secret",
+      credentialLabel: "应用密钥",
       accountConfigured: appSecretPromptState.accountConfigured,
       canUseEnv: appSecretPromptState.canUseEnv,
       hasConfigToken: appSecretPromptState.hasConfigToken,
-      envPrompt: "FEISHU_APP_ID + FEISHU_APP_SECRET detected. Use env vars?",
-      keepPrompt: "Feishu App Secret already configured. Keep it?",
-      inputPrompt: "Enter Feishu App Secret",
+      envPrompt: "检测到 FEISHU_APP_ID + FEISHU_APP_SECRET。使用环境变量？",
+      keepPrompt: "飞书应用密钥已配置。保留吗？",
+      inputPrompt: "输入飞书应用密钥",
       preferredEnvVar: "FEISHU_APP_SECRET",
     });
 
@@ -302,26 +302,26 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
         });
         if (probe.ok) {
           await prompter.note(
-            `Connected as ${probe.botName ?? probe.botOpenId ?? "bot"}`,
-            "Feishu connection test",
+            `已连接为 ${probe.botName ?? probe.botOpenId ?? "bot"}`,
+            "飞书连接测试",
           );
         } else {
           await prompter.note(
-            `Connection failed: ${probe.error ?? "unknown error"}`,
-            "Feishu connection test",
+            `连接失败：${probe.error ?? "未知错误"}`,
+            "飞书连接测试",
           );
         }
       } catch (err) {
-        await prompter.note(`Connection test failed: ${String(err)}`, "Feishu connection test");
+        await prompter.note(`连接测试失败：${String(err)}`, "Feishu connection test");
       }
     }
 
     const currentMode =
       (next.channels?.feishu as FeishuConfig | undefined)?.connectionMode ?? "websocket";
     const connectionMode = (await prompter.select({
-      message: "Feishu connection mode",
+      message: "飞书连接模式",
       options: [
-        { value: "websocket", label: "WebSocket (default)" },
+        { value: "websocket", label: "WebSocket（默认）" },
         { value: "webhook", label: "Webhook" },
       ],
       initialValue: currentMode,
@@ -349,13 +349,13 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
         cfg: next,
         prompter,
         providerHint: "feishu-webhook",
-        credentialLabel: "verification token",
+        credentialLabel: "验证令牌",
         accountConfigured: verificationTokenPromptState.accountConfigured,
         canUseEnv: verificationTokenPromptState.canUseEnv,
         hasConfigToken: verificationTokenPromptState.hasConfigToken,
         envPrompt: "",
-        keepPrompt: "Feishu verification token already configured. Keep it?",
-        inputPrompt: "Enter Feishu verification token",
+        keepPrompt: "飞书验证令牌已配置。保留吗？",
+        inputPrompt: "输入飞书验证令牌",
         preferredEnvVar: "FEISHU_VERIFICATION_TOKEN",
       });
       if (verificationTokenResult.action === "set") {
@@ -373,9 +373,9 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
       const currentWebhookPath = (next.channels?.feishu as FeishuConfig | undefined)?.webhookPath;
       const webhookPath = String(
         await prompter.text({
-          message: "Feishu webhook path",
+          message: "飞书 webhook 路径",
           initialValue: currentWebhookPath ?? "/feishu/events",
-          validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+          validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
         }),
       ).trim();
       next = {
@@ -393,10 +393,10 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
     // Domain selection
     const currentDomain = (next.channels?.feishu as FeishuConfig | undefined)?.domain ?? "feishu";
     const domain = await prompter.select({
-      message: "Which Feishu domain?",
+      message: "选择飞书域名？",
       options: [
-        { value: "feishu", label: "Feishu (feishu.cn) - China" },
-        { value: "lark", label: "Lark (larksuite.com) - International" },
+        { value: "feishu", label: "飞书 (feishu.cn) - 中国" },
+        { value: "lark", label: "Lark (larksuite.com) - 国际版" },
       ],
       initialValue: currentDomain,
     });
@@ -415,11 +415,11 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
 
     // Group policy
     const groupPolicy = await prompter.select({
-      message: "Group chat policy",
+      message: "群聊策略",
       options: [
-        { value: "allowlist", label: "Allowlist - only respond in specific groups" },
-        { value: "open", label: "Open - respond in all groups (requires mention)" },
-        { value: "disabled", label: "Disabled - don't respond in groups" },
+        { value: "allowlist", label: "白名单 - 仅在特定群组中回复" },
+        { value: "open", label: "开放 - 在所有群组中回复（需要被提及）" },
+        { value: "disabled", label: "禁用 - 不在群组中回复" },
       ],
       initialValue: (next.channels?.feishu as FeishuConfig | undefined)?.groupPolicy ?? "allowlist",
     });
@@ -431,7 +431,7 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
     if (groupPolicy === "allowlist") {
       const existing = (next.channels?.feishu as FeishuConfig | undefined)?.groupAllowFrom ?? [];
       const entry = await prompter.text({
-        message: "Group chat allowlist (chat_ids)",
+        message: "群聊白名单（chat_ids）",
         placeholder: "oc_xxxxx, oc_yyyyy",
         initialValue: existing.length > 0 ? existing.map(String).join(", ") : undefined,
       });

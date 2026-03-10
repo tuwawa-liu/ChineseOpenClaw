@@ -77,13 +77,13 @@ function applyAccountConfig(params: {
 async function noteTlonHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "You need your Urbit ship URL and login code.",
-      "Example URL: https://your-ship-host",
-      "Example ship: ~sampel-palnet",
-      "If your ship URL is on a private network (LAN/localhost), you must explicitly allow it during setup.",
+      "你需要你的 Urbit ship URL 和登录码。",
+      "示例 URL：https://your-ship-host",
+      "示例 ship：~sampel-palnet",
+      "如果你的 ship URL 在私有网络（LAN/localhost）上，你必须在设置期间明确允许。",
       `Docs: ${formatDocsLink("/channels/tlon", "channels/tlon")}`,
     ].join("\n"),
-    "Tlon setup",
+    "Tlon 设置",
   );
 }
 
@@ -106,8 +106,8 @@ export const tlonOnboardingAdapter: ChannelOnboardingAdapter = {
     return {
       channel,
       configured,
-      statusLines: [`Tlon: ${configured ? "configured" : "needs setup"}`],
-      selectionHint: configured ? "configured" : "urbit messenger",
+      statusLines: [`Tlon：${configured ? "已配置" : "需要设置"}`],
+      selectionHint: configured ? "已配置" : "Urbit 即时通讯",
       quickstartScore: configured ? 1 : 4,
     };
   },
@@ -127,10 +127,10 @@ export const tlonOnboardingAdapter: ChannelOnboardingAdapter = {
     await noteTlonHelp(prompter);
 
     const ship = await prompter.text({
-      message: "Ship name",
+      message: "Ship 名称",
       placeholder: "~sampel-palnet",
       initialValue: resolved.ship ?? undefined,
-      validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+      validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
     });
 
     const url = await prompter.text({
@@ -155,30 +155,30 @@ export const tlonOnboardingAdapter: ChannelOnboardingAdapter = {
     if (isBlockedUrbitHostname(validatedUrl.hostname)) {
       allowPrivateNetwork = await prompter.confirm({
         message:
-          "Ship URL looks like a private/internal host. Allow private network access? (SSRF risk)",
+          "Ship URL 看起来是私有/内部主机。允许私有网络访问？（SSRF 风险）",
         initialValue: allowPrivateNetwork,
       });
       if (!allowPrivateNetwork) {
-        throw new Error("Refusing private/internal Ship URL without explicit approval");
+        throw new Error("拒绝未经明确批准的私有/内部 Ship URL");
       }
     }
 
     const code = await prompter.text({
-      message: "Login code",
+      message: "登录码",
       placeholder: "lidlut-tabwed-pillex-ridrup",
       initialValue: resolved.code ?? undefined,
-      validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+      validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
     });
 
     const wantsGroupChannels = await prompter.confirm({
-      message: "Add group channels manually? (optional)",
+      message: "手动添加群组频道？（可选）",
       initialValue: false,
     });
 
     let groupChannels: string[] | undefined;
     if (wantsGroupChannels) {
       const entry = await prompter.text({
-        message: "Group channels (comma-separated)",
+        message: "群组频道（逗号分隔）",
         placeholder: "chat/~host-ship/general, chat/~host-ship/support",
       });
       const parsed = parseList(String(entry ?? ""));
@@ -186,14 +186,14 @@ export const tlonOnboardingAdapter: ChannelOnboardingAdapter = {
     }
 
     const wantsAllowlist = await prompter.confirm({
-      message: "Restrict DMs with an allowlist?",
+      message: "使用白名单限制私信？",
       initialValue: false,
     });
 
     let dmAllowlist: string[] | undefined;
     if (wantsAllowlist) {
       const entry = await prompter.text({
-        message: "DM allowlist (comma-separated ship names)",
+        message: "私信白名单（逗号分隔的 ship 名称）",
         placeholder: "~zod, ~nec",
       });
       const parsed = parseList(String(entry ?? ""));
@@ -201,7 +201,7 @@ export const tlonOnboardingAdapter: ChannelOnboardingAdapter = {
     }
 
     const autoDiscoverChannels = await prompter.confirm({
-      message: "Enable auto-discovery of group channels?",
+      message: "启用群组频道自动发现？",
       initialValue: resolved.autoDiscoverChannels ?? true,
     });
 

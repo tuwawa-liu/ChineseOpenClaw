@@ -58,7 +58,7 @@ export function registerCronEditCommand(cron: Command) {
       .option("--announce", t("cronCli.addAnnounceOpt"))
       .option("--deliver", t("cronCli.addDeliverOpt"))
       .option("--no-deliver", t("cronEditCli.noDeliverOpt"))
-      .option("--channel <channel>", `Delivery channel (${getCronChannelOptions()})`)
+      .option("--channel <channel>", `投递渠道 (${getCronChannelOptions()})`)
       .option("--to <dest>", t("cronCli.addToOpt"))
       .option("--account <id>", t("cronCli.addAccountOpt"))
       .option("--best-effort-deliver", t("cronEditCli.bestEffortDeliverOpt"))

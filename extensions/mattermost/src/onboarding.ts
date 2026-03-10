@@ -20,13 +20,13 @@ const channel = "mattermost" as const;
 async function noteMattermostSetup(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "1) Mattermost System Console -> Integrations -> Bot Accounts",
-      "2) Create a bot + copy its token",
-      "3) Use your server base URL (e.g., https://chat.example.com)",
-      "Tip: the bot must be a member of any channel you want it to monitor.",
+      "1) Mattermost 系统控制台 -> 集成 -> 机器人账号",
+      "2) 创建机器人并复制令牌",
+      "3) 使用你的服务器基础 URL（例如 https://chat.example.com）",
+      "提示：机器人必须是你想让它监控的频道的成员。",
       "Docs: https://docs.openclaw.ai/channels/mattermost",
     ].join("\n"),
-    "Mattermost bot token",
+    "Mattermost 机器人令牌",
   );
 }
 
@@ -36,9 +36,9 @@ async function promptMattermostBaseUrl(params: {
 }): Promise<string> {
   const baseUrl = String(
     await params.prompter.text({
-      message: "Enter Mattermost base URL",
+      message: "输入 Mattermost 基础 URL",
       initialValue: params.initialValue,
-      validate: (value) => (value?.trim() ? undefined : "Required"),
+      validate: (value) => (value?.trim() ? undefined : "必填"),
     }),
   ).trim();
   return baseUrl;
@@ -60,8 +60,8 @@ export const mattermostOnboardingAdapter: ChannelOnboardingAdapter = {
     return {
       channel,
       configured,
-      statusLines: [`Mattermost: ${configured ? "configured" : "needs token + url"}`],
-      selectionHint: configured ? "configured" : "needs setup",
+      statusLines: [`Mattermost：${configured ? "已配置" : "需要令牌和 URL"}`],
+      selectionHint: configured ? "已配置" : "需要设置",
       quickstartScore: configured ? 2 : 1,
     };
   },
@@ -112,9 +112,9 @@ export const mattermostOnboardingAdapter: ChannelOnboardingAdapter = {
       accountConfigured: tokenPromptState.accountConfigured,
       canUseEnv: tokenPromptState.canUseEnv,
       hasConfigToken: tokenPromptState.hasConfigToken,
-      envPrompt: "MATTERMOST_BOT_TOKEN + MATTERMOST_URL detected. Use env vars?",
-      keepPrompt: "Mattermost bot token already configured. Keep it?",
-      inputPrompt: "Enter Mattermost bot token",
+      envPrompt: "检测到 MATTERMOST_BOT_TOKEN + MATTERMOST_URL。使用环境变量？",
+      keepPrompt: "Mattermost 机器人令牌已配置。保留吗？",
+      inputPrompt: "输入 Mattermost 机器人令牌",
       preferredEnvVar: "MATTERMOST_BOT_TOKEN",
     });
     if (botTokenResult.action === "keep") {

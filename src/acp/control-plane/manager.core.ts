@@ -215,7 +215,7 @@ export class AcpSessionManager {
   }> {
     const sessionKey = normalizeSessionKey(input.sessionKey);
     if (!sessionKey) {
-      throw new AcpRuntimeError("ACP_SESSION_INIT_FAILED", "ACP session key is required.");
+      throw new AcpRuntimeError("ACP_SESSION_INIT_FAILED", "ACP 会话密钥是必需的。");
     }
     const agent = normalizeAgentId(input.agent);
     await this.evictIdleRuntimeHandles({ cfg: input.cfg });
@@ -237,7 +237,7 @@ export class AcpSessionManager {
             cwd: requestedCwd,
           }),
         fallbackCode: "ACP_SESSION_INIT_FAILED",
-        fallbackMessage: "Could not initialize ACP session runtime.",
+        fallbackMessage: "无法初始化 ACP 会话运行时。",
       });
       const effectiveCwd = normalizeText(handle.cwd) ?? requestedCwd;
       const effectiveRuntimeOptions = normalizeRuntimeOptions({
@@ -360,7 +360,7 @@ export class AcpSessionManager {
               return status;
             },
             fallbackCode: "ACP_TURN_FAILED",
-            fallbackMessage: "Could not read ACP runtime status.",
+            fallbackMessage: "无法读取 ACP 运行时状态。",
           });
         }
         ({ handle, meta, runtimeStatus } = await this.reconcileRuntimeSessionIdentifiers({
@@ -429,7 +429,7 @@ export class AcpSessionManager {
             mode: runtimeMode,
           }),
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not update ACP runtime mode.",
+        fallbackMessage: "无法更新 ACP 运行时模式。",
       });
 
       const nextOptions = mergeRuntimeOptions({
@@ -503,7 +503,7 @@ export class AcpSessionManager {
             value,
           }),
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not update ACP runtime config option.",
+        fallbackMessage: "无法更新 ACP 运行时配置选项。",
       });
 
       const nextOptions = mergeRuntimeOptions({
@@ -577,7 +577,7 @@ export class AcpSessionManager {
             reason: "reset-runtime-options",
           }),
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "Could not reset ACP runtime options.",
+        fallbackMessage: "无法重置 ACP 运行时选项。",
       });
       this.clearCachedRuntimeState(sessionKey);
       await this.persistRuntimeOptions({
@@ -686,7 +686,7 @@ export class AcpSessionManager {
         const acpError = toAcpRuntimeError({
           error,
           fallbackCode: "ACP_TURN_FAILED",
-          fallbackMessage: "ACP turn failed before completion.",
+          fallbackMessage: "ACP 回合在完成前失败。",
         });
         this.recordTurnCompletion({
           startedAt: turnStartedAt,
@@ -755,7 +755,7 @@ export class AcpSessionManager {
       await withAcpRuntimeErrorBoundary({
         run: async () => await activeTurn.cancelPromise!,
         fallbackCode: "ACP_TURN_FAILED",
-        fallbackMessage: "ACP cancel failed before completion.",
+        fallbackMessage: "ACP 取消在完成前失败。",
       });
       return;
     }
@@ -842,7 +842,7 @@ export class AcpSessionManager {
               reason: input.reason,
             }),
           fallbackCode: "ACP_TURN_FAILED",
-          fallbackMessage: "ACP close failed before completion.",
+          fallbackMessage: "ACP 关闭在完成前失败。",
         });
         runtimeClosed = true;
         this.clearCachedRuntimeState(sessionKey);

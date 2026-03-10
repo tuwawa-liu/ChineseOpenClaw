@@ -19,37 +19,37 @@ function pluralize(count: number, noun: string) {
 function formatLegacyIssuePreview(issues: Partial<Record<string, number>>): string[] {
   const lines: string[] = [];
   if (issues.jobId) {
-    lines.push(`- ${pluralize(issues.jobId, "job")} still uses legacy \`jobId\``);
+    lines.push(`- ${pluralize(issues.jobId, "个任务")} 仍使用旧版 \`jobId\``);
   }
   if (issues.legacyScheduleString) {
     lines.push(
-      `- ${pluralize(issues.legacyScheduleString, "job")} stores schedule as a bare string`,
+      `- ${pluralize(issues.legacyScheduleString, "个任务")} 以纯字符串形式存储计划`,
     );
   }
   if (issues.legacyScheduleCron) {
-    lines.push(`- ${pluralize(issues.legacyScheduleCron, "job")} still uses \`schedule.cron\``);
+    lines.push(`- ${pluralize(issues.legacyScheduleCron, "个任务")} 仍使用 \`schedule.cron\``);
   }
   if (issues.legacyPayloadKind) {
-    lines.push(`- ${pluralize(issues.legacyPayloadKind, "job")} needs payload kind normalization`);
+    lines.push(`- ${pluralize(issues.legacyPayloadKind, "个任务")} 需要负载类型规范化`);
   }
   if (issues.legacyPayloadProvider) {
     lines.push(
-      `- ${pluralize(issues.legacyPayloadProvider, "job")} still uses payload \`provider\` as a delivery alias`,
+      `- ${pluralize(issues.legacyPayloadProvider, "个任务")} 仍使用负载 \`provider\` 作为投递别名`,
     );
   }
   if (issues.legacyTopLevelPayloadFields) {
     lines.push(
-      `- ${pluralize(issues.legacyTopLevelPayloadFields, "job")} still uses top-level payload fields`,
+      `- ${pluralize(issues.legacyTopLevelPayloadFields, "个任务")} 仍使用顶层负载字段`,
     );
   }
   if (issues.legacyTopLevelDeliveryFields) {
     lines.push(
-      `- ${pluralize(issues.legacyTopLevelDeliveryFields, "job")} still uses top-level delivery fields`,
+      `- ${pluralize(issues.legacyTopLevelDeliveryFields, "个任务")} 仍使用顶层投递字段`,
     );
   }
   if (issues.legacyDeliveryMode) {
     lines.push(
-      `- ${pluralize(issues.legacyDeliveryMode, "job")} still uses delivery mode \`deliver\``,
+      `- ${pluralize(issues.legacyDeliveryMode, "个任务")} 仍使用投递模式 \`deliver\``,
     );
   }
   return lines;
@@ -105,13 +105,13 @@ function migrateLegacyNotifyFallback(params: {
 
     if (!params.legacyWebhook) {
       warnings.push(
-        `Cron job "${jobName}" still uses legacy notify fallback, but cron.webhook is unset so doctor cannot migrate it automatically.`,
+        `定时任务 "${jobName}" 仍使用旧版通知回退，但 cron.webhook 未设置，因此 doctor 无法自动迁移。`,
       );
       continue;
     }
 
     warnings.push(
-      `Cron job "${jobName}" uses legacy notify fallback alongside delivery mode "${mode}". Migrate it manually so webhook delivery does not replace existing announce behavior.`,
+      `定时任务 "${jobName}" 在使用投递模式 "${mode}" 的同时使用了旧版通知回退。请手动迁移，以免 webhook 投递覆盖现有的广播行为。`,
     );
   }
 
@@ -136,7 +136,7 @@ export async function maybeRepairLegacyCronStore(params: {
   const previewLines = formatLegacyIssuePreview(normalized.issues);
   if (notifyCount > 0) {
     previewLines.push(
-      `- ${pluralize(notifyCount, "job")} still uses legacy \`notify: true\` webhook fallback`,
+      `- ${pluralize(notifyCount, "个任务")} 仍使用旧版 \`notify: true\` webhook 回退`,
     );
   }
   if (previewLines.length === 0) {
@@ -145,15 +145,15 @@ export async function maybeRepairLegacyCronStore(params: {
 
   note(
     [
-      `Legacy cron job storage detected at ${shortenHomePath(storePath)}.`,
+      `在 ${shortenHomePath(storePath)} 检测到旧版定时任务存储。`,
       ...previewLines,
-      `Repair with ${formatCliCommand("openclaw doctor --fix")} to normalize the store before the next scheduler run.`,
+      `使用 ${formatCliCommand("openclaw doctor --fix")} 修复，以在下次调度器运行前规范化存储。`,
     ].join("\n"),
-    "Cron",
+    "定时任务",
   );
 
   const shouldRepair = await params.prompter.confirm({
-    message: "Repair legacy cron jobs now?",
+    message: "现在修复旧版定时任务？",
     initialValue: true,
   });
   if (!shouldRepair) {
@@ -174,10 +174,10 @@ export async function maybeRepairLegacyCronStore(params: {
       version: 1,
       jobs: rawJobs as unknown as CronJob[],
     });
-    note(`Cron store normalized at ${shortenHomePath(storePath)}.`, "Doctor changes");
+    note(`定时任务存储已在 ${shortenHomePath(storePath)} 规范化。`, "诊断更改");
   }
 
   if (notifyMigration.warnings.length > 0) {
-    note(notifyMigration.warnings.join("\n"), "Doctor warnings");
+    note(notifyMigration.warnings.join("\n"), "诊断警告");
   }
 }

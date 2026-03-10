@@ -77,13 +77,13 @@ async function noteNextcloudTalkSecretHelp(prompter: WizardPrompter): Promise<vo
   await prompter.note(
     [
       "1) SSH into your Nextcloud server",
-      '2) Run: ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction',
+      '2) 运行：./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction',
       "3) Copy the shared secret you used in the command",
       "4) Enable the bot in your Nextcloud Talk room settings",
-      "Tip: you can also set NEXTCLOUD_TALK_BOT_SECRET in your env.",
+      "提示：你也可以在环境变量中设置 NEXTCLOUD_TALK_BOT_SECRET。",
       `Docs: ${formatDocsLink("/channels/nextcloud-talk", "channels/nextcloud-talk")}`,
     ].join("\n"),
-    "Nextcloud Talk bot setup",
+    "Nextcloud Talk 机器人设置",
   );
 }
 
@@ -95,7 +95,7 @@ async function noteNextcloudTalkUserIdHelp(prompter: WizardPrompter): Promise<vo
       "3) User IDs are typically lowercase usernames in Nextcloud",
       `Docs: ${formatDocsLink("/channels/nextcloud-talk", "channels/nextcloud-talk")}`,
     ].join("\n"),
-    "Nextcloud Talk user id",
+    "Nextcloud Talk 用户 ID",
   );
 }
 
@@ -118,14 +118,14 @@ async function promptNextcloudTalkAllowFrom(params: {
   let resolvedIds: string[] = [];
   while (resolvedIds.length === 0) {
     const entry = await prompter.text({
-      message: "Nextcloud Talk allowFrom (user id)",
+      message: "Nextcloud Talk allowFrom（用户 ID）",
       placeholder: "username",
       initialValue: existingAllowFrom[0] ? String(existingAllowFrom[0]) : undefined,
-      validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+      validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
     });
     resolvedIds = parseInput(String(entry));
     if (resolvedIds.length === 0) {
-      await prompter.note("Please enter at least one valid user ID.", "Nextcloud Talk allowlist");
+      await prompter.note("请至少输入一个有效的用户 ID。", "Nextcloud Talk 白名单");
     }
   }
 
@@ -181,8 +181,8 @@ export const nextcloudTalkOnboardingAdapter: ChannelOnboardingAdapter = {
     return {
       channel,
       configured,
-      statusLines: [`Nextcloud Talk: ${configured ? "configured" : "needs setup"}`],
-      selectionHint: configured ? "configured" : "self-hosted chat",
+      statusLines: [`Nextcloud Talk：${configured ? "已配置" : "需要设置"}`],
+      selectionHint: configured ? "已配置" : "自托管聊天",
       quickstartScore: configured ? 1 : 5,
     };
   },
@@ -226,14 +226,14 @@ export const nextcloudTalkOnboardingAdapter: ChannelOnboardingAdapter = {
     if (!baseUrl) {
       baseUrl = String(
         await prompter.text({
-          message: "Enter Nextcloud instance URL (e.g., https://cloud.example.com)",
+          message: "输入 Nextcloud 实例 URL（例如 https://cloud.example.com）",
           validate: (value) => {
             const v = String(value ?? "").trim();
             if (!v) {
-              return "Required";
+              return "必填";
             }
             if (!v.startsWith("http://") && !v.startsWith("https://")) {
-              return "URL must start with http:// or https://";
+              return "URL 必须以 http:// 或 https:// 开头";
             }
             return undefined;
           },
@@ -255,8 +255,8 @@ export const nextcloudTalkOnboardingAdapter: ChannelOnboardingAdapter = {
       canUseEnv: secretPromptState.canUseEnv,
       hasConfigToken: secretPromptState.hasConfigToken,
       envPrompt: "NEXTCLOUD_TALK_BOT_SECRET detected. Use env var?",
-      keepPrompt: "Nextcloud Talk bot secret already configured. Keep it?",
-      inputPrompt: "Enter Nextcloud Talk bot secret",
+      keepPrompt: "Nextcloud Talk 机器人密钥已配置。保留吗？",
+      inputPrompt: "输入 Nextcloud Talk 机器人密钥",
       preferredEnvVar: "NEXTCLOUD_TALK_BOT_SECRET",
     });
     if (secretResult.action === "set") {
@@ -276,15 +276,15 @@ export const nextcloudTalkOnboardingAdapter: ChannelOnboardingAdapter = {
       resolvedAccount.config.apiPasswordFile,
     );
     const configureApiCredentials = await prompter.confirm({
-      message: "Configure optional Nextcloud Talk API credentials for room lookups?",
+      message: "配置可选的 Nextcloud Talk API 凭据以进行房间查找？",
       initialValue: Boolean(existingApiUser && existingApiPasswordConfigured),
     });
     if (configureApiCredentials) {
       const apiUser = String(
         await prompter.text({
-          message: "Nextcloud Talk API user",
+          message: "Nextcloud Talk API 用户",
           initialValue: existingApiUser,
-          validate: (value) => (String(value ?? "").trim() ? undefined : "Required"),
+          validate: (value) => (String(value ?? "").trim() ? undefined : "必填"),
         }),
       ).trim();
       const apiPasswordResult = await promptSingleChannelSecretInput({
@@ -298,8 +298,8 @@ export const nextcloudTalkOnboardingAdapter: ChannelOnboardingAdapter = {
           allowEnv: false,
         }),
         envPrompt: "",
-        keepPrompt: "Nextcloud Talk API password already configured. Keep it?",
-        inputPrompt: "Enter Nextcloud Talk API password",
+        keepPrompt: "Nextcloud Talk API 密码已配置。保留吗？",
+        inputPrompt: "输入 Nextcloud Talk API 密码",
         preferredEnvVar: "NEXTCLOUD_TALK_API_PASSWORD",
       });
       const apiPassword = apiPasswordResult.action === "set" ? apiPasswordResult.value : undefined;

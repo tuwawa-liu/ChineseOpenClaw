@@ -113,10 +113,10 @@ async function noteZaloTokenHelp(prompter: WizardPrompter): Promise<void> {
       "1) Open Zalo Bot Platform: https://bot.zaloplatforms.com",
       "2) Create a bot and get the token",
       "3) Token looks like 12345689:abc-xyz",
-      "Tip: you can also set ZALO_BOT_TOKEN in your env.",
+      "提示：你也可以在环境变量中设置 ZALO_BOT_TOKEN。",
       "Docs: https://docs.openclaw.ai/channels/zalo",
     ].join("\n"),
-    "Zalo bot token",
+    "Zalo 机器人令牌",
   );
 }
 
@@ -129,16 +129,16 @@ async function promptZaloAllowFrom(params: {
   const resolved = resolveZaloAccount({ cfg, accountId });
   const existingAllowFrom = resolved.config.allowFrom ?? [];
   const entry = await prompter.text({
-    message: "Zalo allowFrom (user id)",
+    message: "Zalo allowFrom（用户 ID）",
     placeholder: "123456789",
     initialValue: existingAllowFrom[0] ? String(existingAllowFrom[0]) : undefined,
     validate: (value) => {
       const raw = String(value ?? "").trim();
       if (!raw) {
-        return "Required";
+        return "必填";
       }
       if (!/^\d+$/.test(raw)) {
-        return "Use a numeric Zalo user id";
+        return "请使用数字 Zalo 用户 ID";
       }
       return undefined;
     },
@@ -221,8 +221,8 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
     return {
       channel,
       configured,
-      statusLines: [`Zalo: ${configured ? "configured" : "needs token"}`],
-      selectionHint: configured ? "recommended · configured" : "recommended · newcomer-friendly",
+      statusLines: [`Zalo：${configured ? "已配置" : "需要令牌"}`],
+      selectionHint: configured ? "推荐 · 已配置" : "推荐 · 新手友好",
       quickstartScore: configured ? 1 : 10,
     };
   },
@@ -275,8 +275,8 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
       canUseEnv: tokenPromptState.canUseEnv,
       hasConfigToken: tokenPromptState.hasConfigToken,
       envPrompt: "ZALO_BOT_TOKEN detected. Use env var?",
-      keepPrompt: "Zalo token already configured. Keep it?",
-      inputPrompt: "Enter Zalo bot token",
+      keepPrompt: "Zalo 令牌已配置。保留吗？",
+      inputPrompt: "输入 Zalo 机器人令牌",
       preferredEnvVar: "ZALO_BOT_TOKEN",
     });
     if (tokenResult.action === "set") {
@@ -331,7 +331,7 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
     }
 
     const wantsWebhook = await prompter.confirm({
-      message: "Use webhook mode for Zalo?",
+      message: "对 Zalo 使用 webhook 模式？",
       initialValue: Boolean(resolvedAccount.config.webhookUrl),
     });
     if (wantsWebhook) {
@@ -340,7 +340,7 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
           message: "Webhook URL (https://...) ",
           initialValue: resolvedAccount.config.webhookUrl,
           validate: (value) =>
-            value?.trim()?.startsWith("https://") ? undefined : "HTTPS URL required",
+            value?.trim()?.startsWith("https://") ? undefined : "需要 HTTPS URL",
         }),
       ).trim();
       const defaultPath = (() => {
@@ -361,8 +361,8 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
           allowEnv: false,
         }),
         envPrompt: "",
-        keepPrompt: "Zalo webhook secret already configured. Keep it?",
-        inputPrompt: "Webhook secret (8-256 chars)",
+        keepPrompt: "Zalo webhook 密钥已配置。保留吗？",
+        inputPrompt: "Webhook 密钥（8-256 个字符）",
         preferredEnvVar: "ZALO_WEBHOOK_SECRET",
       });
       while (
@@ -370,7 +370,7 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
         typeof webhookSecretResult.value === "string" &&
         (webhookSecretResult.value.length < 8 || webhookSecretResult.value.length > 256)
       ) {
-        await prompter.note("Webhook secret must be between 8 and 256 characters.", "Zalo webhook");
+        await prompter.note("Webhook 密钥必须在8到28个字符之间。", "Zalo webhook");
         webhookSecretResult = await promptSingleChannelSecretInput({
           cfg: next,
           prompter,
@@ -382,8 +382,8 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
             allowEnv: false,
           }),
           envPrompt: "",
-          keepPrompt: "Zalo webhook secret already configured. Keep it?",
-          inputPrompt: "Webhook secret (8-256 chars)",
+          keepPrompt: "Zalo webhook 密钥已配置。保留吗？",
+          inputPrompt: "Webhook 密钥（8-256 个字符）",
           preferredEnvVar: "ZALO_WEBHOOK_SECRET",
         });
       }
@@ -393,7 +393,7 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
           : resolvedAccount.config.webhookSecret;
       const webhookPath = String(
         await prompter.text({
-          message: "Webhook path (optional)",
+          message: "Webhook 路径（可选）",
           initialValue: resolvedAccount.config.webhookPath ?? defaultPath,
         }),
       ).trim();

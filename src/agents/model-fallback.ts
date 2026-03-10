@@ -190,7 +190,7 @@ function throwFallbackFailureSummary(params: {
   const summary =
     params.attempts.length > 0 ? params.attempts.map(params.formatAttempt).join(" | ") : "unknown";
   throw new Error(
-    `All ${params.label} failed (${params.attempts.length || params.candidates.length}): ${summary}`,
+    `所有 ${params.label} 均失败 (${params.attempts.length || params.candidates.length})：${summary}`,
     {
       cause: params.lastError instanceof Error ? params.lastError : undefined,
     },

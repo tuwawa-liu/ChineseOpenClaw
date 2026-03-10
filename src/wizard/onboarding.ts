@@ -31,34 +31,34 @@ async function requireRiskAcknowledgement(params: {
 
   await params.prompter.note(
     [
-      "Security warning — please read.",
+      "安全警告 — 请仔细阅读。",
       "",
-      "OpenClaw is a hobby project and still in beta. Expect sharp edges.",
-      "By default, OpenClaw is a personal agent: one trusted operator boundary.",
-      "This bot can read files and run actions if tools are enabled.",
-      "A bad prompt can trick it into doing unsafe things.",
+      "OpenClaw 是一个业余项目，目前仍处于测试阶段。可能存在各种问题。",
+      "默认情况下，OpenClaw 是一个个人代理：单一受信操作者边界。",
+      "如果启用了工具，此机器人可以读取文件并执行操作。",
+      "恶意提示可能诱骗它执行不安全的操作。",
       "",
-      "OpenClaw is not a hostile multi-tenant boundary by default.",
-      "If multiple users can message one tool-enabled agent, they share that delegated tool authority.",
+      "OpenClaw 默认不是多租户安全隔离边界。",
+      "如果多个用户可以向同一个启用工具的代理发送消息，他们将共享该委托的工具权限。",
       "",
-      "If you’re not comfortable with security hardening and access control, don’t run OpenClaw.",
-      "Ask someone experienced to help before enabling tools or exposing it to the internet.",
+      "如果你不熟悉安全加固和访问控制，请不要运行 OpenClaw。",
+      "在启用工具或将其暴露到互联网之前，请寻求有经验的人帮助。",
       "",
-      "Recommended baseline:",
-      "- Pairing/allowlists + mention gating.",
-      "- Multi-user/shared inbox: split trust boundaries (separate gateway/credentials, ideally separate OS users/hosts).",
-      "- Sandbox + least-privilege tools.",
-      "- Shared inboxes: isolate DM sessions (`session.dmScope: per-channel-peer`) and keep tool access minimal.",
-      "- Keep secrets out of the agent’s reachable filesystem.",
-      "- Use the strongest available model for any bot with tools or untrusted inboxes.",
+      "推荐的基线配置：",
+      "- 配对/白名单 + 提及门控。",
+      "- 多用户/共享收件箱：分离信任边界（独立的网关/凭据，最好使用独立的操作系统用户/主机）。",
+      "- 沙箱 + 最小权限工具。",
+      "- 共享收件箱：隔离 DM 会话（`session.dmScope: per-channel-peer`）并最小化工具访问权限。",
+      "- 让密钥远离代理可访问的文件系统。",
+      "- 对任何启用工具或不受信收件箱的机器人使用最强可用模型。",
       "",
-      "Run regularly:",
+      "定期运行：",
       "openclaw security audit --deep",
       "openclaw security audit --fix",
       "",
-      "Must read: https://docs.openclaw.ai/gateway/security",
+      "必读：https://docs.openclaw.ai/gateway/security",
     ].join("\n"),
-    "Security",
+    "安全",
   );
 
   const ok = await params.prompter.confirm({
@@ -91,7 +91,7 @@ export async function runOnboardingWizard(
         [
           ...snapshot.issues.map((iss) => `- ${iss.path}: ${iss.message}`),
           "",
-          "Docs: https://docs.openclaw.ai/gateway/configuration",
+          "文档：https://docs.openclaw.ai/gateway/configuration",
         ].join("\n"),
         t("wizard.onboarding.configIssuesTitle"),
       );
@@ -514,7 +514,7 @@ export async function runOnboardingWizard(
   });
 
   if (opts.skipSearch) {
-    await prompter.note("Skipping search setup.", "Search");
+    await prompter.note("跳过搜索设置。", "搜索");
   } else {
     const { setupSearch } = await import("../commands/onboard-search.js");
     nextConfig = await setupSearch(nextConfig, runtime, prompter, {

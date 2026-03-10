@@ -71,7 +71,7 @@ import {
 import { resolveTelegramGroupPromptSettings } from "./group-config-helpers.js";
 import { buildInlineKeyboard } from "./send.js";
 
-const EMPTY_RESPONSE_FALLBACK = "No response generated. Please try again.";
+const EMPTY_RESPONSE_FALLBACK = "未生成响应。请重试。";
 
 type TelegramNativeCommandContext = Context & { match?: string };
 
@@ -242,7 +242,7 @@ async function resolveTelegramCommandAuth(params: {
     return null;
   };
   const rejectNotAuthorized = async () => {
-    return await sendAuthMessage("You are not authorized to use this command.");
+    return await sendAuthMessage("你无权使用此命令。");
   };
 
   const baseAccess = evaluateTelegramGroupBaseAccess({
@@ -258,10 +258,10 @@ async function resolveTelegramCommandAuth(params: {
   });
   if (!baseAccess.allowed) {
     if (baseAccess.reason === "group-disabled") {
-      return await sendAuthMessage("This group is disabled.");
+      return await sendAuthMessage("此群组已禁用。");
     }
     if (baseAccess.reason === "topic-disabled") {
-      return await sendAuthMessage("This topic is disabled.");
+      return await sendAuthMessage("此话题已禁用。");
     }
     return await rejectNotAuthorized();
   }
@@ -286,7 +286,7 @@ async function resolveTelegramCommandAuth(params: {
   });
   if (!policyAccess.allowed) {
     if (policyAccess.reason === "group-policy-disabled") {
-      return await sendAuthMessage("Telegram group commands are disabled.");
+      return await sendAuthMessage("Telegram 群组命令已禁用。");
     }
     if (
       policyAccess.reason === "group-policy-allowlist-no-sender" ||
@@ -295,7 +295,7 @@ async function resolveTelegramCommandAuth(params: {
       return await rejectNotAuthorized();
     }
     if (policyAccess.reason === "group-chat-not-allowed") {
-      return await sendAuthMessage("This group is not allowed.");
+      return await sendAuthMessage("此群组不被允许。");
     }
   }
 
@@ -497,7 +497,7 @@ export const registerTelegramNativeCommands = ({
           fn: () =>
             bot.api.sendMessage(
               chatId,
-              "Configured ACP binding is unavailable right now. Please try again.",
+              "配置的 ACP 绑定当前不可用。请重试。",
               buildTelegramThreadParams(threadSpec) ?? {},
             ),
         });
@@ -800,7 +800,7 @@ export const registerTelegramNativeCommands = ({
             await withTelegramApiErrorLogging({
               operation: "sendMessage",
               runtime,
-              fn: () => bot.api.sendMessage(chatId, "Command not found."),
+              fn: () => bot.api.sendMessage(chatId, "未找到命令。"),
             });
             return;
           }

@@ -561,7 +561,7 @@ async function ensureDmComponentAuthorized(params: {
   logVerbose(`agent ${componentLabel}: blocked DM user ${user.id} (not in allowFrom)`);
   try {
     await interaction.reply({
-      content: `You are not authorized to use this ${componentLabel}.`,
+      content: `你无权使用此${componentLabel}。`,
       ...replyOpts,
     });
   } catch {
@@ -1059,7 +1059,7 @@ async function handleDiscordComponentEvent(params: {
     logError(`${params.label}: failed to parse component data`);
     try {
       await params.interaction.reply({
-        content: "This component is no longer valid.",
+        content: "此组件已失效。",
         ephemeral: true,
       });
     } catch {
@@ -1072,7 +1072,7 @@ async function handleDiscordComponentEvent(params: {
   if (!entry) {
     try {
       await params.interaction.reply({
-        content: "This component has expired.",
+        content: "此组件已过期。",
         ephemeral: true,
       });
     } catch {
@@ -1096,7 +1096,7 @@ async function handleDiscordComponentEvent(params: {
     guildEntries: params.ctx.guildEntries,
   });
   const channelCtx = resolveDiscordChannelContext(params.interaction);
-  const unauthorizedReply = `You are not authorized to use this ${params.componentLabel}.`;
+  const unauthorizedReply = `你无权使用此${params.componentLabel}。`;
   const memberAllowed = await ensureGuildComponentMemberAllowed({
     interaction: params.interaction,
     guildInfo,
@@ -1134,7 +1134,7 @@ async function handleDiscordComponentEvent(params: {
   if (!consumed) {
     try {
       await params.interaction.reply({
-        content: "This component has expired.",
+        content: "此组件已过期。",
         ephemeral: true,
       });
     } catch {
@@ -1146,7 +1146,7 @@ async function handleDiscordComponentEvent(params: {
   if (consumed.kind === "modal-trigger") {
     try {
       await params.interaction.reply({
-        content: "This form is no longer available.",
+        content: "此表单已不可用。",
         ephemeral: true,
       });
     } catch {
@@ -1198,7 +1198,7 @@ async function handleDiscordModalTrigger(params: {
     logError(`${params.label}: failed to parse modal trigger data`);
     try {
       await params.interaction.reply({
-        content: "This button is no longer valid.",
+        content: "此按钮已失效。",
         ephemeral: true,
       });
     } catch {
@@ -1210,7 +1210,7 @@ async function handleDiscordModalTrigger(params: {
   if (!entry || entry.kind !== "modal-trigger") {
     try {
       await params.interaction.reply({
-        content: "This button has expired.",
+        content: "此按钮已过期。",
         ephemeral: true,
       });
     } catch {
@@ -1223,7 +1223,7 @@ async function handleDiscordModalTrigger(params: {
   if (!modalId) {
     try {
       await params.interaction.reply({
-        content: "This form is no longer available.",
+        content: "此表单已不可用。",
         ephemeral: true,
       });
     } catch {
@@ -1248,7 +1248,7 @@ async function handleDiscordModalTrigger(params: {
     guildEntries: params.ctx.guildEntries,
   });
   const channelCtx = resolveDiscordChannelContext(params.interaction);
-  const unauthorizedReply = "You are not authorized to use this form.";
+  const unauthorizedReply = "你无权使用此表单。";
   const memberAllowed = await ensureGuildComponentMemberAllowed({
     interaction: params.interaction,
     guildInfo,
@@ -1286,7 +1286,7 @@ async function handleDiscordModalTrigger(params: {
   if (!consumed) {
     try {
       await params.interaction.reply({
-        content: "This form has expired.",
+        content: "此表单已过期。",
         ephemeral: true,
       });
     } catch {
@@ -1300,7 +1300,7 @@ async function handleDiscordModalTrigger(params: {
   if (!modalEntry) {
     try {
       await params.interaction.reply({
-        content: "This form has expired.",
+        content: "此表单已过期。",
         ephemeral: true,
       });
     } catch {
@@ -1334,7 +1334,7 @@ export class AgentComponentButton extends Button {
       logError("agent button: failed to parse component data");
       try {
         await interaction.reply({
-          content: "This button is no longer valid.",
+          content: "此按钮已失效。",
           ephemeral: true,
         });
       } catch {
@@ -1376,7 +1376,7 @@ export class AgentComponentButton extends Button {
       user,
       replyOpts,
       componentLabel: "button",
-      unauthorizedReply: "You are not authorized to use this button.",
+      unauthorizedReply: "你无权使用此按钮。",
     });
     if (!allowed) {
       return;
@@ -1423,7 +1423,7 @@ export class AgentSelectMenu extends StringSelectMenu {
       logError("agent select: failed to parse component data");
       try {
         await interaction.reply({
-          content: "This select menu is no longer valid.",
+          content: "此选择菜单已失效。",
           ephemeral: true,
         });
       } catch {
@@ -1464,7 +1464,7 @@ export class AgentSelectMenu extends StringSelectMenu {
       user,
       replyOpts,
       componentLabel: "select",
-      unauthorizedReply: "You are not authorized to use this select menu.",
+      unauthorizedReply: "你无权使用此选择菜单。",
     });
     if (!allowed) {
       return;
@@ -1643,7 +1643,7 @@ class DiscordComponentChannelSelect extends ChannelSelectMenu {
 }
 
 class DiscordComponentModal extends Modal {
-  title = "OpenClaw form";
+  title = "OpenClaw 表单";
   customId = "__openclaw_discord_component_modal_wildcard__";
   components = [];
   customIdParser = parseDiscordModalCustomIdForCarbon;
@@ -1660,7 +1660,7 @@ class DiscordComponentModal extends Modal {
       logError("discord component modal: missing modal id");
       try {
         await interaction.reply({
-          content: "This form is no longer valid.",
+          content: "此表单已失效。",
           ephemeral: true,
         });
       } catch {
@@ -1673,7 +1673,7 @@ class DiscordComponentModal extends Modal {
     if (!modalEntry) {
       try {
         await interaction.reply({
-          content: "This form has expired.",
+          content: "此表单已过期。",
           ephemeral: true,
         });
       } catch {
@@ -1708,7 +1708,7 @@ class DiscordComponentModal extends Modal {
       user,
       replyOpts,
       componentLabel: "form",
-      unauthorizedReply: "You are not authorized to use this form.",
+      unauthorizedReply: "您无权使用此表单。",
       allowNameMatching: isDangerousNameMatchingEnabled(this.ctx.discordConfig),
     });
     if (!memberAllowed) {
@@ -1722,7 +1722,7 @@ class DiscordComponentModal extends Modal {
     if (!consumed) {
       try {
         await interaction.reply({
-          content: "This form has expired.",
+          content: "此表单已过期。",
           ephemeral: true,
         });
       } catch {

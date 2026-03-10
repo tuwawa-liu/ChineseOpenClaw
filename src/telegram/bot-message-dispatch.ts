@@ -45,7 +45,7 @@ import {
 import { editMessageTelegram } from "./send.js";
 import { cacheSticker, describeStickerImage } from "./sticker-cache.js";
 
-const EMPTY_RESPONSE_FALLBACK = "No response generated. Please try again.";
+const EMPTY_RESPONSE_FALLBACK = "未生成响应。请重试。";
 
 /** Minimum chars before sending first streaming message (improves push notification UX) */
 const DRAFT_MIN_INITIAL_CHARS = 30;
@@ -761,7 +761,7 @@ export const dispatchTelegramMessage = async ({
       (deliverySummary.skippedNonSilent > 0 || deliverySummary.failedNonSilent > 0))
   ) {
     const fallbackText = dispatchError
-      ? "Something went wrong while processing your request. Please try again."
+      ? "处理你的请求时出错。请重试。"
       : EMPTY_RESPONSE_FALLBACK;
     const result = await deliverReplies({
       replies: [{ text: fallbackText }],
