@@ -59,6 +59,7 @@
 git clone https://github.com/tuwawa-liu/ChineseOpenClaw.git
 cd ChineseOpenClaw
 
+npm install -g pnpm      # 安装 pnpm
 pnpm install
 pnpm ui:build
 pnpm build
@@ -107,6 +108,7 @@ pnpm openclaw agent --message "帮我整理一下今天的待办事项" --thinki
 git clone https://github.com/tuwawa-liu/ChineseOpenClaw.git
 cd ChineseOpenClaw
 
+npm install -g pnpm      # 安装 pnpm
 pnpm install
 pnpm ui:build # 首次运行时自动安装 UI 依赖
 pnpm build
