@@ -110,11 +110,11 @@ function setZaloUpdateMode(
 async function noteZaloTokenHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "1) Open Zalo Bot Platform: https://bot.zaloplatforms.com",
-      "2) Create a bot and get the token",
-      "3) Token looks like 12345689:abc-xyz",
+      "1) 打开 Zalo 机器人平台：https://bot.zaloplatforms.com",
+      "2) 创建机器人并获取令牌",
+      "3) 令牌格式类似 12345689:abc-xyz",
       "提示：你也可以在环境变量中设置 ZALO_BOT_TOKEN。",
-      "Docs: https://docs.openclaw.ai/channels/zalo",
+      "文档：https://docs.openclaw.ai/channels/zalo",
     ].join("\n"),
     "Zalo 机器人令牌",
   );
@@ -274,7 +274,7 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
       accountConfigured: tokenPromptState.accountConfigured,
       canUseEnv: tokenPromptState.canUseEnv,
       hasConfigToken: tokenPromptState.hasConfigToken,
-      envPrompt: "ZALO_BOT_TOKEN detected. Use env var?",
+      envPrompt: "检测到 ZALO_BOT_TOKEN 环境变量。是否使用？",
       keepPrompt: "Zalo 令牌已配置。保留吗？",
       inputPrompt: "输入 Zalo 机器人令牌",
       preferredEnvVar: "ZALO_BOT_TOKEN",
@@ -337,7 +337,7 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
     if (wantsWebhook) {
       const webhookUrl = String(
         await prompter.text({
-          message: "Webhook URL (https://...) ",
+          message: "Webhook 地址（https://...）",
           initialValue: resolvedAccount.config.webhookUrl,
           validate: (value) =>
             value?.trim()?.startsWith("https://") ? undefined : "需要 HTTPS URL",
@@ -370,7 +370,7 @@ export const zaloOnboardingAdapter: ChannelOnboardingAdapter = {
         typeof webhookSecretResult.value === "string" &&
         (webhookSecretResult.value.length < 8 || webhookSecretResult.value.length > 256)
       ) {
-        await prompter.note("Webhook 密钥必须在8到28个字符之间。", "Zalo webhook");
+        await prompter.note("Webhook 密钥必须在8到28个字符之间。", "Zalo Webhook 配置");
         webhookSecretResult = await promptSingleChannelSecretInput({
           cfg: next,
           prompter,

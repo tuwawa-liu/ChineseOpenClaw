@@ -170,7 +170,7 @@ function setZalouserGroupAllowlist(
 }
 
 const dmPolicy: ChannelOnboardingDmPolicy = {
-  label: "Zalo Personal",
+  label: "Zalo 个人版",
   channel,
   policyKey: "channels.zalouser.dmPolicy",
   allowFromKey: "channels.zalouser.allowFrom",
@@ -222,7 +222,7 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
     const accountId = await resolveAccountIdForConfigure({
       cfg,
       prompter,
-      label: "Zalo Personal",
+      label: "Zalo 个人版",
       accountOverride: accountOverrides.zalouser,
       shouldPromptAccountIds,
       listAccountIds: listZalouserAccountIds,
@@ -344,7 +344,7 @@ export const zalouserOnboardingAdapter: ChannelOnboardingAdapter = {
               unresolved,
             });
             if (resolution) {
-              await prompter.note(resolution, "Zalo groups");
+              await prompter.note(resolution, "Zalo 群组");
             }
           } catch (err) {
             await prompter.note(

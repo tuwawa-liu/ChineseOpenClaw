@@ -24,7 +24,7 @@ async function noteMattermostSetup(prompter: WizardPrompter): Promise<void> {
       "2) 创建机器人并复制令牌",
       "3) 使用你的服务器基础 URL（例如 https://chat.example.com）",
       "提示：机器人必须是你想让它监控的频道的成员。",
-      "Docs: https://docs.openclaw.ai/channels/mattermost",
+      "文档：https://docs.openclaw.ai/channels/mattermost",
     ].join("\n"),
     "Mattermost 机器人令牌",
   );

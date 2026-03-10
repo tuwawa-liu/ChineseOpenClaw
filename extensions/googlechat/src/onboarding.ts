@@ -74,7 +74,7 @@ async function promptAllowFrom(params: {
 }
 
 const dmPolicy: ChannelOnboardingDmPolicy = {
-  label: "Google Chat",
+  label: "Google Chat 频道",
   channel,
   policyKey: "channels.googlechat.dm.policy",
   allowFromKey: "channels.googlechat.dm.allowFrom",
@@ -238,7 +238,7 @@ export const googlechatOnboardingAdapter: ChannelOnboardingAdapter = {
     const accountId = await resolveAccountIdForConfigure({
       cfg,
       prompter,
-      label: "Google Chat",
+      label: "Google Chat 频道",
       accountOverride: accountOverrides["googlechat"],
       shouldPromptAccountIds,
       listAccountIds: listGoogleChatAccountIds,

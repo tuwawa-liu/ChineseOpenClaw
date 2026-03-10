@@ -76,10 +76,10 @@ function setNextcloudTalkAccountConfig(
 async function noteNextcloudTalkSecretHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "1) SSH into your Nextcloud server",
+      "1) SSH 登录到你的 Nextcloud 服务器",
       '2) 运行：./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction',
-      "3) Copy the shared secret you used in the command",
-      "4) Enable the bot in your Nextcloud Talk room settings",
+      "3) 复制你在命令中使用的共享密钥",
+      "4) 在 Nextcloud Talk 房间设置中启用机器人",
       "提示：你也可以在环境变量中设置 NEXTCLOUD_TALK_BOT_SECRET。",
       `Docs: ${formatDocsLink("/channels/nextcloud-talk", "channels/nextcloud-talk")}`,
     ].join("\n"),
@@ -90,9 +90,9 @@ async function noteNextcloudTalkSecretHelp(prompter: WizardPrompter): Promise<vo
 async function noteNextcloudTalkUserIdHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "1) Check the Nextcloud admin panel for user IDs",
+      "1) 在 Nextcloud 管理面板中查看用户 ID",
       "2) Or look at the webhook payload logs when someone messages",
-      "3) User IDs are typically lowercase usernames in Nextcloud",
+      "3) 用户 ID 通常是 Nextcloud 中的小写用户名",
       `Docs: ${formatDocsLink("/channels/nextcloud-talk", "channels/nextcloud-talk")}`,
     ].join("\n"),
     "Nextcloud Talk 用户 ID",
@@ -158,7 +158,7 @@ async function promptNextcloudTalkAllowFromForAccount(params: {
 }
 
 const dmPolicy: ChannelOnboardingDmPolicy = {
-  label: "Nextcloud Talk",
+  label: "Nextcloud Talk 频道",
   channel,
   policyKey: "channels.nextcloud-talk.dmPolicy",
   allowFromKey: "channels.nextcloud-talk.allowFrom",
@@ -197,7 +197,7 @@ export const nextcloudTalkOnboardingAdapter: ChannelOnboardingAdapter = {
     const accountId = await resolveAccountIdForConfigure({
       cfg,
       prompter,
-      label: "Nextcloud Talk",
+      label: "Nextcloud Talk 频道",
       accountOverride: accountOverrides["nextcloud-talk"],
       shouldPromptAccountIds,
       listAccountIds: listNextcloudTalkAccountIds as (cfg: OpenClawConfig) => string[],
@@ -254,7 +254,7 @@ export const nextcloudTalkOnboardingAdapter: ChannelOnboardingAdapter = {
       accountConfigured: secretPromptState.accountConfigured,
       canUseEnv: secretPromptState.canUseEnv,
       hasConfigToken: secretPromptState.hasConfigToken,
-      envPrompt: "NEXTCLOUD_TALK_BOT_SECRET detected. Use env var?",
+      envPrompt: "检测到 NEXTCLOUD_TALK_BOT_SECRET 环境变量。是否使用？",
       keepPrompt: "Nextcloud Talk 机器人密钥已配置。保留吗？",
       inputPrompt: "输入 Nextcloud Talk 机器人密钥",
       preferredEnvVar: "NEXTCLOUD_TALK_BOT_SECRET",

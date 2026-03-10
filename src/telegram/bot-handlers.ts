@@ -279,7 +279,7 @@ export const registerTelegramHandlers = ({
         void bot.api
           .sendMessage(
             chatId,
-            "Something went wrong while processing your message. Please try again.",
+            "处理您的消息时出错，请重试。",
             threadId != null ? { message_thread_id: threadId } : undefined,
           )
           .catch((sendErr) => {
@@ -1008,7 +1008,7 @@ export const registerTelegramHandlers = ({
         operation: "sendMessage",
         runtime,
         fn: () =>
-          bot.api.sendMessage(chatId, "⚠️ Failed to download media. Please try again.", {
+          bot.api.sendMessage(chatId, "⚠️ 媒体下载失败，请重试。", {
             reply_to_message_id: msg.message_id,
           }),
       }).catch(() => {});
@@ -1292,7 +1292,7 @@ export const registerTelegramHandlers = ({
 
         if (modelCallback.type === "providers" || modelCallback.type === "back") {
           if (providers.length === 0) {
-            await editMessageWithButtons("No providers available.", []);
+            await editMessageWithButtons("没有可用的提供商。", []);
             return;
           }
           const providerInfos: ProviderInfo[] = providers.map((p) => ({
@@ -1300,7 +1300,7 @@ export const registerTelegramHandlers = ({
             count: byProvider.get(p)?.size ?? 0,
           }));
           const buttons = buildProviderKeyboard(providerInfos);
-          await editMessageWithButtons("Select a provider:", buttons);
+          await editMessageWithButtons("选择一个提供商：", buttons);
           return;
         }
 

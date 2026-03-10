@@ -96,8 +96,8 @@ export async function startTelegramWebhook(opts: {
   const secret = typeof opts.secret === "string" ? opts.secret.trim() : "";
   if (!secret) {
     throw new Error(
-      "Telegram webhook mode requires a non-empty secret token. " +
-        "Set channels.telegram.webhookSecret in your config.",
+      "Telegram Webhook 模式需要一个非空的密钥令牌。" +
+        "请在配置中设置 channels.telegram.webhookSecret。",
     );
   }
   const runtime = opts.runtime ?? defaultRuntime;

@@ -89,7 +89,7 @@ async function promptBlueBubblesAllowFrom(params: {
   await params.prompter.note(
     [
       "通过句柄或聊天目标将 BlueBubbles 私信加入白名单。",
-      "Examples:",
+      "示例：",
       "- +15555550123",
       "- user@example.com",
       "- chat_id:123",
@@ -285,10 +285,10 @@ export const blueBubblesOnboardingAdapter: ChannelOnboardingAdapter = {
     await prompter.note(
       [
         "在 BlueBubbles Server 中配置 webhook URL：",
-        "1. Open BlueBubbles Server → Settings → Webhooks",
-        "2. Add your OpenClaw gateway URL + webhook path",
-        "   Example: https://your-gateway-host:3000/bluebubbles-webhook",
-        "3. Enable the webhook and save",
+        "1. 打开 BlueBubbles Server → 设置 → Webhooks",
+        "2. 添加你的 OpenClaw 网关地址 + Webhook 路径",
+        "   示例：https://your-gateway-host:3000/bluebubbles-webhook",
+        "3. 启用 Webhook 并保存",
         "",
         `Docs: ${formatDocsLink("/channels/bluebubbles", "bluebubbles")}`,
       ].join("\n"),

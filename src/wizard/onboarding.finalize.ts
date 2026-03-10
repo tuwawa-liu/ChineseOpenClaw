@@ -315,7 +315,7 @@ export async function finalizeOnboardingWizard(
         : undefined,
       t("wizard.finalize.gatewayWsLabel", { url: links.wsUrl }),
       gatewayStatusLine,
-      "Docs: https://docs.openclaw.ai/web/control-ui",
+      "文档：https://docs.openclaw.ai/web/control-ui",
     ]
       .filter(Boolean)
       .join("\n"),
@@ -418,7 +418,7 @@ export async function finalizeOnboardingWizard(
   await prompter.note(
     [
       t("wizard.finalize.backupWorkspace"),
-      "Docs: https://docs.openclaw.ai/concepts/agent-workspace",
+      "文档：https://docs.openclaw.ai/concepts/agent-workspace",
     ].join("\n"),
     t("wizard.finalize.workspaceBackupTitle"),
   );
@@ -493,7 +493,7 @@ export async function finalizeOnboardingWizard(
           "",
           `${t("wizard.finalize.providerLabel")}: ${label}`,
           ...(keySource ? [keySource] : []),
-          "Docs: https://docs.openclaw.ai/tools/web",
+          "文档：https://docs.openclaw.ai/tools/web",
         ].join("\n"),
         t("wizard.finalize.webSearchTitle"),
       );
@@ -505,7 +505,7 @@ export async function finalizeOnboardingWizard(
           `  ${formatCliCommand("openclaw configure --section web")}`,
           "",
           t("wizard.finalize.getKeyAt", { url: entry?.signupUrl ?? "https://docs.openclaw.ai/tools/web" }),
-          "Docs: https://docs.openclaw.ai/tools/web",
+          "文档：https://docs.openclaw.ai/tools/web",
         ].join("\n"),
         t("wizard.finalize.webSearchTitle"),
       );
@@ -515,7 +515,7 @@ export async function finalizeOnboardingWizard(
           t("wizard.finalize.webSearchDisabled", { label }),
           t("wizard.finalize.reEnable", { cmd: formatCliCommand("openclaw configure --section web") }),
           "",
-          "Docs: https://docs.openclaw.ai/tools/web",
+          "文档：https://docs.openclaw.ai/tools/web",
         ].join("\n"),
         t("wizard.finalize.webSearchTitle"),
       );
@@ -532,7 +532,7 @@ export async function finalizeOnboardingWizard(
       await prompter.note(
         [
           t("wizard.finalize.webSearchAutoDetected", { label: legacyDetected.label }),
-          "Docs: https://docs.openclaw.ai/tools/web",
+          "文档：https://docs.openclaw.ai/tools/web",
         ].join("\n"),
         t("wizard.finalize.webSearchTitle"),
       );
@@ -542,7 +542,7 @@ export async function finalizeOnboardingWizard(
           t("wizard.finalize.webSearchSkipped"),
           `  ${formatCliCommand("openclaw configure --section web")}`,
           "",
-          "Docs: https://docs.openclaw.ai/tools/web",
+          "文档：https://docs.openclaw.ai/tools/web",
         ].join("\n"),
         t("wizard.finalize.webSearchTitle"),
       );

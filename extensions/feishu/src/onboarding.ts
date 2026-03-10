@@ -312,7 +312,7 @@ export const feishuOnboardingAdapter: ChannelOnboardingAdapter = {
           );
         }
       } catch (err) {
-        await prompter.note(`连接测试失败：${String(err)}`, "Feishu connection test");
+        await prompter.note(`连接测试失败：${String(err)}`, "飞书连接测试");
       }
     }
 

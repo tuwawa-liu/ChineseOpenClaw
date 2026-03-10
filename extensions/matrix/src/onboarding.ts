@@ -338,7 +338,7 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
           accountConfigured: passwordPromptState.accountConfigured,
           canUseEnv: passwordPromptState.canUseEnv,
           hasConfigToken: passwordPromptState.hasConfigToken,
-          envPrompt: "MATRIX_PASSWORD detected. Use env var?",
+          envPrompt: "检测到 MATRIX_PASSWORD 环境变量。是否使用？",
           keepPrompt: "Matrix 密码已配置。保留吗？",
           inputPrompt: "Matrix 密码",
           preferredEnvVar: "MATRIX_PASSWORD",
@@ -355,7 +355,7 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
     const deviceName = String(
       await prompter.text({
         message: "Matrix 设备名称（可选）",
-        initialValue: existing.deviceName ?? "OpenClaw Gateway",
+        initialValue: existing.deviceName ?? "OpenClaw 网关",
       }),
     ).trim();
 
@@ -435,7 +435,7 @@ export const matrixOnboardingAdapter: ChannelOnboardingAdapter = {
               unresolved,
             });
             if (resolution) {
-              await prompter.note(resolution, "Matrix rooms");
+              await prompter.note(resolution, "Matrix 房间");
             }
           } catch (err) {
             await prompter.note(

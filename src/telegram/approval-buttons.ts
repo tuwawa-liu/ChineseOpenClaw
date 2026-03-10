@@ -27,16 +27,16 @@ function buildTelegramExecApprovalButtonsForDecisions(
   }
 
   const primaryRow: Array<{ text: string; callback_data: string }> = [
-    { text: "Allow Once", callback_data: allowOnce },
+    { text: "允许一次", callback_data: allowOnce },
   ];
   const allowAlways = `/approve ${approvalId} allow-always`;
   if (allowedDecisions.includes("allow-always") && fitsCallbackData(allowAlways)) {
-    primaryRow.push({ text: "Allow Always", callback_data: allowAlways });
+    primaryRow.push({ text: "始终允许", callback_data: allowAlways });
   }
   const rows: Array<Array<{ text: string; callback_data: string }>> = [primaryRow];
   const deny = `/approve ${approvalId} deny`;
   if (allowedDecisions.includes("deny") && fitsCallbackData(deny)) {
-    rows.push([{ text: "Deny", callback_data: deny }]);
+    rows.push([{ text: "拒绝", callback_data: deny }]);
   }
   return rows;
 }

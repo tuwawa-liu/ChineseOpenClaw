@@ -284,7 +284,7 @@ export async function resolveGatewayConnection(
     urlOverride,
     urlOverrideSource: "cli",
     explicitAuth,
-    errorHint: "Fix: pass --token or --password when using --url.",
+    errorHint: "修复：使用 --url 时请传入 --token 或 --password。",
   });
   const url = buildGatewayConnectionDetails({
     config,
@@ -324,7 +324,7 @@ export async function resolveGatewayConnection(
       throwGatewayAuthResolutionError(
         remoteToken.unresolvedRefReason ??
           remotePassword.unresolvedRefReason ??
-          "Missing gateway auth credentials.",
+          "缺少网关认证凭据。",
       );
     }
     return { url, token, password };
@@ -360,7 +360,7 @@ export async function resolveGatewayConnection(
     const password = explicitAuth.password ?? envPassword ?? localPassword.value;
     if (!password) {
       throwGatewayAuthResolutionError(
-        localPassword.unresolvedRefReason ?? "Missing gateway auth password.",
+        localPassword.unresolvedRefReason ?? "缺少网关认证密码。",
       );
     }
     return {
@@ -382,7 +382,7 @@ export async function resolveGatewayConnection(
     const token = explicitAuth.token ?? localToken.value ?? envToken;
     if (!token) {
       throwGatewayAuthResolutionError(
-        localToken.unresolvedRefReason ?? "Missing gateway auth token.",
+        localToken.unresolvedRefReason ?? "缺少网关认证令牌。",
       );
     }
     return token;
@@ -413,7 +413,7 @@ export async function resolveGatewayConnection(
     const password = explicitAuth.password ?? localPassword.value ?? envPassword;
     if (!password) {
       throwGatewayAuthResolutionError(
-        localPassword.unresolvedRefReason ?? "Missing gateway auth password.",
+        localPassword.unresolvedRefReason ?? "缺少网关认证密码。",
       );
     }
     return {

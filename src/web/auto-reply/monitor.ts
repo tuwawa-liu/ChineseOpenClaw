@@ -309,7 +309,7 @@ export async function monitorWebChannel(
             lastMessageAt: new Date(lastMessageAt),
             messagesHandled: handledMessages,
           },
-          "Message timeout detected - forcing reconnect",
+          "检测到消息超时 - 正在强制重新连接",
         );
         whatsappHeartbeatLog.warn(
           `No messages received in ${minutesSinceLastMessage}m - restarting connection`,

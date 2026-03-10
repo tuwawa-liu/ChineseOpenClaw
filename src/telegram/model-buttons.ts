@@ -251,10 +251,10 @@ export function buildModelsKeyboard(params: ModelsKeyboardParams): ButtonRow[] {
 }
 
 /**
- * Build "Browse providers" button for /model summary.
+ * Build "浏览提供商" button for /model summary.
  */
 export function buildBrowseProvidersButton(): ButtonRow[] {
-  return [[{ text: "Browse providers", callback_data: CALLBACK_PREFIX.providers }]];
+  return [[{ text: "浏览提供商", callback_data: CALLBACK_PREFIX.providers }]];
 }
 
 /**

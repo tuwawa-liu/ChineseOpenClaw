@@ -98,7 +98,7 @@ async function promptMSTeamsAllowFrom(params: {
     });
     const parts = splitOnboardingEntries(String(entry));
     if (parts.length === 0) {
-      await params.prompter.note("请至少输入一个用户。", "MS Teams allowlist");
+      await params.prompter.note("请至少输入一个用户。", "MS Teams 白名单");
       continue;
     }
 
@@ -112,7 +112,7 @@ async function promptMSTeamsAllowFrom(params: {
       if (ids.length !== parts.length) {
         await params.prompter.note(
           "Graph 查找不可用。请仅使用用户 ID。",
-          "MS Teams allowlist",
+          "MS Teams 白名单",
         );
         continue;
       }
@@ -124,7 +124,7 @@ async function promptMSTeamsAllowFrom(params: {
     if (unresolved.length > 0) {
       await params.prompter.note(
         `无法解析：${unresolved.map((item) => item.input).join(", ")}`,
-        "MS Teams allowlist",
+        "MS Teams 白名单",
       );
       continue;
     }
@@ -239,7 +239,7 @@ export const msteamsOnboardingAdapter: ChannelOnboardingAdapter = {
     if (canUseEnv) {
       const keepEnv = await prompter.confirm({
         message:
-          "MSTEAMS_APP_ID + MSTEAMS_APP_PASSWORD + MSTEAMS_TENANT_ID detected. Use env vars?",
+          "检测到 MSTEAMS_APP_ID + MSTEAMS_APP_PASSWORD + MSTEAMS_TENANT_ID 环境变量。是否使用？",
         initialValue: true,
       });
       if (keepEnv) {

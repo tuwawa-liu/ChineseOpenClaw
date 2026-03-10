@@ -142,7 +142,7 @@ export function getCacheStats(): { count: number; oldestAt?: string; newestAt?: 
 }
 
 const STICKER_DESCRIPTION_PROMPT =
-  "Describe this sticker image in 1-2 sentences. Focus on what the sticker depicts (character, object, action, emotion). Be concise and objective.";
+  "用1-2句话描述这个贴纸图片。重点描述贴纸所展示的内容（角色、物体、动作、情感）。简明客观。";
 let imageRuntimePromise: Promise<
   typeof import("../media-understanding/providers/image-runtime.js")
 > | null = null;

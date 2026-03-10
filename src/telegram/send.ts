@@ -399,7 +399,7 @@ function wrapTelegramChatNotFoundError(err: unknown, params: { chatId: string; i
   return new Error(
     [
       `Telegram send failed: chat not found (chat_id=${params.chatId}).`,
-      "Likely: bot not started in DM, bot removed from group/channel, group migrated (new -100… id), or wrong bot token.",
+      "可能原因：机器人未在私信中启动、已被移出群组/频道、群组已迁移（新 -100… ID）或令牌错误。",
       `Input was: ${JSON.stringify(params.input)}.`,
     ].join(" "),
   );
@@ -1226,7 +1226,7 @@ export async function sendPollTelegram(
   const durationSeconds = normalizedPoll.durationSeconds;
   if (durationSeconds === undefined && normalizedPoll.durationHours !== undefined) {
     throw new Error(
-      "Telegram poll durationHours is not supported. Use durationSeconds (5-600) instead.",
+      "不支持 Telegram 投票的 durationHours。请使用 durationSeconds（5-600）。",
     );
   }
   if (durationSeconds !== undefined && (durationSeconds < 5 || durationSeconds > 600)) {

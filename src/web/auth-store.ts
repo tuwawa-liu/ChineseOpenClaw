@@ -138,7 +138,7 @@ export async function logoutWeb(params: {
   const resolvedAuthDir = resolveUserPath(params.authDir ?? resolveDefaultWebAuthDir());
   const exists = await webAuthExists(resolvedAuthDir);
   if (!exists) {
-    runtime.log(info("No WhatsApp Web session found; nothing to delete."));
+    runtime.log(info("未找到 WhatsApp Web 会话；无需删除。"));
     return false;
   }
   if (params.isLegacyAuthDir) {

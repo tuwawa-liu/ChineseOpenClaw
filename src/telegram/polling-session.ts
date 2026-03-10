@@ -142,7 +142,7 @@ export class TelegramPollingSession {
     } catch (err) {
       const shouldRetry = await this.#waitBeforeRetryOnRecoverableSetupError(
         err,
-        "Telegram webhook cleanup failed",
+        "Telegram Webhook 清理失败",
       );
       return shouldRetry ? "retry" : "exit";
     }

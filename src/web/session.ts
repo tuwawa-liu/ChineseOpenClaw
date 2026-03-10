@@ -154,7 +154,7 @@ export async function createWaSocket(
   // Handle WebSocket-level errors to prevent unhandled exceptions from crashing the process
   if (sock.ws && typeof (sock.ws as unknown as { on?: unknown }).on === "function") {
     sock.ws.on("error", (err: Error) => {
-      sessionLogger.error({ error: String(err) }, "WebSocket error");
+      sessionLogger.error({ error: String(err) }, "WebSocket 错误");
     });
   }
 

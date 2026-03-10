@@ -373,15 +373,15 @@ export function buildTtsSystemPromptHint(cfg: OpenClawConfig): string | undefine
   const summarize = isSummarizationEnabled(prefsPath) ? "on" : "off";
   const autoHint =
     autoMode === "inbound"
-      ? "Only use TTS when the user's last message includes audio/voice."
+      ? "仅在用户的最后一条消息包含音频/语音时使用 TTS。"
       : autoMode === "tagged"
-        ? "Only use TTS when you include [[tts]] or [[tts:text]] tags."
+        ? "仅在包含 [[tts]] 或 [[tts:text]] 标签时使用 TTS。"
         : undefined;
   return [
-    "Voice (TTS) is enabled.",
+    "语音（TTS）已启用。",
     autoHint,
     `Keep spoken text ≤${maxLength} chars to avoid auto-summary (summary ${summarize}).`,
-    "Use [[tts:...]] and optional [[tts:text]]...[[/tts:text]] to control voice/expressiveness.",
+    "使用 [[tts:...]] 和可选的 [[tts:text]]...[[/tts:text]] 来控制语音/表现力。",
   ]
     .filter(Boolean)
     .join("\n");
