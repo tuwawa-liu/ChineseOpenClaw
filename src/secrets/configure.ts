@@ -182,7 +182,7 @@ async function promptEnvNameCsv(params: {
       initialValue: params.initialValue,
       validate: (value) => validateEnvNameCsv(String(value ?? "")),
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
   return parseCsv(String(raw ?? ""));
 }
@@ -203,12 +203,12 @@ async function promptOptionalPositiveInt(params: {
         }
         const parsed = parseOptionalPositiveInt(trimmed, params.max);
         if (parsed === undefined) {
-          return `Must be an integer between 1 and ${params.max}`;
+          return `必须是 1 到 ${params.max} 之间的整数`;
         }
         return undefined;
       },
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
   const parsed = parseOptionalPositiveInt(String(raw ?? ""), params.max);
   return parsed;
@@ -314,38 +314,38 @@ function loadAuthProfileStoreForConfigure(params: {
 async function promptNewAuthProfileCandidate(agentId: string): Promise<ConfigureCandidate> {
   const profileId = assertNoCancel(
     await text({
-      message: "Auth profile id",
+      message: "身份配置 ID",
       validate: (value) => {
         const trimmed = String(value ?? "").trim();
         if (!trimmed) {
-          return "Required";
+          return "必填";
         }
         if (!AUTH_PROFILE_ID_PATTERN.test(trimmed)) {
-          return 'Use letters/numbers/":"/"_"/"-" only.';
+          return '仅允许字母/数字/":"/"_"/"-"。';
         }
         return undefined;
       },
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const credentialType = assertNoCancel(
     await select({
-      message: "Auth profile credential type",
+      message: "身份配置凭据类型",
       options: [
         { value: "api_key", label: "api_key (key/keyRef)" },
         { value: "token", label: "token (token/tokenRef)" },
       ],
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const provider = assertNoCancel(
     await text({
-      message: "Provider id",
-      validate: (value) => (String(value ?? "").trim().length > 0 ? undefined : "Required"),
+      message: "提供者 ID",
+      validate: (value) => (String(value ?? "").trim().length > 0 ? undefined : "必填"),
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const profileIdTrimmed = String(profileId).trim();
@@ -377,23 +377,23 @@ async function promptNewAuthProfileCandidate(agentId: string): Promise<Configure
 async function promptProviderAlias(params: { existingAliases: Set<string> }): Promise<string> {
   const alias = assertNoCancel(
     await text({
-      message: "Provider alias",
+      message: "提供者别名",
       initialValue: "default",
       validate: (value) => {
         const trimmed = String(value ?? "").trim();
         if (!trimmed) {
-          return "Required";
+          return "必填";
         }
         if (!isValidSecretProviderAlias(trimmed)) {
-          return "Must match /^[a-z][a-z0-9_-]{0,63}$/";
+          return "必须匹配 /^[a-z][a-z0-9_-]{0,63}$/";
         }
         if (params.existingAliases.has(trimmed)) {
-          return "Alias already exists";
+          return "别名已存在";
         }
         return undefined;
       },
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
   return String(alias).trim();
 }
@@ -401,7 +401,7 @@ async function promptProviderAlias(params: { existingAliases: Set<string> }): Pr
 async function promptProviderSource(initial?: SecretRefSource): Promise<SecretRefSource> {
   const source = assertNoCancel(
     await select({
-      message: "Provider source",
+      message: "提供者源",
       options: [
         { value: "env", label: "env" },
         { value: "file", label: "file" },
@@ -409,7 +409,7 @@ async function promptProviderSource(initial?: SecretRefSource): Promise<SecretRe
       ],
       initialValue: initial,
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
   return source as SecretRefSource;
 }
@@ -418,7 +418,7 @@ async function promptEnvProvider(
   base?: Extract<SecretProviderConfig, { source: "env" }>,
 ): Promise<Extract<SecretProviderConfig, { source: "env" }>> {
   const allowlist = await promptEnvNameCsv({
-    message: "Env allowlist (comma-separated, blank for unrestricted)",
+    message: "环境变量允许列表（逗号分隔，留空表示不限制）",
     initialValue: base?.allowlist?.join(",") ?? "",
   });
   return {
@@ -432,41 +432,41 @@ async function promptFileProvider(
 ): Promise<Extract<SecretProviderConfig, { source: "file" }>> {
   const filePath = assertNoCancel(
     await text({
-      message: "File path (absolute)",
+      message: "文件路径（绝对路径）",
       initialValue: base?.path ?? "",
       validate: (value) => {
         const trimmed = String(value ?? "").trim();
         if (!trimmed) {
-          return "Required";
+          return "必填";
         }
         if (!isAbsolutePathValue(trimmed)) {
-          return "Must be an absolute path";
+          return "必须是绝对路径";
         }
         return undefined;
       },
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const mode = assertNoCancel(
     await select({
-      message: "File mode",
+      message: "文件模式",
       options: [
         { value: "json", label: "json" },
         { value: "singleValue", label: "singleValue" },
       ],
       initialValue: base?.mode ?? "json",
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const timeoutMs = await promptOptionalPositiveInt({
-    message: "Timeout ms (blank for default)",
+    message: "超时毫秒数（留空使用默认值）",
     initialValue: base?.timeoutMs,
     max: 120000,
   });
   const maxBytes = await promptOptionalPositiveInt({
-    message: "Max bytes (blank for default)",
+    message: "最大字节数（留空使用默认值）",
     initialValue: base?.maxBytes,
     max: 20 * 1024 * 1024,
   });
@@ -497,28 +497,28 @@ async function promptExecProvider(
 ): Promise<Extract<SecretProviderConfig, { source: "exec" }>> {
   const command = assertNoCancel(
     await text({
-      message: "Command path (absolute)",
+      message: "命令路径（绝对路径）",
       initialValue: base?.command ?? "",
       validate: (value) => {
         const trimmed = String(value ?? "").trim();
         if (!trimmed) {
-          return "Required";
+          return "必填";
         }
         if (!isAbsolutePathValue(trimmed)) {
-          return "Must be an absolute path";
+          return "必须是绝对路径";
         }
         if (!isSafeExecutableValue(trimmed)) {
-          return "Command value is not allowed";
+          return "命令值不允许";
         }
         return undefined;
       },
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const argsRaw = assertNoCancel(
     await text({
-      message: "Args JSON array (blank for none)",
+      message: "参数 JSON 数组（留空表示无）",
       initialValue: JSON.stringify(base?.args ?? []),
       validate: (value) => {
         const trimmed = String(value ?? "").trim();
@@ -528,78 +528,78 @@ async function promptExecProvider(
         try {
           const parsed = JSON.parse(trimmed) as unknown;
           if (!Array.isArray(parsed) || !parsed.every((entry) => typeof entry === "string")) {
-            return "Must be a JSON array of strings";
+            return "必须是字符串的 JSON 数组";
           }
           return undefined;
         } catch {
-          return "Must be valid JSON";
+          return "必须是有效的 JSON";
         }
       },
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const timeoutMs = await promptOptionalPositiveInt({
-    message: "Timeout ms (blank for default)",
+    message: "超时毫秒数（留空使用默认值）",
     initialValue: base?.timeoutMs,
     max: 120000,
   });
 
   const noOutputTimeoutMs = await promptOptionalPositiveInt({
-    message: "No-output timeout ms (blank for default)",
+    message: "无输出超时毫秒数（留空使用默认值）",
     initialValue: base?.noOutputTimeoutMs,
     max: 120000,
   });
 
   const maxOutputBytes = await promptOptionalPositiveInt({
-    message: "Max output bytes (blank for default)",
+    message: "最大输出字节数（留空使用默认值）",
     initialValue: base?.maxOutputBytes,
     max: 20 * 1024 * 1024,
   });
 
   const jsonOnly = assertNoCancel(
     await confirm({
-      message: "Require JSON-only response?",
+      message: "要求仅 JSON 响应？",
       initialValue: base?.jsonOnly ?? true,
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const passEnv = await promptEnvNameCsv({
-    message: "Pass-through env vars (comma-separated, blank for none)",
+    message: "透传环境变量（逗号分隔，留空表示无）",
     initialValue: base?.passEnv?.join(",") ?? "",
   });
 
   const trustedDirsRaw = assertNoCancel(
     await text({
-      message: "Trusted dirs (comma-separated absolute paths, blank for none)",
+      message: "受信目录（逗号分隔的绝对路径，留空表示无）",
       initialValue: base?.trustedDirs?.join(",") ?? "",
       validate: (value) => {
         const entries = parseCsv(String(value ?? ""));
         for (const entry of entries) {
           if (!isAbsolutePathValue(entry)) {
-            return `Trusted dir must be absolute: ${entry}`;
+            return `受信目录必须是绝对路径：${entry}`;
           }
         }
         return undefined;
       },
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const allowInsecurePath = assertNoCancel(
     await confirm({
-      message: "Allow insecure command path checks?",
+      message: "允许不安全的命令路径检查？",
       initialValue: base?.allowInsecurePath ?? false,
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
   const allowSymlinkCommand = assertNoCancel(
     await confirm({
-      message: "Allow symlink command path?",
+      message: "允许符号链接命令路径？",
       initialValue: base?.allowSymlinkCommand ?? false,
     }),
-    "Secrets configure cancelled.",
+    "Secrets 配置已取消。",
   );
 
   const args = await parseArgsInput(String(argsRaw ?? ""));
@@ -644,37 +644,37 @@ async function configureProvidersInteractive(config: OpenClawConfig): Promise<vo
     const actionOptions: Array<{ value: string; label: string; hint?: string }> = [
       {
         value: "add",
-        label: "Add provider",
-        hint: "Define a new env/file/exec provider",
+        label: "添加提供者",
+        hint: "定义新的 env/file/exec 提供者",
       },
     ];
     if (providerEntries.length > 0) {
       actionOptions.push({
         value: "edit",
-        label: "Edit provider",
-        hint: "Update an existing provider",
+        label: "编辑提供者",
+        hint: "更新现有提供者",
       });
       actionOptions.push({
         value: "remove",
-        label: "Remove provider",
-        hint: "Delete a provider alias",
+        label: "移除提供者",
+        hint: "删除提供者别名",
       });
     }
     actionOptions.push({
       value: "continue",
-      label: "Continue",
-      hint: "Move to credential mapping",
+      label: "继续",
+      hint: "进入凭据映射",
     });
 
     const action = assertNoCancel(
       await select({
         message:
           providerEntries.length > 0
-            ? "Configure secret providers"
-            : "Configure secret providers (only env refs are available until file/exec providers are added)",
+            ? "配置密钥提供者"
+            : "配置密钥提供者（添加 file/exec 提供者后才可使用 env 以外的引用）",
         options: actionOptions,
       }),
-      "Secrets configure cancelled.",
+      "Secrets 配置已取消。",
     );
 
     if (action === "continue") {
@@ -694,14 +694,14 @@ async function configureProvidersInteractive(config: OpenClawConfig): Promise<vo
     if (action === "edit") {
       const alias = assertNoCancel(
         await select({
-          message: "Select provider to edit",
+          message: "选择要编辑的提供者",
           options: providerEntries.map(([providerAlias, providerConfig]) => ({
             value: providerAlias,
             label: providerAlias,
             hint: providerHint(providerConfig),
           })),
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       );
       const current = providers[alias];
       if (!current) {
@@ -718,22 +718,22 @@ async function configureProvidersInteractive(config: OpenClawConfig): Promise<vo
     if (action === "remove") {
       const alias = assertNoCancel(
         await select({
-          message: "Select provider to remove",
+          message: "选择要移除的提供者",
           options: providerEntries.map(([providerAlias, providerConfig]) => ({
             value: providerAlias,
             label: providerAlias,
             hint: providerHint(providerConfig),
           })),
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       );
 
       const shouldRemove = assertNoCancel(
         await confirm({
-          message: `Remove provider "${alias}"?`,
+          message: `移除提供者 "${alias}"？`,
           initialValue: false,
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       );
       if (shouldRemove) {
         removeSecretProvider(config, alias);
@@ -751,17 +751,17 @@ export async function runSecretsConfigureInteractive(
   } = {},
 ): Promise<SecretsConfigureResult> {
   if (!process.stdin.isTTY) {
-    throw new Error("secrets configure requires an interactive TTY.");
+    throw new Error("secrets configure 需要交互式 TTY。");
   }
   if (params.providersOnly && params.skipProviderSetup) {
-    throw new Error("Cannot combine --providers-only with --skip-provider-setup.");
+    throw new Error("无法同时使用 --providers-only 和 --skip-provider-setup。");
   }
 
   const env = params.env ?? process.env;
   const io = createSecretsConfigIO({ env });
   const { snapshot } = await io.readConfigFileSnapshotForWrite();
   if (!snapshot.valid) {
-    throw new Error("Cannot run interactive secrets configure because config is invalid.");
+    throw new Error("无法运行交互式 secrets configure，因为配置无效。");
   }
 
   const stagedConfig = structuredClone(snapshot.config);
@@ -790,7 +790,7 @@ export async function runSecretsConfigureInteractive(
       },
     });
     if (candidates.length === 0) {
-      throw new Error("No configurable secret-bearing fields found for this agent scope.");
+      throw new Error("未找到此代理范围的可配置密钥字段。");
     }
 
     const sourceChoices = toSourceChoices(stagedConfig);
@@ -813,32 +813,32 @@ export async function runSecretsConfigureInteractive(
       }));
       options.push({
         value: "__create_auth_profile__",
-        label: "Create auth profile mapping",
-        hint: `Add a new auth-profiles target for agent ${configureAgentId}`,
+        label: "创建身份配置映射",
+        hint: `为代理 ${configureAgentId} 添加新的 auth-profiles 目标`,
       });
       if (hasDerivedCandidates) {
         options.push({
           value: "__toggle_derived__",
-          label: showDerivedCandidates ? "Hide derived targets" : "Show derived targets",
+          label: showDerivedCandidates ? "隐藏派生目标" : "显示派生目标",
           hint: showDerivedCandidates
-            ? "Show only fields authored directly in config"
-            : "Include normalized/derived aliases",
+            ? "仅显示配置中直接编写的字段"
+            : "包含规范化/派生的别名",
         });
       }
       if (selectedByPath.size > 0) {
         options.unshift({
           value: "__done__",
-          label: "Done",
-          hint: "Finish and run preflight",
+          label: "完成",
+          hint: "结束并运行预检",
         });
       }
 
       const selectedPath = assertNoCancel(
         await select({
-          message: "Select credential field",
+          message: "选择凭据字段",
           options,
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       );
 
       if (selectedPath === "__done__") {
@@ -876,11 +876,11 @@ export async function runSecretsConfigureInteractive(
 
       const source = assertNoCancel(
         await select({
-          message: "Secret source",
+          message: "密钥源",
           options: sourceChoices,
           initialValue: sourceInitialValue,
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       ) as SecretRefSource;
 
       const defaultAlias = resolveDefaultSecretProviderAlias(stagedConfig, source, {
@@ -890,20 +890,20 @@ export async function runSecretsConfigureInteractive(
         existingRef?.source === source ? existingRef.provider : defaultAlias;
       const provider = assertNoCancel(
         await text({
-          message: "Provider alias",
+          message: "提供者别名",
           initialValue: providerInitialValue,
           validate: (value) => {
             const trimmed = String(value ?? "").trim();
             if (!trimmed) {
-              return "Required";
+              return "必填";
             }
             if (!isValidSecretProviderAlias(trimmed)) {
-              return "Must match /^[a-z][a-z0-9_-]{0,63}$/";
+              return "必须匹配 /^[a-z][a-z0-9_-]{0,63}$/";
             }
             return undefined;
           },
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       );
       const providerAlias = String(provider).trim();
       const suggestedIdFromExistingRef =
@@ -920,12 +920,12 @@ export async function runSecretsConfigureInteractive(
       }
       const id = assertNoCancel(
         await text({
-          message: "Secret id",
+          message: "密钥 ID",
           initialValue: suggestedId,
           validate: (value) => {
             const trimmed = String(value ?? "").trim();
             if (!trimmed) {
-              return "Required";
+              return "必填";
             }
             if (source === "exec" && !isValidExecSecretRefId(trimmed)) {
               return formatExecSecretRefIdValidationMessage();
@@ -933,7 +933,7 @@ export async function runSecretsConfigureInteractive(
             return undefined;
           },
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       );
       const ref: SecretRef = {
         source,
@@ -961,10 +961,10 @@ export async function runSecretsConfigureInteractive(
 
       const addMore = assertNoCancel(
         await confirm({
-          message: "Configure another credential?",
+          message: "继续配置另一个凭据？",
           initialValue: true,
         }),
-        "Secrets configure cancelled.",
+        "Secrets 配置已取消。",
       );
       if (!addMore) {
         break;
@@ -973,7 +973,7 @@ export async function runSecretsConfigureInteractive(
   }
 
   if (!hasConfigurePlanChanges({ selectedTargets: selectedByPath, providerChanges })) {
-    throw new Error("No secrets changes were selected.");
+    throw new Error("未选择任何 secrets 更改。");
   }
 
   const plan = buildSecretsConfigurePlan({

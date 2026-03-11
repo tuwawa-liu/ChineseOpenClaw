@@ -535,21 +535,21 @@ export function collectAttackSurfaceSummaryFindings(cfg: OpenClawConfig): Securi
   const detail =
     `groups: open=${group.open}, allowlist=${group.allowlist}` +
     `\n` +
-    `tools.elevated: ${elevated ? "enabled" : "disabled"}` +
+    `tools.elevated: ${elevated ? "已启用" : "已禁用"}` +
     `\n` +
-    `hooks.webhooks: ${webhooksEnabled ? "enabled" : "disabled"}` +
+    `hooks.webhooks: ${webhooksEnabled ? "已启用" : "已禁用"}` +
     `\n` +
-    `hooks.internal: ${internalHooksEnabled ? "enabled" : "disabled"}` +
+    `hooks.internal: ${internalHooksEnabled ? "已启用" : "已禁用"}` +
     `\n` +
-    `browser control: ${browserEnabled ? "enabled" : "disabled"}` +
+    `browser control: ${browserEnabled ? "已启用" : "已禁用"}` +
     `\n` +
-    "trust model: personal assistant (one trusted operator boundary), not hostile multi-tenant on one shared gateway";
+    "信任模型：个人助理（单一受信操作者边界），非共享网关上的敌对多租户";
 
   return [
     {
       checkId: "summary.attack_surface",
       severity: "info",
-      title: "Attack surface summary",
+      title: "攻击面摘要",
       detail,
     },
   ];
@@ -564,9 +564,9 @@ export function collectSyncedFolderFindings(params: {
     findings.push({
       checkId: "fs.synced_dir",
       severity: "warn",
-      title: "State/config path looks like a synced folder",
-      detail: `stateDir=${params.stateDir}, configPath=${params.configPath}. Synced folders (iCloud/Dropbox/OneDrive/Google Drive) can leak tokens and transcripts onto other devices.`,
-      remediation: `Keep OPENCLAW_STATE_DIR on a local-only volume and re-run "${formatCliCommand("openclaw security audit --fix")}".`,
+      title: "状态/配置路径疑似同步文件夹",
+      detail: `stateDir=${params.stateDir}, configPath=${params.configPath}。同步文件夹（iCloud/Dropbox/OneDrive/Google Drive）可能会将令牌和对话记录泄露到其他设备。`,
+      remediation: `请将 OPENCLAW_STATE_DIR 设置在仅本地卷上，并重新运行 "${formatCliCommand("openclaw security audit --fix")}"。`,
     });
   }
   return findings;
@@ -580,11 +580,11 @@ export function collectSecretsInConfigFindings(cfg: OpenClawConfig): SecurityAud
     findings.push({
       checkId: "config.secrets.gateway_password_in_config",
       severity: "warn",
-      title: "Gateway password is stored in config",
+      title: "网关密码存储在配置文件中",
       detail:
-        "gateway.auth.password is set in the config file; prefer environment variables for secrets when possible.",
+        "gateway.auth.password 已在配置文件中设置；建议尽可能使用环境变量来存储密钥。",
       remediation:
-        "Prefer OPENCLAW_GATEWAY_PASSWORD (env) and remove gateway.auth.password from disk.",
+        "建议使用 OPENCLAW_GATEWAY_PASSWORD（环境变量），并从磁盘上的配置文件中移除 gateway.auth.password。",
     });
   }
 
@@ -593,9 +593,9 @@ export function collectSecretsInConfigFindings(cfg: OpenClawConfig): SecurityAud
     findings.push({
       checkId: "config.secrets.hooks_token_in_config",
       severity: "info",
-      title: "Hooks token is stored in config",
+      title: "Hooks 令牌存储在配置文件中",
       detail:
-        "hooks.token is set in the config file; keep config perms tight and treat it like an API secret.",
+        "hooks.token 已在配置文件中设置；请确保配置文件权限严格，并将其视为 API 密钥。",
     });
   }
 
@@ -616,8 +616,8 @@ export function collectHooksHardeningFindings(
     findings.push({
       checkId: "hooks.token_too_short",
       severity: "warn",
-      title: "Hooks token looks short",
-      detail: `hooks.token is ${token.length} chars; prefer a long random token.`,
+      title: "Hooks 令牌过短",
+      detail: `hooks.token 长度为 ${token.length} 个字符；建议使用较长的随机令牌。`,
     });
   }
 
@@ -642,10 +642,10 @@ export function collectHooksHardeningFindings(
     findings.push({
       checkId: "hooks.token_reuse_gateway_token",
       severity: "critical",
-      title: "Hooks token reuses the Gateway token",
+      title: "Hooks 令牌复用了网关令牌",
       detail:
-        "hooks.token matches gateway.auth token; compromise of hooks expands blast radius to the Gateway API.",
-      remediation: "Use a separate hooks.token dedicated to hook ingress.",
+        "hooks.token 与 gateway.auth 令牌相同；一旦 hooks 泄露，影响范围将扩展到网关 API。",
+      remediation: "请使用专用于 Hook 入口的独立 hooks.token。",
     });
   }
 
@@ -654,9 +654,9 @@ export function collectHooksHardeningFindings(
     findings.push({
       checkId: "hooks.path_root",
       severity: "critical",
-      title: "Hooks base path is '/'",
-      detail: "hooks.path='/' would shadow other HTTP endpoints and is unsafe.",
-      remediation: "Use a dedicated path like '/hooks'.",
+      title: "Hooks 基础路径为 '/'",
+      detail: "hooks.path='/' 会遮蔽其他 HTTP 端点，存在安全风险。",
+      remediation: "请使用专用路径，如 '/hooks'。",
     });
   }
 
@@ -674,10 +674,10 @@ export function collectHooksHardeningFindings(
     findings.push({
       checkId: "hooks.default_session_key_unset",
       severity: "warn",
-      title: "hooks.defaultSessionKey is not configured",
+      title: "hooks.defaultSessionKey 未配置",
       detail:
-        "Hook agent runs without explicit sessionKey use generated per-request keys. Set hooks.defaultSessionKey to keep hook ingress scoped to a known session.",
-      remediation: 'Set hooks.defaultSessionKey (for example, "hook:ingress").',
+        "Hook 代理未设置显式 sessionKey，将为每次请求生成密钥。请设置 hooks.defaultSessionKey 以将 Hook 入口限制在已知会话范围内。",
+      remediation: '请设置 hooks.defaultSessionKey（例如 "hook:ingress"）。',
     });
   }
 
@@ -685,11 +685,11 @@ export function collectHooksHardeningFindings(
     findings.push({
       checkId: "hooks.request_session_key_enabled",
       severity: remoteExposure ? "critical" : "warn",
-      title: "External hook payloads may override sessionKey",
+      title: "外部 Hook 载荷可能覆盖 sessionKey",
       detail:
-        "hooks.allowRequestSessionKey=true allows `/hooks/agent` callers to choose the session key. Treat hook token holders as full-trust unless you also restrict prefixes.",
+        "hooks.allowRequestSessionKey=true 允许 `/hooks/agent` 调用者选择会话密钥。除非同时限制前缀，否则应将 Hook 令牌持有者视为完全受信。",
       remediation:
-        "Set hooks.allowRequestSessionKey=false (recommended) or constrain hooks.allowedSessionKeyPrefixes.",
+        "建议设置 hooks.allowRequestSessionKey=false（推荐），或限制 hooks.allowedSessionKeyPrefixes。",
     });
   }
 
@@ -697,11 +697,11 @@ export function collectHooksHardeningFindings(
     findings.push({
       checkId: "hooks.request_session_key_prefixes_missing",
       severity: remoteExposure ? "critical" : "warn",
-      title: "Request sessionKey override is enabled without prefix restrictions",
+      title: "请求 sessionKey 覆盖已启用但无前缀限制",
       detail:
-        "hooks.allowRequestSessionKey=true and hooks.allowedSessionKeyPrefixes is unset/empty, so request payloads can target arbitrary session key shapes.",
+        "hooks.allowRequestSessionKey=true 且 hooks.allowedSessionKeyPrefixes 未设置/为空，因此请求载荷可以指定任意会话密钥格式。",
       remediation:
-        'Set hooks.allowedSessionKeyPrefixes (for example, ["hook:"]) or disable request overrides.',
+        '请设置 hooks.allowedSessionKeyPrefixes（例如 ["hook:"]）或禁用请求覆盖。',
     });
   }
 
@@ -726,10 +726,10 @@ export function collectGatewayHttpSessionKeyOverrideFindings(
   findings.push({
     checkId: "gateway.http.session_key_override_enabled",
     severity: "info",
-    title: "HTTP API session-key override is enabled",
+    title: "HTTP API session-key 覆盖已启用",
     detail:
-      `${enabledEndpoints.join(", ")} accept x-openclaw-session-key for per-request session routing. ` +
-      "Treat API credential holders as trusted principals.",
+      `${enabledEndpoints.join(", ")} 接受 x-openclaw-session-key 进行每请求会话路由。` +
+      "请将 API 凭据持有者视为受信主体。",
   });
 
   return findings;
@@ -758,12 +758,12 @@ export function collectGatewayHttpNoAuthFindings(
   findings.push({
     checkId: "gateway.http.no_auth",
     severity: remoteExposure ? "critical" : "warn",
-    title: "Gateway HTTP APIs are reachable without auth",
+    title: "网关 HTTP API 无需认证即可访问",
     detail:
-      `gateway.auth.mode="none" leaves ${enabledEndpoints.join(", ")} callable without a shared secret. ` +
-      "Treat this as trusted-local only and avoid exposing the gateway beyond loopback.",
+      `gateway.auth.mode="none" 使 ${enabledEndpoints.join(", ")} 无需共享密钥即可调用。` +
+      "请仅在受信本地环境使用，避免将网关暴露到回环地址以外。",
     remediation:
-      "Set gateway.auth.mode to token/password (recommended). If you intentionally keep mode=none, keep gateway.bind=loopback and disable optional HTTP endpoints.",
+      "建议将 gateway.auth.mode 设置为 token/password（推荐）。如果您有意保持 mode=none，请保持 gateway.bind=loopback 并禁用可选 HTTP 端点。",
   });
 
   return findings;
@@ -808,12 +808,12 @@ export function collectSandboxDockerNoopFindings(cfg: OpenClawConfig): SecurityA
   findings.push({
     checkId: "sandbox.docker_config_mode_off",
     severity: "warn",
-    title: "Sandbox docker settings configured while sandbox mode is off",
+    title: "沙箱 Docker 设置已配置但沙箱模式处于关闭状态",
     detail:
-      "These docker settings will not take effect until sandbox mode is enabled:\n" +
+      "以下 Docker 设置在启用沙箱模式前不会生效：\n" +
       configuredPaths.map((entry) => `- ${entry}`).join("\n"),
     remediation:
-      'Enable sandbox mode (`agents.defaults.sandbox.mode="non-main"` or `"all"`) where needed, or remove unused docker settings.',
+      '请在需要的地方启用沙箱模式（`agents.defaults.sandbox.mode="non-main"` 或 `"all"`），或移除未使用的 Docker 设置。',
   });
 
   return findings;
@@ -858,11 +858,11 @@ export function collectSandboxDangerousConfigFindings(cfg: OpenClawConfig): Secu
         findings.push({
           checkId: "sandbox.bind_mount_non_absolute",
           severity: "warn",
-          title: "Sandbox bind mount uses a non-absolute source path",
+          title: "沙箱绑定挂载使用了非绝对源路径",
           detail:
-            `${source}.binds contains "${bind}" which uses source path "${blocked.sourcePath}". ` +
-            "Non-absolute bind sources are hard to validate safely and may resolve unexpectedly.",
-          remediation: `Rewrite "${bind}" to use an absolute host path (for example: /home/user/project:/project:ro).`,
+            `${source}.binds 包含 "${bind}"，其源路径为 "${blocked.sourcePath}"。` +
+            "非绝对绑定源路径难以安全验证，可能会以意外的方式解析。",
+          remediation: `请将 "${bind}" 改写为绝对主机路径（例如：/home/user/project:/project:ro）。`,
         });
         continue;
       }
@@ -873,11 +873,11 @@ export function collectSandboxDangerousConfigFindings(cfg: OpenClawConfig): Secu
       findings.push({
         checkId: "sandbox.dangerous_bind_mount",
         severity: "critical",
-        title: "Dangerous bind mount in sandbox config",
+        title: "沙箱配置中存在危险的绑定挂载",
         detail:
-          `${source}.binds contains "${bind}" which ${verb} blocked path "${blocked.blockedPath}". ` +
-          "This can expose host system directories or the Docker socket to sandbox containers.",
-        remediation: `Remove "${bind}" from ${source}.binds. Use project-specific paths instead.`,
+          `${source}.binds 包含 "${bind}"，它${verb}了被阻止的路径 "${blocked.blockedPath}"。` +
+          "这可能会将主机系统目录或 Docker 套接字暴露给沙箱容器。",
+        remediation: `请从 ${source}.binds 中移除 "${bind}"。改用项目特定路径。`,
       });
     }
 
@@ -887,16 +887,16 @@ export function collectSandboxDangerousConfigFindings(cfg: OpenClawConfig): Secu
       const modeLabel = normalizedNetwork === "host" ? '"host"' : `"${network}"`;
       const detail =
         normalizedNetwork === "host"
-          ? `${source}.network is "host" which bypasses container network isolation entirely.`
-          : `${source}.network is ${modeLabel} which joins another container namespace and can bypass sandbox network isolation.`;
+          ? `${source}.network 为 "host"，这将完全绕过容器网络隔离。`
+          : `${source}.network 为 ${modeLabel}，将加入另一个容器的命名空间，可能绕过沙箱网络隔离。`;
       findings.push({
         checkId: "sandbox.dangerous_network_mode",
         severity: "critical",
-        title: "Dangerous network mode in sandbox config",
+        title: "沙箱配置中存在危险的网络模式",
         detail,
         remediation:
-          `Set ${source}.network to "bridge", "none", or a custom bridge network name.` +
-          ` Use ${source}.dangerouslyAllowContainerNamespaceJoin=true only as a break-glass override when you fully trust this runtime.`,
+          `请将 ${source}.network 设置为 "bridge"、"none" 或自定义桥接网络名称。` +
+          ` 仅在您完全信任此运行时时，使用 ${source}.dangerouslyAllowContainerNamespaceJoin=true 作为紧急覆盖。`,
       });
     }
 
@@ -906,9 +906,9 @@ export function collectSandboxDangerousConfigFindings(cfg: OpenClawConfig): Secu
       findings.push({
         checkId: "sandbox.dangerous_seccomp_profile",
         severity: "critical",
-        title: "Seccomp unconfined in sandbox config",
-        detail: `${source}.seccompProfile is "unconfined" which disables syscall filtering.`,
-        remediation: `Remove ${source}.seccompProfile or use a custom seccomp profile file.`,
+        title: "沙箱配置中 Seccomp 设为 unconfined",
+        detail: `${source}.seccompProfile 为 "unconfined"，这将禁用系统调用过滤。`,
+        remediation: `请移除 ${source}.seccompProfile 或使用自定义 seccomp 配置文件。`,
       });
     }
 
@@ -918,9 +918,9 @@ export function collectSandboxDangerousConfigFindings(cfg: OpenClawConfig): Secu
       findings.push({
         checkId: "sandbox.dangerous_apparmor_profile",
         severity: "critical",
-        title: "AppArmor unconfined in sandbox config",
-        detail: `${source}.apparmorProfile is "unconfined" which disables AppArmor enforcement.`,
-        remediation: `Remove ${source}.apparmorProfile or use a named AppArmor profile.`,
+        title: "沙箱配置中 AppArmor 设为 unconfined",
+        detail: `${source}.apparmorProfile 为 "unconfined"，这将禁用 AppArmor 强制执行。`,
+        remediation: `请移除 ${source}.apparmorProfile 或使用命名的 AppArmor 配置文件。`,
       });
     }
   }
@@ -954,13 +954,13 @@ export function collectSandboxDangerousConfigFindings(cfg: OpenClawConfig): Secu
     findings.push({
       checkId: "sandbox.browser_cdp_bridge_unrestricted",
       severity: "warn",
-      title: "Sandbox browser CDP may be reachable by peer containers",
+      title: "沙箱浏览器 CDP 可能被对等容器访问",
       detail:
-        "These sandbox browser configs use Docker bridge networking with no CDP source restriction:\n" +
+        "以下沙箱浏览器配置使用 Docker 桥接网络且未限制 CDP 来源：\n" +
         browserExposurePaths.map((entry) => `- ${entry}`).join("\n"),
       remediation:
-        "Set sandbox.browser.network to a dedicated bridge network (recommended default: openclaw-sandbox-browser), " +
-        "or set sandbox.browser.cdpSourceRange (for example 172.21.0.1/32) to restrict container-edge CDP ingress.",
+        "建议将 sandbox.browser.network 设置为专用桥接网络（推荐默认值：openclaw-sandbox-browser），" +
+        "或设置 sandbox.browser.cdpSourceRange（例如 172.21.0.1/32）以限制容器边缘的 CDP 入口。",
     });
   }
 
@@ -991,7 +991,7 @@ export function collectNodeDenyCommandPatternFindings(cfg: OpenClawConfig): Secu
   const detailParts: string[] = [];
   if (patternLike.length > 0) {
     detailParts.push(
-      `Pattern-like entries (not supported by exact matching): ${patternLike.join(", ")}`,
+      `类似模式的条目（精确匹配不支持）：${patternLike.join(", ")}`,
     );
   }
   if (unknownExact.length > 0) {
@@ -1005,20 +1005,20 @@ export function collectNodeDenyCommandPatternFindings(cfg: OpenClawConfig): Secu
       })
       .join(", ");
 
-    detailParts.push(`Unknown command names (not in defaults/allowCommands): ${unknownDetails}`);
+    detailParts.push(`未知命令名称（不在 defaults/allowCommands 中）：${unknownDetails}`);
   }
   const examples = Array.from(knownCommands).slice(0, 8);
 
   findings.push({
     checkId: "gateway.nodes.deny_commands_ineffective",
     severity: "warn",
-    title: "Some gateway.nodes.denyCommands entries are ineffective",
+    title: "部分 gateway.nodes.denyCommands 条目无效",
     detail:
-      "gateway.nodes.denyCommands uses exact node command-name matching only (for example `system.run`), not shell-text filtering inside a command payload.\n" +
+      "gateway.nodes.denyCommands 仅使用精确的节点命令名称匹配（例如 `system.run`），而非命令载荷中的 shell 文本过滤。\n" +
       detailParts.map((entry) => `- ${entry}`).join("\n"),
     remediation:
-      `Use exact command names (for example: ${examples.join(", ")}). ` +
-      "If you need broader restrictions, remove risky command IDs from allowCommands/default workflows and tighten tools.exec policy.",
+      `请使用精确命令名称（例如：${examples.join(", ")}）。` +
+      "如需更广泛的限制，请从 allowCommands/默认工作流中移除有风险的命令 ID，并收紧 tools.exec 策略。",
   });
 
   return findings;
@@ -1049,13 +1049,13 @@ export function collectNodeDangerousAllowCommandFindings(
   findings.push({
     checkId: "gateway.nodes.allow_commands_dangerous",
     severity: isGatewayRemotelyExposed(cfg) ? "critical" : "warn",
-    title: "Dangerous node commands explicitly enabled",
+    title: "危险的节点命令已被显式启用",
     detail:
-      `gateway.nodes.allowCommands includes: ${dangerousAllowed.join(", ")}. ` +
-      "These commands can trigger high-impact device actions (camera/screen/contacts/calendar/reminders/SMS).",
+      `gateway.nodes.allowCommands 包含：${dangerousAllowed.join(", ")}。` +
+      "这些命令可触发高影响的设备操作（摄像头/屏幕/联系人/日历/提醒/短信）。",
     remediation:
-      "Remove these entries from gateway.nodes.allowCommands (recommended). " +
-      "If you keep them, treat gateway auth as full operator access and keep gateway exposure local/tailnet-only.",
+      "建议从 gateway.nodes.allowCommands 中移除这些条目（推荐）。" +
+      "如需保留，请将网关认证视为完整操作员访问权限，并保持网关暴露仅限本地/Tailscale 网络。",
   });
 
   return findings;
@@ -1086,12 +1086,12 @@ export function collectMinimalProfileOverrideFindings(cfg: OpenClawConfig): Secu
   findings.push({
     checkId: "tools.profile_minimal_overridden",
     severity: "warn",
-    title: "Global tools.profile=minimal is overridden by agent profiles",
+    title: "全局 tools.profile=minimal 被代理配置覆盖",
     detail:
-      "Global minimal profile is set, but these agent profiles take precedence:\n" +
+      "全局已设置 minimal 配置文件，但以下代理配置文件优先级更高：\n" +
       overrides.map((entry) => `- agents.list.${entry}`).join("\n"),
     remediation:
-      'Set those agents to `tools.profile="minimal"` (or remove the agent override) if you want minimal tools enforced globally.',
+      '如果您希望全局强制执行 minimal 工具，请将这些代理设置为 `tools.profile="minimal"`（或移除代理覆盖）。',
   });
 
   return findings;
@@ -1151,12 +1151,12 @@ export function collectModelHygieneFindings(cfg: OpenClawConfig): SecurityAuditF
     findings.push({
       checkId: "models.legacy",
       severity: "warn",
-      title: "Some configured models look legacy",
+      title: "部分已配置的模型为旧版",
       detail:
-        "Older/legacy models can be less robust against prompt injection and tool misuse.\n" +
+        "较旧/旧版模型对提示注入和工具滥用的防御能力较弱。\n" +
         lines +
         more,
-      remediation: "Prefer modern, instruction-hardened models for any bot that can run tools.",
+      remediation: "建议为任何可运行工具的机器人使用现代、指令强化型模型。",
     });
   }
 
@@ -1169,13 +1169,13 @@ export function collectModelHygieneFindings(cfg: OpenClawConfig): SecurityAuditF
     findings.push({
       checkId: "models.weak_tier",
       severity: "warn",
-      title: "Some configured models are below recommended tiers",
+      title: "部分已配置的模型低于推荐等级",
       detail:
-        "Smaller/older models are generally more susceptible to prompt injection and tool misuse.\n" +
+        "较小/较旧的模型通常更容易受到提示注入和工具滥用的影响。\n" +
         lines +
         more,
       remediation:
-        "Use the latest, top-tier model for any bot with tools or untrusted inboxes. Avoid Haiku tiers; prefer GPT-5+ and Claude 4.5+.",
+        "建议为任何带有工具或不受信收件箱的机器人使用最新顶级模型。避免使用 Haiku 等级；建议使用 GPT-5+ 和 Claude 4.5+。",
     });
   }
 
@@ -1256,22 +1256,22 @@ export function collectSmallModelRiskFindings(params: {
   const exposureList = Array.from(exposureSet);
   const exposureDetail =
     exposureList.length > 0
-      ? `Uncontrolled input tools allowed: ${exposureList.join(", ")}.`
-      : "No web/browser tools detected for these models.";
+      ? `允许的不受控输入工具：${exposureList.join(", ")}。`
+      : "未检测到这些模型的 web/浏览器工具。";
 
   findings.push({
     checkId: "models.small_params",
     severity: hasUnsafe ? "critical" : "info",
-    title: "Small models require sandboxing and web tools disabled",
+    title: "小模型需要启用沙箱并禁用网络工具",
     detail:
-      `Small models (<=${SMALL_MODEL_PARAM_B_MAX}B params) detected:\n` +
+      `检测到小模型（<=${SMALL_MODEL_PARAM_B_MAX}B 参数）：\n` +
       modelLines.join("\n") +
       `\n` +
       exposureDetail +
       `\n` +
-      "Small models are not recommended for untrusted inputs.",
+      "不建议小模型用于不受信的输入。",
     remediation:
-      'If you must use small models, enable sandboxing for all sessions (agents.defaults.sandbox.mode="all") and disable web_search/web_fetch/browser (tools.deny=["group:web","browser"]).',
+      '如果必须使用小模型，请为所有会话启用沙箱（agents.defaults.sandbox.mode="all"）并禁用 web_search/web_fetch/browser（tools.deny=["group:web","browser"]）。',
   });
 
   return findings;
@@ -1289,11 +1289,11 @@ export function collectExposureMatrixFindings(cfg: OpenClawConfig): SecurityAudi
     findings.push({
       checkId: "security.exposure.open_groups_with_elevated",
       severity: "critical",
-      title: "Open groupPolicy with elevated tools enabled",
+      title: "开放 groupPolicy 且已启用提权工具",
       detail:
-        `Found groupPolicy="open" at:\n${openGroups.map((p) => `- ${p}`).join("\n")}\n` +
-        "With tools.elevated enabled, a prompt injection in those rooms can become a high-impact incident.",
-      remediation: `Set groupPolicy="allowlist" and keep elevated allowlists extremely tight.`,
+        `发现 groupPolicy="open" 位于：\n${openGroups.map((p) => `- ${p}`).join("\n")}\n` +
+        "在启用 tools.elevated 的情况下，这些房间中的提示注入可能成为高影响事件。",
+      remediation: `请设置 groupPolicy="allowlist" 并保持提权允许列表极度严格。`,
     });
   }
 
@@ -1303,13 +1303,13 @@ export function collectExposureMatrixFindings(cfg: OpenClawConfig): SecurityAudi
     findings.push({
       checkId: "security.exposure.open_groups_with_runtime_or_fs",
       severity: hasRuntimeRisk ? "critical" : "warn",
-      title: "Open groupPolicy with runtime/filesystem tools exposed",
+      title: "开放 groupPolicy 且暴露了运行时/文件系统工具",
       detail:
-        `Found groupPolicy="open" at:\n${openGroups.map((p) => `- ${p}`).join("\n")}\n` +
-        `Risky tool exposure contexts:\n${riskyContexts.map((line) => `- ${line}`).join("\n")}\n` +
-        "Prompt injection in open groups can trigger command/file actions in these contexts.",
+        `发现 groupPolicy="open" 位于：\n${openGroups.map((p) => `- ${p}`).join("\n")}\n` +
+        `有风险的工具暴露上下文：\n${riskyContexts.map((line) => `- ${line}`).join("\n")}\n` +
+        "开放组中的提示注入可能在这些上下文中触发命令/文件操作。",
       remediation:
-        'For open groups, prefer tools.profile="messaging" (or deny group:runtime/group:fs), set tools.fs.workspaceOnly=true, and use agents.defaults.sandbox.mode="all" for exposed agents.',
+        '对于开放组，建议使用 tools.profile="messaging"（或禁止 group:runtime/group:fs），设置 tools.fs.workspaceOnly=true，并为暴露的代理使用 agents.defaults.sandbox.mode="all"。',
     });
   }
 
@@ -1325,24 +1325,24 @@ export function collectLikelyMultiUserSetupFindings(cfg: OpenClawConfig): Securi
 
   const { riskyContexts, hasRuntimeRisk } = collectRiskyToolExposureContexts(cfg);
   const impactLine = hasRuntimeRisk
-    ? "Runtime/process tools are exposed without full sandboxing in at least one context."
-    : "No unguarded runtime/process tools were detected by this heuristic.";
+    ? "运行时/进程工具在至少一个上下文中被暴露且未完全沙箱化。"
+    : "此启发式检测未发现无防护的运行时/进程工具。";
   const riskyContextsDetail =
     riskyContexts.length > 0
-      ? `Potential high-impact tool exposure contexts:\n${riskyContexts.map((line) => `- ${line}`).join("\n")}`
-      : "No unguarded runtime/filesystem contexts detected.";
+      ? `潜在高影响工具暴露上下文：\n${riskyContexts.map((line) => `- ${line}`).join("\n")}`
+      : "未检测到无防护的运行时/文件系统上下文。";
 
   findings.push({
     checkId: "security.trust_model.multi_user_heuristic",
     severity: "warn",
-    title: "Potential multi-user setup detected (personal-assistant model warning)",
+    title: "检测到潜在的多用户配置（个人助理模型警告）",
     detail:
-      "Heuristic signals indicate this gateway may be reachable by multiple users:\n" +
+      "启发式信号表明此网关可能被多个用户访问：\n" +
       signals.map((signal) => `- ${signal}`).join("\n") +
       `\n${impactLine}\n${riskyContextsDetail}\n` +
-      "OpenClaw's default security model is personal-assistant (one trusted operator boundary), not hostile multi-tenant isolation on one shared gateway.",
+      "OpenClaw 的默认安全模型是个人助理（单一受信操作者边界），而非在单一共享网关上的敌对多租户隔离。",
     remediation:
-      'If users may be mutually untrusted, split trust boundaries (separate gateways + credentials, ideally separate OS users/hosts). If you intentionally run shared-user access, set agents.defaults.sandbox.mode="all", keep tools.fs.workspaceOnly=true, deny runtime/fs/web tools unless required, and keep personal/private identities + credentials off that runtime.',
+      '如果用户之间可能互不信任，请分离信任边界（独立网关 + 凭据，理想情况下使用独立的操作系统用户/主机）。如果您有意运行共享用户访问，请设置 agents.defaults.sandbox.mode="all"，保持 tools.fs.workspaceOnly=true，禁止 runtime/fs/web 工具（除非必需），并确保个人/私密身份和凭据不在该运行时上。',
   });
 
   return findings;

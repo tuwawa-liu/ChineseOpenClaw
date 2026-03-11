@@ -222,16 +222,16 @@ export async function collectChannelSecurityFindings(params: {
       findings.push({
         checkId: `channels.${input.provider}.dm.open`,
         severity: "critical",
-        title: `${input.label} DMs are open`,
-        detail: `${policyPath}="open" allows anyone to DM the bot.`,
-        remediation: `Use pairing/allowlist; if you really need open DMs, ensure ${allowFromKey} includes "*".`,
+        title: `${input.label} 私信为开放状态`,
+        detail: `${policyPath}="open" 允许任何人向机器人发送私信。`,
+        remediation: `请使用配对/允许列表；如果确实需要开放私信，请确保 ${allowFromKey} 包含 "*"。`,
       });
       if (!hasWildcard) {
         findings.push({
           checkId: `channels.${input.provider}.dm.open_invalid`,
           severity: "warn",
-          title: `${input.label} DM config looks inconsistent`,
-          detail: `"open" requires ${allowFromKey} to include "*".`,
+          title: `${input.label} 私信配置看起来不一致`,
+          detail: `"open" 要求 ${allowFromKey} 包含 "*"。`,
         });
       }
     }
@@ -240,8 +240,8 @@ export async function collectChannelSecurityFindings(params: {
       findings.push({
         checkId: `channels.${input.provider}.dm.disabled`,
         severity: "info",
-        title: `${input.label} DMs are disabled`,
-        detail: `${policyPath}="disabled" ignores inbound DMs.`,
+        title: `${input.label} 私信已禁用`,
+        detail: `${policyPath}="disabled" 将忽略入站私信。`,
       });
       return;
     }
@@ -250,13 +250,13 @@ export async function collectChannelSecurityFindings(params: {
       findings.push({
         checkId: `channels.${input.provider}.dm.scope_main_multiuser`,
         severity: "warn",
-        title: `${input.label} DMs share the main session`,
+        title: `${input.label} 私信共享主会话`,
         detail:
-          "Multiple DM senders currently share the main session, which can leak context across users.",
+          "多个私信发送者当前共享主会话，这可能导致用户之间的上下文泄露。",
         remediation:
-          "Run: " +
+          "请运行：" +
           formatCliCommand('openclaw config set session.dmScope "per-channel-peer"') +
-          ' (or "per-account-channel-peer" for multi-account channels) to isolate DM sessions per sender.',
+          '（或对多账户频道使用 "per-account-channel-peer"）以按发送者隔离私信会话。',
       });
     }
   };
@@ -295,11 +295,11 @@ export async function collectChannelSecurityFindings(params: {
         findings.push({
           checkId: `channels.${plugin.id}.allowFrom.dangerous_name_matching_enabled`,
           severity: "info",
-          title: `${plugin.meta.label ?? plugin.id} dangerous name matching is enabled${accountNote}`,
+          title: `${plugin.meta.label ?? plugin.id} 已启用危险的名称匹配${accountNote}`,
           detail:
-            "dangerouslyAllowNameMatching=true re-enables mutable name/email/tag matching for sender authorization. This is a break-glass compatibility mode, not a hardened default.",
+            "dangerouslyAllowNameMatching=true 重新启用了可变名称/邮箱/标签匹配进行发送者授权。这是一个紧急兼容模式，而非强化的默认设置。",
           remediation:
-            "Prefer stable sender IDs in allowlists, then disable dangerouslyAllowNameMatching.",
+            "建议在允许列表中使用稳定的发送者 ID，然后禁用 dangerouslyAllowNameMatching。",
         });
       }
 
@@ -373,16 +373,16 @@ export async function collectChannelSecurityFindings(params: {
             checkId: "channels.discord.allowFrom.name_based_entries",
             severity: dangerousNameMatchingEnabled ? "info" : "warn",
             title: dangerousNameMatchingEnabled
-              ? "Discord allowlist uses break-glass name/tag matching"
-              : "Discord allowlist contains name or tag entries",
+              ? "Discord 允许列表使用紧急名称/标签匹配"
+              : "Discord 允许列表包含名称或标签条目",
             detail: dangerousNameMatchingEnabled
-              ? "Discord name/tag allowlist matching is explicitly enabled via dangerouslyAllowNameMatching. This mutable-identity mode is operator-selected break-glass behavior and out-of-scope for vulnerability reports by itself. " +
-                `Found: ${examples.join(", ")}${more}.`
-              : "Discord name/tag allowlist matching uses normalized slugs and can collide across users. " +
-                `Found: ${examples.join(", ")}${more}.`,
+              ? "Discord 名称/标签允许列表匹配已通过 dangerouslyAllowNameMatching 显式启用。此可变身份模式是操作员选择的紧急行为，本身不属于漏洞报告范围。" +
+                `发现：${examples.join(", ")}${more}。`
+              : "Discord 名称/标签允许列表匹配使用规范化别名，可能在用户之间发生冲突。" +
+                `发现：${examples.join(", ")}${more}。`,
             remediation: dangerousNameMatchingEnabled
-              ? "Prefer stable Discord IDs (or <@id>/user:<id>/pk:<id>), then disable dangerouslyAllowNameMatching."
-              : "Prefer stable Discord IDs (or <@id>/user:<id>/pk:<id>) in channels.discord.allowFrom and channels.discord.guilds.*.users, or explicitly opt in with dangerouslyAllowNameMatching=true if you accept the risk.",
+              ? "建议使用稳定的 Discord ID（或 <@id>/user:<id>/pk:<id>），然后禁用 dangerouslyAllowNameMatching。"
+              : "建议在 channels.discord.allowFrom 和 channels.discord.guilds.*.users 中使用稳定的 Discord ID（或 <@id>/user:<id>/pk:<id>），或显式启用 dangerouslyAllowNameMatching=true 接受风险。",
           });
         }
         const nativeEnabled = resolveNativeCommandsEnabled({
@@ -441,11 +441,11 @@ export async function collectChannelSecurityFindings(params: {
             findings.push({
               checkId: "channels.discord.commands.native.unrestricted",
               severity: "critical",
-              title: "Discord slash commands are unrestricted",
+              title: "Discord 斜杠命令无限制",
               detail:
-                "commands.useAccessGroups=false disables sender allowlists for Discord slash commands unless a per-guild/channel users allowlist is configured; with no users allowlist, any user in allowed guild channels can invoke /… commands.",
+                "commands.useAccessGroups=false 禁用了 Discord 斜杠命令的发送者允许列表，除非配置了每公会/频道的 users 允许列表；未配置 users 允许列表时，允许公会频道中的任何用户都可以调用 /… 命令。",
               remediation:
-                "Set commands.useAccessGroups=true (recommended), or configure channels.discord.guilds.<id>.users (or channels.discord.guilds.<id>.channels.<channel>.users).",
+                "建议设置 commands.useAccessGroups=true（推荐），或配置 channels.discord.guilds.<id>.users（或 channels.discord.guilds.<id>.channels.<channel>.users）。",
             });
           } else if (
             useAccessGroups &&
@@ -457,11 +457,11 @@ export async function collectChannelSecurityFindings(params: {
             findings.push({
               checkId: "channels.discord.commands.native.no_allowlists",
               severity: "warn",
-              title: "Discord slash commands have no allowlists",
+              title: "Discord 斜杠命令无允许列表",
               detail:
-                "Discord slash commands are enabled, but neither an owner allowFrom list nor any per-guild/channel users allowlist is configured; /… commands will be rejected for everyone.",
+                "Discord 斜杠命令已启用，但既未配置所有者 allowFrom 列表，也未配置任何每公会/频道的 users 允许列表；/… 命令将拒绝所有人。",
               remediation:
-                "Add your user id to channels.discord.allowFrom (or approve yourself via pairing), or configure channels.discord.guilds.<id>.users.",
+                "请将您的用户 ID 添加到 channels.discord.allowFrom（或通过配对批准自己），或配置 channels.discord.guilds.<id>.users。",
             });
           }
         }
@@ -495,10 +495,10 @@ export async function collectChannelSecurityFindings(params: {
             findings.push({
               checkId: "channels.slack.commands.slash.useAccessGroups_off",
               severity: "critical",
-              title: "Slack slash commands bypass access groups",
+              title: "Slack 斜杠命令绕过访问组",
               detail:
-                "Slack slash/native commands are enabled while commands.useAccessGroups=false; this can allow unrestricted /… command execution from channels/users you didn't explicitly authorize.",
-              remediation: "Set commands.useAccessGroups=true (recommended).",
+                "Slack 斜杠/原生命令已启用且 commands.useAccessGroups=false；这可能允许未明确授权的频道/用户不受限制地执行 /… 命令。",
+              remediation: "建议设置 commands.useAccessGroups=true（推荐）。",
             });
           } else {
             const allowFromRaw = (
@@ -534,11 +534,11 @@ export async function collectChannelSecurityFindings(params: {
               findings.push({
                 checkId: "channels.slack.commands.slash.no_allowlists",
                 severity: "warn",
-                title: "Slack slash commands have no allowlists",
+                title: "Slack 斜杠命令无允许列表",
                 detail:
-                  "Slack slash/native commands are enabled, but neither an owner allowFrom list nor any channels.<id>.users allowlist is configured; /… commands will be rejected for everyone.",
+                  "Slack 斜杠/原生命令已启用，但既未配置所有者 allowFrom 列表，也未配置任何 channels.<id>.users 允许列表；/… 命令将拒绝所有人。",
                 remediation:
-                  "Approve yourself via pairing (recommended), or set channels.slack.allowFrom and/or channels.slack.channels.<id>.users.",
+                  "请通过配对批准自己（推荐），或设置 channels.slack.allowFrom 和/或 channels.slack.channels.<id>.users。",
               });
             }
           }
@@ -577,7 +577,7 @@ export async function collectChannelSecurityFindings(params: {
           findings.push({
             checkId: `channels.${plugin.id}.warning.${findings.length + 1}`,
             severity: classifyChannelWarningSeverity(trimmed),
-            title: `${plugin.meta.label ?? plugin.id} security warning`,
+            title: `${plugin.meta.label ?? plugin.id} 安全警告`,
             detail: trimmed.replace(/^-\s*/, ""),
           });
         }
@@ -676,12 +676,12 @@ export async function collectChannelSecurityFindings(params: {
         findings.push({
           checkId: "channels.telegram.allowFrom.invalid_entries",
           severity: "warn",
-          title: "Telegram allowlist contains non-numeric entries",
+          title: "Telegram 允许列表包含非数字条目",
           detail:
-            "Telegram sender authorization requires numeric Telegram user IDs. " +
-            `Found non-numeric allowFrom entries: ${examples.join(", ")}${more}.`,
+            "Telegram 发送者授权需要数字的 Telegram 用户 ID。" +
+            `发现非数字的 allowFrom 条目：${examples.join(", ")}${more}。`,
           remediation:
-            "Replace @username entries with numeric Telegram user IDs (use onboarding to resolve), then re-run the audit.",
+            "请将 @用户名条目替换为数字的 Telegram 用户 ID（使用引导流程解析），然后重新运行审计。",
         });
       }
 
@@ -689,11 +689,11 @@ export async function collectChannelSecurityFindings(params: {
         findings.push({
           checkId: "channels.telegram.groups.allowFrom.wildcard",
           severity: "critical",
-          title: "Telegram group allowlist contains wildcard",
+          title: "Telegram 组允许列表包含通配符",
           detail:
-            'Telegram group sender allowlist contains "*", which allows any group member to run /… commands and control directives.',
+            'Telegram 组发送者允许列表包含 "*"，这允许任何组成员运行 /… 命令和控制指令。',
           remediation:
-            'Remove "*" from channels.telegram.groupAllowFrom and pairing store; prefer explicit numeric Telegram user IDs.',
+            '请从 channels.telegram.groupAllowFrom 和配对存储中移除 "*"；建议使用明确的数字 Telegram 用户 ID。',
         });
         continue;
       }
@@ -710,12 +710,12 @@ export async function collectChannelSecurityFindings(params: {
         findings.push({
           checkId: "channels.telegram.groups.allowFrom.missing",
           severity: "critical",
-          title: "Telegram group commands have no sender allowlist",
+          title: "Telegram 组命令无发送者允许列表",
           detail:
-            `Telegram group access is enabled but no sender allowlist is configured; this allows any group member to invoke /… commands` +
-            (skillsEnabled ? " (including skill commands)." : "."),
+            `Telegram 组访问已启用但未配置发送者允许列表；这允许任何组成员调用 /… 命令` +
+            (skillsEnabled ? "（包括技能命令）。" : "。"),
           remediation:
-            "Approve yourself via pairing (recommended), or set channels.telegram.groupAllowFrom (or per-group groups.<id>.allowFrom).",
+            "请通过配对批准自己（推荐），或设置 channels.telegram.groupAllowFrom（或每组 groups.<id>.allowFrom）。",
         });
       }
     }

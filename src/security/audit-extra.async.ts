@@ -486,11 +486,11 @@ export async function collectSandboxBrowserHashLabelFindings(params?: {
     findings.push({
       checkId: "sandbox.browser_container.hash_label_missing",
       severity: "warn",
-      title: "Sandbox browser container missing config hash label",
+      title: "沙箱浏览器容器缺少配置哈希标签",
       detail:
-        `Containers: ${missingHash.join(", ")}. ` +
-        "These browser containers predate hash-based drift checks and may miss security remediations until recreated.",
-      remediation: `${formatCliCommand("openclaw sandbox recreate --browser --all")} (add --force to skip prompt).`,
+        `容器：${missingHash.join(", ")}。` +
+        "这些浏览器容器先于基于哈希的漂移检查，在重新创建之前可能会遗漏安全修复。",
+      remediation: `${formatCliCommand("openclaw sandbox recreate --browser --all")}（添加 --force 可跳过确认提示）。`,
     });
   }
 
@@ -498,11 +498,11 @@ export async function collectSandboxBrowserHashLabelFindings(params?: {
     findings.push({
       checkId: "sandbox.browser_container.hash_epoch_stale",
       severity: "warn",
-      title: "Sandbox browser container hash epoch is stale",
+      title: "沙箱浏览器容器哈希纪元过旧",
       detail:
-        `Containers: ${staleEpoch.join(", ")}. ` +
-        `Expected openclaw.browserConfigEpoch=${SANDBOX_BROWSER_SECURITY_HASH_EPOCH}.`,
-      remediation: `${formatCliCommand("openclaw sandbox recreate --browser --all")} (add --force to skip prompt).`,
+        `容器：${staleEpoch.join(", ")}。` +
+        `期望的 openclaw.browserConfigEpoch=${SANDBOX_BROWSER_SECURITY_HASH_EPOCH}。`,
+      remediation: `${formatCliCommand("openclaw sandbox recreate --browser --all")}（添加 --force 可跳过确认提示）。`,
     });
   }
 
@@ -510,13 +510,13 @@ export async function collectSandboxBrowserHashLabelFindings(params?: {
     findings.push({
       checkId: "sandbox.browser_container.non_loopback_publish",
       severity: "critical",
-      title: "Sandbox browser container publishes ports on non-loopback interfaces",
+      title: "沙箱浏览器容器在非回环接口上发布端口",
       detail:
-        `Containers: ${nonLoopbackPublished.join(", ")}. ` +
-        "Sandbox browser observer/control ports should stay loopback-only to avoid unintended remote access.",
+        `容器：${nonLoopbackPublished.join(", ")}。` +
+        "沙箱浏览器观察/控制端口应保持仅回环地址，以避免意外的远程访问。",
       remediation:
-        `${formatCliCommand("openclaw sandbox recreate --browser --all")} (add --force to skip prompt), ` +
-        "then verify published ports are bound to 127.0.0.1.",
+        `${formatCliCommand("openclaw sandbox recreate --browser --all")}（添加 --force 可跳过确认提示），` +
+        "然后验证发布的端口是否绑定到 127.0.0.1。",
     });
   }
 
@@ -608,13 +608,13 @@ export async function collectPluginsTrustFindings(params: {
       findings.push({
         checkId: "plugins.extensions_no_allowlist",
         severity: skillCommandsLikelyExposed ? "critical" : "warn",
-        title: "Extensions exist but plugins.allow is not set",
+        title: "存在扩展但未设置 plugins.allow",
         detail:
-          `Found ${pluginDirs.length} extension(s) under ${extensionsDir}. Without plugins.allow, any discovered plugin id may load (depending on config and plugin behavior).` +
+          `在 ${extensionsDir} 下发现 ${pluginDirs.length} 个扩展。未设置 plugins.allow 时，任何发现的插件 ID 都可能被加载（取决于配置和插件行为）。` +
           (skillCommandsLikelyExposed
-            ? "\nNative skill commands are enabled on at least one configured chat surface; treat unpinned/unallowlisted extensions as high risk."
+            ? "\n至少一个已配置的聊天表面启用了原生技能命令；应将未固定/未允许的扩展视为高风险。"
             : ""),
-        remediation: "Set plugins.allow to an explicit list of plugin ids you trust.",
+        remediation: "请将 plugins.allow 设置为您信任的插件 ID 显式列表。",
       });
     }
 
@@ -680,12 +680,12 @@ export async function collectPluginsTrustFindings(params: {
         findings.push({
           checkId: "plugins.tools_reachable_permissive_policy",
           severity: "warn",
-          title: "Extension plugin tools may be reachable under permissive tool policy",
+          title: "扩展插件工具可能在宽松的工具策略下可达",
           detail:
-            `Enabled extension plugins: ${enabledExtensionPluginIds.join(", ")}.\n` +
-            `Permissive tool policy contexts:\n${permissiveContexts.map((entry) => `- ${entry}`).join("\n")}`,
+            `已启用的扩展插件：${enabledExtensionPluginIds.join(", ")}。\n` +
+            `宽松的工具策略上下文：\n${permissiveContexts.map((entry) => `- ${entry}`).join("\n")}`,
           remediation:
-            "Use restrictive profiles (`minimal`/`coding`) or explicit tool allowlists that exclude plugin tools for agents handling untrusted input.",
+            "对于处理不受信输入的代理，请使用限制性配置文件（`minimal`/`coding`）或排除插件工具的显式工具允许列表。",
         });
       }
     }
@@ -703,10 +703,10 @@ export async function collectPluginsTrustFindings(params: {
       findings.push({
         checkId: "plugins.installs_unpinned_npm_specs",
         severity: "warn",
-        title: "Plugin installs include unpinned npm specs",
-        detail: `Unpinned plugin install records:\n${unpinned.map((entry) => `- ${entry}`).join("\n")}`,
+        title: "插件安装包含未固定的 npm 规格",
+        detail: `未固定的插件安装记录：\n${unpinned.map((entry) => `- ${entry}`).join("\n")}`,
         remediation:
-          "Pin install specs to exact versions (for example, `@scope/pkg@1.2.3`) for higher supply-chain stability.",
+          "请将安装规格固定到精确版本（例如 `@scope/pkg@1.2.3`）以提高供应链稳定性。",
       });
     }
 
@@ -719,10 +719,10 @@ export async function collectPluginsTrustFindings(params: {
       findings.push({
         checkId: "plugins.installs_missing_integrity",
         severity: "warn",
-        title: "Plugin installs are missing integrity metadata",
-        detail: `Plugin install records missing integrity:\n${missingIntegrity.map((entry) => `- ${entry}`).join("\n")}`,
+        title: "插件安装缺少完整性元数据",
+        detail: `缺少完整性信息的插件安装记录：\n${missingIntegrity.map((entry) => `- ${entry}`).join("\n")}`,
         remediation:
-          "Reinstall or update plugins to refresh install metadata with resolved integrity hashes.",
+          "请重新安装或更新插件以刷新带有已解析完整性哈希的安装元数据。",
       });
     }
 
@@ -746,10 +746,10 @@ export async function collectPluginsTrustFindings(params: {
       findings.push({
         checkId: "plugins.installs_version_drift",
         severity: "warn",
-        title: "Plugin install records drift from installed package versions",
-        detail: `Detected plugin install metadata drift:\n${pluginVersionDrift.map((entry) => `- ${entry}`).join("\n")}`,
+        title: "插件安装记录与已安装的包版本不一致",
+        detail: `检测到插件安装元数据漂移：\n${pluginVersionDrift.map((entry) => `- ${entry}`).join("\n")}`,
         remediation:
-          "Run `openclaw plugins update --all` (or reinstall affected plugins) to refresh install metadata.",
+          "请运行 `openclaw plugins update --all`（或重新安装受影响的插件）以刷新安装元数据。",
       });
     }
   }
@@ -766,10 +766,10 @@ export async function collectPluginsTrustFindings(params: {
       findings.push({
         checkId: "hooks.installs_unpinned_npm_specs",
         severity: "warn",
-        title: "Hook installs include unpinned npm specs",
-        detail: `Unpinned hook install records:\n${unpinned.map((entry) => `- ${entry}`).join("\n")}`,
+        title: "Hook 安装包含未固定的 npm 规格",
+        detail: `未固定的 Hook 安装记录：\n${unpinned.map((entry) => `- ${entry}`).join("\n")}`,
         remediation:
-          "Pin hook install specs to exact versions (for example, `@scope/pkg@1.2.3`) for higher supply-chain stability.",
+          "请将 Hook 安装规格固定到精确版本（例如 `@scope/pkg@1.2.3`）以提高供应链稳定性。",
       });
     }
 
@@ -782,10 +782,10 @@ export async function collectPluginsTrustFindings(params: {
       findings.push({
         checkId: "hooks.installs_missing_integrity",
         severity: "warn",
-        title: "Hook installs are missing integrity metadata",
-        detail: `Hook install records missing integrity:\n${missingIntegrity.map((entry) => `- ${entry}`).join("\n")}`,
+        title: "Hook 安装缺少完整性元数据",
+        detail: `缺少完整性信息的 Hook 安装记录：\n${missingIntegrity.map((entry) => `- ${entry}`).join("\n")}`,
         remediation:
-          "Reinstall or update hooks to refresh install metadata with resolved integrity hashes.",
+          "请重新安装或更新 Hook 以刷新带有已解析完整性哈希的安装元数据。",
       });
     }
 
@@ -809,10 +809,10 @@ export async function collectPluginsTrustFindings(params: {
       findings.push({
         checkId: "hooks.installs_version_drift",
         severity: "warn",
-        title: "Hook install records drift from installed package versions",
-        detail: `Detected hook install metadata drift:\n${hookVersionDrift.map((entry) => `- ${entry}`).join("\n")}`,
+        title: "Hook 安装记录与已安装的包版本不一致",
+        detail: `检测到 Hook 安装元数据漂移：\n${hookVersionDrift.map((entry) => `- ${entry}`).join("\n")}`,
         remediation:
-          "Run `openclaw hooks update --all` (or reinstall affected hooks) to refresh install metadata.",
+          "请运行 `openclaw hooks update --all`（或重新安装受影响的 Hook）以刷新安装元数据。",
       });
     }
   }
@@ -870,9 +870,9 @@ export async function collectWorkspaceSkillSymlinkEscapeFindings(params: {
   findings.push({
     checkId: "skills.workspace.symlink_escape",
     severity: "warn",
-    title: "Workspace skill files resolve outside the workspace root",
+    title: "工作区技能文件解析到工作区根目录之外",
     detail:
-      "Detected workspace `skills/**/SKILL.md` paths whose realpath escapes their workspace root:\n" +
+      "检测到工作区 `skills/**/SKILL.md` 路径的真实路径超出了其工作区根目录：\n" +
       escapedSkillFiles
         .slice(0, MAX_WORKSPACE_SKILL_ESCAPE_DETAIL_ROWS)
         .map(
@@ -886,7 +886,7 @@ export async function collectWorkspaceSkillSymlinkEscapeFindings(params: {
         ? `\n- +${escapedSkillFiles.length - MAX_WORKSPACE_SKILL_ESCAPE_DETAIL_ROWS} more`
         : ""),
     remediation:
-      "Keep workspace skills inside the workspace root (replace symlinked escapes with real in-workspace files), or move trusted shared skills to managed/bundled skill locations.",
+      "请将工作区技能保持在工作区根目录内（用实际的工作区内文件替换符号链接转义），或将受信的共享技能移到托管/损束的技能位置。",
   });
 
   return findings;
@@ -926,8 +926,8 @@ export async function collectIncludeFilePermFindings(params: {
       findings.push({
         checkId: "fs.config_include.perms_writable",
         severity: "critical",
-        title: "Config include file is writable by others",
-        detail: `${formatPermissionDetail(p, perms)}; another user could influence your effective config.`,
+        title: "配置包含文件可被他人写入",
+        detail: `${formatPermissionDetail(p, perms)}；其他用户可能影响您的有效配置。`,
         remediation: formatPermissionRemediation({
           targetPath: p,
           perms,
@@ -940,8 +940,8 @@ export async function collectIncludeFilePermFindings(params: {
       findings.push({
         checkId: "fs.config_include.perms_world_readable",
         severity: "critical",
-        title: "Config include file is world-readable",
-        detail: `${formatPermissionDetail(p, perms)}; include files can contain tokens and private settings.`,
+        title: "配置包含文件全局可读",
+        detail: `${formatPermissionDetail(p, perms)}；包含文件可能包含令牌和私有设置。`,
         remediation: formatPermissionRemediation({
           targetPath: p,
           perms,
@@ -954,8 +954,8 @@ export async function collectIncludeFilePermFindings(params: {
       findings.push({
         checkId: "fs.config_include.perms_group_readable",
         severity: "warn",
-        title: "Config include file is group-readable",
-        detail: `${formatPermissionDetail(p, perms)}; include files can contain tokens and private settings.`,
+        title: "配置包含文件组可读",
+        detail: `${formatPermissionDetail(p, perms)}；包含文件可能包含令牌和私有设置。`,
         remediation: formatPermissionRemediation({
           targetPath: p,
           perms,
@@ -990,8 +990,8 @@ export async function collectStateDeepFilesystemFindings(params: {
       findings.push({
         checkId: "fs.credentials_dir.perms_writable",
         severity: "critical",
-        title: "Credentials dir is writable by others",
-        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}; another user could drop/modify credential files.`,
+        title: "凭据目录可被他人写入",
+        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}；其他用户可能投放/修改凭据文件。`,
         remediation: formatPermissionRemediation({
           targetPath: oauthDir,
           perms: oauthPerms,
@@ -1004,8 +1004,8 @@ export async function collectStateDeepFilesystemFindings(params: {
       findings.push({
         checkId: "fs.credentials_dir.perms_readable",
         severity: "warn",
-        title: "Credentials dir is readable by others",
-        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}; credentials and allowlists can be sensitive.`,
+        title: "凭据目录可被他人读取",
+        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}；凭据和允许列表可能是敏感信息。`,
         remediation: formatPermissionRemediation({
           targetPath: oauthDir,
           perms: oauthPerms,
@@ -1039,8 +1039,8 @@ export async function collectStateDeepFilesystemFindings(params: {
         findings.push({
           checkId: "fs.auth_profiles.perms_writable",
           severity: "critical",
-          title: "auth-profiles.json is writable by others",
-          detail: `${formatPermissionDetail(authPath, authPerms)}; another user could inject credentials.`,
+          title: "auth-profiles.json 可被他人写入",
+          detail: `${formatPermissionDetail(authPath, authPerms)}；其他用户可能注入凭据。`,
           remediation: formatPermissionRemediation({
             targetPath: authPath,
             perms: authPerms,
@@ -1053,8 +1053,8 @@ export async function collectStateDeepFilesystemFindings(params: {
         findings.push({
           checkId: "fs.auth_profiles.perms_readable",
           severity: "warn",
-          title: "auth-profiles.json is readable by others",
-          detail: `${formatPermissionDetail(authPath, authPerms)}; auth-profiles.json contains API keys and OAuth tokens.`,
+          title: "auth-profiles.json 可被他人读取",
+          detail: `${formatPermissionDetail(authPath, authPerms)}； auth-profiles.json 包含 API 密钥和 OAuth 令牌。`,
           remediation: formatPermissionRemediation({
             targetPath: authPath,
             perms: authPerms,
@@ -1078,8 +1078,8 @@ export async function collectStateDeepFilesystemFindings(params: {
         findings.push({
           checkId: "fs.sessions_store.perms_readable",
           severity: "warn",
-          title: "sessions.json is readable by others",
-          detail: `${formatPermissionDetail(storePath, storePerms)}; routing and transcript metadata can be sensitive.`,
+          title: "sessions.json 可被他人读取",
+          detail: `${formatPermissionDetail(storePath, storePerms)}；路由和对话元数据可能是敏感信息。`,
           remediation: formatPermissionRemediation({
             targetPath: storePath,
             perms: storePerms,
@@ -1108,8 +1108,8 @@ export async function collectStateDeepFilesystemFindings(params: {
           findings.push({
             checkId: "fs.log_file.perms_readable",
             severity: "warn",
-            title: "Log file is readable by others",
-            detail: `${formatPermissionDetail(logPath, logPerms)}; logs can contain private messages and tool output.`,
+            title: "日志文件可被他人读取",
+            detail: `${formatPermissionDetail(logPath, logPerms)}；日志可能包含私人消息和工具输出。`,
             remediation: formatPermissionRemediation({
               targetPath: logPath,
               perms: logPerms,
@@ -1147,10 +1147,10 @@ export async function collectPluginsCodeSafetyFindings(params: {
       findings.push({
         checkId: "plugins.code_safety.scan_failed",
         severity: "warn",
-        title: "Plugin extensions directory scan failed",
-        detail: `Static code scan could not list extensions directory: ${String(err)}`,
+        title: "插件扩展目录扫描失败",
+        detail: `静态代码扫描无法列出扩展目录：${String(err)}`,
         remediation:
-          "Check file permissions and plugin layout, then rerun `openclaw security audit --deep`.",
+          "请检查文件权限和插件布局，然后重新运行 `openclaw security audit --deep`。",
       });
     },
   });
@@ -1171,9 +1171,9 @@ export async function collectPluginsCodeSafetyFindings(params: {
         findings.push({
           checkId: "plugins.code_safety.entry_path",
           severity: "warn",
-          title: `Plugin "${pluginName}" entry path is hidden or node_modules`,
-          detail: `Extension entry "${entry}" points to a hidden or node_modules path. Deep code scan will cover this entry explicitly, but review this path choice carefully.`,
-          remediation: "Prefer extension entrypoints under normal source paths like dist/ or src/.",
+          title: `插件 "${pluginName}" 的入口路径为隐藏或 node_modules`,
+          detail: `扩展入口 "${entry}" 指向隐藏或 node_modules 路径。深度代码扫描将显式覆盖此入口，但请仔细审查此路径选择。`,
+          remediation: "建议使用 dist/ 或 src/ 等常规源路径下的扩展入口点。",
         });
       }
       forcedScanEntries.push(resolvedEntry);
@@ -1183,10 +1183,10 @@ export async function collectPluginsCodeSafetyFindings(params: {
       findings.push({
         checkId: "plugins.code_safety.entry_escape",
         severity: "critical",
-        title: `Plugin "${pluginName}" has extension entry path traversal`,
-        detail: `Found extension entries that escape the plugin directory:\n${escapedEntries.map((entry) => `  - ${entry}`).join("\n")}`,
+        title: `插件 "${pluginName}" 存在扩展入口路径穿越`,
+        detail: `发现超出插件目录的扩展入口：\n${escapedEntries.map((entry) => `  - ${entry}`).join("\n")}`,
         remediation:
-          "Update the plugin manifest so all openclaw.extensions entries stay inside the plugin directory.",
+          "请更新插件清单，确保所有 openclaw.extensions 条目保持在插件目录内。",
       });
     }
 
@@ -1198,10 +1198,10 @@ export async function collectPluginsCodeSafetyFindings(params: {
       findings.push({
         checkId: "plugins.code_safety.scan_failed",
         severity: "warn",
-        title: `Plugin "${pluginName}" code scan failed`,
-        detail: `Static code scan could not complete: ${String(err)}`,
+        title: `插件 "${pluginName}" 代码扫描失败`,
+        detail: `静态代码扫描无法完成：${String(err)}`,
         remediation:
-          "Check file permissions and plugin layout, then rerun `openclaw security audit --deep`.",
+          "请检查文件权限和插件布局，然后重新运行 `openclaw security audit --deep`。",
       });
       return null;
     });
@@ -1216,10 +1216,10 @@ export async function collectPluginsCodeSafetyFindings(params: {
       findings.push({
         checkId: "plugins.code_safety",
         severity: "critical",
-        title: `Plugin "${pluginName}" contains dangerous code patterns`,
-        detail: `Found ${summary.critical} critical issue(s) in ${summary.scannedFiles} scanned file(s):\n${details}`,
+        title: `插件 "${pluginName}" 包含危险的代码模式`,
+        detail: `在 ${summary.scannedFiles} 个扫描文件中发现 ${summary.critical} 个严重问题：\n${details}`,
         remediation:
-          "Review the plugin source code carefully before use. If untrusted, remove the plugin from your OpenClaw extensions state directory.",
+          "使用前请仔细审查插件源代码。如果不受信，请从 OpenClaw 扩展状态目录中移除该插件。",
       });
     } else if (summary.warn > 0) {
       const warnFindings = summary.findings.filter((f) => f.severity === "warn");
@@ -1228,9 +1228,9 @@ export async function collectPluginsCodeSafetyFindings(params: {
       findings.push({
         checkId: "plugins.code_safety",
         severity: "warn",
-        title: `Plugin "${pluginName}" contains suspicious code patterns`,
-        detail: `Found ${summary.warn} warning(s) in ${summary.scannedFiles} scanned file(s):\n${details}`,
-        remediation: `Review the flagged code to ensure it is intentional and safe.`,
+        title: `插件 "${pluginName}" 包含可疑的代码模式`,
+        detail: `在 ${summary.scannedFiles} 个扫描文件中发现 ${summary.warn} 个警告：\n${details}`,
+        remediation: `请审查标记的代码以确保其行为是有意且安全的。`,
       });
     }
   }
@@ -1273,10 +1273,10 @@ export async function collectInstalledSkillsCodeSafetyFindings(params: {
         findings.push({
           checkId: "skills.code_safety.scan_failed",
           severity: "warn",
-          title: `Skill "${skillName}" code scan failed`,
-          detail: `Static code scan could not complete for ${skillDir}: ${String(err)}`,
+          title: `技能 "${skillName}" 代码扫描失败`,
+          detail: `静态代码扫描无法完成 ${skillDir}：${String(err)}`,
           remediation:
-            "Check file permissions and skill layout, then rerun `openclaw security audit --deep`.",
+            "请检查文件权限和技能布局，然后重新运行 `openclaw security audit --deep`。",
         });
         return null;
       });
@@ -1292,9 +1292,9 @@ export async function collectInstalledSkillsCodeSafetyFindings(params: {
         findings.push({
           checkId: "skills.code_safety",
           severity: "critical",
-          title: `Skill "${skillName}" contains dangerous code patterns`,
-          detail: `Found ${summary.critical} critical issue(s) in ${summary.scannedFiles} scanned file(s) under ${skillDir}:\n${details}`,
-          remediation: `Review the skill source code before use. If untrusted, remove "${skillDir}".`,
+          title: `技能 "${skillName}" 包含危险的代码模式`,
+          detail: `在 ${skillDir} 下的 ${summary.scannedFiles} 个扫描文件中发现 ${summary.critical} 个严重问题：\n${details}`,
+          remediation: `使用前请审查技能源代码。如果不受信，请移除 "${skillDir}"。`,
         });
       } else if (summary.warn > 0) {
         const warnFindings = summary.findings.filter((finding) => finding.severity === "warn");
@@ -1302,9 +1302,9 @@ export async function collectInstalledSkillsCodeSafetyFindings(params: {
         findings.push({
           checkId: "skills.code_safety",
           severity: "warn",
-          title: `Skill "${skillName}" contains suspicious code patterns`,
-          detail: `Found ${summary.warn} warning(s) in ${summary.scannedFiles} scanned file(s) under ${skillDir}:\n${details}`,
-          remediation: "Review flagged lines to ensure the behavior is intentional and safe.",
+          title: `技能 "${skillName}" 包含可疑的代码模式`,
+          detail: `在 ${skillDir} 下的 ${summary.scannedFiles} 个扫描文件中发现 ${summary.warn} 个警告：\n${details}`,
+          remediation: "请审查标记的代码行以确保其行为是有意且安全的。",
         });
       }
     }

@@ -224,16 +224,16 @@ async function collectFilesystemFindings(params: {
       findings.push({
         checkId: "fs.state_dir.symlink",
         severity: "warn",
-        title: "State dir is a symlink",
-        detail: `${params.stateDir} is a symlink; treat this as an extra trust boundary.`,
+        title: "状态目录是符号链接",
+        detail: `${params.stateDir} 是符号链接；请将其视为额外的信任边界。`,
       });
     }
     if (stateDirPerms.worldWritable) {
       findings.push({
         checkId: "fs.state_dir.perms_world_writable",
         severity: "critical",
-        title: "State dir is world-writable",
-        detail: `${formatPermissionDetail(params.stateDir, stateDirPerms)}; other users can write into your OpenClaw state.`,
+        title: "状态目录全局可写",
+        detail: `${formatPermissionDetail(params.stateDir, stateDirPerms)}；其他用户可以写入你的 OpenClaw 状态。`,
         remediation: formatPermissionRemediation({
           targetPath: params.stateDir,
           perms: stateDirPerms,
@@ -246,8 +246,8 @@ async function collectFilesystemFindings(params: {
       findings.push({
         checkId: "fs.state_dir.perms_group_writable",
         severity: "warn",
-        title: "State dir is group-writable",
-        detail: `${formatPermissionDetail(params.stateDir, stateDirPerms)}; group users can write into your OpenClaw state.`,
+        title: "状态目录组可写",
+        detail: `${formatPermissionDetail(params.stateDir, stateDirPerms)}；组用户可以写入你的 OpenClaw 状态。`,
         remediation: formatPermissionRemediation({
           targetPath: params.stateDir,
           perms: stateDirPerms,
@@ -260,8 +260,8 @@ async function collectFilesystemFindings(params: {
       findings.push({
         checkId: "fs.state_dir.perms_readable",
         severity: "warn",
-        title: "State dir is readable by others",
-        detail: `${formatPermissionDetail(params.stateDir, stateDirPerms)}; consider restricting to 700.`,
+        title: "状态目录可被他人读取",
+        detail: `${formatPermissionDetail(params.stateDir, stateDirPerms)}；建议限制为 700。`,
         remediation: formatPermissionRemediation({
           targetPath: params.stateDir,
           perms: stateDirPerms,
@@ -284,16 +284,16 @@ async function collectFilesystemFindings(params: {
       findings.push({
         checkId: "fs.config.symlink",
         severity: "warn",
-        title: "Config file is a symlink",
-        detail: `${params.configPath} is a symlink; make sure you trust its target.`,
+        title: "配置文件是符号链接",
+        detail: `${params.configPath} 是符号链接；请确保你信任其目标。`,
       });
     }
     if (configPerms.worldWritable || configPerms.groupWritable) {
       findings.push({
         checkId: "fs.config.perms_writable",
         severity: "critical",
-        title: "Config file is writable by others",
-        detail: `${formatPermissionDetail(params.configPath, configPerms)}; another user could change gateway/auth/tool policies.`,
+        title: "配置文件可被他人写入",
+        detail: `${formatPermissionDetail(params.configPath, configPerms)}；其他用户可能更改网关/认证/工具策略。`,
         remediation: formatPermissionRemediation({
           targetPath: params.configPath,
           perms: configPerms,
@@ -306,8 +306,8 @@ async function collectFilesystemFindings(params: {
       findings.push({
         checkId: "fs.config.perms_world_readable",
         severity: "critical",
-        title: "Config file is world-readable",
-        detail: `${formatPermissionDetail(params.configPath, configPerms)}; config can contain tokens and private settings.`,
+        title: "配置文件全局可读",
+        detail: `${formatPermissionDetail(params.configPath, configPerms)}；配置可能包含令牌和私有设置。`,
         remediation: formatPermissionRemediation({
           targetPath: params.configPath,
           perms: configPerms,
@@ -320,8 +320,8 @@ async function collectFilesystemFindings(params: {
       findings.push({
         checkId: "fs.config.perms_group_readable",
         severity: "warn",
-        title: "Config file is group-readable",
-        detail: `${formatPermissionDetail(params.configPath, configPerms)}; config can contain tokens and private settings.`,
+        title: "配置文件组可读",
+        detail: `${formatPermissionDetail(params.configPath, configPerms)}；配置可能包含令牌和私有设置。`,
         remediation: formatPermissionRemediation({
           targetPath: params.configPath,
           perms: configPerms,
@@ -416,22 +416,22 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.tools_invoke_http.dangerous_allow",
       severity: extraRisk ? "critical" : "warn",
-      title: "Gateway HTTP /tools/invoke re-enables dangerous tools",
+      title: "网关 HTTP /tools/invoke 重新启用了危险工具",
       detail:
-        `gateway.tools.allow includes ${reenabledOverHttp.join(", ")} which removes them from the default HTTP deny list. ` +
-        "This can allow remote session spawning / control-plane actions via HTTP and increases RCE blast radius if the gateway is reachable.",
+        `gateway.tools.allow 包含 ${reenabledOverHttp.join(", ")} ，这将它们从默认 HTTP 拒绝列表中移除。` +
+        "这可能允许通过 HTTP 进行远程会话生成/控制平面操作，并增加网关可达时的 RCE 爆炸半径。",
       remediation:
-        "Remove these entries from gateway.tools.allow (recommended). " +
-        "If you keep them enabled, keep gateway.bind loopback-only (or tailnet-only), restrict network exposure, and treat the gateway token/password as full-admin.",
+        "从 gateway.tools.allow 中移除这些条目（推荐）。" +
+        "如果保留启用，请保持 gateway.bind 为本地回环（或仅 tailnet），限制网络暴露，并将网关令牌/密码视为完全管理权限。",
     });
   }
   if (bind !== "loopback" && !hasSharedSecret && auth.mode !== "trusted-proxy") {
     findings.push({
       checkId: "gateway.bind_no_auth",
       severity: "critical",
-      title: "Gateway binds beyond loopback without auth",
-      detail: `gateway.bind="${bind}" but no gateway.auth token/password is configured.`,
-      remediation: `Set gateway.auth (token recommended) or bind to loopback.`,
+      title: "网关绑定超出本地回环但无认证",
+      detail: `gateway.bind="${bind}" 但未配置 gateway.auth 令牌/密码。`,
+      remediation: `设置 gateway.auth（推荐令牌）或绑定到本地回环。`,
     });
   }
 
@@ -439,13 +439,13 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.trusted_proxies_missing",
       severity: "warn",
-      title: "Reverse proxy headers are not trusted",
+      title: "反向代理头未被信任",
       detail:
-        "gateway.bind is loopback and gateway.trustedProxies is empty. " +
-        "If you expose the Control UI through a reverse proxy, configure trusted proxies " +
-        "so local-client checks cannot be spoofed.",
+        "gateway.bind 为本地回环且 gateway.trustedProxies 为空。" +
+        "如果通过反向代理暴露控制 UI，请配置受信任代理" +
+        "以防止本地客户端检查被伪造。",
       remediation:
-        "Set gateway.trustedProxies to your proxy IPs or keep the Control UI local-only.",
+        "将 gateway.trustedProxies 设置为你的代理 IP，或保持控制 UI 仅本地访问。",
     });
   }
 
@@ -453,11 +453,11 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.loopback_no_auth",
       severity: "critical",
-      title: "Gateway auth missing on loopback",
+      title: "本地回环网关缺少认证",
       detail:
-        "gateway.bind is loopback but no gateway auth secret is configured. " +
-        "If the Control UI is exposed through a reverse proxy, unauthenticated access is possible.",
-      remediation: "Set gateway.auth (token recommended) or keep the Control UI local-only.",
+        "gateway.bind 为本地回环但未配置网关认证密钥。" +
+        "如果控制 UI 通过反向代理暴露，可能存在未认证访问。",
+      remediation: "设置 gateway.auth（推荐令牌）或保持控制 UI 仅本地访问。",
     });
   }
   if (
@@ -469,13 +469,13 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.control_ui.allowed_origins_required",
       severity: "critical",
-      title: "Non-loopback Control UI missing explicit allowed origins",
+      title: "非本地回环控制 UI 缺少明确的允许源",
       detail:
-        "Control UI is enabled on a non-loopback bind but gateway.controlUi.allowedOrigins is empty. " +
-        "Strict origin policy requires explicit allowed origins for non-loopback deployments.",
+        "控制 UI 在非本地回环绑定上启用但 gateway.controlUi.allowedOrigins 为空。" +
+        "严格源策略要求非本地回环部署必须有明确的允许源。",
       remediation:
-        "Set gateway.controlUi.allowedOrigins to full trusted origins (for example https://control.example.com). " +
-        "If your deployment intentionally relies on Host-header origin fallback, set gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true.",
+        "将 gateway.controlUi.allowedOrigins 设置为完整的受信任源（例如 https://control.example.com）。" +
+        "如果你的部署有意依赖 Host 头源回退，请设置 gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true。",
     });
   }
   if (controlUiAllowedOrigins.includes("*")) {
@@ -483,11 +483,11 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.control_ui.allowed_origins_wildcard",
       severity: exposed ? "critical" : "warn",
-      title: "Control UI allowed origins contains wildcard",
+      title: "控制 UI 允许源包含通配符",
       detail:
-        'gateway.controlUi.allowedOrigins includes "*" which effectively disables origin allowlisting for Control UI/WebChat requests.',
+        'gateway.controlUi.allowedOrigins 包含 "*"，这实际上禁用了控制 UI/WebChat 请求的源允许列表。',
       remediation:
-        "Replace wildcard origins with explicit trusted origins (for example https://control.example.com).",
+        "用明确的受信任源替换通配符源（例如 https://control.example.com）。",
     });
   }
   if (dangerouslyAllowHostHeaderOriginFallback) {
@@ -495,12 +495,12 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.control_ui.host_header_origin_fallback",
       severity: exposed ? "critical" : "warn",
-      title: "DANGEROUS: Host-header origin fallback enabled",
+      title: "危险：Host 头源回退已启用",
       detail:
-        "gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true enables Host-header origin fallback " +
-        "for Control UI/WebChat websocket checks and weakens DNS rebinding protections.",
+        "gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true 启用了 Host 头源回退" +
+        "，削弱了控制 UI/WebChat WebSocket 检查的 DNS 重绑定保护。",
       remediation:
-        "Disable gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback and configure explicit gateway.controlUi.allowedOrigins.",
+        "禁用 gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback 并配置明确的 gateway.controlUi.allowedOrigins。",
     });
   }
 
@@ -513,13 +513,13 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.real_ip_fallback_enabled",
       severity: exposed ? "critical" : "warn",
-      title: "X-Real-IP fallback is enabled",
+      title: "X-Real-IP 回退已启用",
       detail:
-        "gateway.allowRealIpFallback=true trusts X-Real-IP when trusted proxies omit X-Forwarded-For. " +
-        "Misconfigured proxies that forward client-supplied X-Real-IP can spoof source IP and local-client checks.",
+        "gateway.allowRealIpFallback=true 在受信任代理省略 X-Forwarded-For 时信任 X-Real-IP。" +
+        "配置错误的代理转发客户端提供的 X-Real-IP 可能伪造源 IP 和本地客户端检查。",
       remediation:
-        "Keep gateway.allowRealIpFallback=false (default). Only enable this when your trusted proxy " +
-        "always overwrites X-Real-IP and cannot provide X-Forwarded-For.",
+        "保持 gateway.allowRealIpFallback=false（默认）。仅在你的受信任代理" +
+        "始终覆写 X-Real-IP 且无法提供 X-Forwarded-For 时启用。",
     });
   }
 
@@ -528,12 +528,12 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "discovery.mdns_full_mode",
       severity: exposed ? "critical" : "warn",
-      title: "mDNS full mode can leak host metadata",
+      title: "mDNS 完整模式可能泄露主机元数据",
       detail:
-        'discovery.mdns.mode="full" publishes cliPath/sshPort in local-network TXT records. ' +
-        "This can reveal usernames, filesystem layout, and management ports.",
+        'discovery.mdns.mode="full" 在局域网 TXT 记录中发布 cliPath/sshPort。' +
+        "这可能暴露用户名、文件系统布局和管理端口。",
       remediation:
-        'Prefer discovery.mdns.mode="minimal" (recommended) or "off", especially when gateway.bind is not loopback.',
+        '优先使用 discovery.mdns.mode="minimal"（推荐）或 "off"，特别是当 gateway.bind 不是本地回环时。',
     });
   }
 
@@ -541,16 +541,16 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.tailscale_funnel",
       severity: "critical",
-      title: "Tailscale Funnel exposure enabled",
-      detail: `gateway.tailscale.mode="funnel" exposes the Gateway publicly; keep auth strict and treat it as internet-facing.`,
-      remediation: `Prefer tailscale.mode="serve" (tailnet-only) or set tailscale.mode="off".`,
+      title: "Tailscale Funnel 暴露已启用",
+      detail: `gateway.tailscale.mode="funnel" 将网关公开暴露；请保持严格认证并视为面向互联网。`,
+      remediation: `优先使用 tailscale.mode="serve"（仅 tailnet）或设置 tailscale.mode="off"。`,
     });
   } else if (tailscaleMode === "serve") {
     findings.push({
       checkId: "gateway.tailscale_serve",
       severity: "info",
-      title: "Tailscale Serve exposure enabled",
-      detail: `gateway.tailscale.mode="serve" exposes the Gateway to your tailnet (loopback behind Tailscale).`,
+      title: "Tailscale Serve 暴露已启用",
+      detail: `gateway.tailscale.mode="serve" 将网关暴露到你的 tailnet（Tailscale 后的本地回环）。`,
     });
   }
 
@@ -558,10 +558,10 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.control_ui.insecure_auth",
       severity: "warn",
-      title: "Control UI insecure auth toggle enabled",
+      title: "控制 UI 不安全认证开关已启用",
       detail:
-        "gateway.controlUi.allowInsecureAuth=true does not bypass secure context or device identity checks; only dangerouslyDisableDeviceAuth disables Control UI device identity checks.",
-      remediation: "Disable it or switch to HTTPS (Tailscale Serve) or localhost.",
+        "gateway.controlUi.allowInsecureAuth=true 不会绕过安全上下文或设备身份检查；只有 dangerouslyDisableDeviceAuth 才会禁用控制 UI 设备身份检查。",
+      remediation: "禁用它或切换到 HTTPS（Tailscale Serve）或 localhost。",
     });
   }
 
@@ -569,10 +569,10 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.control_ui.device_auth_disabled",
       severity: "critical",
-      title: "DANGEROUS: Control UI device auth disabled",
+      title: "危险：控制 UI 设备认证已禁用",
       detail:
-        "gateway.controlUi.dangerouslyDisableDeviceAuth=true disables device identity checks for the Control UI.",
-      remediation: "Disable it unless you are in a short-lived break-glass scenario.",
+        "gateway.controlUi.dangerouslyDisableDeviceAuth=true 禁用了控制 UI 的设备身份检查。",
+      remediation: "禁用它，除非你处于短期紧急处理场景。",
     });
   }
 
@@ -580,11 +580,11 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "channels.feishu.doc_owner_open_id",
       severity: "warn",
-      title: "Feishu doc create can grant requester permissions",
+      title: "飞书文档创建可能授予请求者权限",
       detail:
-        'channels.feishu tools include "doc"; feishu_doc action "create" can grant document access to the trusted requesting Feishu user.',
+        'channels.feishu 工具包含 "doc"；feishu_doc 操作 "create" 可以向受信任的请求飞书用户授予文档访问权限。',
       remediation:
-        "Disable channels.feishu.tools.doc when not needed, and restrict tool access for untrusted prompts.",
+        "不需要时禁用 channels.feishu.tools.doc，并限制不受信任提示的工具访问。",
     });
   }
 
@@ -593,10 +593,10 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "config.insecure_or_dangerous_flags",
       severity: "warn",
-      title: "Insecure or dangerous config flags enabled",
-      detail: `Detected ${enabledDangerousFlags.length} enabled flag(s): ${enabledDangerousFlags.join(", ")}.`,
+      title: "已启用不安全或危险的配置标志",
+      detail: `检测到 ${enabledDangerousFlags.length} 个已启用的标志：${enabledDangerousFlags.join(", ")}。`,
       remediation:
-        "Disable these flags when not actively debugging, or keep deployment scoped to trusted/local-only networks.",
+        "在未进行调试时禁用这些标志，或将部署范围限制为受信任/仅本地网络。",
     });
   }
 
@@ -606,8 +606,8 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.token_too_short",
       severity: "warn",
-      title: "Gateway token looks short",
-      detail: `gateway auth token is ${token.length} chars; prefer a long random token.`,
+      title: "网关令牌看起来过短",
+      detail: `网关认证令牌为 ${token.length} 个字符；建议使用较长的随机令牌。`,
     });
   }
 
@@ -618,27 +618,27 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.trusted_proxy_auth",
       severity: "critical",
-      title: "Trusted-proxy auth mode enabled",
+      title: "受信任代理认证模式已启用",
       detail:
-        'gateway.auth.mode="trusted-proxy" delegates authentication to a reverse proxy. ' +
-        "Ensure your proxy (Pomerium, Caddy, nginx) handles auth correctly and that gateway.trustedProxies " +
-        "only contains IPs of your actual proxy servers.",
+        'gateway.auth.mode="trusted-proxy" 将认证委托给反向代理。' +
+        "确保你的代理（Pomerium、Caddy、nginx）正确处理认证，且 gateway.trustedProxies " +
+        "仅包含实际代理服务器的 IP。",
       remediation:
-        "Verify: (1) Your proxy terminates TLS and authenticates users. " +
-        "(2) gateway.trustedProxies is restricted to proxy IPs only. " +
-        "(3) Direct access to the Gateway port is blocked by firewall. " +
-        "See /gateway/trusted-proxy-auth for setup guidance.",
+        "验证：(1) 你的代理终止 TLS 并认证用户。" +
+        "(2) gateway.trustedProxies 仅限代理 IP。" +
+        "(3) 防火墙阻止对网关端口的直接访问。" +
+        "参见 /gateway/trusted-proxy-auth 获取设置指南。",
     });
 
     if (trustedProxies.length === 0) {
       findings.push({
         checkId: "gateway.trusted_proxy_no_proxies",
         severity: "critical",
-        title: "Trusted-proxy auth enabled but no trusted proxies configured",
+        title: "受信任代理认证已启用但未配置受信任代理",
         detail:
-          'gateway.auth.mode="trusted-proxy" but gateway.trustedProxies is empty. ' +
-          "All requests will be rejected.",
-        remediation: "Set gateway.trustedProxies to the IP(s) of your reverse proxy.",
+          'gateway.auth.mode="trusted-proxy" 但 gateway.trustedProxies 为空。' +
+          "所有请求将被拒绝。",
+        remediation: "将 gateway.trustedProxies 设置为你的反向代理 IP。",
       });
     }
 
@@ -646,12 +646,12 @@ function collectGatewayConfigFindings(
       findings.push({
         checkId: "gateway.trusted_proxy_no_user_header",
         severity: "critical",
-        title: "Trusted-proxy auth missing userHeader config",
+        title: "受信任代理认证缺少 userHeader 配置",
         detail:
-          'gateway.auth.mode="trusted-proxy" but gateway.auth.trustedProxy.userHeader is not configured.',
+          'gateway.auth.mode="trusted-proxy" 但未配置 gateway.auth.trustedProxy.userHeader。',
         remediation:
-          "Set gateway.auth.trustedProxy.userHeader to the header name your proxy uses " +
-          '(e.g., "x-forwarded-user", "x-pomerium-claim-email").',
+          "将 gateway.auth.trustedProxy.userHeader 设置为你的代理使用的头名称" +
+          '（例如 "x-forwarded-user"、"x-pomerium-claim-email"）。',
       });
     }
 
@@ -660,12 +660,12 @@ function collectGatewayConfigFindings(
       findings.push({
         checkId: "gateway.trusted_proxy_no_allowlist",
         severity: "warn",
-        title: "Trusted-proxy auth allows all authenticated users",
+        title: "受信任代理认证允许所有已认证用户",
         detail:
-          "gateway.auth.trustedProxy.allowUsers is empty, so any user authenticated by your proxy can access the Gateway.",
+          "gateway.auth.trustedProxy.allowUsers 为空，因此你的代理认证的任何用户都可以访问网关。",
         remediation:
-          "Consider setting gateway.auth.trustedProxy.allowUsers to restrict access to specific users " +
-          '(e.g., ["nick@example.com"]).',
+          "考虑设置 gateway.auth.trustedProxy.allowUsers 以限制特定用户的访问" +
+          '（例如 ["nick@example.com"]）。',
       });
     }
   }
@@ -674,12 +674,12 @@ function collectGatewayConfigFindings(
     findings.push({
       checkId: "gateway.auth_no_rate_limit",
       severity: "warn",
-      title: "No auth rate limiting configured",
+      title: "未配置认证速率限制",
       detail:
-        "gateway.bind is not loopback but no gateway.auth.rateLimit is configured. " +
-        "Without rate limiting, brute-force auth attacks are not mitigated.",
+        "gateway.bind 不是本地回环但未配置 gateway.auth.rateLimit。" +
+        "没有速率限制，暴力认证攻击无法被缓解。",
       remediation:
-        "Set gateway.auth.rateLimit (e.g. { maxAttempts: 10, windowMs: 60000, lockoutMs: 300000 }).",
+        "设置 gateway.auth.rateLimit（例如 { maxAttempts: 10, windowMs: 60000, lockoutMs: 300000 }）。",
     });
   }
 
@@ -728,7 +728,7 @@ function collectBrowserControlFindings(
     findings.push({
       checkId: "browser.control_invalid_config",
       severity: "warn",
-      title: "Browser control config looks invalid",
+      title: "浏览器控制配置看起来无效",
       detail: String(err),
       remediation: `Fix browser.cdpUrl in ${resolveConfigPath()} and re-run "${formatCliCommand("openclaw security audit --deep")}".`,
     });
@@ -762,12 +762,12 @@ function collectBrowserControlFindings(
     findings.push({
       checkId: "browser.control_no_auth",
       severity: "critical",
-      title: "Browser control has no auth",
+      title: "浏览器控制无认证",
       detail:
-        "Browser control HTTP routes are enabled but no gateway.auth token/password is configured. " +
-        "Any local process (or SSRF to loopback) can call browser control endpoints.",
+        "浏览器控制 HTTP 路由已启用但未配置 gateway.auth 令牌/密码。" +
+        "任何本地进程（或 SSRF 到本地回环）都可以调用浏览器控制端点。",
       remediation:
-        "Set gateway.auth.token (recommended) or gateway.auth.password so browser control HTTP routes require authentication. Restarting the gateway will auto-generate gateway.auth.token when browser control is enabled.",
+        "设置 gateway.auth.token（推荐）或 gateway.auth.password 以使浏览器控制 HTTP 路由需要认证。启用浏览器控制时重启网关将自动生成 gateway.auth.token。",
     });
   }
 
@@ -786,9 +786,9 @@ function collectBrowserControlFindings(
       findings.push({
         checkId: "browser.remote_cdp_http",
         severity: "warn",
-        title: "Remote CDP uses HTTP",
-        detail: `browser profile "${name}" uses http CDP (${profile.cdpUrl}); this is OK only if it's tailnet-only or behind an encrypted tunnel.`,
-        remediation: `Prefer HTTPS/TLS or a tailnet-only endpoint for remote CDP.`,
+        title: "远程 CDP 使用 HTTP",
+        detail: `浏览器配置文件 "${name}" 使用 http CDP（${profile.cdpUrl}）；仅在 tailnet 内或加密隧道后才可接受。`,
+        remediation: `优先使用 HTTPS/TLS 或仅 tailnet 端点作为远程 CDP。`,
       });
     }
   }
@@ -805,9 +805,9 @@ function collectLoggingFindings(cfg: OpenClawConfig): SecurityAuditFinding[] {
     {
       checkId: "logging.redact_off",
       severity: "warn",
-      title: "Tool summary redaction is disabled",
-      detail: `logging.redactSensitive="off" can leak secrets into logs and status output.`,
-      remediation: `Set logging.redactSensitive="tools".`,
+      title: "工具摘要编辑已禁用",
+      detail: `logging.redactSensitive="off" 可能将密钥泄露到日志和状态输出中。`,
+      remediation: `设置 logging.redactSensitive="tools"。`,
     },
   ];
 }
@@ -831,15 +831,15 @@ function collectElevatedFindings(cfg: OpenClawConfig): SecurityAuditFinding[] {
       findings.push({
         checkId: `tools.elevated.allowFrom.${provider}.wildcard`,
         severity: "critical",
-        title: "Elevated exec allowlist contains wildcard",
-        detail: `tools.elevated.allowFrom.${provider} includes "*" which effectively approves everyone on that channel for elevated mode.`,
+        title: "提权执行允许列表包含通配符",
+        detail: `tools.elevated.allowFrom.${provider} 包含 "*"，这实际上批准了该频道上所有人的提权模式。`,
       });
     } else if (normalized.length > 25) {
       findings.push({
         checkId: `tools.elevated.allowFrom.${provider}.large`,
         severity: "warn",
-        title: "Elevated exec allowlist is large",
-        detail: `tools.elevated.allowFrom.${provider} has ${normalized.length} entries; consider tightening elevated access.`,
+        title: "提权执行允许列表过大",
+        detail: `tools.elevated.allowFrom.${provider} 有 ${normalized.length} 个条目；建议收紧提权访问。`,
       });
     }
   }
@@ -857,12 +857,12 @@ function collectExecRuntimeFindings(cfg: OpenClawConfig): SecurityAuditFinding[]
     findings.push({
       checkId: "tools.exec.host_sandbox_no_sandbox_defaults",
       severity: "warn",
-      title: "Exec host is sandbox but sandbox mode is off",
+      title: "执行主机为沙箱但沙箱模式已关闭",
       detail:
-        "tools.exec.host is explicitly set to sandbox while agents.defaults.sandbox.mode=off. " +
-        "In this mode, exec runs directly on the gateway host.",
+        "tools.exec.host 显式设置为 sandbox 但 agents.defaults.sandbox.mode=off。" +
+        "在此模式下，执行直接在网关主机上运行。",
       remediation:
-        'Enable sandbox mode (`agents.defaults.sandbox.mode="non-main"` or `"all"`) or set tools.exec.host to "gateway" with approvals.',
+        '启用沙箱模式（`agents.defaults.sandbox.mode="non-main"` 或 `"all"`）或设置 tools.exec.host 为 "gateway" 并启用审批。',
     });
   }
 
@@ -883,12 +883,12 @@ function collectExecRuntimeFindings(cfg: OpenClawConfig): SecurityAuditFinding[]
     findings.push({
       checkId: "tools.exec.host_sandbox_no_sandbox_agents",
       severity: "warn",
-      title: "Agent exec host uses sandbox while sandbox mode is off",
+      title: "代理执行主机使用沙箱但沙箱模式已关闭",
       detail:
-        `agents.list.*.tools.exec.host is set to sandbox for: ${riskyAgents.join(", ")}. ` +
-        "With sandbox mode off, exec runs directly on the gateway host.",
+        `agents.list.*.tools.exec.host 对以下代理设置为 sandbox：${riskyAgents.join(", ")}。` +
+        "沙箱模式关闭时，执行直接在网关主机上运行。",
       remediation:
-        'Enable sandbox mode for these agents (`agents.list[].sandbox.mode`) or set their tools.exec.host to "gateway".',
+        '为这些代理启用沙箱模式（`agents.list[].sandbox.mode`）或设置它们的 tools.exec.host 为 "gateway"。',
     });
   }
 
@@ -1011,12 +1011,12 @@ function collectExecRuntimeFindings(cfg: OpenClawConfig): SecurityAuditFinding[]
     findings.push({
       checkId: "tools.exec.safe_bins_interpreter_unprofiled",
       severity: "warn",
-      title: "safeBins includes interpreter/runtime binaries without explicit profiles",
+      title: "safeBins 包含无显式配置文件的解释器/运行时二进制",
       detail:
-        `Detected interpreter-like safeBins entries missing explicit profiles:\n${interpreterHits.join("\n")}\n` +
-        "These entries can turn safeBins into a broad execution surface when used with permissive argv profiles.",
+        `检测到缺少显式配置文件的解释器类 safeBins 条目：\n${interpreterHits.join("\n")}\n` +
+        "这些条目在与宽松的 argv 配置文件一起使用时可能将 safeBins 变成广泛的执行面。",
       remediation:
-        "Remove interpreter/runtime bins from safeBins (prefer allowlist entries) or define hardened tools.exec.safeBinProfiles.<bin> rules.",
+        "从 safeBins 中移除解释器/运行时二进制（优先使用允许列表条目）或定义加固的 tools.exec.safeBinProfiles.<bin> 规则。",
     });
   }
 
@@ -1024,14 +1024,14 @@ function collectExecRuntimeFindings(cfg: OpenClawConfig): SecurityAuditFinding[]
     findings.push({
       checkId: "tools.exec.safe_bin_trusted_dirs_risky",
       severity: "warn",
-      title: "safeBinTrustedDirs includes risky mutable directories",
+      title: "safeBinTrustedDirs 包含有风险的可变目录",
       detail:
-        `Detected risky safeBinTrustedDirs entries:\n${riskyTrustedDirHits.slice(0, 10).join("\n")}` +
+        `检测到有风险的 safeBinTrustedDirs 条目：\n${riskyTrustedDirHits.slice(0, 10).join("\n")}` +
         (riskyTrustedDirHits.length > 10
-          ? `\n- +${riskyTrustedDirHits.length - 10} more entries.`
+          ? `\n- +${riskyTrustedDirHits.length - 10} 个更多条目。`
           : ""),
       remediation:
-        "Prefer root-owned immutable bins, keep default trust dirs (/bin, /usr/bin), and avoid trusting temporary/home/package-manager paths unless tightly controlled.",
+        "优先使用 root 拥有的不可变二进制，保持默认信任目录（/bin、/usr/bin），避免信任临时/主目录/包管理器路径，除非严格控制。",
     });
   }
 
@@ -1233,8 +1233,8 @@ export async function runSecurityAudit(opts: SecurityAuditOptions): Promise<Secu
     findings.push({
       checkId: "gateway.probe_failed",
       severity: "warn",
-      title: "Gateway probe failed (deep)",
-      detail: deep.gateway.error ?? "gateway unreachable",
+      title: "网关探测失败（深度）",
+      detail: deep.gateway.error ?? "网关不可达",
       remediation: `Run "${formatCliCommand("openclaw status --all")}" to debug connectivity/auth, then re-run "${formatCliCommand("openclaw security audit --deep")}".`,
     });
   }
@@ -1242,7 +1242,7 @@ export async function runSecurityAudit(opts: SecurityAuditOptions): Promise<Secu
     findings.push({
       checkId: "gateway.probe_auth_secretref_unavailable",
       severity: "warn",
-      title: "Gateway probe auth SecretRef is unavailable",
+      title: "网关探测认证 SecretRef 不可用",
       detail: deepProbeResult.authWarning,
       remediation: `Set OPENCLAW_GATEWAY_TOKEN/OPENCLAW_GATEWAY_PASSWORD in this shell or resolve the external secret provider, then re-run "${formatCliCommand("openclaw security audit --deep")}".`,
     });
