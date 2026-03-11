@@ -125,7 +125,7 @@ function createGatewaySubagentRuntime(): PluginRuntime["subagent"] {
       });
       const runId = payload?.runId;
       if (typeof runId !== "string" || !runId) {
-        throw new Error("Gateway agent method returned an invalid runId.");
+        throw new Error("网关代理方法返回了无效的 runId。");
       }
       return { runId };
     },

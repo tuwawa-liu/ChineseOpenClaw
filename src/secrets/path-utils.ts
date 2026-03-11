@@ -30,7 +30,7 @@ function traverseToLeafParent(params: {
   requireExistingSegment: boolean;
 }): unknown {
   if (params.segments.length === 0) {
-    throw new Error("Target path is empty.");
+    throw new Error("目标路径为空。");
   }
 
   let cursor: unknown = params.root;
@@ -94,7 +94,7 @@ export function setPathCreateStrict(
   value: unknown,
 ): boolean {
   if (segments.length === 0) {
-    throw new Error("Target path is empty.");
+    throw new Error("目标路径为空。");
   }
   let cursor: unknown = root;
   let changed = false;

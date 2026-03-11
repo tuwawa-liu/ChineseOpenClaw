@@ -266,7 +266,7 @@ export async function resolveMedia(
     return null;
   }
   if (!file.file_path) {
-    throw new Error("Telegram getFile returned no file_path");
+    throw new Error("Telegram getFile 未返回 file_path");
   }
   const saved = await downloadAndSaveTelegramFile({
     filePath: file.file_path,

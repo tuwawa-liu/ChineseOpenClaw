@@ -33,7 +33,7 @@ function resolveRunAgentId(params: {
   const rawSessionKey = params.sessionKey?.trim() ?? "";
   const shape = classifySessionKeyShape(rawSessionKey);
   if (shape === "malformed_agent") {
-    throw new Error("Malformed agent session key; refusing workspace resolution.");
+    throw new Error("代理会话密钥格式错误；拒绝工作区解析。");
   }
 
   const explicit =

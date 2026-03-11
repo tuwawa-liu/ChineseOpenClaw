@@ -95,7 +95,7 @@ export const signalMessageActions: ChannelMessageActionAdapter = {
 
   handleAction: async ({ action, params, cfg, accountId, toolContext }) => {
     if (action === "send") {
-      throw new Error("Send should be handled by outbound, not actions handler.");
+      throw new Error("发送应由出站处理，而非 actions 处理程序。");
     }
 
     if (action === "react") {
@@ -115,7 +115,7 @@ export const signalMessageActions: ChannelMessageActionAdapter = {
       const actionConfig = resolveSignalAccount({ cfg, accountId }).config.actions;
       const isActionEnabled = createActionGate(actionConfig);
       if (!isActionEnabled("reactions")) {
-        throw new Error("Signal reactions are disabled via actions.reactions.");
+        throw new Error("Signal 表情反应已通过 actions.reactions 禁用。");
       }
 
       const recipientRaw =
@@ -152,7 +152,7 @@ export const signalMessageActions: ChannelMessageActionAdapter = {
 
       if (remove) {
         if (!emoji) {
-          throw new Error("Emoji required to remove reaction.");
+          throw new Error("移除表情反应需要指定表情。");
         }
         return await mutateSignalReaction({
           cfg,
@@ -167,7 +167,7 @@ export const signalMessageActions: ChannelMessageActionAdapter = {
       }
 
       if (!emoji) {
-        throw new Error("Emoji required to add reaction.");
+        throw new Error("添加表情反应需要指定表情。");
       }
       return await mutateSignalReaction({
         cfg,

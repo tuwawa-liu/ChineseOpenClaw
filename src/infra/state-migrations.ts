@@ -541,26 +541,26 @@ export async function autoMigrateLegacyStateDir(params: {
       return { migrated: false, skipped: false, changes, warnings };
     }
     warnings.push(
-      `State dir migration skipped: target already exists (${targetDir}). Remove or merge manually.`,
+      `状态目录迁移已跳过：目标已存在（${targetDir}）。请手动删除或合并。`,
     );
     return { migrated: false, skipped: false, changes, warnings };
   }
 
   try {
     if (!legacyDir) {
-      throw new Error("Legacy state dir not found");
+      throw new Error("未找到旧版状态目录");
     }
     fs.renameSync(legacyDir, targetDir);
   } catch (err) {
     warnings.push(
-      `Failed to move legacy state dir (${legacyDir ?? "unknown"} → ${targetDir}): ${String(err)}`,
+      `移动旧版状态目录失败（${legacyDir ?? "未知"} → ${targetDir}）：${String(err)}`,
     );
     return { migrated: false, skipped: false, changes, warnings };
   }
 
   try {
     if (!legacyDir) {
-      throw new Error("Legacy state dir not found");
+      throw new Error("未找到旧版状态目录");
     }
     fs.symlinkSync(targetDir, legacyDir, "dir");
     changes.push(formatStateDirMigration(legacyDir, targetDir));
@@ -568,7 +568,7 @@ export async function autoMigrateLegacyStateDir(params: {
     try {
       if (process.platform === "win32") {
         if (!legacyDir) {
-          throw new Error("Legacy state dir not found", { cause: err });
+          throw new Error("未找到旧版状态目录", { cause: err });
         }
         fs.symlinkSync(targetDir, legacyDir, "junction");
         changes.push(formatStateDirMigration(legacyDir, targetDir));
@@ -579,19 +579,19 @@ export async function autoMigrateLegacyStateDir(params: {
       try {
         if (!legacyDir) {
           // oxlint-disable-next-line preserve-caught-error
-          throw new Error("Legacy state dir not found", { cause: fallbackErr });
+          throw new Error("未找到旧版状态目录", { cause: fallbackErr });
         }
         fs.renameSync(targetDir, legacyDir);
         warnings.push(
-          `State dir migration rolled back (failed to link legacy path): ${String(fallbackErr)}`,
+          `状态目录迁移已回滚（无法链接旧版路径）：${String(fallbackErr)}`,
         );
         return { migrated: false, skipped: false, changes: [], warnings };
       } catch (rollbackErr) {
         warnings.push(
-          `State dir moved but failed to link legacy path (${legacyDir ?? "unknown"} → ${targetDir}): ${String(fallbackErr)}`,
+          `状态目录已移动但无法链接旧版路径（${legacyDir ?? "未知"} → ${targetDir}）：${String(fallbackErr)}`,
         );
         warnings.push(
-          `Rollback failed; set OPENCLAW_STATE_DIR=${targetDir} to avoid split state: ${String(rollbackErr)}`,
+          `回滚失败；请设置 OPENCLAW_STATE_DIR=${targetDir} 以避免状态分裂：${String(rollbackErr)}`,
         );
         changes.push(`State dir: ${legacyDir ?? "unknown"} → ${targetDir}`);
       }

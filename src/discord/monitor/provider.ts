@@ -406,7 +406,7 @@ export async function monitorDiscordProvider(opts: MonitorDiscordOpts = {}) {
 
   const applicationId = await fetchDiscordApplicationId(token, 4000, discordRestFetch);
   if (!applicationId) {
-    throw new Error("Failed to resolve Discord application id");
+    throw new Error("解析 Discord 应用 ID 失败");
   }
 
   const maxDiscordCommands = 100;

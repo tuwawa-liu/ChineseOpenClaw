@@ -843,7 +843,7 @@ export async function resolveSecretRefValues(
   for (const ref of refs) {
     const id = ref.id.trim();
     if (!id) {
-      throw new Error("Secret reference id is empty.");
+      throw new Error("密钥引用 ID 为空。");
     }
     if (ref.source === "exec" && !isValidExecSecretRefId(id)) {
       throw new Error(

@@ -52,7 +52,7 @@ export function renderGatewayServiceCleanupHints(
 function resolveHomeDir(env: Record<string, string | undefined>): string {
   const home = env.HOME?.trim() || env.USERPROFILE?.trim();
   if (!home) {
-    throw new Error("Missing HOME");
+    throw new Error("缺少 HOME 环境变量");
   }
   return home;
 }

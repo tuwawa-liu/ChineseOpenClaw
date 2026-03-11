@@ -17,7 +17,7 @@ export async function uploadEmojiDiscord(payload: DiscordEmojiUpload, opts: Disc
     !contentType ||
     !["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(contentType)
   ) {
-    throw new Error("Discord emoji uploads require a PNG, JPG, or GIF image");
+    throw new Error("Discord 表情上传需要 PNG、JPG 或 GIF 图片");
   }
   const image = `data:${contentType};base64,${media.buffer.toString("base64")}`;
   const roleIds = (payload.roleIds ?? []).map((id) => id.trim()).filter(Boolean);
@@ -38,7 +38,7 @@ export async function uploadStickerDiscord(
   const media = await loadWebMediaRaw(payload.mediaUrl, DISCORD_MAX_STICKER_BYTES);
   const contentType = media.contentType?.toLowerCase();
   if (!contentType || !["image/png", "image/apng", "application/json"].includes(contentType)) {
-    throw new Error("Discord sticker uploads require a PNG, APNG, or Lottie JSON file");
+    throw new Error("Discord 贴纸上传需要 PNG、APNG 或 Lottie JSON 文件");
   }
   return await rest.post(Routes.guildStickers(payload.guildId), {
     body: {

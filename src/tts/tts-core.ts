@@ -501,7 +501,7 @@ export async function summarizeText(params: {
         .trim();
 
       if (!summary) {
-        throw new Error("No summary returned");
+        throw new Error("未返回摘要");
       }
 
       return {
@@ -516,7 +516,7 @@ export async function summarizeText(params: {
   } catch (err) {
     const error = err as Error;
     if (error.name === "AbortError") {
-      throw new Error("Summarization timed out", { cause: err });
+      throw new Error("摘要生成超时", { cause: err });
     }
     throw err;
   }
@@ -563,7 +563,7 @@ export async function elevenLabsTTS(params: {
     timeoutMs,
   } = params;
   if (!isValidVoiceId(voiceId)) {
-    throw new Error("Invalid voiceId format");
+    throw new Error("无效的 voiceId 格式");
   }
   assertElevenLabsVoiceSettings(voiceSettings);
   const normalizedLanguage = normalizeLanguageCode(languageCode);

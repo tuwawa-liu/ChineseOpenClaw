@@ -8,7 +8,7 @@ export async function ensureBinary(
 ): Promise<void> {
   // Abort early if a required CLI tool is missing.
   await exec("which", [name]).catch(() => {
-    runtime.error(`Missing required binary: ${name}. Please install it.`);
+    runtime.error(`缺少必需的二进制文件：${name}。请安装它。`);
     runtime.exit(1);
   });
 }

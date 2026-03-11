@@ -32,7 +32,7 @@ type DeviceTokenResponse =
 
 function parseJsonResponse<T>(value: unknown): T {
   if (!value || typeof value !== "object") {
-    throw new Error("Unexpected response from GitHub");
+    throw new Error("GitHub 返回意外响应");
   }
   return value as T;
 }
@@ -58,7 +58,7 @@ async function requestDeviceCode(params: { scope: string }): Promise<DeviceCodeR
 
   const json = parseJsonResponse<DeviceCodeResponse>(await res.json());
   if (!json.device_code || !json.user_code || !json.verification_uri) {
-    throw new Error("GitHub device code response missing fields");
+    throw new Error("GitHub 设备代码响应缺少字段");
   }
   return json;
 }
@@ -103,15 +103,15 @@ async function pollForAccessToken(params: {
       continue;
     }
     if (err === "expired_token") {
-      throw new Error("GitHub device code expired; run login again");
+      throw new Error("GitHub 设备代码已过期；请重新运行登录");
     }
     if (err === "access_denied") {
-      throw new Error("GitHub login cancelled");
+      throw new Error("GitHub 登录已取消");
     }
-    throw new Error(`GitHub device flow error: ${err}`);
+    throw new Error(`GitHub 设备流错误：${err}`);
   }
 
-  throw new Error("GitHub device code expired; run login again");
+  throw new Error("GitHub 设备代码已过期；请重新运行登录");
 }
 
 export async function githubCopilotLoginCommand(

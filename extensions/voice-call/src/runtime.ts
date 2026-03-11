@@ -149,7 +149,7 @@ export async function createVoiceCallRuntime(params: {
   const config = resolveVoiceCallConfig(rawConfig);
 
   if (!config.enabled) {
-    throw new Error("Voice call disabled. Enable the plugin entry in config.");
+    throw new Error("语音通话已禁用。请在配置中启用插件。");
   }
 
   if (config.skipSignatureVerification) {

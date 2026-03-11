@@ -225,7 +225,7 @@ async function downloadToFile(
               sniffLen += chunk.length;
             }
             if (total > MAX_BYTES) {
-              req.destroy(new Error("Media exceeds 5MB limit"));
+              req.destroy(new Error("媒体超出 5MB 限制"));
             }
           });
           pipeline(res, out)
@@ -275,26 +275,26 @@ export class SaveMediaSourceError extends Error {
 function toSaveMediaSourceError(err: SafeOpenError): SaveMediaSourceError {
   switch (err.code) {
     case "symlink":
-      return new SaveMediaSourceError("invalid-path", "Media path must not be a symlink", {
+      return new SaveMediaSourceError("invalid-path", "媒体路径不能是符号链接", {
         cause: err,
       });
     case "not-file":
-      return new SaveMediaSourceError("not-file", "Media path is not a file", { cause: err });
+      return new SaveMediaSourceError("not-file", "媒体路径不是文件", { cause: err });
     case "path-mismatch":
-      return new SaveMediaSourceError("path-mismatch", "Media path changed during read", {
+      return new SaveMediaSourceError("path-mismatch", "媒体路径在读取期间发生变化", {
         cause: err,
       });
     case "too-large":
-      return new SaveMediaSourceError("too-large", "Media exceeds 5MB limit", { cause: err });
+      return new SaveMediaSourceError("too-large", "媒体超出 5MB 限制", { cause: err });
     case "not-found":
-      return new SaveMediaSourceError("not-found", "Media path does not exist", { cause: err });
+      return new SaveMediaSourceError("not-found", "媒体路径不存在", { cause: err });
     case "outside-workspace":
-      return new SaveMediaSourceError("invalid-path", "Media path is outside workspace root", {
+      return new SaveMediaSourceError("invalid-path", "媒体路径在工作区根目录之外", {
         cause: err,
       });
     case "invalid-path":
     default:
-      return new SaveMediaSourceError("invalid-path", "Media path is not safe to read", {
+      return new SaveMediaSourceError("invalid-path", "媒体路径不安全，无法读取", {
         cause: err,
       });
   }
@@ -351,7 +351,7 @@ export async function saveMediaBuffer(
   originalFilename?: string,
 ): Promise<SavedMedia> {
   if (buffer.byteLength > maxBytes) {
-    throw new Error(`Media exceeds ${(maxBytes / (1024 * 1024)).toFixed(0)}MB limit`);
+    throw new Error(`媒体超出 ${(maxBytes / (1024 * 1024)).toFixed(0)}MB 限制`);
   }
   const dir = path.join(resolveMediaDir(), subdir);
   await fs.mkdir(dir, { recursive: true, mode: 0o700 });

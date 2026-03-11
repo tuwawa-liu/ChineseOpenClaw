@@ -232,7 +232,7 @@ export async function resolveApiKeyForProvider(params: {
       agentDir: params.agentDir,
     });
     if (!resolved) {
-      throw new Error(`No credentials found for profile "${profileId}".`);
+      throw new Error(`未找到配置文件 "${profileId}" 的凭据。`);
     }
     const mode = store.profiles[profileId]?.type;
     return {
@@ -304,7 +304,7 @@ export async function resolveApiKeyForProvider(params: {
     const hasCodex = listProfilesForProvider(store, "openai-codex").length > 0;
     if (hasCodex) {
       throw new Error(
-        'No API key found for provider "openai". You are authenticated with OpenAI Codex OAuth. Use openai-codex/gpt-5.4 (OAuth) or set OPENAI_API_KEY to use openai/gpt-5.4.',
+        '未找到提供商 "openai" 的 API 密钥。您已通过 OpenAI Codex OAuth 认证。请使用 openai-codex/gpt-5.4（OAuth）或设置 OPENAI_API_KEY 来使用 openai/gpt-5.4。',
       );
     }
   }
@@ -313,9 +313,9 @@ export async function resolveApiKeyForProvider(params: {
   const resolvedAgentDir = path.dirname(authStorePath);
   throw new Error(
     [
-      `No API key found for provider "${provider}".`,
-      `Auth store: ${authStorePath} (agentDir: ${resolvedAgentDir}).`,
-      `Configure auth for this agent (${formatCliCommand("openclaw agents add <id>")}) or copy auth-profiles.json from the main agentDir.`,
+      `未找到提供商 "${provider}" 的 API 密钥。`,
+      `认证存储：${authStorePath}（agentDir: ${resolvedAgentDir}）。`,
+      `请为此代理配置认证（${formatCliCommand("openclaw agents add <id>")}）或从主 agentDir 复制 auth-profiles.json。`,
     ].join(" "),
   );
 }
@@ -437,5 +437,5 @@ export function requireApiKey(auth: ResolvedProviderAuth, provider: string): str
   if (key) {
     return key;
   }
-  throw new Error(`No API key resolved for provider "${provider}" (auth mode: ${auth.mode}).`);
+  throw new Error(`未能解析提供商 "${provider}" 的 API 密钥（认证模式：${auth.mode}）。`);
 }

@@ -134,13 +134,13 @@ export async function getTailnetHostname(exec: typeof runExec = runExec, detecte
       if (ips.length > 0) {
         return ips[0];
       }
-      throw new Error("Could not determine Tailscale DNS or IP");
+      throw new Error("无法确定 Tailscale DNS 或 IP");
     } catch (err) {
       lastError = err;
     }
   }
 
-  throw lastError ?? new Error("Could not determine Tailscale DNS or IP");
+  throw lastError ?? new Error("无法确定 Tailscale DNS 或 IP");
 }
 
 /**

@@ -108,13 +108,13 @@ function parsePinnedIdentity(stdout: string): FileIdentityStat {
     .filter(Boolean)
     .at(-1);
   if (!line) {
-    throw new Error("Pinned write helper returned no identity");
+    throw new Error("固定写入助手未返回标识");
   }
   const [devRaw, inoRaw] = line.split("|");
   const dev = Number.parseInt(devRaw ?? "", 10);
   const ino = Number.parseInt(inoRaw ?? "", 10);
   if (!Number.isFinite(dev) || !Number.isFinite(ino)) {
-    throw new Error(`Pinned write helper returned invalid identity: ${line}`);
+    throw new Error(`固定写入助手返回了无效标识：${line}`);
   }
   return { dev, ino };
 }

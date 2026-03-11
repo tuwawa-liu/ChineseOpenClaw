@@ -12,7 +12,7 @@ type GatewayRuntimePreference = "auto" | "node" | "bun";
 async function resolveCliEntrypointPathForService(): Promise<string> {
   const argv1 = process.argv[1];
   if (!argv1) {
-    throw new Error("Unable to resolve CLI entrypoint path");
+    throw new Error("无法解析 CLI 入口点路径");
   }
 
   const normalized = path.resolve(argv1);
@@ -117,13 +117,13 @@ function appendNodeModulesBinCandidates(
 function resolveRepoRootForDev(): string {
   const argv1 = process.argv[1];
   if (!argv1) {
-    throw new Error("Unable to resolve repo root");
+    throw new Error("无法解析仓库根目录");
   }
   const normalized = path.resolve(argv1);
   const parts = normalized.split(path.sep);
   const srcIndex = parts.lastIndexOf("src");
   if (srcIndex === -1) {
-    throw new Error("Dev mode requires running from repo (src/index.ts)");
+    throw new Error("开发模式需要从仓库运行（src/index.ts）");
   }
   return parts.slice(0, srcIndex).join(path.sep);
 }
@@ -151,9 +151,9 @@ async function resolveBinaryPath(binary: string): Promise<string> {
     return resolved;
   } catch {
     if (binary === "bun") {
-      throw new Error("Bun not found in PATH. Install bun: https://bun.sh");
+      throw new Error("PATH 中找不到 Bun。请安装 bun：https://bun.sh");
     }
-    throw new Error("Node not found in PATH. Install Node 22+.");
+    throw new Error("PATH 中找不到 Node。请安装 Node 22+。");
   }
 }
 

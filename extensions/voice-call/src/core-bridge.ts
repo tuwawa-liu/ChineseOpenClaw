@@ -118,7 +118,7 @@ function resolveOpenClawRoot(): string {
     }
   }
 
-  throw new Error("Unable to resolve core root. Set OPENCLAW_ROOT to the package root.");
+  throw new Error("无法解析核心根目录。请设置 OPENCLAW_ROOT 为包根目录。");
 }
 
 async function importCoreExtensionAPI(): Promise<{

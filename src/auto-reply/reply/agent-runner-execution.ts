@@ -495,7 +495,7 @@ export async function runAgentTurnWithFallback(params: {
         return {
           kind: "final",
           payload: {
-            text: "⚠️ Context limit exceeded. I've reset our conversation to start fresh - please try again.\n\nTo prevent this, increase your compaction buffer by setting `agents.defaults.compaction.reserveTokensFloor` to 20000 or higher in your config.",
+            text: "⚠️ 上下文限制已超出。已重置对话以重新开始——请再试一次。\n\n为防止此问题，请将配置中的 `agents.defaults.compaction.reserveTokensFloor` 增加到 20000 或更高。",
           },
         };
       }
@@ -505,7 +505,7 @@ export async function runAgentTurnWithFallback(params: {
           return {
             kind: "final",
             payload: {
-              text: "⚠️ Message ordering conflict. I've reset the conversation - please try again.",
+              text: "⚠️ 消息顺序冲突。已重置对话——请再试一次。",
             },
           };
         }
@@ -529,7 +529,7 @@ export async function runAgentTurnWithFallback(params: {
         return {
           kind: "final",
           payload: {
-            text: "⚠️ Context limit exceeded during compaction. I've reset our conversation to start fresh - please try again.\n\nTo prevent this, increase your compaction buffer by setting `agents.defaults.compaction.reserveTokensFloor` to 20000 or higher in your config.",
+            text: "⚠️ 压缩期间上下文限制已超出。已重置对话以重新开始——请再试一次。\n\n为防止此问题，请将配置中的 `agents.defaults.compaction.reserveTokensFloor` 增加到 20000 或更高。",
           },
         };
       }
@@ -539,7 +539,7 @@ export async function runAgentTurnWithFallback(params: {
           return {
             kind: "final",
             payload: {
-              text: "⚠️ Message ordering conflict. I've reset the conversation - please try again.",
+              text: "⚠️ 消息顺序冲突。已重置对话——请再试一次。",
             },
           };
         }
@@ -555,7 +555,7 @@ export async function runAgentTurnWithFallback(params: {
         const sessionKey = params.sessionKey;
         const corruptedSessionId = params.getActiveSessionEntry()?.sessionId;
         defaultRuntime.error(
-          `Session history corrupted (Gemini function call ordering). Resetting session: ${params.sessionKey}`,
+          `会话历史损坏（Gemini 函数调用顺序问题）。正在重置会话：${params.sessionKey}`,
         );
 
         try {
@@ -578,14 +578,14 @@ export async function runAgentTurnWithFallback(params: {
           });
         } catch (cleanupErr) {
           defaultRuntime.error(
-            `Failed to reset corrupted session ${params.sessionKey}: ${String(cleanupErr)}`,
+            `重置损坏会话 ${params.sessionKey} 失败：${String(cleanupErr)}`,
           );
         }
 
         return {
           kind: "final",
           payload: {
-            text: "⚠️ Session history was corrupted. I've reset the conversation - please try again!",
+            text: "⚠️ 会话历史已损坏。已重置对话——请再试一次！",
           },
         };
       }
@@ -597,7 +597,7 @@ export async function runAgentTurnWithFallback(params: {
         // back to an alternate model first would not help. Instead we wait
         // and retry the complete primary→fallback chain.
         defaultRuntime.error(
-          `Transient HTTP provider error before reply (${message}). Retrying once in ${TRANSIENT_HTTP_RETRY_DELAY_MS}ms.`,
+          `回复前出现临时 HTTP 提供商错误 (${message})。将在 ${TRANSIENT_HTTP_RETRY_DELAY_MS}ms 后重试一次。`,
         );
         await new Promise<void>((resolve) => {
           setTimeout(resolve, TRANSIENT_HTTP_RETRY_DELAY_MS);
@@ -605,16 +605,16 @@ export async function runAgentTurnWithFallback(params: {
         continue;
       }
 
-      defaultRuntime.error(`Embedded agent failed before reply: ${message}`);
+      defaultRuntime.error(`嵌入式代理回复前失败：${message}`);
       const safeMessage = isTransientHttp
         ? sanitizeUserFacingText(message, { errorContext: true })
         : message;
       const trimmedMessage = safeMessage.replace(/\.\s*$/, "");
       const fallbackText = isContextOverflow
-        ? "⚠️ Context overflow — prompt too large for this model. Try a shorter message or a larger-context model."
+        ? "⚠️ 上下文溢出——提示词对于此模型过大。请尝试较短的消息或使用更大上下文的模型。"
         : isRoleOrderingError
-          ? "⚠️ Message ordering conflict - please try again. If this persists, use /new to start a fresh session."
-          : `⚠️ Agent failed before reply: ${trimmedMessage}.\nLogs: openclaw logs --follow`;
+          ? "⚠️ 消息顺序冲突 - 请再试一次。如果此问题持续存在，请使用 /new 开始新会话。"
+          : `⚠️ 代理回复前失败：${trimmedMessage}。\n日志：openclaw logs --follow`;
 
       return {
         kind: "final",
@@ -636,7 +636,7 @@ export async function runAgentTurnWithFallback(params: {
     return {
       kind: "final",
       payload: {
-        text: "⚠️ Context overflow — this conversation is too large for the model. Use /new to start a fresh session.",
+        text: "⚠️ 上下文溢出——此对话对于模型来说过大。请使用 /new 开始新会话。",
       },
     };
   }

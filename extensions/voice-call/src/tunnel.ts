@@ -219,7 +219,7 @@ export async function startTailscaleTunnel(config: {
   // Get Tailscale DNS name
   const dnsName = await getTailscaleDnsName();
   if (!dnsName) {
-    throw new Error("Could not get Tailscale DNS name. Is Tailscale running?");
+    throw new Error("无法获取 Tailscale DNS 名称。Tailscale 是否正在运行？");
   }
 
   const path = config.path.startsWith("/") ? config.path : `/${config.path}`;

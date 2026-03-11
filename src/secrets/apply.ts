@@ -183,7 +183,7 @@ async function projectPlanState(params: {
   const io = createSecretsConfigIO({ env: params.env });
   const { snapshot, writeOptions } = await io.readConfigFileSnapshotForWrite();
   if (!snapshot.valid) {
-    throw new Error("Cannot apply secrets plan: config is invalid.");
+    throw new Error("无法应用密钥计划：配置无效。");
   }
 
   const options = normalizeSecretsPlanOptions(params.plan.options);

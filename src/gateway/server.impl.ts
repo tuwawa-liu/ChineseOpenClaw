@@ -788,7 +788,7 @@ export async function startGatewayServer(
     reloadSecrets: async () => {
       const active = getActiveSecretsRuntimeSnapshot();
       if (!active) {
-        throw new Error("Secrets runtime snapshot is not active.");
+        throw new Error("密钥运行时快照未激活。");
       }
       const prepared = await activateRuntimeSecrets(active.sourceConfig, {
         reason: "reload",

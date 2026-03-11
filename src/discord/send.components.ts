@@ -68,7 +68,7 @@ export async function sendDiscordComponentMessage(
   const channelType = await resolveDiscordChannelType(rest, channelId);
 
   if (channelType && DISCORD_FORUM_LIKE_TYPES.has(channelType)) {
-    throw new Error("Discord components are not supported in forum-style channels");
+    throw new Error("Discord 组件不支持论坛类型频道");
   }
 
   const buildResult = buildDiscordComponentMessage({

@@ -23,7 +23,7 @@ function wrapOwnerOnlyToolExecution(tool: AnyAgentTool, senderIsOwner: boolean):
   return {
     ...tool,
     execute: async () => {
-      throw new Error("Tool restricted to owner senders.");
+      throw new Error("工具仅限所有者发送者使用。");
     },
   };
 }

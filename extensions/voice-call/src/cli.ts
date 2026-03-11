@@ -131,7 +131,7 @@ export function registerVoiceCallCli(params: {
       const rt = await ensureRuntime();
       const to = options.to ?? rt.config.toNumber;
       if (!to) {
-        throw new Error("Missing --to and no toNumber configured");
+        throw new Error("缺少 --to 且未配置 toNumber");
       }
       await initiateCallAndPrintId({
         runtime: rt,
@@ -279,7 +279,7 @@ export function registerVoiceCallCli(params: {
       const last = Math.max(1, Number(options.last ?? 200));
 
       if (!fs.existsSync(file)) {
-        throw new Error("No log file at " + file);
+        throw new Error("未找到日志文件：" + file);
       }
 
       const content = fs.readFileSync(file, "utf8");

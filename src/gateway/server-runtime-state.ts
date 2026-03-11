@@ -180,7 +180,7 @@ export async function createGatewayRuntimeState(params: {
   }
   const httpServer = httpServers[0];
   if (!httpServer) {
-    throw new Error("Gateway HTTP server failed to start");
+    throw new Error("网关 HTTP 服务器启动失败");
   }
 
   const wss = new WebSocketServer({

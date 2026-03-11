@@ -47,7 +47,7 @@ function resolveRequestUrl(input: RequestInfo | URL): string {
   if ("url" in input && typeof input.url === "string") {
     return input.url;
   }
-  throw new Error("Unsupported fetch input: expected string, URL, or Request");
+  throw new Error("不支持的 fetch 输入：应为字符串、URL 或 Request");
 }
 
 function createSlackMediaFetch(token: string): FetchLike {

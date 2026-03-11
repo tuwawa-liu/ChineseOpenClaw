@@ -281,7 +281,7 @@ export const sendHandlers: GatewayRequestHandlers = {
 
         const result = results.at(-1);
         if (!result) {
-          throw new Error("No delivery result");
+          throw new Error("无投递结果");
         }
         const payload: Record<string, unknown> = {
           runId: idem,

@@ -487,7 +487,7 @@ export async function optimizeImageToJpeg(
     };
   }
 
-  throw new Error("Failed to optimize image");
+  throw new Error("图片优化失败");
 }
 
 export { optimizeImageToPng };

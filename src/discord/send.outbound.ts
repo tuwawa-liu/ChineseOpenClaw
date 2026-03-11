@@ -351,7 +351,7 @@ export async function sendWebhookMessageDiscord(
   const webhookId = opts.webhookId.trim();
   const webhookToken = opts.webhookToken.trim();
   if (!webhookId || !webhookToken) {
-    throw new Error("Discord webhook id/token are required");
+    throw new Error("Discord webhook ID/Token 是必需的");
   }
 
   const rewrittenText = rewriteDiscordKnownMentions(text, {
@@ -453,7 +453,7 @@ export async function sendPollDiscord(
       })
     : undefined;
   if (poll.durationSeconds !== undefined) {
-    throw new Error("Discord polls do not support durationSeconds; use durationHours");
+    throw new Error("Discord 投票不支持 durationSeconds；请使用 durationHours");
   }
   const payload = normalizeDiscordPollInput(poll);
   const flags = opts.silent ? SUPPRESS_NOTIFICATIONS_FLAG : undefined;

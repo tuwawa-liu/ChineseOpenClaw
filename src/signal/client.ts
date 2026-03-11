@@ -31,7 +31,7 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 function normalizeBaseUrl(url: string): string {
   const trimmed = url.trim();
   if (!trimmed) {
-    throw new Error("Signal base URL is required");
+    throw new Error("Signal 基础 URL 是必需的");
   }
   if (/^https?:\/\//i.test(trimmed)) {
     return trimmed.replace(/\/+$/, "");

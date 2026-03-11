@@ -227,6 +227,6 @@ export function syncTelegramMenuCommands(params: {
   };
 
   void sync().catch((err) => {
-    runtime.error?.(`Telegram command sync failed: ${String(err)}`);
+    runtime.error?.(`Telegram 命令同步失败：${String(err)}`);
   });
 }

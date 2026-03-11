@@ -237,7 +237,7 @@ export function createFollowupRunner(params: {
         fallbackModel = fallbackResult.model;
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        defaultRuntime.error?.(`Followup agent failed before reply: ${message}`);
+        defaultRuntime.error?.(`后续代理回复前失败：${message}`);
         return;
       }
 

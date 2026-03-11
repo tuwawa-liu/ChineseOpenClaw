@@ -116,7 +116,7 @@ export async function runWebHeartbeatOnce(opts: {
   }
 
   if (overrideBody && overrideBody.trim().length === 0) {
-    throw new Error("Override body must be non-empty when provided.");
+    throw new Error("提供 override body 时不能为空。");
   }
 
   try {

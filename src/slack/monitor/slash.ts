@@ -681,7 +681,7 @@ export async function registerSlackMonitorSlashCommands(params: {
 
   if (nativeCommands.length > 0) {
     if (!slashCommandsRuntime) {
-      throw new Error("Missing commands runtime for native Slack commands.");
+      throw new Error("原生 Slack 命令缺少命令运行时。");
     }
     for (const command of nativeCommands) {
       ctx.app.command(

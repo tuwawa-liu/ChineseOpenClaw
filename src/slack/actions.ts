@@ -51,7 +51,7 @@ function resolveToken(explicit?: string, accountId?: string) {
         explicit,
       )} source=${account.botTokenSource ?? "unknown"}`,
     );
-    throw new Error("SLACK_BOT_TOKEN or channels.slack.botToken is required for Slack actions");
+    throw new Error("Slack 操作需要 SLACK_BOT_TOKEN 或 channels.slack.botToken");
   }
   return token;
 }
@@ -59,7 +59,7 @@ function resolveToken(explicit?: string, accountId?: string) {
 function normalizeEmoji(raw: string) {
   const trimmed = raw.trim();
   if (!trimmed) {
-    throw new Error("Emoji is required for Slack reactions");
+    throw new Error("Slack 表情反应需要指定表情");
   }
   return trimmed.replace(/^:+|:+$/g, "");
 }
@@ -72,7 +72,7 @@ async function getClient(opts: SlackActionClientOpts = {}) {
 async function resolveBotUserId(client: WebClient) {
   const auth = await client.auth.test();
   if (!auth?.user_id) {
-    throw new Error("Failed to resolve Slack bot user id");
+    throw new Error("解析 Slack 机器人用户 ID 失败");
   }
   return auth.user_id;
 }

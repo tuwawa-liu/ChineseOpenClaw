@@ -162,7 +162,7 @@ function resolveToken(params: {
 function parseRecipient(raw: string): SlackRecipient {
   const target = parseSlackTarget(raw);
   if (!target) {
-    throw new Error("Recipient is required for Slack sends");
+    throw new Error("Slack 发送需要指定接收者");
   }
   return { kind: target.kind, id: target.id };
 }
@@ -184,7 +184,7 @@ async function resolveChannelId(
   const response = await client.conversations.open({ users: recipient.id });
   const channelId = response.channel?.id;
   if (!channelId) {
-    throw new Error("Failed to open Slack DM channel");
+    throw new Error("打开 Slack DM 频道失败");
   }
   return { channelId, isDm: true };
 }
@@ -261,7 +261,7 @@ export async function sendMessageSlack(
   }
   const blocks = opts.blocks == null ? undefined : validateSlackBlocksArray(opts.blocks);
   if (!trimmedMessage && !opts.mediaUrl && !blocks) {
-    throw new Error("Slack send requires text, blocks, or media");
+    throw new Error("Slack 发送需要文本、blocks 或媒体");
   }
   const cfg = opts.cfg ?? loadConfig();
   const account = resolveSlackAccount({
@@ -279,7 +279,7 @@ export async function sendMessageSlack(
   const { channelId } = await resolveChannelId(client, recipient);
   if (blocks) {
     if (opts.mediaUrl) {
-      throw new Error("Slack send does not support blocks with mediaUrl");
+      throw new Error("Slack 发送不支持 blocks 与 mediaUrl 同时使用");
     }
     const fallbackText = trimmedMessage || buildSlackBlocksFallbackText(blocks);
     const response = await postSlackMessageBestEffort({

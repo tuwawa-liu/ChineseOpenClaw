@@ -17,7 +17,7 @@ export function resolveSignalRpcContext(
       : undefined);
   const baseUrl = opts.baseUrl?.trim() || resolvedAccount?.baseUrl;
   if (!baseUrl) {
-    throw new Error("Signal base URL is required");
+    throw new Error("Signal 基础 URL 是必需的");
   }
   const account = opts.account?.trim() || resolvedAccount?.config.account?.trim();
   return { baseUrl, account };

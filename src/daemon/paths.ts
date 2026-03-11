@@ -7,7 +7,7 @@ const windowsUncPath = /^\\\\/;
 export function resolveHomeDir(env: Record<string, string | undefined>): string {
   const home = env.HOME?.trim() || env.USERPROFILE?.trim();
   if (!home) {
-    throw new Error("Missing HOME");
+    throw new Error("缺少 HOME 环境变量");
   }
   return home;
 }
@@ -19,7 +19,7 @@ export function resolveUserPathWithHome(input: string, home?: string): string {
   }
   if (trimmed.startsWith("~")) {
     if (!home) {
-      throw new Error("Missing HOME");
+      throw new Error("缺少 HOME 环境变量");
     }
     const expanded = trimmed.replace(/^~(?=$|[\\/])/, home);
     return path.resolve(expanded);

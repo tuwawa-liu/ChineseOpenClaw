@@ -266,7 +266,7 @@ async function resolveChatId(
   const lookupTarget = normalizeTelegramLookupTarget(to);
   const getChat = params.api.getChat;
   if (!lookupTarget || typeof getChat !== "function") {
-    throw new Error("Telegram recipient must be a numeric chat ID");
+    throw new Error("Telegram 接收者必须是数字 chat ID");
   }
   try {
     const chat = await getChat.call(params.api, lookupTarget);
@@ -314,14 +314,14 @@ function normalizeMessageId(raw: string | number): number {
   if (typeof raw === "string") {
     const value = raw.trim();
     if (!value) {
-      throw new Error("Message id is required for Telegram actions");
+      throw new Error("Telegram 操作需要消息 ID");
     }
     const parsed = Number.parseInt(value, 10);
     if (Number.isFinite(parsed)) {
       return parsed;
     }
   }
-  throw new Error("Message id is required for Telegram actions");
+  throw new Error("Telegram 操作需要消息 ID");
 }
 
 function isTelegramThreadNotFoundError(err: unknown): boolean {
@@ -922,7 +922,7 @@ export async function sendMessageTelegram(
   }
 
   if (!text || !text.trim()) {
-    throw new Error("Message must be non-empty for Telegram sends");
+    throw new Error("Telegram 发送的消息不能为空");
   }
   let textResult: { messageId: string; chatId: string };
   if (textMode === "html") {
@@ -1006,7 +1006,7 @@ export async function reactMessageTelegram(
       ? []
       : [{ type: "emoji", emoji: trimmedEmoji as ReactionTypeEmoji["emoji"] }];
   if (typeof api.setMessageReaction !== "function") {
-    throw new Error("Telegram reactions are unavailable in this bot API.");
+    throw new Error("Telegram 表情反应在此机器人 API 中不可用。");
   }
   try {
     await requestWithDiag(() => api.setMessageReaction(chatId, messageId, reactions), "reaction");
@@ -1260,7 +1260,7 @@ export async function sendStickerTelegram(
   opts: TelegramStickerOpts = {},
 ): Promise<TelegramSendResult> {
   if (!fileId?.trim()) {
-    throw new Error("Telegram sticker file_id is required");
+    throw new Error("Telegram 贴纸 file_id 是必需的");
   }
 
   const { cfg, account, api } = resolveTelegramApiContext(opts);
@@ -1386,7 +1386,7 @@ export async function sendPollTelegram(
     );
   }
   if (durationSeconds !== undefined && (durationSeconds < 5 || durationSeconds > 600)) {
-    throw new Error("Telegram poll durationSeconds must be between 5 and 600");
+    throw new Error("Telegram 投票 durationSeconds 必须在 5 到 600 之间");
   }
 
   // Build poll parameters following Grammy's api.sendPoll signature
@@ -1461,11 +1461,11 @@ export async function createForumTopicTelegram(
   opts: TelegramCreateForumTopicOpts = {},
 ): Promise<TelegramCreateForumTopicResult> {
   if (!name?.trim()) {
-    throw new Error("Forum topic name is required");
+    throw new Error("论坛主题名称是必需的");
   }
   const trimmedName = name.trim();
   if (trimmedName.length > 128) {
-    throw new Error("Forum topic name must be 128 characters or fewer");
+    throw new Error("论坛主题名称不能超过 128 个字符");
   }
 
   const { cfg, account, api } = resolveTelegramApiContext(opts);

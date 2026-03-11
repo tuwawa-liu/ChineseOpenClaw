@@ -10,7 +10,7 @@ export async function refreshQwenPortalCredentials(
 ): Promise<OAuthCredentials> {
   const refreshToken = credentials.refresh?.trim();
   if (!refreshToken) {
-    throw new Error("Qwen OAuth refresh token missing; re-authenticate.");
+    throw new Error("通义 OAuth 刷新令牌缺失；请重新认证。");
   }
 
   const response = await fetch(QWEN_OAUTH_TOKEN_ENDPOINT, {
@@ -46,10 +46,10 @@ export async function refreshQwenPortalCredentials(
   const expiresIn = payload.expires_in;
 
   if (!accessToken) {
-    throw new Error("Qwen OAuth refresh response missing access token.");
+    throw new Error("通义 OAuth 刷新响应缺少访问令牌。");
   }
   if (typeof expiresIn !== "number" || !Number.isFinite(expiresIn) || expiresIn <= 0) {
-    throw new Error("Qwen OAuth refresh response missing or invalid expires_in.");
+    throw new Error("通义 OAuth 刷新响应缺少或无效的 expires_in。");
   }
 
   return {

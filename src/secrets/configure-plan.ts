@@ -119,7 +119,7 @@ export function buildConfigureCandidatesForScope(params: {
           .map((entry) => {
             const authProfiles = params.authProfiles;
             if (!authProfiles) {
-              throw new Error("Missing auth profile scope for configure candidate discovery.");
+              throw new Error("配置候选发现缺少认证配置文件作用域。");
             }
             const authProfileProvider = resolveAuthProfileProvider(
               authProfiles.store,

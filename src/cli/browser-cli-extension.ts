@@ -46,7 +46,7 @@ export async function installChromeExtension(opts?: {
 }): Promise<{ path: string }> {
   const src = opts?.sourceDir ?? resolveBundledExtensionRootDir();
   if (!hasManifest(src)) {
-    throw new Error("Bundled Chrome extension is missing. Reinstall OpenClaw and try again.");
+    throw new Error("捆绑的 Chrome 扩展缺失。请重新安装 OpenClaw 并重试。");
   }
 
   const stateDir = opts?.stateDir ?? resolveStateDir();
@@ -62,7 +62,7 @@ export async function installChromeExtension(opts?: {
 
   await fs.promises.cp(src, dest, { recursive: true });
   if (!hasManifest(dest)) {
-    throw new Error("Chrome extension install failed (manifest.json missing). Try again.");
+    throw new Error("Chrome 扩展安装失败（缺少 manifest.json）。请重试。");
   }
 
   return { path: dest };

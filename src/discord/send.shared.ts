@@ -63,7 +63,7 @@ function parseRecipient(raw: string): DiscordRecipient {
     ambiguousMessage: `Ambiguous Discord recipient "${raw.trim()}". Use "user:${raw.trim()}" for DMs or "channel:${raw.trim()}" for channel messages.`,
   });
   if (!target) {
-    throw new Error("Recipient is required for Discord sends");
+    throw new Error("Discord 发送需要指定接收者");
   }
   return { kind: target.kind, id: target.id };
 }
@@ -108,7 +108,7 @@ export async function parseAndResolveRecipient(
   const parsed = parseDiscordTarget(raw, parseOptions);
 
   if (!parsed) {
-    throw new Error("Recipient is required for Discord sends");
+    throw new Error("Discord 发送需要指定接收者");
   }
 
   return { kind: parsed.kind, id: parsed.id };
@@ -117,10 +117,10 @@ export async function parseAndResolveRecipient(
 function normalizeStickerIds(raw: string[]) {
   const ids = raw.map((entry) => entry.trim()).filter(Boolean);
   if (ids.length === 0) {
-    throw new Error("At least one sticker id is required");
+    throw new Error("至少需要一个贴纸 ID");
   }
   if (ids.length > DISCORD_MAX_STICKERS) {
-    throw new Error("Discord supports up to 3 stickers per message");
+    throw new Error("Discord 每条消息最多支持 3 个贴纸");
   }
   return ids;
 }
@@ -240,7 +240,7 @@ async function resolveChannelId(
     "dm-channel",
   )) as { id: string };
   if (!dmChannel?.id) {
-    throw new Error("Failed to create Discord DM channel");
+    throw new Error("创建 Discord DM 频道失败");
   }
   return { channelId: dmChannel.id, dm: true };
 }
@@ -366,7 +366,7 @@ async function sendDiscordText(
   silent?: boolean,
 ) {
   if (!text.trim()) {
-    throw new Error("Message must be non-empty for Discord sends");
+    throw new Error("Discord 发送的消息不能为空");
   }
   const messageReference = replyTo ? { message_id: replyTo, fail_if_not_exists: false } : undefined;
   const flags = silent ? SUPPRESS_NOTIFICATIONS_FLAG : undefined;
@@ -404,7 +404,7 @@ async function sendDiscordText(
     last = await sendChunk(chunk, index === 0);
   }
   if (!last) {
-    throw new Error("Discord send failed (empty chunk result)");
+    throw new Error("Discord 发送失败（空的分块结果）");
   }
   return last;
 }

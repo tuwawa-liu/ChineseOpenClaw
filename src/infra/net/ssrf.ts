@@ -279,7 +279,7 @@ export async function resolvePinnedHostnameWithPolicy(
 ): Promise<PinnedHostname> {
   const normalized = normalizeHostname(hostname);
   if (!normalized) {
-    throw new Error("Invalid hostname");
+    throw new Error("无效的主机名");
   }
 
   const allowPrivateNetwork = isPrivateNetworkAllowedByPolicy(params.policy);

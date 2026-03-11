@@ -49,7 +49,7 @@ export function isThreadChannelType(channelType?: number) {
 async function fetchBotUserId(rest: RequestClient) {
   const me = (await rest.get(Routes.user("@me"))) as { id?: string };
   if (!me?.id) {
-    throw new Error("Failed to resolve bot user id");
+    throw new Error("解析机器人用户 ID 失败");
   }
   return me.id;
 }

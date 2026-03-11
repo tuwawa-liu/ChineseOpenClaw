@@ -68,10 +68,10 @@ export class PlivoProvider implements VoiceCallProvider {
 
   constructor(config: PlivoConfig, options: PlivoProviderOptions = {}) {
     if (!config.authId) {
-      throw new Error("Plivo Auth ID is required");
+      throw new Error("Plivo Auth ID 是必需的");
     }
     if (!config.authToken) {
-      throw new Error("Plivo Auth Token is required");
+      throw new Error("Plivo Auth Token 是必需的");
     }
 
     this.authId = config.authId;
@@ -328,7 +328,7 @@ export class PlivoProvider implements VoiceCallProvider {
       ? result.request_uuid[0]
       : result.request_uuid;
     if (!requestUuid) {
-      throw new Error("Plivo call create returned no request_uuid");
+      throw new Error("Plivo 创建通话未返回 request_uuid");
     }
 
     return { providerCallId: requestUuid, status: "initiated" };
@@ -370,10 +370,10 @@ export class PlivoProvider implements VoiceCallProvider {
     const webhookBase =
       this.callUuidToWebhookUrl.get(callUuid) || this.callIdToWebhookUrl.get(params.callId);
     if (!webhookBase) {
-      throw new Error("Missing webhook URL for this call (provider state missing)");
+      throw new Error("缺少此通话的 Webhook URL（提供商状态缺失）");
     }
     if (!callUuid) {
-      throw new Error(`Missing Plivo CallUUID for ${params.operation}`);
+      throw new Error(`缺少 Plivo CallUUID（${params.operation}）`);
     }
     return { callUuid, webhookBase };
   }

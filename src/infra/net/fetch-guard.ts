@@ -178,11 +178,11 @@ export async function fetchWithSsrFGuard(params: GuardedFetchOptions): Promise<G
       parsedUrl = new URL(currentUrl);
     } catch {
       await release();
-      throw new Error("Invalid URL: must be http or https");
+      throw new Error("无效的 URL：必须是 http 或 https");
     }
     if (!["http:", "https:"].includes(parsedUrl.protocol)) {
       await release();
-      throw new Error("Invalid URL: must be http or https");
+      throw new Error("无效的 URL：必须是 http 或 https");
     }
 
     let dispatcher: Dispatcher | null = null;
@@ -212,18 +212,18 @@ export async function fetchWithSsrFGuard(params: GuardedFetchOptions): Promise<G
         const location = response.headers.get("location");
         if (!location) {
           await release(dispatcher);
-          throw new Error(`Redirect missing location header (${response.status})`);
+          throw new Error(`缺少重定向 location 头（${response.status}）`);
         }
         redirectCount += 1;
         if (redirectCount > maxRedirects) {
           await release(dispatcher);
-          throw new Error(`Too many redirects (limit: ${maxRedirects})`);
+          throw new Error(`重定向次数过多（限制：${maxRedirects}）`);
         }
         const nextParsedUrl = new URL(location, parsedUrl);
         const nextUrl = nextParsedUrl.toString();
         if (visited.has(nextUrl)) {
           await release(dispatcher);
-          throw new Error("Redirect loop detected");
+          throw new Error("检测到重定向循环");
         }
         if (nextParsedUrl.origin !== parsedUrl.origin) {
           currentInit = retainSafeHeadersForCrossOriginRedirect(currentInit);

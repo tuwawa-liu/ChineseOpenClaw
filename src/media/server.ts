@@ -111,7 +111,7 @@ export async function startMediaServer(
     const server = app.listen(port, "127.0.0.1");
     server.once("listening", () => resolve(server));
     server.once("error", (err) => {
-      runtime.error(danger(`Media server failed: ${String(err)}`));
+      runtime.error(danger(`媒体服务器失败：${String(err)}`));
       reject(err);
     });
   });

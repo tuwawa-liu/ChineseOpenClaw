@@ -87,7 +87,7 @@ export async function removePath(
   const label = opts?.label ?? resolved;
   const displayLabel = shortenHomeInString(label);
   if (isUnsafeRemovalTarget(resolved)) {
-    runtime.error(`Refusing to remove unsafe path: ${displayLabel}`);
+    runtime.error(`拒绝删除不安全路径：${displayLabel}`);
     return { ok: false };
   }
   if (opts?.dryRun) {
@@ -99,7 +99,7 @@ export async function removePath(
     runtime.log(`Removed ${displayLabel}`);
     return { ok: true };
   } catch (err) {
-    runtime.error(`Failed to remove ${displayLabel}: ${String(err)}`);
+    runtime.error(`删除 ${displayLabel} 失败：${String(err)}`);
     return { ok: false };
   }
 }

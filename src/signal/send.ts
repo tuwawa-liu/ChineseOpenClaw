@@ -37,7 +37,7 @@ type SignalTarget =
 function parseTarget(raw: string): SignalTarget {
   let value = raw.trim();
   if (!value) {
-    throw new Error("Signal recipient is required");
+    throw new Error("Signal 发送需要指定接收者");
   }
   const lower = value.toLowerCase();
   if (lower.startsWith("signal:")) {
@@ -155,7 +155,7 @@ export async function sendMessageSignal(
   }
 
   if (!message.trim() && (!attachments || attachments.length === 0)) {
-    throw new Error("Signal send requires text or media");
+    throw new Error("Signal 发送需要文本或媒体");
   }
 
   const params: Record<string, unknown> = { message };
@@ -177,7 +177,7 @@ export async function sendMessageSignal(
     username: true,
   });
   if (!targetParams) {
-    throw new Error("Signal recipient is required");
+    throw new Error("Signal 发送需要指定接收者");
   }
   Object.assign(params, targetParams);
 

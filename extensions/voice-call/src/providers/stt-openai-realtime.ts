@@ -58,7 +58,7 @@ export class OpenAIRealtimeSTTProvider {
 
   constructor(config: RealtimeSTTConfig) {
     if (!config.apiKey) {
-      throw new Error("OpenAI API key required for Realtime STT");
+      throw new Error("实时 STT 需要 OpenAI API 密钥");
     }
     this.apiKey = config.apiKey;
     this.model = config.model || "gpt-4o-transcribe";

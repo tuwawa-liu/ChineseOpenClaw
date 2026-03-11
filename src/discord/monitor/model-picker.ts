@@ -561,7 +561,7 @@ export function buildDiscordModelPickerCustomId(params: {
 }): string {
   const userId = params.userId.trim();
   if (!userId) {
-    throw new Error("Discord model picker custom_id requires userId");
+    throw new Error("Discord 模型选择器 custom_id 需要 userId");
   }
 
   const page = normalizePage(params.page);

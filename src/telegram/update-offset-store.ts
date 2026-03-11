@@ -108,7 +108,7 @@ export async function writeTelegramUpdateOffset(params: {
   env?: NodeJS.ProcessEnv;
 }): Promise<void> {
   if (!isValidUpdateId(params.updateId)) {
-    throw new Error("Telegram update offset must be a non-negative safe integer.");
+    throw new Error("Telegram 更新偏移量必须是非负安全整数。");
   }
   const filePath = resolveTelegramUpdateOffsetPath(params.accountId, params.env);
   const payload: TelegramUpdateOffsetState = {

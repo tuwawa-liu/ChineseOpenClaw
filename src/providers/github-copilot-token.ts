@@ -26,13 +26,13 @@ function parseCopilotTokenResponse(value: unknown): {
   expiresAt: number;
 } {
   if (!value || typeof value !== "object") {
-    throw new Error("Unexpected response from GitHub Copilot token endpoint");
+    throw new Error("GitHub Copilot 令牌端点返回意外响应");
   }
   const asRecord = value as Record<string, unknown>;
   const token = asRecord.token;
   const expiresAt = asRecord.expires_at;
   if (typeof token !== "string" || token.trim().length === 0) {
-    throw new Error("Copilot token response missing token");
+    throw new Error("Copilot 令牌响应缺少 token");
   }
 
   // GitHub returns a unix timestamp (seconds), but we defensively accept ms too.
@@ -42,11 +42,11 @@ function parseCopilotTokenResponse(value: unknown): {
   } else if (typeof expiresAt === "string" && expiresAt.trim().length > 0) {
     const parsed = Number.parseInt(expiresAt, 10);
     if (!Number.isFinite(parsed)) {
-      throw new Error("Copilot token response has invalid expires_at");
+      throw new Error("Copilot 令牌响应的 expires_at 无效");
     }
     expiresAtMs = parsed > 10_000_000_000 ? parsed : parsed * 1000;
   } else {
-    throw new Error("Copilot token response missing expires_at");
+    throw new Error("Copilot 令牌响应缺少 expires_at");
   }
 
   return { token, expiresAt: expiresAtMs };

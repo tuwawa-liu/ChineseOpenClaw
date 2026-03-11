@@ -136,10 +136,10 @@ export class TwilioProvider implements VoiceCallProvider {
 
   constructor(config: TwilioConfig, options: TwilioProviderOptions = {}) {
     if (!config.accountSid) {
-      throw new Error("Twilio Account SID is required");
+      throw new Error("Twilio Account SID 是必需的");
     }
     if (!config.authToken) {
-      throw new Error("Twilio Auth Token is required");
+      throw new Error("Twilio Auth Token 是必需的");
     }
 
     this.accountSid = config.accountSid;
@@ -574,11 +574,11 @@ export class TwilioProvider implements VoiceCallProvider {
     // Fall back to TwiML <Say> (may not work on all accounts)
     const webhookUrl = this.callWebhookUrls.get(input.providerCallId);
     if (!webhookUrl) {
-      throw new Error("Missing webhook URL for this call (provider state not initialized)");
+      throw new Error("缺少此通话的 Webhook URL（提供商状态未初始化）");
     }
 
     console.warn(
-      "[voice-call] Using TwiML <Say> fallback - telephony TTS not configured or media stream not active",
+      "[voice-call] 使用 TwiML <Say> 回退方案 - 未配置电话 TTS 或媒体流未激活",
     );
 
     const pollyVoice = mapVoiceToPolly(input.voice);
@@ -602,7 +602,7 @@ export class TwilioProvider implements VoiceCallProvider {
    */
   private async playTtsViaStream(text: string, streamSid: string): Promise<void> {
     if (!this.ttsProvider || !this.mediaStreamHandler) {
-      throw new Error("TTS provider and media stream handler required");
+      throw new Error("TTS 提供商和媒体流处理程序是必需的");
     }
 
     // Stream audio in 20ms chunks (160 bytes at 8kHz mu-law)
@@ -640,7 +640,7 @@ export class TwilioProvider implements VoiceCallProvider {
   async startListening(input: StartListeningInput): Promise<void> {
     const webhookUrl = this.callWebhookUrls.get(input.providerCallId);
     if (!webhookUrl) {
-      throw new Error("Missing webhook URL for this call (provider state not initialized)");
+      throw new Error("缺少此通话的 Webhook URL（提供商状态未初始化）");
     }
 
     const actionUrl = new URL(webhookUrl);

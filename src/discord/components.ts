@@ -288,7 +288,7 @@ export function resolveDiscordComponentAttachmentName(value: string): string {
   }
   const attachmentName = trimmed.slice(DISCORD_COMPONENT_ATTACHMENT_PREFIX.length).trim();
   if (!attachmentName) {
-    throw new Error("Attachment reference must include a filename");
+    throw new Error("附件引用必须包含文件名");
   }
   return attachmentName;
 }
@@ -691,7 +691,7 @@ function createButtonComponent(params: {
   const isLink = style === ButtonStyle.Link || Boolean(params.spec.url);
   if (isLink) {
     if (!params.spec.url) {
-      throw new Error("Link buttons require a url");
+      throw new Error("链接按钮需要一个 URL");
     }
     const linkUrl = params.spec.url;
     class DynamicLinkButton extends LinkButton {
@@ -742,7 +742,7 @@ function createSelectComponent(params: {
   if (type === "string") {
     const options = params.spec.options ?? [];
     if (options.length === 0) {
-      throw new Error("String select menus require options");
+      throw new Error("字符串选择菜单需要选项");
     }
     class DynamicStringSelect extends StringSelectMenu {
       customId = customId;
@@ -970,7 +970,7 @@ export function buildDiscordComponentMessage(params: {
     if (block.type === "section") {
       const displays = buildTextDisplays(block.text, block.texts);
       if (displays.length > 3) {
-        throw new Error("Section blocks support up to 3 text displays");
+        throw new Error("分区块最多支持 3 个文本显示");
       }
       let accessory: Thumbnail | Button | LinkButton | undefined;
       if (block.accessory?.type === "thumbnail") {
@@ -1009,7 +1009,7 @@ export function buildDiscordComponentMessage(params: {
       > = [];
       if (block.buttons) {
         if (block.buttons.length > 5) {
-          throw new Error("Action rows support up to 5 buttons");
+          throw new Error("操作行最多支持 5 个按钮");
         }
         for (const button of block.buttons) {
           const { component, entry } = createButtonComponent({ spec: button });
@@ -1121,7 +1121,7 @@ export class DiscordFormModal extends Modal {
   }
 
   async run(): Promise<void> {
-    throw new Error("Modal handler is not registered for dynamic forms");
+    throw new Error("动态表单未注册模态对话框处理程序");
   }
 }
 

@@ -219,7 +219,7 @@ export function resolveCommandSecretsFromActiveRuntimeSnapshot(params: {
   targetIds: ReadonlySet<string>;
 }): { assignments: CommandSecretAssignment[]; diagnostics: string[]; inactiveRefPaths: string[] } {
   if (!activeSnapshot) {
-    throw new Error("Secrets runtime snapshot is not active.");
+    throw new Error("密钥运行时快照未激活。");
   }
   if (params.targetIds.size === 0) {
     return { assignments: [], diagnostics: [], inactiveRefPaths: [] };

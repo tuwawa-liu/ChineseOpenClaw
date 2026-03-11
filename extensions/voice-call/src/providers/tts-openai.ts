@@ -92,7 +92,7 @@ export class OpenAITTSProvider {
     this.instructions = trimToUndefined(config.instructions);
 
     if (!this.apiKey) {
-      throw new Error("OpenAI API key required (set OPENAI_API_KEY or pass apiKey)");
+      throw new Error("OpenAI API 密钥是必需的（设置 OPENAI_API_KEY 或传入 apiKey）");
     }
   }
 

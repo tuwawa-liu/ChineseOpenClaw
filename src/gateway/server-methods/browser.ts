@@ -110,7 +110,7 @@ function resolveBrowserNodeTarget(params: {
   const browserNodes = params.nodes.filter((node) => isBrowserNode(node));
   if (browserNodes.length === 0) {
     if (policy?.node?.trim()) {
-      throw new Error("No connected browser-capable nodes.");
+      throw new Error("没有已连接的支持浏览器的节点。");
     }
     return null;
   }

@@ -122,7 +122,7 @@ export async function resolveNonInteractiveApiKey(params: {
 
   const profileHint =
     params.allowProfile === false ? "" : `, or existing ${params.provider} API-key profile`;
-  params.runtime.error(`Missing ${params.flagName} (or ${params.envVar} in env${profileHint}).`);
+  params.runtime.error(`缺少 ${params.flagName}（或环境变量中的 ${params.envVar}${profileHint}）。`);
   params.runtime.exit(1);
   return null;
 }

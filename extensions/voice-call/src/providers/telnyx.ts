@@ -43,10 +43,10 @@ export class TelnyxProvider implements VoiceCallProvider {
 
   constructor(config: TelnyxConfig, options: TelnyxProviderOptions = {}) {
     if (!config.apiKey) {
-      throw new Error("Telnyx API key is required");
+      throw new Error("Telnyx API 密钥是必需的");
     }
     if (!config.connectionId) {
-      throw new Error("Telnyx connection ID is required");
+      throw new Error("Telnyx 连接 ID 是必需的");
     }
 
     this.apiKey = config.apiKey;

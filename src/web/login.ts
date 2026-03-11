@@ -61,7 +61,7 @@ export async function loginWeb(
           t("webLogin.sessionLoggedOut", { command: formatCliCommand("openclaw channels login") }),
         ),
       );
-      throw new Error("Session logged out; cache cleared. Re-run login.", { cause: err });
+      throw new Error("会话已登出；缓存已清除。请重新运行登录。", { cause: err });
     }
     const formatted = formatError(err);
     console.error(danger(t("webLogin.connectionEndedBeforeOpen", { error: formatted })));

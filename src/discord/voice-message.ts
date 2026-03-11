@@ -46,12 +46,12 @@ export async function getAudioDuration(filePath: string): Promise<number> {
     ]);
     const duration = parseFloat(stdout.trim());
     if (isNaN(duration)) {
-      throw new Error("Could not parse duration");
+      throw new Error("无法解析音频时长");
     }
     return Math.round(duration * 100) / 100; // Round to 2 decimal places
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to get audio duration: ${errMessage}`, { cause: err });
+    throw new Error(`获取音频时长失败：${errMessage}`, { cause: err });
   }
 }
 
@@ -257,7 +257,7 @@ export async function sendDiscordVoiceMessage(
   // the auto-conversion causes HTTP 400 "Expected Content-Type application/json".
   const botToken = token;
   if (!botToken) {
-    throw new Error("Discord bot token is required for voice message upload");
+    throw new Error("Discord 语音消息上传需要 Bot Token");
   }
   const uploadUrlResponse = await request(async () => {
     const url = `${rest.options?.baseUrl ?? "https://discord.com/api"}/channels/${channelId}/attachments`;
@@ -298,7 +298,7 @@ export async function sendDiscordVoiceMessage(
   }, "voice-upload-url");
 
   if (!uploadUrlResponse.attachments?.[0]) {
-    throw new Error("Failed to get upload URL for voice message");
+    throw new Error("获取语音消息上传 URL 失败");
   }
 
   const { upload_url, upload_filename } = uploadUrlResponse.attachments[0];

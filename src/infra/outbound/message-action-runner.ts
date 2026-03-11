@@ -307,16 +307,16 @@ async function handleBroadcastAction(
   throwIfAborted(input.abortSignal);
   const broadcastEnabled = input.cfg.tools?.message?.broadcast?.enabled !== false;
   if (!broadcastEnabled) {
-    throw new Error("Broadcast is disabled. Set tools.message.broadcast.enabled to true.");
+    throw new Error("广播已禁用。请将 tools.message.broadcast.enabled 设置为 true。");
   }
   const rawTargets = readStringArrayParam(params, "targets", { required: true });
   if (rawTargets.length === 0) {
-    throw new Error("Broadcast requires at least one target in --targets.");
+    throw new Error("广播需要在 --targets 中指定至少一个目标。");
   }
   const channelHint = readStringParam(params, "channel");
   const configured = await listConfiguredMessageChannels(input.cfg);
   if (configured.length === 0) {
-    throw new Error("Broadcast requires at least one configured channel.");
+    throw new Error("广播需要至少一个已配置的渠道。");
   }
   const targetChannels =
     channelHint && channelHint.trim().toLowerCase() !== "all"

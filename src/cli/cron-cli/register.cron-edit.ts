@@ -104,7 +104,7 @@ export function registerCronEditCommand(cron: Command) {
             patch.description = opts.description;
           }
           if (opts.enable && opts.disable) {
-            throw new Error("Choose --enable or --disable, not both");
+            throw new Error("请选择 --enable 或 --disable，不能同时使用");
           }
           if (opts.enable) {
             patch.enabled = true;
@@ -113,7 +113,7 @@ export function registerCronEditCommand(cron: Command) {
             patch.enabled = false;
           }
           if (opts.deleteAfterRun && opts.keepAfterRun) {
-            throw new Error("Choose --delete-after-run or --keep-after-run, not both");
+            throw new Error("请选择 --delete-after-run 或 --keep-after-run，不能同时使用");
           }
           if (opts.deleteAfterRun) {
             patch.deleteAfterRun = true;
@@ -128,7 +128,7 @@ export function registerCronEditCommand(cron: Command) {
             patch.wakeMode = opts.wake;
           }
           if (opts.agent && opts.clearAgent) {
-            throw new Error("Use --agent or --clear-agent, not both");
+            throw new Error("请使用 --agent 或 --clear-agent，不能同时使用");
           }
           if (typeof opts.agent === "string" && opts.agent.trim()) {
             patch.agentId = sanitizeAgentId(opts.agent.trim());
@@ -137,7 +137,7 @@ export function registerCronEditCommand(cron: Command) {
             patch.agentId = null;
           }
           if (opts.sessionKey && opts.clearSessionKey) {
-            throw new Error("Use --session-key or --clear-session-key, not both");
+            throw new Error("请使用 --session-key 或 --clear-session-key，不能同时使用");
           }
           if (typeof opts.sessionKey === "string" && opts.sessionKey.trim()) {
             patch.sessionKey = opts.sessionKey.trim();
@@ -148,7 +148,7 @@ export function registerCronEditCommand(cron: Command) {
 
           const scheduleChosen = [opts.at, opts.every, opts.cron].filter(Boolean).length;
           if (scheduleChosen > 1) {
-            throw new Error("Choose at most one schedule change");
+            throw new Error("最多只能选择一种调度更改");
           }
           if (
             (requestedStaggerMs !== undefined || typeof opts.tz === "string") &&
@@ -159,13 +159,13 @@ export function registerCronEditCommand(cron: Command) {
           if (opts.at) {
             const atIso = parseAt(String(opts.at));
             if (!atIso) {
-              throw new Error("Invalid --at");
+              throw new Error("无效的 --at");
             }
             patch.schedule = { kind: "at", at: atIso };
           } else if (opts.every) {
             const everyMs = parseDurationMs(String(opts.every));
             if (!everyMs) {
-              throw new Error("Invalid --every");
+              throw new Error("无效的 --every");
             }
             patch.schedule = { kind: "every", everyMs };
           } else if (opts.cron) {
@@ -184,7 +184,7 @@ export function registerCronEditCommand(cron: Command) {
               throw new Error(`unknown cron job id: ${id}`);
             }
             if (existing.schedule.kind !== "cron") {
-              throw new Error("Current job is not a cron schedule; use --cron to convert first");
+              throw new Error("当前任务不是 cron 调度；请先使用 --cron 进行转换");
             }
             const tz =
               typeof opts.tz === "string" ? opts.tz.trim() || undefined : existing.schedule.tz;
@@ -223,7 +223,7 @@ export function registerCronEditCommand(cron: Command) {
             hasDeliveryAccount ||
             hasBestEffort;
           if (hasSystemEventPatch && hasAgentTurnPatch) {
-            throw new Error("Choose at most one payload change");
+            throw new Error("最多只能选择一种负载更改");
           }
           if (hasSystemEventPatch) {
             patch.payload = {
@@ -287,7 +287,7 @@ export function registerCronEditCommand(cron: Command) {
           const failureAlertFlag =
             typeof opts.failureAlert === "boolean" ? opts.failureAlert : undefined;
           if (failureAlertFlag === false && hasFailureAlertFields) {
-            throw new Error("Use --no-failure-alert alone (without failure-alert-* options).");
+            throw new Error("请单独使用 --no-failure-alert（不要与 failure-alert-* 选项同时使用）。");
           }
           if (failureAlertFlag === false) {
             patch.failureAlert = false;
@@ -296,7 +296,7 @@ export function registerCronEditCommand(cron: Command) {
             if (hasFailureAlertAfter) {
               const after = Number.parseInt(String(opts.failureAlertAfter), 10);
               if (!Number.isFinite(after) || after <= 0) {
-                throw new Error("Invalid --failure-alert-after (must be a positive integer).");
+                throw new Error("无效的 --failure-alert-after（必须是正整数）。");
               }
               failureAlert.after = after;
             }
@@ -311,7 +311,7 @@ export function registerCronEditCommand(cron: Command) {
             if (hasFailureAlertCooldown) {
               const cooldownMs = parseDurationMs(String(opts.failureAlertCooldown));
               if (!cooldownMs && cooldownMs !== 0) {
-                throw new Error("Invalid --failure-alert-cooldown.");
+                throw new Error("无效的 --failure-alert-cooldown。");
               }
               failureAlert.cooldownMs = cooldownMs;
             }

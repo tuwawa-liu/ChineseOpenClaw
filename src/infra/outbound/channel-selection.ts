@@ -126,9 +126,9 @@ export async function resolveMessageChannelSelection(params: {
     return { channel: configured[0], configured, source: "single-configured" };
   }
   if (configured.length === 0) {
-    throw new Error("Channel is required (no configured channels detected).");
+    throw new Error("需要指定渠道（未检测到已配置的渠道）。");
   }
   throw new Error(
-    `Channel is required when multiple channels are configured: ${configured.join(", ")}`,
+    `配置了多个渠道时需要指定渠道：${configured.join(", ")}`,
   );
 }

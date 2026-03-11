@@ -85,7 +85,7 @@ export function parseCronStaggerMs(params: {
   }
   const parsed = parseDurationMs(params.staggerRaw);
   if (!parsed) {
-    throw new Error("Invalid --stagger; use e.g. 30s, 1m, 5m");
+    throw new Error("无效的 --stagger；请使用例如 30s、30m、5m");
   }
   return parsed;
 }
