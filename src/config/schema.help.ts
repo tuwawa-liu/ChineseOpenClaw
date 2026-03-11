@@ -1039,539 +1039,539 @@ export const FIELD_HELP: Record<string, string> = {
   commands:
     "控制聊天命令界面、所有者门控和跨提供商的提升命令访问行为。保持默认值，除非需要更严格的操作者控制或更广泛的命令可用性。",
   "commands.native":
-    "Registers native slash/menu commands with channels that support command registration (Discord, Slack, Telegram). Keep enabled for discoverability unless you intentionally run text-only command workflows.",
+    "在支持命令注册的频道（Discord、Slack、Telegram）中注册原生斜杠/菜单命令。保持启用以提高可发现性，除非你有意运行纯文本命令工作流。",
   "commands.nativeSkills":
-    "Registers native skill commands so users can invoke skills directly from provider command menus where supported. Keep aligned with your skill policy so exposed commands match what operators expect.",
+    "注册原生技能命令，使用户可以在受支持的提供商命令菜单中直接调用技能。保持与你的技能策略对齐，确保暴露的命令符合操作者预期。",
   "commands.text":
-    "Enables text-command parsing in chat input in addition to native command surfaces where available. Keep this enabled for compatibility across channels that do not support native command registration.",
+    "在可用的原生命令界面之外，启用聊天输入中的文本命令解析。保持启用以兼容不支持原生命令注册的频道。",
   "commands.bash":
-    "Allow bash chat command (`!`; `/bash` alias) to run host shell commands (default: false; requires tools.elevated).",
+    "允许 bash 聊天命令（`!`；`/bash` 别名）运行主机 shell 命令（默认：false；需要 tools.elevated）。",
   "commands.bashForegroundMs":
-    "How long bash waits before backgrounding (default: 2000; 0 backgrounds immediately).",
-  "commands.config": "Allow /config chat command to read/write config on disk (default: false).",
-  "commands.debug": "Allow /debug chat command for runtime-only overrides (default: false).",
-  "commands.restart": "Allow /restart and gateway restart tool actions (default: true).",
-  "commands.useAccessGroups": "Enforce access-group allowlists/policies for commands.",
+    "bash 在后台执行前等待的时间（默认：2000；0 表示立即后台执行）。",
+  "commands.config": "允许 /config 聊天命令读写磁盘上的配置（默认：false）。",
+  "commands.debug": "允许 /debug 聊天命令进行仅运行时覆盖（默认：false）。",
+  "commands.restart": "允许 /restart 和网关重启工具操作（默认：true）。",
+  "commands.useAccessGroups": "为命令强制执行访问组允许列表/策略。",
   "commands.ownerAllowFrom":
-    "Explicit owner allowlist for owner-only tools/commands. Use channel-native IDs (optionally prefixed like \"whatsapp:+15551234567\"). '*' is ignored.",
+    "仅所有者工具/命令的显式所有者允许列表。使用频道原生 ID（可选前缀，如 \"whatsapp:+15551234567\"）。'*' 被忽略。",
   "commands.ownerDisplay":
-    "Controls how owner IDs are rendered in the system prompt. Allowed values: raw, hash. Default: raw.",
+    "控制所有者 ID 在系统提示中的呈现方式。允许值：raw、hash。默认：raw。",
   "commands.ownerDisplaySecret":
-    "Optional secret used to HMAC hash owner IDs when ownerDisplay=hash. Prefer env substitution.",
+    "ownerDisplay=hash 时用于 HMAC 哈希所有者 ID 的可选密钥。建议使用环境变量替换。",
   "commands.allowFrom":
-    "Defines elevated command allow rules by channel and sender for owner-level command surfaces. Use narrow provider-specific identities so privileged commands are not exposed to broad chat audiences.",
+    "按频道和发送者为所有者级别命令界面定义提升命令允许规则。使用窄范围的提供商特定身份，避免特权命令暴露给广泛的聊天受众。",
   session:
     "全局会话路由、重置、投递策略和会话历史行为的维护控制。保持默认值，除非需要更严格的隔离、保留或投递约束。",
   "session.scope":
-    'Sets base session grouping strategy: "per-sender" isolates by sender and "global" shares one session per channel context. Keep "per-sender" for safer multi-user behavior unless deliberate shared context is required.',
+    '设置基础会话分组策略："per-sender" 按发送者隔离，"global" 在每个频道上下文中共享一个会话。保持 "per-sender" 以获得更安全的多用户行为，除非需要刻意共享上下文。',
   "session.dmScope":
-    'DM session scoping: "main" keeps continuity, while "per-peer", "per-channel-peer", and "per-account-channel-peer" increase isolation. Use isolated modes for shared inboxes or multi-account deployments.',
+    'DM 会话范围："main" 保持连续性，而 "per-peer"、"per-channel-peer" 和 "per-account-channel-peer" 增加隔离。在共享收件箱或多账户部署中使用隔离模式。',
   "session.identityLinks":
-    "Maps canonical identities to provider-prefixed peer IDs so equivalent users resolve to one DM thread (example: telegram:123456). Use this when the same human appears across multiple channels or accounts.",
+    "将规范身份映射到带提供商前缀的对等 ID，使等效用户解析到同一个 DM 线程（例如：telegram:123456）。当同一个人出现在多个频道或账户中时使用。",
   "session.resetTriggers":
-    "Lists message triggers that force a session reset when matched in inbound content. Use sparingly for explicit reset phrases so context is not dropped unexpectedly during normal conversation.",
+    "列出在入站内容中匹配时强制会话重置的消息触发器。谨慎使用显式的重置短语，避免在正常对话中意外丢失上下文。",
   "session.idleMinutes":
-    "Applies a legacy idle reset window in minutes for session reuse behavior across inactivity gaps. Use this only for compatibility and prefer structured reset policies under session.reset/session.resetByType.",
+    "以分钟为单位应用旧版空闲重置窗口，用于不活跃间隙的会话复用行为。仅用于兼容性，优先使用 session.reset/session.resetByType 下的结构化重置策略。",
   "session.reset":
-    "Defines the default reset policy object used when no type-specific or channel-specific override applies. Set this first, then layer resetByType or resetByChannel only where behavior must differ.",
+    "定义无类型特定或频道特定覆盖时使用的默认重置策略对象。先设置此项，然后仅在行为需要不同时叠加 resetByType 或 resetByChannel。",
   "session.reset.mode":
-    'Selects reset strategy: "daily" resets at a configured hour and "idle" resets after inactivity windows. Keep one clear mode per policy to avoid surprising context turnover patterns.',
+    '选择重置策略："daily" 在配置的小时重置，"idle" 在不活跃窗口后重置。每个策略保持一个明确的模式，避免意外的上下文轮换模式。',
   "session.reset.atHour":
-    "Sets local-hour boundary (0-23) for daily reset mode so sessions roll over at predictable times. Use with mode=daily and align to operator timezone expectations for human-readable behavior.",
+    "设置每日重置模式的本地小时边界（0-23），使会话在可预测的时间轮换。配合 mode=daily 使用，并与操作者时区预期对齐。",
   "session.reset.idleMinutes":
-    "Sets inactivity window before reset for idle mode and can also act as secondary guard with daily mode. Use larger values to preserve continuity or smaller values for fresher short-lived threads.",
+    "设置空闲模式下重置前的不活跃窗口，也可作为每日模式的辅助保护。使用较大值保持连续性，或较小值获得更新鲜的短期线程。",
   "session.resetByType":
-    "Overrides reset behavior by chat type (direct, group, thread) when defaults are not sufficient. Use this when group/thread traffic needs different reset cadence than direct messages.",
+    "按聊天类型（直接、群组、线程）覆盖重置行为，当默认值不足时使用。当群组/线程流量需要与直接消息不同的重置节奏时使用。",
   "session.resetByType.direct":
-    "Defines reset policy for direct chats and supersedes the base session.reset configuration for that type. Use this as the canonical direct-message override instead of the legacy dm alias.",
+    "定义直接聊天的重置策略，替代该类型的基础 session.reset 配置。使用此作为规范的直接消息覆盖，而不是旧版 dm 别名。",
   "session.resetByType.dm":
-    "Deprecated alias for direct reset behavior kept for backward compatibility with older configs. Use session.resetByType.direct instead so future tooling and validation remain consistent.",
+    "为向后兼容保留的直接重置行为的已弃用别名。使用 session.resetByType.direct 代替，以保持未来工具和验证的一致性。",
   "session.resetByType.group":
-    "Defines reset policy for group chat sessions where continuity and noise patterns differ from DMs. Use shorter idle windows for busy groups if context drift becomes a problem.",
+    "定义群组聊天会话的重置策略，其中连续性和噪声模式与 DM 不同。如果上下文漂移成为问题，对繁忙群组使用较短的空闲窗口。",
   "session.resetByType.thread":
-    "Defines reset policy for thread-scoped sessions, including focused channel thread workflows. Use this when thread sessions should expire faster or slower than other chat types.",
+    "定义线程范围会话的重置策略，包括聚焦频道线程工作流。当线程会话需要比其他聊天类型更快或更慢过期时使用。",
   "session.resetByChannel":
-    "Provides channel-specific reset overrides keyed by provider/channel id for fine-grained behavior control. Use this only when one channel needs exceptional reset behavior beyond type-level policies.",
+    "提供按提供商/频道 ID 键控的频道特定重置覆盖，用于细粒度行为控制。仅当某个频道需要超出类型级别策略的异常重置行为时使用。",
   "session.store":
-    "Sets the session storage file path used to persist session records across restarts. Use an explicit path only when you need custom disk layout, backup routing, or mounted-volume storage.",
+    "设置用于跨重启持久化会话记录的会话存储文件路径。仅在需要自定义磁盘布局、备份路由或挂载卷存储时使用显式路径。",
   "session.typingIntervalSeconds":
-    "Controls interval for repeated typing indicators while replies are being prepared in typing-capable channels. Increase to reduce chatty updates or decrease for more active typing feedback.",
+    "控制在支持打字的频道中准备回复时重复打字指示器的间隔。增加以减少频繁更新，或减少以获得更活跃的打字反馈。",
   "session.typingMode":
-    'Controls typing behavior timing: "never", "instant", "thinking", or "message" based emission points. Keep conservative modes in high-volume channels to avoid unnecessary typing noise.',
+    '控制打字行为时机："never"、"instant"、"thinking" 或 "message" 基于的发射点。在高流量频道中保持保守模式以避免不必要的打字噪声。',
   "session.parentForkMaxTokens":
-    "Maximum parent-session token count allowed for thread/session inheritance forking. If the parent exceeds this, OpenClaw starts a fresh thread session instead of forking; set 0 to disable this protection.",
+    "线程/会话继承分叉允许的最大父会话令牌数。如果父会话超过此值，OpenClaw 将启动新的线程会话而不是分叉；设置 0 禁用此保护。",
   "session.mainKey":
-    'Overrides the canonical main session key used for continuity when dmScope or routing logic points to "main". Use a stable value only if you intentionally need custom session anchoring.',
+    '覆盖 dmScope 或路由逻辑指向 "main" 时用于连续性的规范主会话密钥。仅在有意需要自定义会话锚定时使用稳定值。',
   "session.sendPolicy":
-    "Controls cross-session send permissions using allow/deny rules evaluated against channel, chatType, and key prefixes. Use this to fence where session tools can deliver messages in complex environments.",
+    "控制跨会话发送权限，使用针对频道、chatType 和密钥前缀评估的允许/拒绝规则。使用此项来限制会话工具在复杂环境中可以投递消息的位置。",
   "session.sendPolicy.default":
-    'Sets fallback action when no sendPolicy rule matches: "allow" or "deny". Keep "allow" for simpler setups, or choose "deny" when you require explicit allow rules for every destination.',
+    '设置无 sendPolicy 规则匹配时的回退操作："allow" 或 "deny"。简单设置保持 "allow"，或当需要每个目标都有显式允许规则时选择 "deny"。',
   "session.sendPolicy.rules":
-    'Ordered allow/deny rules evaluated before the default action, for example `{ action: "deny", match: { channel: "discord" } }`. Put most specific rules first so broad rules do not shadow exceptions.',
+    '在默认操作之前评估的有序允许/拒绝规则，例如 `{ action: "deny", match: { channel: "discord" } }`。将最具体的规则放在前面，避免广泛规则遮蔽异常。',
   "session.sendPolicy.rules[].action":
-    'Defines rule decision as "allow" or "deny" when the corresponding match criteria are satisfied. Use deny-first ordering when enforcing strict boundaries with explicit allow exceptions.',
+    '定义当对应匹配条件满足时的规则决策为 "allow" 或 "deny"。在强制执行严格边界并有显式允许异常时使用 deny-first 顺序。',
   "session.sendPolicy.rules[].match":
-    "Defines optional rule match conditions that can combine channel, chatType, and key-prefix constraints. Keep matches narrow so policy intent stays readable and debugging remains straightforward.",
+    "定义可组合频道、chatType 和密钥前缀约束的可选规则匹配条件。保持匹配范围窄，使策略意图保持可读且调试简单。",
   "session.sendPolicy.rules[].match.channel":
-    "Matches rule application to a specific channel/provider id (for example discord, telegram, slack). Use this when one channel should permit or deny delivery independently of others.",
+    "将规则应用匹配到特定频道/提供商 ID（例如 discord、telegram、slack）。当某个频道需要独立于其他频道允许或拒绝投递时使用。",
   "session.sendPolicy.rules[].match.chatType":
-    "Matches rule application to chat type (direct, group, thread) so behavior varies by conversation form. Use this when DM and group destinations require different safety boundaries.",
+    "将规则应用匹配到聊天类型（直接、群组、线程），使行为按对话形式变化。当 DM 和群组目标需要不同的安全边界时使用。",
   "session.sendPolicy.rules[].match.keyPrefix":
-    "Matches a normalized session-key prefix after internal key normalization steps in policy consumers. Use this for general prefix controls, and prefer rawKeyPrefix when exact full-key matching is required.",
+    "匹配策略消费者中内部密钥规范化步骤后的已规范化会话密钥前缀。用于一般前缀控制，需要精确全密钥匹配时优先使用 rawKeyPrefix。",
   "session.sendPolicy.rules[].match.rawKeyPrefix":
-    "Matches the raw, unnormalized session-key prefix for exact full-key policy targeting. Use this when normalized keyPrefix is too broad and you need agent-prefixed or transport-specific precision.",
+    "匹配原始未规范化的会话密钥前缀，用于精确的全密钥策略定位。当规范化 keyPrefix 太宽泛且需要代理前缀或传输特定精度时使用。",
   "session.agentToAgent":
-    "Groups controls for inter-agent session exchanges, including loop prevention limits on reply chaining. Keep defaults unless you run advanced agent-to-agent automation with strict turn caps.",
+    "代理间会话交换的分组控制，包括回复链的循环防止限制。保持默认值，除非运行具有严格轮次上限的高级代理到代理自动化。",
   "session.agentToAgent.maxPingPongTurns":
-    "Max reply-back turns between requester and target agents during agent-to-agent exchanges (0-5). Use lower values to hard-limit chatter loops and preserve predictable run completion.",
+    "代理到代理交换中请求者和目标代理之间的最大回复轮次（0-5）。使用较小的值来硬性限制对话循环并保持可预测的运行完成。",
   "session.threadBindings":
-    "Shared defaults for thread-bound session routing behavior across providers that support thread focus workflows. Configure global defaults here and override per channel only when behavior differs.",
+    "跨支持线程聚焦工作流的提供商的线程绑定会话路由行为的共享默认值。在此处配置全局默认值，仅在行为不同时按频道覆盖。",
   "session.threadBindings.enabled":
-    "Global master switch for thread-bound session routing features and focused thread delivery behavior. Keep enabled for modern thread workflows unless you need to disable thread binding globally.",
+    "线程绑定会话路由功能和聚焦线程投递行为的全局主开关。保持启用以支持现代线程工作流，除非需要全局禁用线程绑定。",
   "session.threadBindings.idleHours":
-    "Default inactivity window in hours for thread-bound sessions across providers/channels (0 disables idle auto-unfocus). Default: 24.",
+    "跨提供商/频道的线程绑定会话的默认不活跃窗口（小时，0 禁用空闲自动取消聚焦）。默认：24。",
   "session.threadBindings.maxAgeHours":
-    "Optional hard max age in hours for thread-bound sessions across providers/channels (0 disables hard cap). Default: 0.",
+    "跨提供商/频道的线程绑定会话的可选硬性最大年龄（小时，0 禁用硬性上限）。默认：0。",
   "session.maintenance":
-    "Automatic session-store maintenance controls for pruning age, entry caps, and file rotation behavior. Start in warn mode to observe impact, then enforce once thresholds are tuned.",
+    "会话存储的自动维护控制，用于修剪年龄、条目上限和文件轮换行为。先以 warn 模式观察影响，然后在阈值调优后切换到 enforce。",
   "session.maintenance.mode":
-    'Determines whether maintenance policies are only reported ("warn") or actively applied ("enforce"). Keep "warn" during rollout and switch to "enforce" after validating safe thresholds.',
+    '确定维护策略是仅报告（"warn"）还是主动应用（"enforce"）。在发布时保持 "warn"，验证安全阈值后切换到 "enforce"。',
   "session.maintenance.pruneAfter":
-    "Removes entries older than this duration (for example `30d` or `12h`) during maintenance passes. Use this as the primary age-retention control and align it with data retention policy.",
+    "在维护期间删除超过此持续时间的条目（例如 `30d` 或 `12h`）。将此作为主要的年龄保留控制，并与数据保留策略对齐。",
   "session.maintenance.pruneDays":
-    "Deprecated age-retention field kept for compatibility with legacy configs using day counts. Use session.maintenance.pruneAfter instead so duration syntax and behavior are consistent.",
+    "为兼容使用天数的旧版配置保留的已弃用年龄保留字段。使用 session.maintenance.pruneAfter 代替，以保持持续时间语法和行为的一致性。",
   "session.maintenance.maxEntries":
-    "Caps total session entry count retained in the store to prevent unbounded growth over time. Use lower limits for constrained environments, or higher limits when longer history is required.",
+    "限制存储中保留的总会话条目数，防止无限增长。在受限环境中使用较低限制，或在需要更长历史时使用较高限制。",
   "session.maintenance.rotateBytes":
-    "Rotates the session store when file size exceeds a threshold such as `10mb` or `1gb`. Use this to bound single-file growth and keep backup/restore operations manageable.",
+    "当文件大小超过阈值（如 `10mb` 或 `1gb`）时轮换会话存储。使用此项限制单文件增长，使备份/恢复操作可管理。",
   "session.maintenance.resetArchiveRetention":
-    "Retention for reset transcript archives (`*.reset.<timestamp>`). Accepts a duration (for example `30d`), or `false` to disable cleanup. Defaults to pruneAfter so reset artifacts do not grow forever.",
+    "重置记录归档（`*.reset.<timestamp>`）的保留时间。接受持续时间（例如 `30d`），或 `false` 禁用清理。默认为 pruneAfter，避免重置工件无限增长。",
   "session.maintenance.maxDiskBytes":
-    "Optional per-agent sessions-directory disk budget (for example `500mb`). Use this to cap session storage per agent; when exceeded, warn mode reports pressure and enforce mode performs oldest-first cleanup.",
+    "可选的每代理会话目录磁盘预算（例如 `500mb`）。使用此项限制每个代理的会话存储；超出时，warn 模式报告压力，enforce 模式执行最旧优先清理。",
   "session.maintenance.highWaterBytes":
-    "Target size after disk-budget cleanup (high-water mark). Defaults to 80% of maxDiskBytes; set explicitly for tighter reclaim behavior on constrained disks.",
-  cron: "Global scheduler settings for stored cron jobs, run concurrency, delivery fallback, and run-session retention. Keep defaults unless you are scaling job volume or integrating external webhook receivers.",
+    "磁盘预算清理后的目标大小（高水位标记）。默认为 maxDiskBytes 的 80%；在受限磁盘上显式设置以获得更紧凑的回收行为。",
+  cron: "全局调度器设置，用于存储的定时任务、运行并发、投递回退和运行会话保留。保持默认值，除非正在扩展任务量或集成外部 webhook 接收器。",
   "cron.enabled":
-    "Enables cron job execution for stored schedules managed by the gateway. Keep enabled for normal reminder/automation flows, and disable only to pause all cron execution without deleting jobs.",
+    "启用网关管理的存储计划的定时任务执行。保持启用用于正常的提醒/自动化流程，仅在需要暂停所有定时执行而不删除任务时禁用。",
   "cron.store":
-    "Path to the cron job store file used to persist scheduled jobs across restarts. Set an explicit path only when you need custom storage layout, backups, or mounted volumes.",
+    "用于跨重启持久化计划任务的定时任务存储文件路径。仅在需要自定义存储布局、备份或挂载卷时设置显式路径。",
   "cron.maxConcurrentRuns":
-    "Limits how many cron jobs can execute at the same time when multiple schedules fire together. Use lower values to protect CPU/memory under heavy automation load, or raise carefully for higher throughput.",
+    "限制多个计划同时触发时可以同时执行的定时任务数。使用较低值保护重负载自动化下的 CPU/内存，或谨慎提高以获得更高吞吐量。",
   "cron.retry":
-    "Overrides the default retry policy for one-shot jobs when they fail with transient errors (rate limit, overloaded, network, server_error). Omit to use defaults: maxAttempts 3, backoffMs [30000, 60000, 300000], retry all transient types.",
+    "覆盖一次性任务在瞬时错误（速率限制、过载、网络、server_error）失败时的默认重试策略。省略以使用默认值：maxAttempts 3、backoffMs [30000, 60000, 300000]、重试所有瞬时类型。",
   "cron.retry.maxAttempts":
-    "Max retries for one-shot jobs on transient errors before permanent disable (default: 3).",
+    "一次性任务在瞬时错误时永久禁用前的最大重试次数（默认：3）。",
   "cron.retry.backoffMs":
-    "Backoff delays in ms for each retry attempt (default: [30000, 60000, 300000]). Use shorter values for faster retries.",
+    "每次重试尝试的退避延迟（毫秒，默认：[30000, 60000, 300000]）。使用较短的值以加快重试。",
   "cron.retry.retryOn":
-    "Error types to retry: rate_limit, overloaded, network, timeout, server_error. Use to restrict which errors trigger retries; omit to retry all transient types.",
+    "要重试的错误类型：rate_limit、overloaded、network、timeout、server_error。用于限制哪些错误触发重试；省略则重试所有瞬时类型。",
   "cron.webhook":
     'Deprecated legacy fallback webhook URL used only for old jobs with `notify=true`. Migrate to per-job delivery using `delivery.mode="webhook"` plus `delivery.to`, and avoid relying on this global field.',
   "cron.webhookToken":
-    "Bearer token attached to cron webhook POST deliveries when webhook mode is used. Prefer secret/env substitution and rotate this token regularly if shared webhook endpoints are internet-reachable.",
+    "使用 webhook 模式时附加到定时任务 webhook POST 投递的 Bearer 令牌。优先使用密钥/环境变量替换，并在共享 webhook 端点可从互联网访问时定期轮换此令牌。",
   "cron.sessionRetention":
-    "Controls how long completed cron run sessions are kept before pruning (`24h`, `7d`, `1h30m`, or `false` to disable pruning; default: `24h`). Use shorter retention to reduce storage growth on high-frequency schedules.",
+    "控制已完成的定时运行会话在修剪前保留多长时间（`24h`、`7d`、`1h30m`，或 `false` 禁用修剪；默认：`24h`）。使用较短的保留时间以减少高频计划的存储增长。",
   "cron.runLog":
-    "Pruning controls for per-job cron run history files under `cron/runs/<jobId>.jsonl`, including size and line retention.",
+    "每个任务的定时运行历史文件（`cron/runs/<jobId>.jsonl`）的修剪控制，包括大小和行保留。",
   "cron.runLog.maxBytes":
-    "Maximum bytes per cron run-log file before pruning rewrites to the last keepLines entries (for example `2mb`, default `2000000`).",
+    "每个定时运行日志文件在修剪重写为最后 keepLines 条目前的最大字节数（例如 `2mb`，默认 `2000000`）。",
   "cron.runLog.keepLines":
-    "How many trailing run-log lines to retain when a file exceeds maxBytes (default `2000`). Increase for longer forensic history or lower for smaller disks.",
+    "当文件超过 maxBytes 时保留的尾部运行日志行数（默认 `2000`）。增加以获得更长的取证历史，或降低以适应较小的磁盘。",
   hooks:
     "入站 Webhook 自动化界面，用于将外部事件映射到 OpenClaw 中的唤醒或代理操作。在暴露到可信网络之外前，使用显式的令牌/会话/代理控制锁定它。",
   "hooks.enabled":
-    "Enables the hooks endpoint and mapping execution pipeline for inbound webhook requests. Keep disabled unless you are actively routing external events into the gateway.",
+    "启用入站 webhook 请求的 hooks 端点和映射执行管道。保持禁用，除非正在积极将外部事件路由到网关。",
   "hooks.path":
-    "HTTP path used by the hooks endpoint (for example `/hooks`) on the gateway control server. Use a non-guessable path and combine it with token validation for defense in depth.",
+    "网关控制服务器上 hooks 端点使用的 HTTP 路径（例如 `/hooks`）。使用不可猜测的路径，并配合令牌验证进行纵深防御。",
   "hooks.token":
-    "Shared bearer token checked by hooks ingress for request authentication before mappings run. Use environment substitution and rotate regularly when webhook endpoints are internet-accessible.",
+    "在映射运行前，hooks 入口检查的共享 Bearer 令牌用于请求身份验证。使用环境变量替换，并在 webhook 端点可从互联网访问时定期轮换。",
   "hooks.defaultSessionKey":
-    "Fallback session key used for hook deliveries when a request does not provide one through allowed channels. Use a stable but scoped key to avoid mixing unrelated automation conversations.",
+    "当请求未通过允许的频道提供会话密钥时，用于 hook 投递的回退会话密钥。使用稳定但有范围的密钥，避免混合不相关的自动化对话。",
   "hooks.allowRequestSessionKey":
-    "Allows callers to supply a session key in hook requests when true, enabling caller-controlled routing. Keep false unless trusted integrators explicitly need custom session threading.",
+    "当为 true 时允许调用者在 hook 请求中提供会话密钥，启用调用者控制的路由。保持 false，除非受信任的集成者明确需要自定义会话线程。",
   "hooks.allowedSessionKeyPrefixes":
-    "Allowlist of accepted session-key prefixes for inbound hook requests when caller-provided keys are enabled. Use narrow prefixes to prevent arbitrary session-key injection.",
+    "当启用调用者提供的密钥时，入站 hook 请求接受的会话密钥前缀允许列表。使用窄范围前缀防止任意会话密钥注入。",
   "hooks.allowedAgentIds":
-    "Allowlist of agent IDs that hook mappings are allowed to target when selecting execution agents. Use this to constrain automation events to dedicated service agents.",
+    "允许 hook 映射在选择执行代理时定位的代理 ID 允许列表。使用此项将自动化事件约束到专用的服务代理。",
   "hooks.maxBodyBytes":
-    "Maximum accepted webhook payload size in bytes before the request is rejected. Keep this bounded to reduce abuse risk and protect memory usage under bursty integrations.",
+    "请求被拒绝前接受的最大 webhook 有效负载大小（字节）。保持有界限以减少滥用风险并保护突发集成下的内存使用。",
   "hooks.presets":
-    "Named hook preset bundles applied at load time to seed standard mappings and behavior defaults. Keep preset usage explicit so operators can audit which automations are active.",
+    "在加载时应用的命名 hook 预设包，用于种子标准映射和行为默认值。保持预设使用明确，使操作者可以审计哪些自动化处于活动状态。",
   "hooks.transformsDir":
-    "Base directory for hook transform modules referenced by mapping transform.module paths. Use a controlled repo directory so dynamic imports remain reviewable and predictable.",
+    "映射 transform.module 路径引用的 hook 转换模块的基础目录。使用受控的仓库目录，使动态导入保持可审查和可预测。",
   "hooks.mappings":
-    "Ordered mapping rules that match inbound hook requests and choose wake or agent actions with optional delivery routing. Use specific mappings first to avoid broad pattern rules capturing everything.",
+    "匹配入站 hook 请求并选择唤醒或代理操作以及可选投递路由的有序映射规则。将特定映射放在前面，避免广泛模式规则捕获所有内容。",
   "hooks.mappings[].id":
-    "Optional stable identifier for a hook mapping entry used for auditing, troubleshooting, and targeted updates. Use unique IDs so logs and config diffs can reference mappings unambiguously.",
+    "用于审计、排查和定向更新的 hook 映射条目的可选稳定标识符。使用唯一 ID 使日志和配置差异可以明确引用映射。",
   "hooks.mappings[].match":
-    "Grouping object for mapping match predicates such as path and source before action routing is applied. Keep match criteria specific so unrelated webhook traffic does not trigger automations.",
+    "在应用操作路由之前，用于路径和来源等映射匹配谓词的分组对象。保持匹配条件具体，避免不相关的 webhook 流量触发自动化。",
   "hooks.mappings[].match.path":
-    "Path match condition for a hook mapping, usually compared against the inbound request path. Use this to split automation behavior by webhook endpoint path families.",
+    "hook 映射的路径匹配条件，通常与入站请求路径比较。使用此项按 webhook 端点路径系列拆分自动化行为。",
   "hooks.mappings[].match.source":
-    "Source match condition for a hook mapping, typically set by trusted upstream metadata or adapter logic. Use stable source identifiers so routing remains deterministic across retries.",
+    "hook 映射的来源匹配条件，通常由受信任的上游元数据或适配器逻辑设置。使用稳定的来源标识符，使路由在重试中保持确定性。",
   "hooks.mappings[].action":
-    'Mapping action type: "wake" triggers agent wake flow, while "agent" sends directly to agent handling. Use "agent" for immediate execution and "wake" when heartbeat-driven processing is preferred.',
+    '映射操作类型："wake" 触发代理唤醒流程，"agent" 直接发送到代理处理。使用 "agent" 进行立即执行，使用 "wake" 当首选心跳驱动处理时。',
   "hooks.mappings[].wakeMode":
-    'Wake scheduling mode: "now" wakes immediately, while "next-heartbeat" defers until the next heartbeat cycle. Use deferred mode for lower-priority automations that can tolerate slight delay.',
+    '唤醒调度模式："now" 立即唤醒，"next-heartbeat" 延迟到下一个心跳周期。对可以容忍略微延迟的低优先级自动化使用延迟模式。',
   "hooks.mappings[].name":
-    "Human-readable mapping display name used in diagnostics and operator-facing config UIs. Keep names concise and descriptive so routing intent is obvious during incident review.",
+    "用于诊断和面向操作者的配置界面的可读映射显示名称。保持名称简洁且有描述性，使路由意图在事件审查中显而易见。",
   "hooks.mappings[].agentId":
-    "Target agent ID for mapping execution when action routing should not use defaults. Use dedicated automation agents to isolate webhook behavior from interactive operator sessions.",
+    "当操作路由不应使用默认值时的目标代理 ID。使用专用的自动化代理来隔离 webhook 行为与交互式操作者会话。",
   "hooks.mappings[].sessionKey":
-    "Explicit session key override for mapping-delivered messages to control thread continuity. Use stable scoped keys so repeated events correlate without leaking into unrelated conversations.",
+    "用于控制线程连续性的映射投递消息的显式会话密钥覆盖。使用稳定的有范围密钥，使重复事件关联而不泄漏到不相关的对话中。",
   "hooks.mappings[].messageTemplate":
-    "Template for synthesizing structured mapping input into the final message content sent to the target action path. Keep templates deterministic so downstream parsing and behavior remain stable.",
+    "用于将结构化映射输入合成为发送到目标操作路径的最终消息内容的模板。保持模板确定性，使下游解析和行为保持稳定。",
   "hooks.mappings[].textTemplate":
-    "Text-only fallback template used when rich payload rendering is not desired or not supported. Use this to provide a concise, consistent summary string for chat delivery surfaces.",
+    "当不需要或不支持富有效负载渲染时使用的纯文本回退模板。使用此项为聊天投递界面提供简洁一致的摘要字符串。",
   "hooks.mappings[].deliver":
-    "Controls whether mapping execution results are delivered back to a channel destination versus being processed silently. Disable delivery for background automations that should not post user-facing output.",
+    "控制映射执行结果是投递回频道目标还是静默处理。对不应发布面向用户输出的后台自动化禁用投递。",
   "hooks.mappings[].allowUnsafeExternalContent":
-    "When true, mapping content may include less-sanitized external payload data in generated messages. Keep false by default and enable only for trusted sources with reviewed transform logic.",
+    "当为 true 时，映射内容可能在生成的消息中包含较少消毒的外部有效负载数据。默认保持 false，仅对已审查转换逻辑的受信任来源启用。",
   "hooks.mappings[].channel":
-    'Delivery channel override for mapping outputs (for example "last", "telegram", "discord", "slack", "signal", "imessage", or "msteams"). Keep channel overrides explicit to avoid accidental cross-channel sends.',
+    '映射输出的投递频道覆盖（例如 "last"、"telegram"、"discord"、"slack"、"signal"、"imessage" 或 "msteams"）。保持频道覆盖明确，避免意外的跨频道发送。',
   "hooks.mappings[].to":
-    "Destination identifier inside the selected channel when mapping replies should route to a fixed target. Verify provider-specific destination formats before enabling production mappings.",
+    "当映射回复应路由到固定目标时，所选频道内的目标标识符。在启用生产映射之前验证提供商特定的目标格式。",
   "hooks.mappings[].model":
-    "Optional model override for mapping-triggered runs when automation should use a different model than agent defaults. Use this sparingly so behavior remains predictable across mapping executions.",
+    "当自动化应使用与代理默认值不同的模型时，映射触发运行的可选模型覆盖。谨慎使用，使行为在映射执行中保持可预测。",
   "hooks.mappings[].thinking":
-    "Optional thinking-effort override for mapping-triggered runs to tune latency versus reasoning depth. Keep low or minimal for high-volume hooks unless deeper reasoning is clearly required.",
+    "映射触发运行的可选思考努力覆盖，用于调整延迟与推理深度。对高流量 hooks 保持低或最小，除非明确需要更深入的推理。",
   "hooks.mappings[].timeoutSeconds":
-    "Maximum runtime allowed for mapping action execution before timeout handling applies. Use tighter limits for high-volume webhook sources to prevent queue pileups.",
+    "映射操作执行在超时处理应用前允许的最大运行时间。对高流量 webhook 源使用更紧凑的限制以防止队列堆积。",
   "hooks.mappings[].transform":
-    "Transform configuration block defining module/export preprocessing before mapping action handling. Use transforms only from reviewed code paths and keep behavior deterministic for repeatable automation.",
+    "定义映射操作处理前的模块/导出预处理的转换配置块。仅从已审查的代码路径使用转换，并保持行为确定性以实现可重复的自动化。",
   "hooks.mappings[].transform.module":
-    "Relative transform module path loaded from hooks.transformsDir to rewrite incoming payloads before delivery. Keep modules local, reviewed, and free of path traversal patterns.",
+    "从 hooks.transformsDir 加载的相对转换模块路径，用于在投递前重写传入的有效负载。保持模块本地、已审查且无路径穿越模式。",
   "hooks.mappings[].transform.export":
-    "Named export to invoke from the transform module; defaults to module default export when omitted. Set this when one file hosts multiple transform handlers.",
+    "从转换模块调用的命名导出；省略时默认为模块默认导出。当一个文件托管多个转换处理程序时设置此项。",
   "hooks.gmail":
-    "Gmail push integration settings used for Pub/Sub notifications and optional local callback serving. Keep this scoped to dedicated Gmail automation accounts where possible.",
+    "Gmail 推送集成设置，用于 Pub/Sub 通知和可选的本地回调服务。尽可能将此项限定在专用的 Gmail 自动化账户。",
   "hooks.gmail.account":
-    "Google account identifier used for Gmail watch/subscription operations in this hook integration. Use a dedicated automation mailbox account to isolate operational permissions.",
+    "此 hook 集成中用于 Gmail watch/订阅操作的 Google 账户标识符。使用专用的自动化邮箱账户以隔离操作权限。",
   "hooks.gmail.label":
-    "Optional Gmail label filter limiting which labeled messages trigger hook events. Keep filters narrow to avoid flooding automations with unrelated inbox traffic.",
+    "可选的 Gmail 标签过滤器，限制哪些带标签的消息触发 hook 事件。保持过滤器窄范围，避免不相关的收件箱流量涛入自动化。",
   "hooks.gmail.topic":
-    "Google Pub/Sub topic name used by Gmail watch to publish change notifications for this account. Ensure the topic IAM grants Gmail publish access before enabling watches.",
+    "Gmail watch 用于发布此账户变更通知的 Google Pub/Sub 主题名称。在启用 watch 前确保主题 IAM 授予 Gmail 发布访问权限。",
   "hooks.gmail.subscription":
-    "Pub/Sub subscription consumed by the gateway to receive Gmail change notifications from the configured topic. Keep subscription ownership clear so multiple consumers do not race unexpectedly.",
+    "网关消费的 Pub/Sub 订阅，用于从配置的主题接收 Gmail 变更通知。保持订阅所有权明确，避免多个消费者意外竞争。",
   "hooks.gmail.hookUrl":
-    "Public callback URL Gmail or intermediaries invoke to deliver notifications into this hook pipeline. Keep this URL protected with token validation and restricted network exposure.",
+    "Gmail 或中间层调用以将通知投递到此 hook 管道的公共回调 URL。使用令牌验证和受限网络暴露保护此 URL。",
   "hooks.gmail.includeBody":
-    "When true, fetch and include email body content for downstream mapping/agent processing. Keep false unless body text is required, because this increases payload size and sensitivity.",
+    "当为 true 时，获取并包含邮件正文内容用于下游映射/代理处理。保持 false 除非需要正文文本，因为这会增加有效负载大小和敏感性。",
   "hooks.gmail.allowUnsafeExternalContent":
-    "Allows less-sanitized external Gmail content to pass into processing when enabled. Keep disabled for safer defaults, and enable only for trusted mail streams with controlled transforms.",
+    "启用时允许较少消毒的外部 Gmail 内容进入处理。保持禁用以获得更安全的默认值，仅对有受控转换的受信任邮件流启用。",
   "hooks.gmail.serve":
-    "Local callback server settings block for directly receiving Gmail notifications without a separate ingress layer. Enable only when this process should terminate webhook traffic itself.",
+    "用于直接接收 Gmail 通知而无需单独入口层的本地回调服务器设置块。仅在此进程应自行终止 webhook 流量时启用。",
   "hooks.gmail.pushToken":
-    "Shared secret token required on Gmail push hook callbacks before processing notifications. Use env substitution and rotate if callback endpoints are exposed externally.",
+    "在处理通知前 Gmail 推送 hook 回调需要的共享密钥令牌。使用环境变量替换，并在回调端点外部暴露时轮换。",
   "hooks.gmail.maxBytes":
-    "Maximum Gmail payload bytes processed per event when includeBody is enabled. Keep conservative limits to reduce oversized message processing cost and risk.",
+    "启用 includeBody 时每个事件处理的最大 Gmail 有效负载字节数。保持保守限制以减少超大消息处理成本和风险。",
   "hooks.gmail.renewEveryMinutes":
-    "Renewal cadence in minutes for Gmail watch subscriptions to prevent expiration. Set below provider expiration windows and monitor renew failures in logs.",
+    "Gmail watch 订阅的续期频率（分钟）以防止过期。设置在提供商过期窗口之下，并在日志中监控续期失败。",
   "hooks.gmail.serve.bind":
-    "Bind address for the local Gmail callback HTTP server used when serving hooks directly. Keep loopback-only unless external ingress is intentionally required.",
+    "直接提供 hooks 时本地 Gmail 回调 HTTP 服务器的绑定地址。保持仅回环，除非有意需要外部入口。",
   "hooks.gmail.serve.port":
-    "Port for the local Gmail callback HTTP server when serve mode is enabled. Use a dedicated port to avoid collisions with gateway/control interfaces.",
+    "启用 serve 模式时本地 Gmail 回调 HTTP 服务器的端口。使用专用端口避免与网关/控制接口冲突。",
   "hooks.gmail.serve.path":
-    "HTTP path on the local Gmail callback server where push notifications are accepted. Keep this consistent with subscription configuration to avoid dropped events.",
+    "本地 Gmail 回调服务器上接受推送通知的 HTTP 路径。保持与订阅配置一致以避免丢失事件。",
   "hooks.gmail.tailscale.mode":
-    'Tailscale exposure mode for Gmail callbacks: "off", "serve", or "funnel". Use "serve" for private tailnet delivery and "funnel" only when public internet ingress is required.',
+    'Gmail 回调的 Tailscale 暴露模式："off"、"serve" 或 "funnel"。使用 "serve" 进行私有 tailnet 投递，仅在需要公共互联网入口时使用 "funnel"。',
   "hooks.gmail.tailscale":
-    "Tailscale exposure configuration block for publishing Gmail callbacks through Serve/Funnel routes. Use private tailnet modes before enabling any public ingress path.",
+    "用于通过 Serve/Funnel 路由发布 Gmail 回调的 Tailscale 暴露配置块。在启用任何公共入口路径之前使用私有 tailnet 模式。",
   "hooks.gmail.tailscale.path":
-    "Path published by Tailscale Serve/Funnel for Gmail callback forwarding when enabled. Keep it aligned with Gmail webhook config so requests reach the expected handler.",
+    "启用时 Tailscale Serve/Funnel 发布的用于 Gmail 回调转发的路径。保持与 Gmail webhook 配置对齐，使请求到达预期的处理程序。",
   "hooks.gmail.tailscale.target":
-    "Local service target forwarded by Tailscale Serve/Funnel (for example http://127.0.0.1:8787). Use explicit loopback targets to avoid ambiguous routing.",
+    "Tailscale Serve/Funnel 转发的本地服务目标（例如 http://127.0.0.1:8787）。使用显式的回环目标以避免模糊路由。",
   "hooks.gmail.model":
-    "Optional model override for Gmail-triggered runs when mailbox automations should use dedicated model behavior. Keep unset to inherit agent defaults unless mailbox tasks need specialization.",
+    "当邮箱自动化应使用专用模型行为时，Gmail 触发运行的可选模型覆盖。保持未设置以继承代理默认值，除非邮箱任务需要专业化。",
   "hooks.gmail.thinking":
-    'Thinking effort override for Gmail-driven agent runs: "off", "minimal", "low", "medium", or "high". Keep modest defaults for routine inbox automations to control cost and latency.',
+    'Gmail 驱动的代理运行的思考努力覆盖："off"、"minimal"、"low"、"medium" 或 "high"。对常规收件箱自动化保持适度默认值以控制成本和延迟。',
   "hooks.internal":
-    "Internal hook runtime settings for bundled/custom event handlers loaded from module paths. Use this for trusted in-process automations and keep handler loading tightly scoped.",
+    "从模块路径加载的内置/自定义事件处理程序的内部 hook 运行时设置。用于受信任的进程内自动化，并保持处理程序加载紧密限定范围。",
   "hooks.internal.enabled":
-    "Enables processing for internal hook handlers and configured entries in the internal hook runtime. Keep disabled unless internal hook handlers are intentionally configured.",
+    "启用内部 hook 运行时中的内部 hook 处理程序和已配置条目的处理。保持禁用，除非有意配置了内部 hook 处理程序。",
   "hooks.internal.handlers":
-    "List of internal event handlers mapping event names to modules and optional exports. Keep handler definitions explicit so event-to-code routing is auditable.",
+    "将事件名称映射到模块和可选导出的内部事件处理程序列表。保持处理程序定义明确，使事件到代码的路由可审计。",
   "hooks.internal.handlers[].event":
-    "Internal event name that triggers this handler module when emitted by the runtime. Use stable event naming conventions to avoid accidental overlap across handlers.",
+    "当运行时发出此事件时触发此处理程序模块的内部事件名称。使用稳定的事件命名约定以避免处理程序间意外重叠。",
   "hooks.internal.handlers[].module":
-    "Safe relative module path for the internal hook handler implementation loaded at runtime. Keep module files in reviewed directories and avoid dynamic path composition.",
+    "运行时加载的内部 hook 处理程序实现的安全相对模块路径。保持模块文件在已审查的目录中，避免动态路径组合。",
   "hooks.internal.handlers[].export":
-    "Optional named export for the internal hook handler function when module default export is not used. Set this when one module ships multiple handler entrypoints.",
+    "当不使用模块默认导出时，内部 hook 处理程序函数的可选命名导出。当一个模块提供多个处理程序入口点时设置此项。",
   "hooks.internal.entries":
-    "Configured internal hook entry records used to register concrete runtime handlers and metadata. Keep entries explicit and versioned so production behavior is auditable.",
+    "用于注册具体运行时处理程序和元数据的已配置内部 hook 条目记录。保持条目明确且版本化，使生产行为可审计。",
   "hooks.internal.load":
-    "Internal hook loader settings controlling where handler modules are discovered at startup. Use constrained load roots to reduce accidental module conflicts or shadowing.",
+    "控制启动时处理程序模块发现位置的内部 hook 加载器设置。使用受限的加载根目录以减少意外的模块冲突或遮蔽。",
   "hooks.internal.load.extraDirs":
-    "Additional directories searched for internal hook modules beyond default load paths. Keep this minimal and controlled to reduce accidental module shadowing.",
+    "除默认加载路径外搜索内部 hook 模块的额外目录。保持最小化和受控，以减少意外的模块遮蔽。",
   "hooks.internal.installs":
-    "Install metadata for internal hook modules, including source and resolved artifacts for repeatable deployments. Use this as operational provenance and avoid manual drift edits.",
+    "内部 hook 模块的安装元数据，包括源和已解析的工件，用于可重复的部署。将此作为操作来源，避免手动漂移编辑。",
   messages:
     "入站/出站聊天流的消息格式化、确认、排队、防抖和状态反应行为。当频道响应性或消息体验需要调整时使用此部分。",
   "messages.messagePrefix":
-    "Prefix text prepended to inbound user messages before they are handed to the agent runtime. Use this sparingly for channel context markers and keep it stable across sessions.",
+    "在交给代理运行时之前附加到入站用户消息的前缀文本。谨慎使用用于频道上下文标记，并在会话中保持稳定。",
   "messages.responsePrefix":
-    "Prefix text prepended to outbound assistant replies before sending to channels. Use for lightweight branding/context tags and avoid long prefixes that reduce content density.",
+    "在发送到频道之前附加到出站助手回复的前缀文本。用于轻量级品牌/上下文标记，避免过长前缀降低内容密度。",
   "messages.groupChat":
-    "Group-message handling controls including mention triggers and history window sizing. Keep mention patterns narrow so group channels do not trigger on every message.",
+    "群组消息处理控制，包括提及触发器和历史窗口大小。保持提及模式窄范围，使群组频道不会对每条消息触发。",
   "messages.groupChat.mentionPatterns":
-    "Regex-like patterns used to detect explicit mentions/trigger phrases in group chats. Use precise patterns to reduce false positives in high-volume channels.",
+    "用于检测群聊中显式提及/触发短语的正则式模式。使用精确的模式以减少高流量频道中的误报。",
   "messages.groupChat.historyLimit":
-    "Maximum number of prior group messages loaded as context per turn for group sessions. Use higher values for richer continuity, or lower values for faster and cheaper responses.",
+    "群组会话每轮加载为上下文的最大先前群组消息数。使用较高值获得更丰富的连续性，或较低值获得更快更便宜的响应。",
   "messages.queue":
-    "Inbound message queue strategy used to buffer bursts before processing turns. Tune this for busy channels where sequential processing or batching behavior matters.",
+    "用于在处理轮次前缓冲突发的入站消息队列策略。为顺序处理或批处理行为重要的繁忙频道调整此项。",
   "messages.queue.mode":
-    'Queue behavior mode: "steer", "followup", "collect", "steer-backlog", "steer+backlog", "queue", or "interrupt". Keep conservative modes unless you intentionally need aggressive interruption/backlog semantics.',
+    '队列行为模式："steer"、"followup"、"collect"、"steer-backlog"、"steer+backlog"、"queue" 或 "interrupt"。保持保守模式，除非有意需要激进的中断/积压语义。',
   "messages.queue.byChannel":
     "Per-channel queue mode overrides keyed by provider id (for example telegram, discord, slack). Use this when one channel’s traffic pattern needs different queue behavior than global defaults.",
   "messages.queue.debounceMs":
-    "Global queue debounce window in milliseconds before processing buffered inbound messages. Use higher values to coalesce rapid bursts, or lower values for reduced response latency.",
+    "处理缓冲的入站消息之前的全局队列防抖动窗口（毫秒）。使用较高值合并快速突发，或较低值减少响应延迟。",
   "messages.queue.debounceMsByChannel":
-    "Per-channel debounce overrides for queue behavior keyed by provider id. Use this to tune burst handling independently for chat surfaces with different pacing.",
+    "按提供商 ID 键控的每频道防抖动覆盖。用于对具有不同节奏的聊天界面独立调整突发处理。",
   "messages.queue.cap":
-    "Maximum number of queued inbound items retained before drop policy applies. Keep caps bounded in noisy channels so memory usage remains predictable.",
+    "丢弃策略应用前保留的最大队列入站条目数。在嘈杂频道中保持上限有界，使内存使用保持可预测。",
   "messages.queue.drop":
-    'Drop strategy when queue cap is exceeded: "old", "new", or "summarize". Use summarize when preserving intent matters, or old/new when deterministic dropping is preferred.',
+    '队列上限超出时的丢弃策略："old"、"new" 或 "summarize"。当保留意图重要时使用 summarize，或当需要确定性丢弃时使用 old/new。',
   "messages.inbound":
-    "Direct inbound debounce settings used before queue/turn processing starts. Configure this for provider-specific rapid message bursts from the same sender.",
+    "在队列/轮次处理开始前使用的直接入站防抖动设置。为特定提供商的同一发送者快速消息突发配置此项。",
   "messages.inbound.byChannel":
-    "Per-channel inbound debounce overrides keyed by provider id in milliseconds. Use this where some providers send message fragments more aggressively than others.",
+    "按提供商 ID 键控的每频道入站防抖动覆盖（毫秒）。当某些提供商比其他提供商更激进地发送消息片段时使用。",
   "messages.removeAckAfterReply":
-    "Removes the acknowledgment reaction after final reply delivery when enabled. Keep enabled for cleaner UX in channels where persistent ack reactions create clutter.",
+    "启用时在最终回复投递后移除确认反应。在持久确认反应会造成杂乱的频道中保持启用以获得更清洁的用户体验。",
   "messages.tts":
-    "Text-to-speech policy for reading agent replies aloud on supported voice or audio surfaces. Keep disabled unless voice playback is part of your operator/user workflow.",
+    "在支持的语音或音频界面上朗读代理回复的文本转语音策略。保持禁用，除非语音播放是你的操作者/用户工作流的一部分。",
   channels:
     "频道提供商配置加上控制访问策略、心跳可见性和每界面行为的共享默认值。保持默认值集中化，仅在需要时按提供商覆盖。",
   "channels.telegram":
-    "Telegram channel provider configuration including auth tokens, retry behavior, and message rendering controls. Use this section to tune bot behavior for Telegram-specific API semantics.",
+    "Telegram 频道提供商配置，包括身份验证令牌、重试行为和消息渲染控制。使用此部分调整 Telegram 特定 API 语义的机器人行为。",
   "channels.slack":
-    "Slack channel provider configuration for bot/app tokens, streaming behavior, and DM policy controls. Keep token handling and thread behavior explicit to avoid noisy workspace interactions.",
+    "Slack 频道提供商配置，用于机器人/应用令牌、流式行为和 DM 策略控制。保持令牌处理和线程行为明确以避免嘈杂的工作区交互。",
   "channels.discord":
-    "Discord channel provider configuration for bot auth, retry policy, streaming, thread bindings, and optional voice capabilities. Keep privileged intents and advanced features disabled unless needed.",
+    "Discord 频道提供商配置，用于机器人身份验证、重试策略、流式、线程绑定和可选语音功能。保持特权意图和高级功能禁用，除非需要。",
   "channels.whatsapp":
-    "WhatsApp channel provider configuration for access policy and message batching behavior. Use this section to tune responsiveness and direct-message routing safety for WhatsApp chats.",
+    "WhatsApp 频道提供商配置，用于访问策略和消息批处理行为。使用此部分调整 WhatsApp 聊天的响应性和直接消息路由安全性。",
   "channels.signal":
-    "Signal channel provider configuration including account identity and DM policy behavior. Keep account mapping explicit so routing remains stable across multi-device setups.",
+    "Signal 频道提供商配置，包括账户身份和 DM 策略行为。保持账户映射明确，使路由在多设备设置中保持稳定。",
   "channels.imessage":
-    "iMessage channel provider configuration for CLI integration and DM access policy handling. Use explicit CLI paths when runtime environments have non-standard binary locations.",
+    "iMessage 频道提供商配置，用于 CLI 集成和 DM 访问策略处理。当运行时环境有非标准二进制位置时使用显式 CLI 路径。",
   "channels.bluebubbles":
-    "BlueBubbles channel provider configuration used for Apple messaging bridge integrations. Keep DM policy aligned with your trusted sender model in shared deployments.",
+    "BlueBubbles 频道提供商配置，用于 Apple 消息桥接集成。保持 DM 策略与你在共享部署中的受信任发送者模型对齐。",
   "channels.msteams":
-    "Microsoft Teams channel provider configuration and provider-specific policy toggles. Use this section to isolate Teams behavior from other enterprise chat providers.",
+    "Microsoft Teams 频道提供商配置和提供商特定策略开关。使用此部分将 Teams 行为与其他企业聊天提供商隔离。",
   "channels.mattermost":
-    "Mattermost channel provider configuration for bot credentials, base URL, and message trigger modes. Keep mention/trigger rules strict in high-volume team channels.",
+    "Mattermost 频道提供商配置，用于机器人凭据、基础 URL 和消息触发模式。在高流量团队频道中保持提及/触发规则严格。",
   "channels.irc":
-    "IRC channel provider configuration and compatibility settings for classic IRC transport workflows. Use this section when bridging legacy chat infrastructure into OpenClaw.",
+    "IRC 频道提供商配置和经典 IRC 传输工作流的兼容性设置。当将旧版聊天基础设施桥接到 OpenClaw 时使用此部分。",
   "channels.defaults":
-    "Default channel behavior applied across providers when provider-specific settings are not set. Use this to enforce consistent baseline policy before per-provider tuning.",
+    "当未设置提供商特定设置时跨提供商应用的默认频道行为。使用此项在按提供商调整之前强制一致的基线策略。",
   "channels.defaults.groupPolicy":
-    'Default group policy across channels: "open", "disabled", or "allowlist". Keep "allowlist" for safer production setups unless broad group participation is intentional.',
+    '跨频道的默认群组策略："open"、"disabled" 或 "allowlist"。为更安全的生产设置保持 "allowlist"，除非有意需要广泛的群组参与。',
   "channels.defaults.heartbeat":
-    "Default heartbeat visibility settings for status messages emitted by providers/channels. Tune this globally to reduce noisy healthy-state updates while keeping alerts visible.",
+    "提供商/频道发出的状态消息的默认心跳可见性设置。全局调整以减少嘈杂的健康状态更新，同时保持警报可见。",
   "channels.defaults.heartbeat.showOk":
-    "Shows healthy/OK heartbeat status entries when true in channel status outputs. Keep false in noisy environments and enable only when operators need explicit healthy confirmations.",
+    "当为 true 时在频道状态输出中显示健康/OK 心跳状态条目。在嘈杂环境中保持 false，仅在操作者需要显式健康确认时启用。",
   "channels.defaults.heartbeat.showAlerts":
-    "Shows degraded/error heartbeat alerts when true so operator channels surface problems promptly. Keep enabled in production so broken channel states are visible.",
+    "当为 true 时显示降级/错误心跳警报，使操作者频道及时发现问题。在生产环境中保持启用，使故障频道状态可见。",
   "channels.defaults.heartbeat.useIndicator":
-    "Enables concise indicator-style heartbeat rendering instead of verbose status text where supported. Use indicator mode for dense dashboards with many active channels.",
+    "在支持的地方启用简洁的指示器样式心跳渲染，而不是冗长的状态文本。对具有许多活动频道的密集仪表板使用指示器模式。",
   "agents.defaults.heartbeat.directPolicy":
-    'Controls whether heartbeat delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.',
+    '控制心跳投递是否可以定向直接/DM 聊天："allow"（默认）允许 DM 投递，"block" 禁止直接目标发送。',
   "agents.list.*.heartbeat.directPolicy":
-    'Per-agent override for heartbeat direct/DM delivery policy; use "block" for agents that should only send heartbeat alerts to non-DM destinations.',
+    '每个代理的心跳直接/DM 投递策略覆盖；对应仅向非 DM 目标发送心跳警报的代理使用 "block"。',
   "channels.telegram.configWrites":
-    "Allow Telegram to write config in response to channel events/commands (default: true).",
+    "允许 Telegram 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.telegram.botToken":
-    "Telegram bot token used to authenticate Bot API requests for this account/provider config. Use secret/env substitution and rotate tokens if exposure is suspected.",
+    "用于验证此账户/提供商配置的 Bot API 请求的 Telegram 机器人令牌。使用密钥/环境变量替换，并在怀疑泄露时轮换令牌。",
   "channels.telegram.capabilities.inlineButtons":
-    "Enable Telegram inline button components for supported command and interaction surfaces. Disable if your deployment needs plain-text-only compatibility behavior.",
+    "为支持的命令和交互界面启用 Telegram 内联按钮组件。如果你的部署需要纯文本兼容行为则禁用。",
   "channels.telegram.execApprovals":
-    "Telegram-native exec approval routing and approver authorization. Enable this only when Telegram should act as an explicit exec-approval client for the selected bot account.",
+    "Telegram 原生执行审批路由和审批者授权。仅当 Telegram 应作为所选机器人账户的显式执行审批客户端时启用。",
   "channels.telegram.execApprovals.enabled":
-    "Enable Telegram exec approvals for this account. When false or unset, Telegram messages/buttons cannot approve exec requests.",
+    "为此账户启用 Telegram 执行审批。当为 false 或未设置时，Telegram 消息/按钮无法审批执行请求。",
   "channels.telegram.execApprovals.approvers":
-    "Telegram user IDs allowed to approve exec requests for this bot account. Use numeric Telegram user IDs; prompts are only delivered to these approvers when target includes dm.",
+    "允许为此机器人账户审批执行请求的 Telegram 用户 ID。使用数字 Telegram 用户 ID；当 target 包含 dm 时，提示仅投递给这些审批者。",
   "channels.telegram.execApprovals.agentFilter":
-    'Optional allowlist of agent IDs eligible for Telegram exec approvals, for example `["main", "ops-agent"]`. Use this to keep approval prompts scoped to the agents you actually operate from Telegram.',
+    '符合 Telegram 执行审批条件的代理 ID 可选允许列表，例如 `["main", "ops-agent"]`。使用此项使审批提示仅限于你实际从 Telegram 操作的代理。',
   "channels.telegram.execApprovals.sessionFilter":
-    "Optional session-key filters matched as substring or regex-style patterns before Telegram approval routing is used. Use narrow patterns so Telegram approvals only appear for intended sessions.",
+    "在使用 Telegram 审批路由之前作为子字符串或正则式模式匹配的可选会话密钥过滤器。使用窄范围模式使 Telegram 审批仅出现在预期的会话中。",
   "channels.telegram.execApprovals.target":
-    'Controls where Telegram approval prompts are sent: "dm" sends to approver DMs (default), "channel" sends to the originating Telegram chat/topic, and "both" sends to both. Channel delivery exposes the command text to the chat, so only use it in trusted groups/topics.',
+    '控制 Telegram 审批提示发送位置："dm" 发送到审批者 DM（默认），"channel" 发送到原始 Telegram 聊天/主题，"both" 发送到两者。频道投递会向聊天暴露命令文本，因此仅在受信任的群组/主题中使用。',
   "channels.slack.configWrites":
-    "Allow Slack to write config in response to channel events/commands (default: true).",
+    "允许 Slack 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.slack.botToken":
-    "Slack bot token used for standard chat actions in the configured workspace. Keep this credential scoped and rotate if workspace app permissions change.",
+    "用于配置的工作区中标准聊天操作的 Slack 机器人令牌。保持凭据范围有限，并在工作区应用权限变更时轮换。",
   "channels.slack.appToken":
-    "Slack app-level token used for Socket Mode connections and event transport when enabled. Use least-privilege app scopes and store this token as a secret.",
+    "启用时用于 Socket Mode 连接和事件传输的 Slack 应用级令牌。使用最小权限应用范围并将此令牌存储为密钥。",
   "channels.slack.userToken":
-    "Optional Slack user token for workflows requiring user-context API access beyond bot permissions. Use sparingly and audit scopes because this token can carry broader authority.",
+    "用于需要超出机器人权限的用户上下文 API 访问的可选 Slack 用户令牌。谨慎使用并审计范围，因为此令牌可能携带更广泛的权限。",
   "channels.slack.userTokenReadOnly":
-    "When true, treat configured Slack user token usage as read-only helper behavior where possible. Keep enabled if you only need supplemental reads without user-context writes.",
+    "当为 true 时，尽可能将配置的 Slack 用户令牌使用视为只读辅助行为。如果你只需要补充读取而不需要用户上下文写入则保持启用。",
   "channels.mattermost.configWrites":
-    "Allow Mattermost to write config in response to channel events/commands (default: true).",
+    "允许 Mattermost 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.discord.configWrites":
-    "Allow Discord to write config in response to channel events/commands (default: true).",
+    "允许 Discord 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.discord.token":
-    "Discord bot token used for gateway and REST API authentication for this provider account. Keep this secret out of committed config and rotate immediately after any leak.",
+    "用于此提供商账户的网关和 REST API 身份验证的 Discord 机器人令牌。保持此密钥不在已提交的配置中，并在任何泄露后立即轮换。",
   "channels.discord.allowBots":
-    'Allow bot-authored messages to trigger Discord replies (default: false). Set "mentions" to only accept bot messages that mention the bot.',
+    '允许机器人撰写的消息触发 Discord 回复（默认：false）。设置 "mentions" 仅接受提及机器人的机器人消息。',
   "channels.discord.proxy":
-    "Proxy URL for Discord gateway + API requests (app-id lookup and allowlist resolution). Set per account via channels.discord.accounts.<id>.proxy.",
+    "Discord 网关 + API 请求（应用 ID 查找和允许列表解析）的代理 URL。通过 channels.discord.accounts.<id>.proxy 按账户设置。",
   "channels.whatsapp.configWrites":
-    "Allow WhatsApp to write config in response to channel events/commands (default: true).",
+    "允许 WhatsApp 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.signal.configWrites":
-    "Allow Signal to write config in response to channel events/commands (default: true).",
+    "允许 Signal 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.signal.account":
-    "Signal account identifier (phone/number handle) used to bind this channel config to a specific Signal identity. Keep this aligned with your linked device/session state.",
+    "用于将此频道配置绑定到特定 Signal 身份的 Signal 账户标识符（电话/号码句柄）。保持与你的链接设备/会话状态对齐。",
   "channels.imessage.configWrites":
-    "Allow iMessage to write config in response to channel events/commands (default: true).",
+    "允许 iMessage 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.imessage.cliPath":
-    "Filesystem path to the iMessage bridge CLI binary used for send/receive operations. Set explicitly when the binary is not on PATH in service runtime environments.",
+    "用于发送/接收操作的 iMessage 桥接 CLI 二进制文件的文件系统路径。当二进制文件不在服务运行时环境的 PATH 中时显式设置。",
   "channels.msteams.configWrites":
-    "Allow Microsoft Teams to write config in response to channel events/commands (default: true).",
+    "允许 Microsoft Teams 在响应频道事件/命令时写入配置（默认：true）。",
   "channels.modelByChannel":
-    "Map provider -> channel id -> model override (values are provider/model or aliases).",
+    "映射提供商 -> 频道 ID -> 模型覆盖（值为提供商/模型或别名）。",
   ...IRC_FIELD_HELP,
-  "channels.discord.commands.native": 'Override native commands for Discord (bool or "auto").',
+  "channels.discord.commands.native": '覆盖 Discord 的原生命令（布尔值或 "auto"）。',
   "channels.discord.commands.nativeSkills":
-    'Override native skill commands for Discord (bool or "auto").',
-  "channels.telegram.commands.native": 'Override native commands for Telegram (bool or "auto").',
+    '覆盖 Discord 的原生技能命令（布尔值或 "auto"）。',
+  "channels.telegram.commands.native": '覆盖 Telegram 的原生命令（布尔值或 "auto"）。',
   "channels.telegram.commands.nativeSkills":
-    'Override native skill commands for Telegram (bool or "auto").',
-  "channels.slack.commands.native": 'Override native commands for Slack (bool or "auto").',
+    '覆盖 Telegram 的原生技能命令（布尔值或 "auto"）。',
+  "channels.slack.commands.native": '覆盖 Slack 的原生命令（布尔值或 "auto"）。',
   "channels.slack.commands.nativeSkills":
-    'Override native skill commands for Slack (bool or "auto").',
+    '覆盖 Slack 的原生技能命令（布尔值或 "auto"）。',
   "channels.slack.streaming":
-    'Unified Slack stream preview mode: "off" | "partial" | "block" | "progress". Legacy boolean/streamMode keys are auto-mapped.',
+    '统一的 Slack 流式预览模式："off" | "partial" | "block" | "progress"。旧版布尔值/streamMode 键会自动映射。',
   "channels.slack.nativeStreaming":
-    "Enable native Slack text streaming (chat.startStream/chat.appendStream/chat.stopStream) when channels.slack.streaming is partial (default: true).",
+    "当 channels.slack.streaming 为 partial 时启用原生 Slack 文本流式传输（chat.startStream/chat.appendStream/chat.stopStream）（默认：true）。",
   "channels.slack.streamMode":
-    "Legacy Slack preview mode alias (replace | status_final | append); auto-migrated to channels.slack.streaming.",
+    "旧版 Slack 预览模式别名（replace | status_final | append）；自动迁移到 channels.slack.streaming。",
   "channels.telegram.customCommands":
-    "Additional Telegram bot menu commands (merged with native; conflicts ignored).",
+    "额外的 Telegram 机器人菜单命令（与原生命令合并；冲突时忽略）。",
   "messages.suppressToolErrors":
-    "When true, suppress ⚠️ tool-error warnings from being shown to the user. The agent already sees errors in context and can retry. Default: false.",
-  "messages.ackReaction": "Emoji reaction used to acknowledge inbound messages (empty disables).",
+    "为 true 时，抑制向用户显示 ⚠️ 工具错误警告。代理已在上下文中看到错误并可重试。默认：false。",
+  "messages.ackReaction": "用于确认入站消息的 Emoji 反应（留空禁用）。",
   "messages.ackReactionScope":
-    'When to send ack reactions ("group-mentions", "group-all", "direct", "all", "off", "none"). "off"/"none" disables ack reactions entirely.',
+    '何时发送确认反应（"group-mentions"、"group-all"、"direct"、"all"、"off"、"none"）。"off"/"none" 完全禁用确认反应。',
   "messages.statusReactions":
-    "Lifecycle status reactions that update the emoji on the trigger message as the agent progresses (queued → thinking → tool → done/error).",
+    "生命周期状态反应，随着代理进展更新触发消息上的 Emoji（排队 → 思考 → 工具 → 完成/错误）。",
   "messages.statusReactions.enabled":
-    "Enable lifecycle status reactions for Telegram. When enabled, the ack reaction becomes the initial 'queued' state and progresses through thinking, tool, done/error automatically. Default: false.",
+    "为 Telegram 启用生命周期状态反应。启用后，确认反应成为初始“排队”状态，并自动进展为思考、工具、完成/错误。默认：false。",
   "messages.statusReactions.emojis":
-    "Override default status reaction emojis. Keys: thinking, tool, coding, web, done, error, stallSoft, stallHard. Must be valid Telegram reaction emojis.",
+    "覆盖默认状态反应 Emoji。键名：thinking、tool、coding、web、done、error、stallSoft、stallHard。必须是有效的 Telegram 反应 Emoji。",
   "messages.statusReactions.timing":
-    "Override default timing. Keys: debounceMs (700), stallSoftMs (25000), stallHardMs (60000), doneHoldMs (1500), errorHoldMs (2500).",
+    "覆盖默认时序。键名：debounceMs (700)、stallSoftMs (25000)、stallHardMs (60000)、doneHoldMs (1500)、errorHoldMs (2500)。",
   "messages.inbound.debounceMs":
-    "Debounce window (ms) for batching rapid inbound messages from the same sender (0 to disable).",
+    "用于批量处理同一发送者快速入站消息的防抖窗口（毫秒，0 禁用）。",
   "channels.telegram.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.telegram.allowFrom=["*"].',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.telegram.allowFrom=["*"]。',,
   "channels.telegram.streaming":
-    'Unified Telegram stream preview mode: "off" | "partial" | "block" | "progress" (default: "partial"). "progress" maps to "partial" on Telegram. Legacy boolean/streamMode keys are auto-mapped.',
+    '统一的 Telegram 流式预览模式："off" | "partial" | "block" | "progress"（默认："partial"）。"progress" 在 Telegram 上映射为 "partial"。旧版布尔值/streamMode 键会自动映射。',,
   "channels.discord.streaming":
-    'Unified Discord stream preview mode: "off" | "partial" | "block" | "progress". "progress" maps to "partial" on Discord. Legacy boolean/streamMode keys are auto-mapped.',
+    '统一的 Discord 流式预览模式："off" | "partial" | "block" | "progress"。"progress" 在 Discord 上映射为 "partial"。旧版布尔值/streamMode 键会自动映射。',,
   "channels.discord.streamMode":
-    "Legacy Discord preview mode alias (off | partial | block); auto-migrated to channels.discord.streaming.",
+    "旧版 Discord 预览模式别名（off | partial | block）；自动迁移到 channels.discord.streaming。",
   "channels.discord.draftChunk.minChars":
-    'Minimum chars before emitting a Discord stream preview update when channels.discord.streaming="block" (default: 200).',
+    '当 channels.discord.streaming="block" 时，发出 Discord 流式预览更新前的最小字符数（默认：200）。',,
   "channels.discord.draftChunk.maxChars":
-    'Target max size for a Discord stream preview chunk when channels.discord.streaming="block" (default: 800; clamped to channels.discord.textChunkLimit).',
+    '当 channels.discord.streaming="block" 时，Discord 流式预览块的目标最大大小（默认：800；限制为 channels.discord.textChunkLimit）。',,
   "channels.discord.draftChunk.breakPreference":
-    "Preferred breakpoints for Discord draft chunks (paragraph | newline | sentence). Default: paragraph.",
+    "Discord 草稿块的首选断点（paragraph | newline | sentence）。默认：paragraph。",
   "channels.telegram.retry.attempts":
-    "Max retry attempts for outbound Telegram API calls (default: 3).",
-  "channels.telegram.retry.minDelayMs": "Minimum retry delay in ms for Telegram outbound calls.",
+    "Telegram 出站 API 调用的最大重试次数（默认：3）。",
+  "channels.telegram.retry.minDelayMs": "Telegram 出站调用的最小重试延迟（毫秒）。",
   "channels.telegram.retry.maxDelayMs":
-    "Maximum retry delay cap in ms for Telegram outbound calls.",
-  "channels.telegram.retry.jitter": "Jitter factor (0-1) applied to Telegram retry delays.",
+    "Telegram 出站调用的最大重试延迟上限（毫秒）。",
+  "channels.telegram.retry.jitter": "Telegram 重试延迟的抱动因子（0-1）。",
   "channels.telegram.network.autoSelectFamily":
-    "Override Node autoSelectFamily for Telegram (true=enable, false=disable).",
+    "覆盖 Telegram 的 Node autoSelectFamily（true=启用，false=禁用）。",
   "channels.telegram.timeoutSeconds":
-    "Max seconds before Telegram API requests are aborted (default: 500 per grammY).",
+    "Telegram API 请求超时前的最大秒数（默认：500，按 grammY 约定）。",
   "channels.telegram.threadBindings.enabled":
-    "Enable Telegram conversation binding features (/focus, /unfocus, /agents, and /session idle|max-age). Overrides session.threadBindings.enabled when set.",
+    "启用 Telegram 会话绑定功能（/focus、/unfocus、/agents 和 /session idle|max-age）。设置时覆盖 session.threadBindings.enabled。",
   "channels.telegram.threadBindings.idleHours":
-    "Inactivity window in hours for Telegram bound sessions. Set 0 to disable idle auto-unfocus (default: 24). Overrides session.threadBindings.idleHours when set.",
+    "Telegram 绑定会话的不活动窗口（小时）。设 0 禁用空闲自动取消聚焦（默认：24）。设置时覆盖 session.threadBindings.idleHours。",
   "channels.telegram.threadBindings.maxAgeHours":
-    "Optional hard max age in hours for Telegram bound sessions. Set 0 to disable hard cap (default: 0). Overrides session.threadBindings.maxAgeHours when set.",
+    "Telegram 绑定会话的可选硬性最大年龄（小时）。设 0 禁用硬性上限（默认：0）。设置时覆盖 session.threadBindings.maxAgeHours。",
   "channels.telegram.threadBindings.spawnSubagentSessions":
-    "Allow subagent spawns with thread=true to auto-bind Telegram current conversations when supported.",
+    "允许带 thread=true 的子代理生成在支持时自动绑定 Telegram 当前会话。",
   "channels.telegram.threadBindings.spawnAcpSessions":
-    "Allow ACP spawns with thread=true to auto-bind Telegram current conversations when supported.",
+    "允许带 thread=true 的 ACP 生成在支持时自动绑定 Telegram 当前会话。",
   "channels.whatsapp.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.whatsapp.allowFrom=["*"].',
-  "channels.whatsapp.selfChatMode": "Same-phone setup (bot uses your personal WhatsApp number).",
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.whatsapp.allowFrom=["*"]。',
+  "channels.whatsapp.selfChatMode": "同号设置（机器人使用你的个人 WhatsApp 号码）。",
   "channels.whatsapp.debounceMs":
-    "Debounce window (ms) for batching rapid consecutive messages from the same sender (0 to disable).",
+    "用于批量处理同一发送者快速连续消息的防抖窗口（毫秒，0 禁用）。",
   "channels.signal.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.signal.allowFrom=["*"].',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.signal.allowFrom=["*"]。',,
   "channels.imessage.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.imessage.allowFrom=["*"].',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.imessage.allowFrom=["*"]。',,
   "channels.bluebubbles.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.bluebubbles.allowFrom=["*"].',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.bluebubbles.allowFrom=["*"]。',,
   "channels.discord.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.discord.allowFrom=["*"].',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.discord.allowFrom=["*"]。',,
   "channels.discord.dm.policy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.discord.allowFrom=["*"] (legacy: channels.discord.dm.allowFrom).',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.discord.allowFrom=["*"]（旧版：channels.discord.dm.allowFrom）。',,
   "channels.discord.retry.attempts":
-    "Max retry attempts for outbound Discord API calls (default: 3).",
-  "channels.discord.retry.minDelayMs": "Minimum retry delay in ms for Discord outbound calls.",
-  "channels.discord.retry.maxDelayMs": "Maximum retry delay cap in ms for Discord outbound calls.",
-  "channels.discord.retry.jitter": "Jitter factor (0-1) applied to Discord retry delays.",
-  "channels.discord.maxLinesPerMessage": "Soft max line count per Discord message (default: 17).",
-  "channels.discord.inboundWorker.runTimeoutMs": `Optional queued Discord inbound worker timeout in ms. This is separate from Carbon listener timeouts; defaults to ${DISCORD_DEFAULT_INBOUND_WORKER_TIMEOUT_MS} and can be disabled with 0. Set per account via channels.discord.accounts.<id>.inboundWorker.runTimeoutMs.`,
-  "channels.discord.eventQueue.listenerTimeout": `Canonical Discord listener timeout control in ms for gateway normalization/enqueue handlers. Default is ${DISCORD_DEFAULT_LISTENER_TIMEOUT_MS} in OpenClaw; set per account via channels.discord.accounts.<id>.eventQueue.listenerTimeout.`,
+    "Discord 出站 API 调用的最大重试次数（默认：3）。",
+  "channels.discord.retry.minDelayMs": "Discord 出站调用的最小重试延迟（毫秒）。",
+  "channels.discord.retry.maxDelayMs": "Discord 出站调用的最大重试延迟上限（毫秒）。",
+  "channels.discord.retry.jitter": "Discord 重试延迟的抖动因子（0-1）。",
+  "channels.discord.maxLinesPerMessage": "每条 Discord 消息的软性最大行数（默认：17）。",
+  "channels.discord.inboundWorker.runTimeoutMs": `可选的 Discord 入站队列工作器超时时间（毫秒）。与 Carbon 监听器超时分开；默认为 ${DISCORD_DEFAULT_INBOUND_WORKER_TIMEOUT_MS}，设 0 可禁用。通过 channels.discord.accounts.<id>.inboundWorker.runTimeoutMs 按账户设置。`,
+  "channels.discord.eventQueue.listenerTimeout": `Discord 网关规范化/入队处理器的规范监听器超时控制（毫秒）。OpenClaw 中默认为 ${DISCORD_DEFAULT_LISTENER_TIMEOUT_MS}；通过 channels.discord.accounts.<id>.eventQueue.listenerTimeout 按账户设置。`,
   "channels.discord.eventQueue.maxQueueSize":
-    "Optional Discord EventQueue capacity override (max queued events before backpressure). Set per account via channels.discord.accounts.<id>.eventQueue.maxQueueSize.",
+    "可选的 Discord 事件队列容量覆盖（背压前的最大排队事件数）。通过 channels.discord.accounts.<id>.eventQueue.maxQueueSize 按账户设置。",
   "channels.discord.eventQueue.maxConcurrency":
-    "Optional Discord EventQueue concurrency override (max concurrent handler executions). Set per account via channels.discord.accounts.<id>.eventQueue.maxConcurrency.",
+    "可选的 Discord 事件队列并发覆盖（最大并发处理器执行数）。通过 channels.discord.accounts.<id>.eventQueue.maxConcurrency 按账户设置。",
   "channels.discord.threadBindings.enabled":
-    "Enable Discord thread binding features (/focus, bound-thread routing/delivery, and thread-bound subagent sessions). Overrides session.threadBindings.enabled when set.",
+    "启用 Discord 线程绑定功能（/focus、绑定线程路由/投递、线程绑定子代理会话）。设置时覆盖 session.threadBindings.enabled。",
   "channels.discord.threadBindings.idleHours":
-    "Inactivity window in hours for Discord thread-bound sessions (/focus and spawned thread sessions). Set 0 to disable idle auto-unfocus (default: 24). Overrides session.threadBindings.idleHours when set.",
+    "Discord 线程绑定会话（/focus 和生成的线程会话）的不活动窗口（小时）。设 0 禁用空闲自动取消聚焦（默认：24）。设置时覆盖 session.threadBindings.idleHours。",
   "channels.discord.threadBindings.maxAgeHours":
-    "Optional hard max age in hours for Discord thread-bound sessions. Set 0 to disable hard cap (default: 0). Overrides session.threadBindings.maxAgeHours when set.",
+    "Discord 线程绑定会话的可选硬性最大年龄（小时）。设 0 禁用硬性上限（默认：0）。设置时覆盖 session.threadBindings.maxAgeHours。",
   "channels.discord.threadBindings.spawnSubagentSessions":
-    "Allow subagent spawns with thread=true to auto-create and bind Discord threads (default: false; opt-in). Set true to enable thread-bound subagent spawns for this account/channel.",
+    "允许带 thread=true 的子代理生成自动创建并绑定 Discord 线程（默认：false；需显式启用）。设 true 为此账户/频道启用线程绑定子代理生成。",
   "channels.discord.threadBindings.spawnAcpSessions":
-    "Allow /acp spawn to auto-create and bind Discord threads for ACP sessions (default: false; opt-in). Set true to enable thread-bound ACP spawns for this account/channel.",
+    "允许 /acp spawn 自动创建并绑定 Discord 线程用于 ACP 会话（默认：false；需显式启用）。设 true 为此账户/频道启用线程绑定 ACP 生成。",
   "channels.discord.ui.components.accentColor":
-    "Accent color for Discord component containers (hex). Set per account via channels.discord.accounts.<id>.ui.components.accentColor.",
+    "Discord 组件容器的强调色（十六进制）。通过 channels.discord.accounts.<id>.ui.components.accentColor 按账户设置。",
   "channels.discord.voice.enabled":
-    "Enable Discord voice channel conversations (default: true). Omit channels.discord.voice to keep voice support disabled for the account.",
+    "启用 Discord 语音频道对话（默认：true）。省略 channels.discord.voice 可保持该账户禁用语音支持。",
   "channels.discord.voice.autoJoin":
-    "Voice channels to auto-join on startup (list of guildId/channelId entries).",
+    "启动时自动加入的语音频道（guildId/channelId 条目列表）。",
   "channels.discord.voice.daveEncryption":
-    "Toggle DAVE end-to-end encryption for Discord voice joins (default: true in @discordjs/voice; Discord may require this).",
+    "切换 Discord 语音加入的 DAVE 端到端加密（默认：true，在 @discordjs/voice 中；Discord 可能需要此功能）。",
   "channels.discord.voice.decryptionFailureTolerance":
-    "Consecutive decrypt failures before DAVE attempts session recovery (passed to @discordjs/voice; default: 24).",
+    "DAVE 尝试会话恢复前的连续解密失败次数（传递给 @discordjs/voice；默认：24）。",
   "channels.discord.voice.tts":
-    "Optional TTS overrides for Discord voice playback (merged with messages.tts).",
+    "可选的 Discord 语音播放 TTS 覆盖（与 messages.tts 合并）。",
   "channels.discord.intents.presence":
-    "Enable the Guild Presences privileged intent. Must also be enabled in the Discord Developer Portal. Allows tracking user activities (e.g. Spotify). Default: false.",
+    "启用公会在线状态特权意图。必须同时在 Discord 开发者门户中启用。允许跟踪用户活动（如 Spotify）。默认：false。",
   "channels.discord.intents.guildMembers":
-    "Enable the Guild Members privileged intent. Must also be enabled in the Discord Developer Portal. Default: false.",
+    "启用公会成员特权意图。必须同时在 Discord 开发者门户中启用。默认：false。",
   "channels.discord.pluralkit.enabled":
-    "Resolve PluralKit proxied messages and treat system members as distinct senders.",
+    "解析 PluralKit 代理消息并将系统成员视为不同发送者。",
   "channels.discord.pluralkit.token":
-    "Optional PluralKit token for resolving private systems or members.",
-  "channels.discord.activity": "Discord presence activity text (defaults to custom status).",
-  "channels.discord.status": "Discord presence status (online, dnd, idle, invisible).",
+    "可选的 PluralKit 令牌，用于解析私有系统或成员。",
+  "channels.discord.activity": "Discord 在线状态活动文本（默认为自定义状态）。",
+  "channels.discord.status": "Discord 在线状态（online、dnd、idle、invisible）。",
   "channels.discord.autoPresence.enabled":
-    "Enable automatic Discord bot presence updates based on runtime/model availability signals. When enabled: healthy=>online, degraded/unknown=>idle, exhausted/unavailable=>dnd.",
+    "基于运行时/模型可用性信号启用自动 Discord 机器人在线状态更新。启用时：健康=>online，降级/未知=>idle，耗尽/不可用=>dnd。",
   "channels.discord.autoPresence.intervalMs":
-    "How often to evaluate Discord auto-presence state in milliseconds (default: 30000).",
+    "评估 Discord 自动在线状态的频率（毫秒，默认：30000）。",
   "channels.discord.autoPresence.minUpdateIntervalMs":
-    "Minimum time between actual Discord presence update calls in milliseconds (default: 15000). Prevents status spam on noisy state changes.",
+    "实际 Discord 在线状态更新调用之间的最小时间（毫秒，默认：15000）。防止嘈杂状态变化时的状态刷屏。",
   "channels.discord.autoPresence.healthyText":
-    "Optional custom status text while runtime is healthy (online). If omitted, falls back to static channels.discord.activity when set.",
+    "运行时健康（online）时的可选自定义状态文本。省略时回退到静态 channels.discord.activity（如已设置）。",
   "channels.discord.autoPresence.degradedText":
-    "Optional custom status text while runtime/model availability is degraded or unknown (idle).",
+    "运行时/模型可用性降级或未知（idle）时的可选自定义状态文本。",
   "channels.discord.autoPresence.exhaustedText":
-    "Optional custom status text while runtime detects exhausted/unavailable model quota (dnd). Supports {reason} template placeholder.",
+    "运行时检测到模型配额耗尽/不可用（dnd）时的可选自定义状态文本。支持 {reason} 模板占位符。",
   "channels.discord.activityType":
-    "Discord presence activity type (0=Playing,1=Streaming,2=Listening,3=Watching,4=Custom,5=Competing).",
-  "channels.discord.activityUrl": "Discord presence streaming URL (required for activityType=1).",
+    "Discord 在线状态活动类型（0=游戏中，1=直播中，2=收听中，3=观看中，4=自定义，5=竞争中）。",
+  "channels.discord.activityUrl": "Discord 在线状态直播 URL（activityType=1 时必填）。",
   "channels.slack.dm.policy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.slack.allowFrom=["*"] (legacy: channels.slack.dm.allowFrom).',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.slack.allowFrom=["*"]（旧版：channels.slack.dm.allowFrom）。',
   "channels.slack.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.slack.allowFrom=["*"].',
+    '私信访问控制（推荐 "pairing"）。"open" 需要 channels.slack.allowFrom=["*"]。',
 };

@@ -122,6 +122,12 @@ function getAuthChoiceGroupDefs(): {
       choices: ["qianfan-api-key"],
     },
     {
+      value: "modelstudio",
+      label: "Alibaba Cloud Model Studio",
+      hint: t("authChoiceOptions.groupHintModelstudio"),
+      choices: ["modelstudio-api-key-cn", "modelstudio-api-key"],
+    },
+    {
       value: "copilot",
       label: "Copilot",
       hint: t("authChoiceOptions.groupHintCopilot"),
@@ -304,6 +310,17 @@ function getBaseAuthChoiceOptions(): ReadonlyArray<AuthChoiceOption> {
       value: "minimax-api-lightning",
       label: t("authChoiceOptions.labelMinimaxApiLightning"),
       hint: t("authChoiceOptions.hintMinimaxApiLightning"),
+    },
+    { value: "qianfan-api-key", label: t("authChoiceOptions.labelQianfanApiKey") },
+    {
+      value: "modelstudio-api-key-cn",
+      label: t("authChoiceOptions.labelModelstudioApiKeyCn"),
+      hint: t("authChoiceOptions.hintModelstudioApiKeyCn"),
+    },
+    {
+      value: "modelstudio-api-key",
+      label: t("authChoiceOptions.labelModelstudioApiKey"),
+      hint: t("authChoiceOptions.hintModelstudioApiKey"),
     },
     { value: "custom-api-key", label: t("authChoiceOptions.labelCustomApiKey") },
   ];
