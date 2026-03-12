@@ -778,7 +778,15 @@ export const FIELD_HELP: Record<string, string> = {
   "agents.defaults.memorySearch.sources":
     '选择索引的来源："memory" 读取 MEMORY.md + 内存文件，"sessions" 包含转录历史。除非需要从先前聊天转录中召回，否则保持 ["memory"]。',
   "agents.defaults.memorySearch.extraPaths":
-    "在默认内存文件之外向内存索引添加额外目录或 .md 文件。当关键参考文档在仓库其他位置时使用；保持路径精简和有意图以避免嘈杂的召回。",
+    "在默认内存文件之外向内存索引添加额外目录或 .md 文件。当关键参考文档在仓库其他位置时使用；启用多模态内存时，这些路径下匹配的图片/音频文件也可被索引。",
+  "agents.defaults.memorySearch.multimodal":
+    '可选的多模态内存设置，用于从配置的额外路径索引图片和音频文件。除非您的嵌入模型明确支持跨模态嵌入，否则保持关闭，启用时将 `memorySearch.fallback` 设为 "none"。匹配的文件在索引时会上传到配置的远程嵌入提供商。',
+  "agents.defaults.memorySearch.multimodal.enabled":
+    "启用从 extraPaths 进行图片/音频内存索引。目前需要 Gemini embedding-2，保持默认内存根目录仅限 Markdown，禁用内存搜索回退提供商，并将匹配的二进制内容上传到配置的远程嵌入提供商。",
+  "agents.defaults.memorySearch.multimodal.modalities":
+    '选择从 extraPaths 索引哪些多模态文件类型："image"、"audio" 或 "all"。保持范围较窄以避免无意中索引大型二进制文件集。',
+  "agents.defaults.memorySearch.multimodal.maxFileBytes":
+    "设置内存索引期间跳过多模态文件前允许的最大字节数。用于限制上传成本和索引延迟，或为短的高质量音频片段提高此值。",
   "agents.defaults.memorySearch.experimental.sessionMemory":
     "将会话转录索引到内存搜索中，使响应可以引用先前聊天轮次。除非需要转录召回，否则保持关闭，因为索引成本和存储使用都会增加。",
   "agents.defaults.memorySearch.provider":

@@ -4,6 +4,10 @@ Docs: https://docs.openclaw.ai
 
 ## Unreleased
 
+### Security
+
+- Gateway/WebSocket: enforce browser origin validation for all browser-originated connections regardless of whether proxy headers are present, closing a cross-site WebSocket hijacking path in `trusted-proxy` mode that could grant untrusted origins `operator.admin` access. (GHSA-5wcw-8jjv-m286)
+
 ### Changes
 
 - Gateway/node pending work: add narrow in-memory pending-work queue primitives (`node.pending.enqueue` / `node.pending.drain`) and wake-helper reuse as a foundation for dormant-node work delivery. (#41409) Thanks @mbelinky.
@@ -19,6 +23,7 @@ Docs: https://docs.openclaw.ai
 - iOS/TestFlight：新增本地 Beta 发布流程，支持 Fastlane 准备/归档/上传，规范 Beta Bundle ID，以及 Watch 应用归档修复。(#42991) 感谢 @ngutman。
 - macOS/引导：检测远程网关何时需要共享认证令牌，说明在网关主机上在哪里找到它，并澄清成功检查何时使用了配对设备认证。(#43100) 感谢 @ngutman。
 - 引导/Ollama：新增一等 Ollama 设置，支持本地或云端 + 本地模式、基于浏览器的云端登录、精选模型建议，以及跳过不必要本地拉取的云模型处理。(#41529) 感谢 @BruceMacD。
+- 内存：新增可选的多模态图片和音频索引，支持 `memorySearch.extraPaths` 配合 Gemini `gemini-embedding-2-preview`，严格回退门控和基于范围的重新索引。(#43460) 感谢 @gumadeiras。
 
 ### Breaking
 
@@ -80,6 +85,7 @@ Docs: https://docs.openclaw.ai
 - Telegram/outbound HTML sends: chunk long HTML-mode messages, preserve plain-text fallback and silent-delivery params across retries, and cut over to plain text when HTML chunk planning cannot safely preserve the full message. (#42240) thanks @obviyus.
 - Agents/embedded overload logs: include the failing model and provider in error-path console output, with lifecycle regression coverage for the rendered and sanitized `consoleMessage`. (#41236) thanks @jiarung.
 - Agents/failover: treat Gemini `MALFORMED_RESPONSE` stop reasons as retryable timeouts so preview-model enum drift falls back cleanly instead of crashing the run, without also reclassifying malformed function-call errors. (#42292) Thanks @jnMetaCode.
+- Gateway/macOS launchd restarts: keep the LaunchAgent registered during explicit restarts, hand off self-restarts through a detached launchd helper, and recover config/hot reload restart paths without unloading the service. Fixes #43311, #43406, #43035, and #43049.
 - Discord/Telegram outbound runtime config: thread runtime-resolved config through Discord and Telegram send paths so SecretRef-based credentials stay resolved during message delivery. (#42352) Thanks @joshavant.
 - Secrets/SecretRef: reject exec SecretRef traversal ids across schema, runtime, and gateway. (#42370) Thanks @joshavant.
 - Telegram/docs: clarify that `channels.telegram.groups` allowlists chats while `groupAllowFrom` allowlists users inside those chats, and point invalid negative chat IDs at the right config key. (#42451) Thanks @altaywtf.
@@ -95,6 +101,7 @@ Docs: https://docs.openclaw.ai
 - Commands/config writes: enforce `configWrites` against both the originating account and the targeted account scope for `/config` and config-backed `/allowlist` edits, blocking sibling-account mutations while preserving gateway `operator.admin` flows. Thanks @tdjackey for reporting.
 - Security/system.run: fail closed for approval-backed interpreter/runtime commands when OpenClaw cannot bind exactly one concrete local file operand, while extending best-effort direct-file binding to additional runtime forms. Thanks @tdjackey for reporting.
 - Gateway/session reset auth: split conversation `/new` and `/reset` handling away from the admin-only `sessions.reset` control-plane RPC so write-scoped gateway callers can no longer reach the privileged reset path through `agent`. Thanks @tdjackey for reporting.
+  <<<<<<< HEAD
 - Telegram/最终预览投递后续：仅在预览已可见时保留缺少 `message_id` 的模糊最终消息，而首次预览/无 ID 情况仍回退，确保 Telegram 用户不会丢失最终回复。(#41932) 感谢 @hougangdev。
 - Agents/Azure OpenAI Responses：将 `azure-openai` 提供商纳入 Responses API 存储覆盖，使 Azure OpenAI 多轮定时任务和嵌入式代理运行不再出现 HTTP 400 "store is set to false" 错误。(#42934, 修复 #42800) 感谢 @ademczuk。
 - Agents/上下文裁剪：在软裁剪时修剪仅包含图片的工具结果，将上下文裁剪覆盖范围与新的工具结果合约对齐，并将历史图片清理扩展到相同的截图密集会话路径。(#43045) 感谢 @MoerAI。
@@ -109,7 +116,27 @@ Docs: https://docs.openclaw.ai
 - Discord/配置类型：在规范的公会频道配置类型上公开频道级 `autoThread`，使严格配置加载与现有 Discord 模式和运行时行为匹配。(#35608) 感谢 @ingyukoh。
 - Agents/错误渲染：忽略成功轮次上过时的助手 `errorMessage` 字段，使后台/工具端失败不再在有效回复前附加合成的计费错误。(#40616) 感谢 @ingyukoh。
 - Agents/回退：识别 Venice `402 Insufficient USD or Diem balance` 计费错误，使配置的模型回退触发而不是显示原始提供商错误。(#43205) 感谢 @Squabble9。
-- 依赖更新：刷新工作区依赖（除固定的 Carbon 包外），并加固 ACP 会话配置写入以防止非字符串 SDK 值，使较新的 ACP 客户端快速失败而不是触发类型/运行时不匹配。
+- # 依赖更新：刷新工作区依赖（除固定的 Carbon 包外），并加固 ACP 会话配置写入以防止非字符串 SDK 值，使较新的 ACP 客户端快速失败而不是触发类型/运行时不匹配。
+- Telegram/final preview delivery followup: keep ambiguous missing-`message_id` finals only when a preview was already visible, while first-preview/no-id cases still fall back so Telegram users do not lose the final reply. (#41932) thanks @hougangdev.
+- Agents/Azure OpenAI Responses: include the `azure-openai` provider in the Responses API store override so Azure OpenAI multi-turn cron jobs and embedded agent runs no longer fail with HTTP 400 "store is set to false". (#42934, fixes #42800) Thanks @ademczuk.
+- Agents/context pruning: prune image-only tool results during soft-trim, align context-pruning coverage with the new tool-result contract, and extend historical image cleanup to the same screenshot-heavy session path. (#43045) Thanks @MoerAI.
+- CLI/skills JSON: strip ANSI and C1 control bytes from `skills list --json`, `skills info --json`, and `skills check --json` so machine-readable output stays valid for terminals and skill metadata with embedded control characters. Fixes #27530. Related #27557. Thanks @Jimmy-xuzimo and @vincentkoc.
+- CLI/tables: default shared tables to ASCII borders on legacy Windows consoles while keeping Unicode borders on modern Windows terminals, so commands like `openclaw skills` stop rendering mojibake under GBK/936 consoles. Fixes #40853. Related #41015. Thanks @ApacheBin and @vincentkoc.
+- fix(models): guard optional model.input capability checks (#42096) thanks @andyliu
+- Security/plugin runtime: stop unauthenticated plugin HTTP routes from inheriting synthetic admin gateway scopes when they call `runtime.subagent.*`, so admin-only methods like `sessions.delete` stay blocked without gateway auth.
+- Security/session_status: enforce sandbox session-tree visibility and shared agent-to-agent access guards before reading or mutating target session state, so sandboxed subagents can no longer inspect parent session metadata or write parent model overrides via `session_status`.
+- Security/nodes: treat the `nodes` agent tool as owner-only fallback policy so non-owner senders cannot reach paired-node approval or invoke paths through the shared tool set.
+- Telegram/final preview cleanup follow-up: clear stale cleanup-retain state only for transient preview finals so archived-preview retains no longer leave a stale partial bubble beside a later fallback-sent final. (#41763) Thanks @obviyus.
+- Signal/config schema: accept `channels.signal.accountUuid` in strict config validation so loop-protection configs no longer fail with an unrecognized-key error. (#35578) Thanks @ingyukoh.
+- Telegram/config schema: accept `channels.telegram.actions.editMessage` and `createForumTopic` in strict config validation so existing Telegram action toggles no longer fail as unrecognized keys. (#35498) Thanks @ingyukoh.
+- Agents/cooldowns: default cooldown windows with no recorded failure history to `unknown` instead of `rate_limit`, avoiding false API rate-limit warnings while preserving cooldown recovery probes. (#42911) Thanks @VibhorGautam.
+- Discord/config typing: expose channel-level `autoThread` on the canonical guild-channel config type so strict config loading matches the existing Discord schema and runtime behavior. (#35608) Thanks @ingyukoh.
+- Agents/error rendering: ignore stale assistant `errorMessage` fields on successful turns so background/tool-side failures no longer prepend synthetic billing errors over valid replies. (#40616) Thanks @ingyukoh.
+- Agents/fallback: recognize Venice `402 Insufficient USD or Diem balance` billing errors so configured model fallbacks trigger instead of surfacing the raw provider error. (#43205) Thanks @Squabble9.
+- Dependencies: refresh workspace dependencies except the pinned Carbon package, and harden ACP session-config writes against non-string SDK values so newer ACP clients fail fast instead of tripping type/runtime mismatches.
+- Gateway/config errors: surface up to three validation issues in top-level `config.set`, `config.patch`, and `config.apply` error messages while preserving structured issue details. (#42664) Thanks @huntharo.
+- Hooks/plugin context parity followup: pass `trigger` and `channelId` through embedded `llm_input`, `agent_end`, and `llm_output` hook contexts so plugins receive the same agent metadata across hook phases. (#42362) Thanks @zhoulf1006.
+  > > > > > > > upstream/main
 
 ## 2026.3.8
 

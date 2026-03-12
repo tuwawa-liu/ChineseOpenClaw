@@ -23,7 +23,7 @@ import {
 } from "../commands/onboard-helpers.js";
 import type { OnboardOptions } from "../commands/onboard-types.js";
 import type { OpenClawConfig } from "../config/config.js";
-import { resolveGatewayService } from "../daemon/service.js";
+import { describeGatewayServiceRestart, resolveGatewayService } from "../daemon/service.js";
 import { isSystemdUserServiceAvailable } from "../daemon/systemd.js";
 import { ensureControlUiAssetsBuilt } from "../infra/control-ui-assets.js";
 import { t } from "../i18n/index.js";
@@ -54,14 +54,16 @@ export async function finalizeOnboardingWizard(
 
   const withWizardProgress = async <T>(
     label: string,
-    options: { doneMessage?: string },
+    options: { doneMessage?: string | (() => string | undefined) },
     work: (progress: { update: (message: string) => void }) => Promise<T>,
   ): Promise<T> => {
     const progress = prompter.progress(label);
     try {
       return await work(progress);
     } finally {
-      progress.stop(options.doneMessage);
+      progress.stop(
+        typeof options.doneMessage === "function" ? options.doneMessage() : options.doneMessage,
+      );
     }
   };
 
@@ -129,6 +131,7 @@ export async function finalizeOnboardingWizard(
     }
     const service = resolveGatewayService();
     const loaded = await service.isLoaded({ env: process.env });
+    let restartWasScheduled = false;
     if (loaded) {
       const action = await prompter.select({
         message: t("wizard.finalize.serviceAlreadyInstalled"),
@@ -139,15 +142,19 @@ export async function finalizeOnboardingWizard(
         ],
       });
       if (action === "restart") {
+        let restartDoneMessage = "Gateway service restarted.";
         await withWizardProgress(
           t("wizard.finalize.gatewayServiceTitle"),
-          { doneMessage: t("wizard.finalize.serviceRestarted") },
+          { doneMessage: () => restartDoneMessage },
           async (progress) => {
             progress.update(t("wizard.finalize.restartingService"));
-            await service.restart({
+            const restartResult = await service.restart({
               env: process.env,
               stdout: process.stdout,
             });
+            const restartStatus = describeGatewayServiceRestart("Gateway", restartResult);
+            restartDoneMessage = restartStatus.progressMessage;
+            restartWasScheduled = restartStatus.scheduled;
           },
         );
       } else if (action === "reinstall") {
@@ -162,7 +169,10 @@ export async function finalizeOnboardingWizard(
       }
     }
 
-    if (!loaded || (loaded && !(await service.isLoaded({ env: process.env })))) {
+    if (
+      !loaded ||
+      (!restartWasScheduled && loaded && !(await service.isLoaded({ env: process.env })))
+    ) {
       const progress = prompter.progress(t("wizard.finalize.gatewayServiceTitle"));
       let installError: string | null = null;
       try {

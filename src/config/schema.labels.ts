@@ -319,6 +319,10 @@ export const FIELD_LABELS: Record<string, string> = {
   "agents.defaults.memorySearch.enabled": "启用记忆搜索",
   "agents.defaults.memorySearch.sources": "记忆搜索来源",
   "agents.defaults.memorySearch.extraPaths": "额外记忆路径",
+  "agents.defaults.memorySearch.multimodal": "记忆搜索多模态",
+  "agents.defaults.memorySearch.multimodal.enabled": "启用记忆搜索多模态",
+  "agents.defaults.memorySearch.multimodal.modalities": "记忆搜索多模态模式",
+  "agents.defaults.memorySearch.multimodal.maxFileBytes": "记忆搜索多模态最大文件字节数",
   "agents.defaults.memorySearch.experimental.sessionMemory":
     "记忆搜索会话索引（实验性）",
   "agents.defaults.memorySearch.provider": "记忆搜索提供者",

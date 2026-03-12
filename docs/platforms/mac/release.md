@@ -39,34 +39,37 @@ x-i18n:
 
 ```bash
 # 从仓库根目录运行；设置发布 ID 以启用 Sparkle 订阅源。
+# 此命令构建发布产物但不进行公证。
 # APP_BUILD 必须为纯数字且单调递增，以便 Sparkle 正确比较。
-BUNDLE_ID=bot.molt.mac \
-APP_VERSION=2026.1.27-beta.1 \
-APP_BUILD="$(git rev-list --count HEAD)" \
+# 省略时默认从 APP_VERSION 自动派生。
+SKIP_NOTARIZE=1 \
+BUNDLE_ID=ai.openclaw.mac \
+APP_VERSION=2026.3.10 \
 BUILD_CONFIG=release \
 SIGN_IDENTITY="Developer ID Application: <Developer Name> (<TEAMID>)" \
 scripts/package-mac-app.sh
 
-# 打包用于分发的 zip（包含资源分支以支持 Sparkle 增量更新）
-ditto -c -k --sequesterRsrc --keepParent dist/OpenClaw.app dist/OpenClaw-2026.1.27-beta.1.zip
+# `package-mac-dist.sh` 已创建 zip + DMG。
+# 如果直接使用 `package-mac-app.sh`，则需手动创建：
+# 如果需要在此步骤中进行公证/装订，请使用下方 NOTARIZE 命令。
+ditto -c -k --sequesterRsrc --keepParent dist/OpenClaw.app dist/OpenClaw-2026.3.10.zip
 
-# 可选：同时构建适合用户使用的样式化 DMG（拖拽到 /Applications）
-scripts/create-dmg.sh dist/OpenClaw.app dist/OpenClaw-2026.1.27-beta.1.dmg
+# 可选：构建适合用户使用的样式化 DMG（拖拽到 /Applications）
+scripts/create-dmg.sh dist/OpenClaw.app dist/OpenClaw-2026.3.10.dmg
 
 # 推荐：构建 + 公证/装订 zip + DMG
 # 首先，创建一次钥匙串配置文件：
 #   xcrun notarytool store-credentials "openclaw-notary" \
 #     --apple-id "<apple-id>" --team-id "<team-id>" --password "<app-specific-password>"
 NOTARIZE=1 NOTARYTOOL_PROFILE=openclaw-notary \
-BUNDLE_ID=bot.molt.mac \
-APP_VERSION=2026.1.27-beta.1 \
-APP_BUILD="$(git rev-list --count HEAD)" \
+BUNDLE_ID=ai.openclaw.mac \
+APP_VERSION=2026.3.10 \
 BUILD_CONFIG=release \
 SIGN_IDENTITY="Developer ID Application: <Developer Name> (<TEAMID>)" \
 scripts/package-mac-dist.sh
 
 # 可选：随发布一起提供 dSYM
-ditto -c -k --keepParent apps/macos/.build/release/OpenClaw.app.dSYM dist/OpenClaw-2026.1.27-beta.1.dSYM.zip
+ditto -c -k --keepParent apps/macos/.build/release/OpenClaw.app.dSYM dist/OpenClaw-2026.3.10.dSYM.zip
 ```
 
 ## Appcast 条目
@@ -74,7 +77,7 @@ ditto -c -k --keepParent apps/macos/.build/release/OpenClaw.app.dSYM dist/OpenCl
 使用发布说明生成器，以便 Sparkle 渲染格式化的 HTML 说明：
 
 ```bash
-SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-private-key scripts/make_appcast.sh dist/OpenClaw-2026.1.27-beta.1.zip https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml
+SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-private-key scripts/make_appcast.sh dist/OpenClaw-2026.3.10.zip https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml
 ```
 
 从 `CHANGELOG.md`（通过 [`scripts/changelog-to-html.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/changelog-to-html.sh)）生成 HTML 发布说明，并将其嵌入 appcast 条目。
@@ -82,7 +85,7 @@ SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-private-key scripts/make_appcast.sh di
 
 ## 发布与验证
 
-- 将 `OpenClaw-2026.1.27-beta.1.zip`（和 `OpenClaw-2026.1.27-beta.1.dSYM.zip`）上传到标签 `v2026.1.27-beta.1` 对应的 GitHub 发布。
+- 将 `OpenClaw-2026.3.10.zip`（和 `OpenClaw-2026.3.10.dSYM.zip`）上传到标签 `v2026.3.10` 对应的 GitHub 发布。
 - 确保原始 appcast URL 与内置的订阅源匹配：`https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml`。
 - 完整性检查：
   - `curl -I https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml` 返回 200。

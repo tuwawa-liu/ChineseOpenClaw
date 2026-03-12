@@ -110,8 +110,45 @@ agents: {
 
 - 路径可以是绝对路径或工作空间相对路径。
 - 目录会递归扫描 `.md` 文件。
-- 仅索引 Markdown 文件。
+- 默认情况下仅索引 Markdown 文件。
+- 如果 `memorySearch.multimodal.enabled = true`，OpenClaw 还会仅从 `extraPaths` 下索引支持的图片/音频文件。默认内存根目录（`MEMORY.md`、`memory.md`、`memory/**/*.md`）保持仅限 Markdown。
 - 符号链接被忽略（文件或目录）。
+
+### 多模态内存文件（Gemini 图片 + 音频）
+
+OpenClaw 可以在使用 Gemini embedding 2 时从 `memorySearch.extraPaths` 索引图片和音频文件：
+
+```json5
+agents: {
+  defaults: {
+    memorySearch: {
+      provider: "gemini",
+      model: "gemini-embedding-2-preview",
+      extraPaths: ["assets/reference", "voice-notes"],
+      multimodal: {
+        enabled: true,
+        modalities: ["image", "audio"], // 或 ["all"]
+        maxFileBytes: 10000000
+      },
+      remote: {
+        apiKey: "YOUR_GEMINI_API_KEY"
+      }
+    }
+  }
+}
+```
+
+说明：
+
+- 多模态内存目前仅支持 `gemini-embedding-2-preview`。
+- 多模态索引仅适用于通过 `memorySearch.extraPaths` 发现的文件。
+- 此阶段支持的模式：图片和音频。
+- 启用多模态内存时，`memorySearch.fallback` 必须保持为 `"none"`。
+- 匹配的图片/音频文件字节在索引期间上传到配置的 Gemini 嵌入端点。
+- 支持的图片扩展名：`.jpg`、`.jpeg`、`.png`、`.webp`、`.gif`、`.heic`、`.heif`。
+- 支持的音频扩展名：`.mp3`、`.wav`、`.ogg`、`.opus`、`.m4a`、`.aac`、`.flac`。
+- 搜索查询仍为文本，但 Gemini 可以将这些文本查询与已索引的图片/音频嵌入进行比较。
+- `memory_get` 仍仅读取 Markdown；二进制文件可搜索但不会作为原始文件内容返回。
 
 ### Gemini 嵌入（原生）
 
