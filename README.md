@@ -14,7 +14,6 @@
 <p align="center">
   <a href="https://github.com/tuwawa-liu/ChineseOpenClaw/actions/workflows/ci.yml?branch=main"><img src="https://img.shields.io/github/actions/workflow/status/tuwawa-liu/ChineseOpenClaw/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI 状态"></a>
   <a href="https://github.com/tuwawa-liu/ChineseOpenClaw"><img src="https://img.shields.io/github/stars/tuwawa-liu/ChineseOpenClaw?style=for-the-badge" alt="GitHub Stars"></a>
-  <a href="https://github.com/openclaw/openclaw/releases"><img src="https://img.shields.io/github/v/release/openclaw/openclaw?include_prereleases&style=for-the-badge&label=上游版本" alt="上游版本"></a>
   <a href="https://www.npmjs.com/package/chinese-openclaw"><img src="https://img.shields.io/npm/v/chinese-openclaw?style=for-the-badge&label=npm&color=CB3837" alt="npm 版本"></a>
   <a href="https://discord.gg/clawd"><img src="https://img.shields.io/discord/1456350064065904867?label=Discord&logo=discord&logoColor=white&color=5865F2&style=for-the-badge" alt="Discord"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT 许可证"></a>
