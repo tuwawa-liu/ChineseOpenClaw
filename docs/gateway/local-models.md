@@ -18,7 +18,9 @@ x-i18n:
 
 本地运行是可行的，但 OpenClaw 期望大上下文 + 强大的提示注入防御。小显存会截断上下文并泄露安全性。目标要高：**≥2 台满配 Mac Studio 或同等 GPU 配置（约 $30k+）**。单张 **24 GB** GPU 仅适用于较轻的提示，且延迟更高。使用**你能运行的最大/完整尺寸模型变体**；激进量化或"小型"检查点会增加提示注入风险（参见[安全](/gateway/security)）。
 
-## 推荐：LM Studio + MiniMax M2.1（Responses API，完整尺寸）
+如果你想要最省事的本地设置，请从 [Ollama](/providers/ollama) 和 `openclaw onboard` 开始。本页面是面向高端本地堆栈和自定义 OpenAI 兼容本地服务器的详细指南。
+
+## 推荐：LM Studio + MiniMax M2.5（Responses API，完整尺寸）
 
 当前最佳本地堆栈。在 LM Studio 中加载 MiniMax M2.1，启用本地服务器（默认 `http://127.0.0.1:1234`），并使用 Responses API 将推理与最终文本分开。
 

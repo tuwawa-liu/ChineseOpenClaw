@@ -785,6 +785,8 @@ export const FIELD_HELP: Record<string, string> = {
     '选择用于构建/查询内存向量的嵌入后端："openai"、"gemini"、"voyage"、"mistral"、"ollama" 或 "local"。在此保持最可靠的提供商并配置回退以增强弹性。',
   "agents.defaults.memorySearch.model":
     "当需要非默认模型时，所选内存提供商使用的嵌入模型覆盖。仅在需要超出提供商默认值的显式召回质量/成本调优时设置。",
+  "agents.defaults.memorySearch.outputDimensionality":
+    "仅限 Gemini embedding-2：选择内存嵌入的输出向量大小。使用 768、1536 或 3072（默认），更改时需要完全重新索引，因为存储的向量维度必须保持一致。",
   "agents.defaults.memorySearch.remote.baseUrl":
     "覆盖嵌入 API 端点，如 OpenAI 兼容代理或自定义 Gemini 基础 URL。仅在通过自有网关或供应商端点路由时使用；否则保持提供商默认值。",
   "agents.defaults.memorySearch.remote.apiKey":

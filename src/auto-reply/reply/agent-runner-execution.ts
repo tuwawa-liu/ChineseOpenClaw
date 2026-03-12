@@ -6,8 +6,10 @@ import { getCliSessionId } from "../../agents/cli-session.js";
 import { runWithModelFallback } from "../../agents/model-fallback.js";
 import { isCliProvider } from "../../agents/model-selection.js";
 import {
+  BILLING_ERROR_USER_MESSAGE,
   isCompactionFailureError,
   isContextOverflowError,
+  isBillingErrorMessage,
   isLikelyContextOverflowError,
   isTransientHttpError,
   sanitizeUserFacingText,
@@ -514,8 +516,9 @@ export async function runAgentTurnWithFallback(params: {
       break;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      const isContextOverflow = isLikelyContextOverflowError(message);
-      const isCompactionFailure = isCompactionFailureError(message);
+      const isBilling = isBillingErrorMessage(message);
+      const isContextOverflow = !isBilling && isLikelyContextOverflowError(message);
+      const isCompactionFailure = !isBilling && isCompactionFailureError(message);
       const isSessionCorruption = /function call turn comes immediately after/i.test(message);
       const isRoleOrderingError = /incorrect role information|roles must alternate/i.test(message);
       const isTransientHttp = isTransientHttpError(message);
@@ -610,11 +613,13 @@ export async function runAgentTurnWithFallback(params: {
         ? sanitizeUserFacingText(message, { errorContext: true })
         : message;
       const trimmedMessage = safeMessage.replace(/\.\s*$/, "");
-      const fallbackText = isContextOverflow
-        ? "⚠️ 上下文溢出——提示词对于此模型过大。请尝试较短的消息或使用更大上下文的模型。"
-        : isRoleOrderingError
-          ? "⚠️ 消息顺序冲突 - 请再试一次。如果此问题持续存在，请使用 /new 开始新会话。"
-          : `⚠️ 代理回复前失败：${trimmedMessage}。\n日志：openclaw logs --follow`;
+      const fallbackText = isBilling
+        ? BILLING_ERROR_USER_MESSAGE
+        : isContextOverflow
+          ? "⚠️ 上下文溢出——提示词对于此模型过大。请尝试较短的消息或使用更大上下文的模型。"
+          : isRoleOrderingError
+            ? "⚠️ 消息顺序冲突 - 请再试一次。如果此问题持续存在，请使用 /new 开始新会话。"
+            : `⚠️ 代理回复前失败：${trimmedMessage}。\n日志：openclaw logs --follow`;
 
       return {
         kind: "final",

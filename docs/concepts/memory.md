@@ -136,6 +136,29 @@ agents: {
 - `remote.baseUrl` 是可选的（默认为 Gemini API 基础 URL）。
 - `remote.headers` 让你可以在需要时添加额外的标头。
 - 默认模型：`gemini-embedding-001`。
+- `gemini-embedding-2-preview` 也受支持：8192 令牌限制和可配置维度（768 / 1536 / 3072，默认 3072）。
+
+#### Gemini Embedding 2（预览版）
+
+```json5
+agents: {
+  defaults: {
+    memorySearch: {
+      provider: "gemini",
+      model: "gemini-embedding-2-preview",
+      outputDimensionality: 3072,  // 可选：768、1536 或 3072（默认）
+      remote: {
+        apiKey: "YOUR_GEMINI_API_KEY"
+      }
+    }
+  }
+}
+```
+
+> **⚠️ 需要重新索引：** 从 `gemini-embedding-001`（768 维度）切换到
+> `gemini-embedding-2-preview`（3072 维度）会改变向量大小。在 768、1536 和 3072 之间
+> 更改 `outputDimensionality` 也是如此。
+> OpenClaw 会在检测到模型或维度变更时自动重新索引。
 
 如果你想使用**自定义 OpenAI 兼容端点**（OpenRouter、vLLM 或代理），可以使用 `remote` 配置与 OpenAI 提供商：
 

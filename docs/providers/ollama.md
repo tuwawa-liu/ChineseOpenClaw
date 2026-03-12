@@ -15,23 +15,44 @@ x-i18n:
 
 # Ollama
 
-Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 `OLLAMA_API_KEY`（或认证配置）启用且未定义显式的 `models.providers.ollama` 条目时，可以**自动发现支持工具调用的模型**。
+Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的原生 API（`/api/chat`）进行集成，支持流式传输和工具调用，并且当你通过 `OLLAMA_API_KEY`（或认证配置）启用且未定义显式的 `models.providers.ollama` 条目时，可以**自动发现本地 Ollama 模型**。
 
 ## 快速开始
 
 1. 安装 Ollama：https://ollama.ai
 
-2. 拉取模型：
+2. 如果需要本地推理，拉取一个本地模型：
 
 ```bash
+ollama pull glm-4.7-flash
+# 或
+ollama pull gpt-oss:20b
+# 或
 ollama pull llama3.3
-# 或
-ollama pull qwen2.5-coder:32b
-# 或
-ollama pull deepseek-r1:32b
 ```
 
-3. 为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）：
+3. 如果也想使用 Ollama 云端模型，请登录：
+
+```bash
+ollama signin
+```
+
+4. 运行引导并选择 `Ollama`：
+
+```bash
+openclaw onboard
+```
+
+- `Local`：仅本地模型
+- `Cloud + Local`：本地模型加 Ollama 云端模型
+- 云端模型如 `kimi-k2.5:cloud`、`minimax-m2.5:cloud` 和 `glm-5:cloud` **不**需要本地 `ollama pull`
+
+OpenClaw 当前建议：
+
+- 本地默认：`glm-4.7-flash`
+- 云端默认：`kimi-k2.5:cloud`、`minimax-m2.5:cloud`、`glm-5:cloud`
+
+5. 如果你偏好手动设置，直接为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）：
 
 ```bash
 # 设置环境变量
@@ -41,13 +62,20 @@ export OLLAMA_API_KEY="ollama-local"
 openclaw config set models.providers.ollama.apiKey "ollama-local"
 ```
 
-4. 使用 Ollama 模型：
+6. 检查或切换模型：
+
+```bash
+openclaw models list
+openclaw models set ollama/glm-4.7-flash
+```
+
+7. 或在配置中设置默认值：
 
 ```json5
 {
   agents: {
     defaults: {
-      model: { primary: "ollama/llama3.3" },
+      model: { primary: "ollama/glm-4.7-flash" },
     },
   },
 }
@@ -57,14 +85,13 @@ openclaw config set models.providers.ollama.apiKey "ollama-local"
 
 当你设置了 `OLLAMA_API_KEY`（或认证配置）且**未**定义 `models.providers.ollama` 时，OpenClaw 会从本地 Ollama 实例 `http://127.0.0.1:11434` 发现模型：
 
-- 查询 `/api/tags` 和 `/api/show`
-- 仅保留报告了 `tools` 能力的模型
-- 当模型报告 `thinking` 时标记为 `reasoning`
-- 在可用时从 `model_info["<arch>.context_length"]` 读取 `contextWindow`
-- 将 `maxTokens` 设置为上下文窗口的 10 倍
+- 查询 `/api/tags`
+- 使用尽力而为的 `/api/show` 查找来读取可用的 `contextWindow`
+- 通过模型名称启发式（`r1`、`reasoning`、`think`）标记 `reasoning`
+- 将 `maxTokens` 设置为 OpenClaw 使用的默认 Ollama 最大令牌上限
 - 所有费用设置为 `0`
 
-这样无需手动配置模型条目，同时保持目录与 Ollama 的能力对齐。
+这样无需手动配置模型条目，同时保持目录与本地 Ollama 实例对齐。
 
 查看可用模型：
 
@@ -99,7 +126,7 @@ export OLLAMA_API_KEY="ollama-local"
 
 - Ollama 运行在其他主机/端口上。
 - 你想强制指定上下文窗口或模型列表。
-- 你想包含未报告工具支持的模型。
+- 你想完全手动定义模型。
 
 ```json5
 {
@@ -167,7 +194,7 @@ export OLLAMA_API_KEY="ollama-local"
 
 ### 推理模型
 
-当 Ollama 在 `/api/show` 中报告 `thinking` 时，OpenClaw 会将模型标记为具有推理能力：
+OpenClaw 默认将名称中包含 `deepseek-r1`、`reasoning` 或 `think` 的模型视为具有推理能力：
 
 ```bash
 ollama pull deepseek-r1:32b
@@ -180,6 +207,52 @@ Ollama 免费且在本地运行，因此所有模型费用均设置为 $0。
 ### 上下文窗口
 
 对于自动发现的模型，OpenClaw 会使用 Ollama 报告的上下文窗口（如果可用），否则默认为 `8192`。你可以在显式提供商配置中覆盖 `contextWindow` 和 `maxTokens`。
+
+## 故障排除
+
+### Ollama 未被检测到
+
+如果你需要使用 OpenAI 兼容端点（例如，在仅支持 OpenAI 格式的代理后面），请显式设置 `api: "openai-completions"`：
+
+```json5
+{
+  models: {
+    providers: {
+      ollama: {
+        baseUrl: "http://ollama-host:11434/v1",
+        api: "openai-completions",
+        injectNumCtxForOpenAICompat: true, // 默认：true
+        apiKey: "ollama-local",
+        models: [...]
+      }
+    }
+  }
+}
+```
+
+此模式可能不支持同时进行流式传输和工具调用。你可能需要在模型配置中使用 `params: { streaming: false }` 禁用流式传输。
+
+当在 Ollama 上使用 `api: "openai-completions"` 时，OpenClaw 默认会注入 `options.num_ctx`，以防 Ollama 静默回退到 4096 上下文窗口。如果你的代理/上游拒绝未知的 `options` 字段，请禁用此行为：
+
+```json5
+{
+  models: {
+    providers: {
+      ollama: {
+        baseUrl: "http://ollama-host:11434/v1",
+        api: "openai-completions",
+        injectNumCtxForOpenAICompat: false,
+        apiKey: "ollama-local",
+        models: [...]
+      }
+    }
+  }
+}
+```
+
+### 上下文窗口
+
+对于自动发现的模型，OpenClaw 会使用 Ollama 报告的上下文窗口（如果可用），否则回退到 OpenClaw 使用的默认 Ollama 上下文窗口。你可以在显式提供商配置中覆盖 `contextWindow` 和 `maxTokens`。
 
 ## 故障排除
 
@@ -199,16 +272,18 @@ curl http://localhost:11434/api/tags
 
 ### 没有可用模型
 
-OpenClaw 仅自动发现报告了工具支持的模型。如果你的模型未列出，可以：
+如果你的模型未列出，可以：
 
-- 拉取一个支持工具调用的模型，或
+- 在本地拉取该模型，或
 - 在 `models.providers.ollama` 中显式定义该模型。
 
 添加模型：
 
 ```bash
 ollama list  # 查看已安装的模型
-ollama pull llama3.3  # 拉取模型
+ollama pull glm-4.7-flash
+ollama pull gpt-oss:20b
+ollama pull llama3.3     # 或其他模型
 ```
 
 ### 连接被拒绝

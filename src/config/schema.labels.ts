@@ -331,6 +331,7 @@ export const FIELD_LABELS: Record<string, string> = {
   "agents.defaults.memorySearch.remote.batch.pollIntervalMs": "远程批量轮询间隔（毫秒）",
   "agents.defaults.memorySearch.remote.batch.timeoutMinutes": "远程批量超时（分钟）",
   "agents.defaults.memorySearch.model": "记忆搜索模型",
+  "agents.defaults.memorySearch.outputDimensionality": "记忆搜索输出维度",
   "agents.defaults.memorySearch.fallback": "记忆搜索回退",
   "agents.defaults.memorySearch.local.modelPath": "本地嵌入模型路径",
   "agents.defaults.memorySearch.store.path": "记忆搜索索引路径",

@@ -1,15 +1,12 @@
 # OpenClaw iOS（超级 Alpha 版）
 
-暂无 TEST FLIGHT
-
 此 iPhone 应用处于超级 Alpha 阶段，仅供内部使用。它以 `role: node` 连接到 OpenClaw Gateway。
 
 ## 分发状态
 
-暂无 TEST FLIGHT
-
-- 当前分发方式：通过 Xcode 从源码本地/手动部署。
-- App Store 流程不在当前内部开发路径中。
+- 公开发布：暂不可用。
+- 内部 Beta 发布：本地归档 + 通过 Fastlane 上传到 TestFlight。
+- 本地/手动通过 Xcode 从源码部署仍是默认开发方式。
 
 ## 超级 Alpha 免责声明
 
@@ -48,6 +45,45 @@ open OpenClaw.xcodeproj
 
 ```bash
 pnpm ios:open
+```
+
+## 本地 Beta 发布流程
+
+前提条件：
+
+- Xcode 16+
+- `pnpm`
+- `xcodegen`
+- `fastlane`
+- Apple 账户已登录 Xcode 以支持自动签名/配置
+- 在自动解析 Beta 构建号或上传到 TestFlight 时，通过 `scripts/ios-asc-keychain-setup.sh` 在钥匙串中设置 App Store Connect API 密钥
+
+发布行为：
+
+- 本地开发继续使用来自 `scripts/ios-configure-signing.sh` 的每开发者唯一 Bundle ID。
+- Beta 发布使用规范的 `ai.openclaw.client*` Bundle ID，通过在 `apps/ios/build/BetaRelease.xcconfig` 中生成临时 xcconfig 实现。
+- Beta 流程不会修改 `apps/ios/.local-signing.xcconfig` 或 `apps/ios/LocalSigning.xcconfig`。
+- 根目录 `package.json.version` 是 iOS 的唯一版本来源。
+- 根版本如 `2026.3.9-beta.1` 会变为：
+  - `CFBundleShortVersionString = 2026.3.9`
+  - `CFBundleVersion = 2026.3.9 的下一个 TestFlight 构建号`
+
+仅归档（不上传）：
+
+```bash
+pnpm ios:beta:archive
+```
+
+归档并上传到 TestFlight：
+
+```bash
+pnpm ios:beta
+```
+
+如果需要强制指定构建号：
+
+```bash
+pnpm ios:beta -- --build-number 7
 ```
 
 ## 本地/手动构建的 APNs 预期

@@ -12,9 +12,13 @@ Docs: https://docs.openclaw.ai
 - Exec/child commands: mark child command environments with `OPENCLAW_CLI` so subprocesses can detect when they were launched from the OpenClaw CLI. (#41411) Thanks @vincentkoc.
 - iOS/Home canvas: add a bundled welcome screen with a live agent overview that refreshes on connect, reconnect, and foreground return, and move the compact connection pill off the top-left canvas overlay. (#42456) Thanks @ngutman.
 - iOS/Home canvas: replace floating controls with a docked toolbar, make the bundled home scaffold adapt to smaller phones, and open chat in the resolved main session instead of a synthetic `ios` session. (#42456) Thanks @ngutman.
+- Memory/Gemini: add `gemini-embedding-2-preview` memory-search support with configurable output dimensions and automatic reindexing when the configured dimensions change. (#42501) Thanks @BillChirico and @gumadeiras.
 - Discord/auto threads: add `autoArchiveDuration` channel config for auto-created threads so Discord thread archiving can stay at 1 hour, 1 day, 3 days, or 1 week instead of always using the 1-hour default. (#35065) Thanks @davidguttman.
 - OpenCode/引导：新增 OpenCode Go 提供商，在向导/文档中将 Zen 和 Go 视为一个 OpenCode 设置，同时保持运行时提供商分离，为两个配置文件存储一个共享的 OpenCode 密钥，并停止覆盖内置的 `opencode-go` 目录路由。(#42313) 感谢 @ImLukeF 和 @vincentkoc。
 - macOS/聊天 UI：新增聊天模型选择器，跨重启保持显式思考级别选择，并加强共享聊天编辑器的提供商感知会话模型同步。(#42314) 感谢 @ImLukeF。
+- iOS/TestFlight：新增本地 Beta 发布流程，支持 Fastlane 准备/归档/上传，规范 Beta Bundle ID，以及 Watch 应用归档修复。(#42991) 感谢 @ngutman。
+- macOS/引导：检测远程网关何时需要共享认证令牌，说明在网关主机上在哪里找到它，并澄清成功检查何时使用了配对设备认证。(#43100) 感谢 @ngutman。
+- 引导/Ollama：新增一等 Ollama 设置，支持本地或云端 + 本地模式、基于浏览器的云端登录、精选模型建议，以及跳过不必要本地拉取的云模型处理。(#41529) 感谢 @BruceMacD。
 
 ### Breaking
 
@@ -92,6 +96,20 @@ Docs: https://docs.openclaw.ai
 - Security/system.run: fail closed for approval-backed interpreter/runtime commands when OpenClaw cannot bind exactly one concrete local file operand, while extending best-effort direct-file binding to additional runtime forms. Thanks @tdjackey for reporting.
 - Gateway/session reset auth: split conversation `/new` and `/reset` handling away from the admin-only `sessions.reset` control-plane RPC so write-scoped gateway callers can no longer reach the privileged reset path through `agent`. Thanks @tdjackey for reporting.
 - Telegram/最终预览投递后续：仅在预览已可见时保留缺少 `message_id` 的模糊最终消息，而首次预览/无 ID 情况仍回退，确保 Telegram 用户不会丢失最终回复。(#41932) 感谢 @hougangdev。
+- Agents/Azure OpenAI Responses：将 `azure-openai` 提供商纳入 Responses API 存储覆盖，使 Azure OpenAI 多轮定时任务和嵌入式代理运行不再出现 HTTP 400 "store is set to false" 错误。(#42934, 修复 #42800) 感谢 @ademczuk。
+- Agents/上下文裁剪：在软裁剪时修剪仅包含图片的工具结果，将上下文裁剪覆盖范围与新的工具结果合约对齐，并将历史图片清理扩展到相同的截图密集会话路径。(#43045) 感谢 @MoerAI。
+- fix(models)：保护可选的 model.input 能力检查。(#42096) 感谢 @andyliu。
+- Security/插件运行时：阻止未认证的插件 HTTP 路由在调用 `runtime.subagent.*` 时继承合成的管理员网关范围，使 admin-only 方法如 `sessions.delete` 在没有网关认证时保持被阻止。
+- Security/session_status：在读取或修改目标会话状态前强制执行沙箱会话树可见性和共享代理到代理的访问阮，使沙箱化子代理无法通过 `session_status` 检查父会话元数据或写入父模型覆盖。
+- Security/nodes：将 `nodes` 代理工具视为仅所有者回退策略，使非所有者发送者无法通过共享工具集到达配对节点审批或调用路径。
+- Telegram/最终预览清理后续：仅对短暂预览最终消息清除过时的 cleanup-retain 状态，使归档预览保留不再在后续回退发送的最终消息旁留下过时的部分气泡。(#41763) 感谢 @obviyus。
+- Signal/配置模式：在严格配置验证中接受 `channels.signal.accountUuid`，使循环保护配置不再因未识别的键错误而失败。(#35578) 感谢 @ingyukoh。
+- Telegram/配置模式：在严格配置验证中接受 `channels.telegram.actions.editMessage` 和 `createForumTopic`，使现有 Telegram 操作开关不再作为未识别的键失败。(#35498) 感谢 @ingyukoh。
+- Agents/冷却时间：将无失败记录的冷却窗口默认为 `unknown` 而不是 `rate_limit`，避免错误的 API 速率限制警告，同时保留冷却恢复探测。(#42911) 感谢 @VibhorGautam。
+- Discord/配置类型：在规范的公会频道配置类型上公开频道级 `autoThread`，使严格配置加载与现有 Discord 模式和运行时行为匹配。(#35608) 感谢 @ingyukoh。
+- Agents/错误渲染：忽略成功轮次上过时的助手 `errorMessage` 字段，使后台/工具端失败不再在有效回复前附加合成的计费错误。(#40616) 感谢 @ingyukoh。
+- Agents/回退：识别 Venice `402 Insufficient USD or Diem balance` 计费错误，使配置的模型回退触发而不是显示原始提供商错误。(#43205) 感谢 @Squabble9。
+- 依赖更新：刷新工作区依赖（除固定的 Carbon 包外），并加固 ACP 会话配置写入以防止非字符串 SDK 值，使较新的 ACP 客户端快速失败而不是触发类型/运行时不匹配。
 
 ## 2026.3.8
 
@@ -156,12 +174,16 @@ Docs: https://docs.openclaw.ai
 - Cron/owner-only tools: pass trusted isolated cron runs into the embedded agent with owner context so `cron`/`gateway` tooling remains available after the owner-auth hardening narrowed direct-message ownership inference.
 - Browser/SSRF: block private-network intermediate redirect hops in strict browser navigation flows and fail closed when remote tab-open paths cannot inspect redirect chains. Thanks @zpbrent.
 - MS Teams/authz: keep `groupPolicy: "allowlist"` enforcing sender allowlists even when a team/channel route allowlist is configured, so route matches no longer widen group access to every sender in that route. Thanks @zpbrent.
+- Security/Gateway: block `device.token.rotate` from minting operator scopes broader than the caller session already holds, closing the critical paired-device token privilege escalation reported as GHSA-4jpw-hj22-2xmc.
 - Security/system.run: bind approved `bun` and `deno run` script operands to on-disk file snapshots so post-approval script rewrites are denied before execution.
 - Skills/download installs: pin the validated per-skill tools root before writing downloaded archives, so rebinding the lexical tools path cannot redirect download writes outside the intended tools directory. Thanks @tdjackey.
 - Control UI/Debug: replace the Manual RPC free-text method field with a sorted dropdown sourced from gateway-advertised methods, and stack the form vertically for narrower layouts. (#14967) thanks @rixau.
 - Auth/profile resolution: log debug details when auto-discovered auth profiles fail during provider API-key resolution, so `--debug` output surfaces the real refresh/keychain/credential-store failure instead of only the generic missing-key message. (#41271) thanks @he-yufeng.
 - ACP/cancel scoping: scope `chat.abort` and shared-session ACP event routing by `runId` so one session cannot cancel or consume another session's run when they share the same gateway session key. (#41331) Thanks @pejmanjohn.
 - SecretRef/models: harden custom/provider secret persistence and reuse across models.json snapshots, merge behavior, runtime headers, and secret audits. (#42554) Thanks @joshavant.
+- macOS/browser proxy: serialize non-GET browser proxy request bodies through `AnyCodable.foundationValue` so nested JSON bodies no longer crash the macOS app with `Invalid type in JSON write (__SwiftValue)`. (#43069) Thanks @Effet.
+- CLI/skills tables: keep terminal table borders aligned for wide graphemes, use full reported terminal width, and switch a few ambiguous skill icons to Terminal-safe emoji so `openclaw skills` renders more consistently in Terminal.app and iTerm. Thanks @vincentkoc.
+- Memory/Gemini: normalize returned Gemini embeddings across direct query, direct batch, and async batch paths so memory search uses consistent vector handling for Gemini too. (#43409) Thanks @gumadeiras.
 
 ## 2026.3.7
 
@@ -522,6 +544,7 @@ Docs: https://docs.openclaw.ai
 - Browser/config schema: accept `browser.profiles.*.driver: "openclaw"` while preserving legacy `"clawd"` compatibility in validated config. (#39374; based on #35621) Thanks @gambletan and @ingyukoh.
 - Memory flush/bootstrap file protection: restrict memory-flush runs to append-only `read`/`write` tools and route host-side memory appends through root-enforced safe file handles so flush turns cannot overwrite bootstrap files via `exec` or unsafe raw rewrites. (#38574) Thanks @frankekn.
 - Mattermost/DM media uploads: resolve bare 26-character Mattermost IDs user-first for direct messages so media sends no longer fail with `403 Forbidden` when targets are configured as unprefixed user IDs. (#29925) Thanks @teconomix.
+- Voice-call/OpenAI TTS config parity: add missing `speed`, `instructions`, and `baseUrl` fields to the OpenAI TTS config schema and gate `instructions` to supported models so voice-call overrides validate and route cleanly through core TTS. (#39226) Thanks @ademczuk.
 
 ## 2026.3.2
 
@@ -1029,6 +1052,7 @@ Docs: https://docs.openclaw.ai
 - Browser/Navigate: resolve the correct `targetId` in navigate responses after renderer swaps. (#25326) Thanks @stone-jin and @vincentkoc.
 - FS/Sandbox workspace boundaries: add a dedicated `outside-workspace` safe-open error code for root-escape checks, and propagate specific outside-workspace messages across edit/browser/media consumers instead of generic not-found/invalid-path fallbacks. (#29715) Thanks @YuzuruS.
 - Diagnostics/Stuck session signal: add configurable stuck-session warning threshold via `diagnostics.stuckSessionWarnMs` (default 120000ms) to reduce false-positive warnings on long multi-tool turns. (#31032)
+- Agents/error classification: check billing errors before context overflow heuristics in the agent runner catch block so spend-limit and quota errors show the billing-specific message instead of being misclassified as "Context overflow: prompt too large". (#40409) Thanks @ademczuk.
 
 ## 2026.2.26
 

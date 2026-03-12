@@ -249,7 +249,7 @@ Ollama 是提供 OpenAI 兼容 API 的本地 LLM 运行时：
 - 提供商：`ollama`
 - 认证：无需（本地服务器）
 - 示例模型：`ollama/llama3.3`
-- 安装：https://ollama.ai
+- 安装：[https://ollama.com/download](https://ollama.com/download)
 
 ```bash
 # Install Ollama, then pull a model:
@@ -264,7 +264,7 @@ ollama pull llama3.3
 }
 ```
 
-当 Ollama 在本地 `http://127.0.0.1:11434/v1` 运行时会自动检测。参见 [/providers/ollama](/providers/ollama) 了解模型推荐和自定义配置。
+当你通过 `OLLAMA_API_KEY` 启用时，Ollama 会在本地 `http://127.0.0.1:11434` 自动检测，`openclaw onboard` 可以直接将其配置为一等提供商。参见 [/providers/ollama](/providers/ollama) 了解引导、云端/本地模式和自定义配置。
 
 ### 本地代理（LM Studio、vLLM、LiteLLM 等）
 

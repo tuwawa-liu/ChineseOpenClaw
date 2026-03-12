@@ -50,6 +50,12 @@ function getAuthChoiceGroupDefs(): {
       choices: ["vllm"],
     },
     {
+      value: "ollama",
+      label: "Ollama",
+      hint: t("authChoiceOptions.groupHintOllama"),
+      choices: ["ollama"],
+    },
+    {
       value: "minimax",
       label: "MiniMax",
       hint: t("authChoiceOptions.groupHintMinimax"),
@@ -246,6 +252,11 @@ function getBaseAuthChoiceOptions(): ReadonlyArray<AuthChoiceOption> {
       label: t("authChoiceOptions.labelVllm"),
       hint: t("authChoiceOptions.hintVllm"),
     },
+    {
+      value: "ollama",
+      label: t("authChoiceOptions.labelOllama"),
+      hint: t("authChoiceOptions.hintOllama"),
+    },
     ...buildProviderAuthChoiceOptions(),
     {
       value: "moonshot-api-key-cn",
@@ -303,11 +314,6 @@ function getBaseAuthChoiceOptions(): ReadonlyArray<AuthChoiceOption> {
       value: "opencode-zen",
       label: t("authChoiceOptions.labelOpenCodeZen"),
       hint: t("authChoiceOptions.hintOpenCodeZen"),
-    },
-    {
-      value: "opencode-go",
-      label: t("authChoiceOptions.labelOpenCodeGo"),
-      hint: t("authChoiceOptions.hintOpenCodeGo"),
     },
     { value: "minimax-api", label: t("authChoiceOptions.labelMinimaxApi") },
     {
