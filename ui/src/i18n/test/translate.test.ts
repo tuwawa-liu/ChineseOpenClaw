@@ -2,13 +2,19 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { i18n, t } from "../lib/translate.ts";
 
 describe("i18n", () => {
+  let translate: TranslateModule;
+
   beforeEach(async () => {
+    vi.resetModules();
+    vi.stubGlobal("localStorage", createStorageMock());
+    vi.stubGlobal("navigator", { language: "en-US" } as Navigator);
+    translate = await import("../lib/translate.ts");
     localStorage.clear();
     await i18n.setLocale("zh-CN");
   });
 
   it("should return the key if translation is missing", () => {
-    expect(t("non.existent.key")).toBe("non.existent.key");
+    expect(translate.t("non.existent.key")).toBe("non.existent.key");
   });
 
   it("should return the correct Chinese translation", () => {
@@ -25,5 +31,11 @@ describe("i18n", () => {
 
   it("default locale is zh-CN", () => {
     expect(i18n.getLocale()).toBe("zh-CN");
+  });
+
+  it("keeps the version label available in shipped locales", () => {
+    expect((pt_BR.common as { version?: string }).version).toBeTruthy();
+    expect((zh_CN.common as { version?: string }).version).toBeTruthy();
+    expect((zh_TW.common as { version?: string }).version).toBeTruthy();
   });
 });

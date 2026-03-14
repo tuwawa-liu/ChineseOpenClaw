@@ -346,6 +346,27 @@ export function createCommandHandlers(context: CommandHandlerContext) {
           chatLog.addSystem(t("tui.verboseFailed", { err: String(err) }));
         }
         break;
+      case "fast":
+        if (!args || args === "status") {
+          chatLog.addSystem(`fast mode: ${state.sessionInfo.fastMode ? "on" : "off"}`);
+          break;
+        }
+        if (args !== "on" && args !== "off") {
+          chatLog.addSystem("usage: /fast <status|on|off>");
+          break;
+        }
+        try {
+          const result = await client.patchSession({
+            key: state.currentSessionKey,
+            fastMode: args === "on",
+          });
+          chatLog.addSystem(`fast mode ${args === "on" ? "enabled" : "disabled"}`);
+          applySessionInfoFromPatch(result);
+          await refreshSessionInfo();
+        } catch (err) {
+          chatLog.addSystem(`fast failed: ${String(err)}`);
+        }
+        break;
       case "reasoning":
         if (!args) {
           chatLog.addSystem(t("tui.reasoningUsage"));

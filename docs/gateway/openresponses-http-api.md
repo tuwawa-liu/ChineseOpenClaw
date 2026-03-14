@@ -28,7 +28,10 @@ OpenClaw 的 Gateway 网关可以提供兼容 OpenResponses 的 `POST /v1/respon
 
 使用 Gateway 网关认证配置。发送 bearer 令牌：
 
-- `Authorization: Bearer <token>`
+- use `Authorization: Bearer <token>` with the normal Gateway auth config
+- treat the endpoint as full operator access for the gateway instance
+- select agents with `model: "openclaw:<agentId>"`, `model: "agent:<agentId>"`, or `x-openclaw-agent-id`
+- use `x-openclaw-session-key` for explicit session routing
 
 说明：
 

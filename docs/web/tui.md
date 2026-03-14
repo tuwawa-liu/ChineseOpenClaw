@@ -99,6 +99,7 @@ openclaw tui --url ws://<host>:<port> --token <gateway-token>
 会话控制：
 
 - `/think <off|minimal|low|medium|high>`
+- `/fast <status|on|off>`
 - `/verbose <on|full|off>`
 - `/reasoning <on|off|stream>`
 - `/usage <off|tokens|full>`

@@ -64,7 +64,7 @@ openclaw browser --browser-profile openclaw snapshot
     // cdpUrl: "http://127.0.0.1:18792", // legacy single-profile override
     remoteCdpTimeoutMs: 1500, // remote CDP HTTP timeout (ms)
     remoteCdpHandshakeTimeoutMs: 3000, // remote CDP WebSocket handshake timeout (ms)
-    defaultProfile: "chrome",
+    defaultProfile: "openclaw",
     color: "#FF4500",
     headless: false,
     noSandbox: false,
@@ -73,6 +73,11 @@ openclaw browser --browser-profile openclaw snapshot
     profiles: {
       openclaw: { cdpPort: 18800, color: "#FF4500" },
       work: { cdpPort: 18801, color: "#0066CC" },
+      "chrome-live": {
+        driver: "existing-session",
+        attachOnly: true,
+        color: "#00AA00",
+      },
       remote: { cdpUrl: "http://10.0.0.42:9222", color: "#00AA00" },
     },
   },

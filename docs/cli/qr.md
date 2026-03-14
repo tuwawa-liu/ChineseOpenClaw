@@ -17,7 +17,7 @@ openclaw qr
 openclaw qr --setup-code-only
 openclaw qr --json
 openclaw qr --remote
-openclaw qr --url wss://gateway.example/ws --token '<token>'
+openclaw qr --url wss://gateway.example/ws
 ```
 
 ## 选项

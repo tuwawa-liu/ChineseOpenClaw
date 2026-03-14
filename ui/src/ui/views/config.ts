@@ -1,8 +1,17 @@
-import { html, nothing } from "lit";
+import { html, nothing, type TemplateResult } from "lit";
+import { icons } from "../icons.ts";
+import type { ThemeTransitionContext } from "../theme-transition.ts";
+import type { ThemeMode, ThemeName } from "../theme.ts";
 import type { ConfigUiHints } from "../types.ts";
-import { hintForPath, humanize, schemaType, type JsonSchema } from "./config-form.shared.ts";
+import {
+  countSensitiveConfigValues,
+  humanize,
+  pathKey,
+  REDACTED_PLACEHOLDER,
+  schemaType,
+  type JsonSchema,
+} from "./config-form.shared.ts";
 import { analyzeConfigSchema, renderConfigForm, SECTION_META } from "./config-form.ts";
-import { getTagFilters, replaceTagFilters } from "./config-search.ts";
 import { t } from "../../i18n/index.ts";
 
 export type ConfigProps = {
@@ -19,6 +28,7 @@ export type ConfigProps = {
   schemaLoading: boolean;
   uiHints: ConfigUiHints;
   formMode: "form" | "raw";
+  showModeToggle?: boolean;
   formValue: Record<string, unknown> | null;
   originalValue: Record<string, unknown> | null;
   searchQuery: string;
@@ -34,25 +44,20 @@ export type ConfigProps = {
   onSave: () => void;
   onApply: () => void;
   onUpdate: () => void;
+  onOpenFile?: () => void;
+  version: string;
+  theme: ThemeName;
+  themeMode: ThemeMode;
+  setTheme: (theme: ThemeName, context?: ThemeTransitionContext) => void;
+  setThemeMode: (mode: ThemeMode, context?: ThemeTransitionContext) => void;
+  gatewayUrl: string;
+  assistantName: string;
+  configPath?: string | null;
+  navRootLabel?: string;
+  includeSections?: string[];
+  excludeSections?: string[];
+  includeVirtualSections?: boolean;
 };
-
-const TAG_SEARCH_PRESETS = [
-  "security",
-  "auth",
-  "network",
-  "access",
-  "privacy",
-  "observability",
-  "performance",
-  "reliability",
-  "storage",
-  "models",
-  "media",
-  "automation",
-  "channels",
-  "tools",
-  "advanced",
-] as const;
 
 // SVG Icons for sidebar (Lucide-style)
 const sidebarIcons = {
@@ -274,6 +279,19 @@ const sidebarIcons = {
       <path d="m19.07 10.93-4.24 4.24"></path>
     </svg>
   `,
+  __appearance__: html`
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  `,
   default: html`
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -282,24 +300,135 @@ const sidebarIcons = {
   `,
 };
 
-// Section definitions
-const SECTION_KEYS = ["env", "update", "agents", "auth", "channels", "messages", "commands", "hooks", "skills", "tools", "gateway", "wizard"] as const;
-
-function getSections(): Array<{ key: string; label: string }> {
-  return SECTION_KEYS.map((key) => ({ key, label: t(`configSections.${key}`) }));
-}
-
-type SubsectionEntry = {
-  key: string;
+// Categorised section definitions
+type SectionCategory = {
+  id: string;
   label: string;
-  description?: string;
-  order: number;
+  sections: Array<{ key: string; label: string }>;
 };
 
-const ALL_SUBSECTION = "__all__";
+const SECTION_CATEGORIES: SectionCategory[] = [
+  {
+    id: "core",
+    label: "核心",
+    sections: [
+      { key: "env", label: "环境变量" },
+      { key: "auth", label: "身份认证" },
+      { key: "update", label: "更新" },
+      { key: "meta", label: "元数据" },
+      { key: "logging", label: "日志" },
+    ],
+  },
+  {
+    id: "ai",
+    label: "AI 与智能体",
+    sections: [
+      { key: "agents", label: "智能体" },
+      { key: "models", label: "模型" },
+      { key: "skills", label: "技能" },
+      { key: "tools", label: "工具" },
+      { key: "memory", label: "记忆" },
+      { key: "session", label: "会话" },
+    ],
+  },
+  {
+    id: "communication",
+    label: "通信",
+    sections: [
+      { key: "channels", label: "频道" },
+      { key: "messages", label: "消息" },
+      { key: "broadcast", label: "广播" },
+      { key: "talk", label: "语音" },
+      { key: "audio", label: "音频" },
+    ],
+  },
+  {
+    id: "automation",
+    label: "自动化",
+    sections: [
+      { key: "commands", label: "命令" },
+      { key: "hooks", label: "钩子" },
+      { key: "bindings", label: "绑定" },
+      { key: "cron", label: "定时任务" },
+      { key: "approvals", label: "审批" },
+      { key: "plugins", label: "插件" },
+    ],
+  },
+  {
+    id: "infrastructure",
+    label: "基础设施",
+    sections: [
+      { key: "gateway", label: "网关" },
+      { key: "web", label: "网页" },
+      { key: "browser", label: "浏览器" },
+      { key: "nodeHost", label: "节点主机" },
+      { key: "canvasHost", label: "画布主机" },
+      { key: "discovery", label: "发现" },
+      { key: "media", label: "媒体" },
+    ],
+  },
+  {
+    id: "appearance",
+    label: "外观",
+    sections: [
+      { key: "__appearance__", label: "外观" },
+      { key: "ui", label: "界面" },
+      { key: "wizard", label: "设置向导" },
+    ],
+  },
+];
+
+// Flat lookup: all categorised keys
+const CATEGORISED_KEYS = new Set(SECTION_CATEGORIES.flatMap((c) => c.sections.map((s) => s.key)));
 
 function getSectionIcon(key: string) {
   return sidebarIcons[key as keyof typeof sidebarIcons] ?? sidebarIcons.default;
+}
+
+function scopeSchemaSections(
+  schema: JsonSchema | null,
+  params: { include?: ReadonlySet<string> | null; exclude?: ReadonlySet<string> | null },
+): JsonSchema | null {
+  if (!schema || schemaType(schema) !== "object" || !schema.properties) {
+    return schema;
+  }
+  const include = params.include;
+  const exclude = params.exclude;
+  const nextProps: Record<string, JsonSchema> = {};
+  for (const [key, value] of Object.entries(schema.properties)) {
+    if (include && include.size > 0 && !include.has(key)) {
+      continue;
+    }
+    if (exclude && exclude.size > 0 && exclude.has(key)) {
+      continue;
+    }
+    nextProps[key] = value;
+  }
+  return { ...schema, properties: nextProps };
+}
+
+function scopeUnsupportedPaths(
+  unsupportedPaths: string[],
+  params: { include?: ReadonlySet<string> | null; exclude?: ReadonlySet<string> | null },
+): string[] {
+  const include = params.include;
+  const exclude = params.exclude;
+  if ((!include || include.size === 0) && (!exclude || exclude.size === 0)) {
+    return unsupportedPaths;
+  }
+  return unsupportedPaths.filter((entry) => {
+    if (entry === "<root>") {
+      return true;
+    }
+    const [top] = entry.split(".");
+    if (include && include.size > 0) {
+      return include.has(top);
+    }
+    if (exclude && exclude.size > 0) {
+      return !exclude.has(top);
+    }
+    return true;
+  });
 }
 
 function resolveSectionMeta(
@@ -317,26 +446,6 @@ function resolveSectionMeta(
     label: schema?.title ?? humanize(key),
     description: schema?.description ?? "",
   };
-}
-
-function resolveSubsections(params: {
-  key: string;
-  schema: JsonSchema | undefined;
-  uiHints: ConfigUiHints;
-}): SubsectionEntry[] {
-  const { key, schema, uiHints } = params;
-  if (!schema || schemaType(schema) !== "object" || !schema.properties) {
-    return [];
-  }
-  const entries = Object.entries(schema.properties).map(([subKey, node]) => {
-    const hint = hintForPath([key, subKey], uiHints);
-    const label = hint?.label ?? node.title ?? humanize(subKey);
-    const description = hint?.help ?? node.description ?? "";
-    const order = hint?.order ?? 50;
-    return { key: subKey, label, description, order };
-  });
-  entries.sort((a, b) => (a.order !== b.order ? a.order - b.order : a.key.localeCompare(b.key)));
-  return entries;
 }
 
 function computeDiff(
@@ -394,237 +503,280 @@ function truncateValue(value: unknown, maxLen = 40): string {
   return str.slice(0, maxLen - 3) + "...";
 }
 
+function renderDiffValue(path: string, value: unknown, _uiHints: ConfigUiHints): string {
+  return truncateValue(value);
+}
+
+type ThemeOption = { id: ThemeName; label: string; description: string; icon: TemplateResult };
+const THEME_OPTIONS: ThemeOption[] = [
+  { id: "claw", label: "Claw", description: "Chroma family", icon: icons.zap },
+  { id: "knot", label: "Knot", description: "Knot family", icon: icons.link },
+  { id: "dash", label: "Dash", description: "Field family", icon: icons.barChart },
+];
+
+function renderAppearanceSection(props: ConfigProps) {
+  const MODE_OPTIONS: Array<{
+    id: ThemeMode;
+    label: string;
+    description: string;
+    icon: TemplateResult;
+  }> = [
+    { id: "system", label: "系统", description: "跟随系统浅色或深色", icon: icons.monitor },
+    { id: "light", label: "浅色", description: "强制浅色模式", icon: icons.sun },
+    { id: "dark", label: "深色", description: "强制深色模式", icon: icons.moon },
+  ];
+
+  return html`
+    <div class="settings-appearance">
+      <div class="settings-appearance__section">
+        <h3 class="settings-appearance__heading">主题</h3>
+        <p class="settings-appearance__hint">选择主题系列。</p>
+        <div class="settings-theme-grid">
+          ${THEME_OPTIONS.map(
+            (opt) => html`
+              <button
+                class="settings-theme-card ${opt.id === props.theme ? "settings-theme-card--active" : ""}"
+                title=${opt.description}
+                @click=${(e: Event) => {
+                  if (opt.id !== props.theme) {
+                    const context: ThemeTransitionContext = {
+                      element: (e.currentTarget as HTMLElement) ?? undefined,
+                    };
+                    props.setTheme(opt.id, context);
+                  }
+                }}
+              >
+                <span class="settings-theme-card__icon" aria-hidden="true">${opt.icon}</span>
+                <span class="settings-theme-card__label">${opt.label}</span>
+                ${
+                  opt.id === props.theme
+                    ? html`<span class="settings-theme-card__check" aria-hidden="true">${icons.check}</span>`
+                    : nothing
+                }
+              </button>
+            `,
+          )}
+        </div>
+      </div>
+
+      <div class="settings-appearance__section">
+        <h3 class="settings-appearance__heading">模式</h3>
+        <p class="settings-appearance__hint">为所选主题选择浅色或深色模式。</p>
+        <div class="settings-theme-grid">
+          ${MODE_OPTIONS.map(
+            (opt) => html`
+              <button
+                class="settings-theme-card ${opt.id === props.themeMode ? "settings-theme-card--active" : ""}"
+                title=${opt.description}
+                @click=${(e: Event) => {
+                  if (opt.id !== props.themeMode) {
+                    const context: ThemeTransitionContext = {
+                      element: (e.currentTarget as HTMLElement) ?? undefined,
+                    };
+                    props.setThemeMode(opt.id, context);
+                  }
+                }}
+              >
+                <span class="settings-theme-card__icon" aria-hidden="true">${opt.icon}</span>
+                <span class="settings-theme-card__label">${opt.label}</span>
+                ${
+                  opt.id === props.themeMode
+                    ? html`<span class="settings-theme-card__check" aria-hidden="true">${icons.check}</span>`
+                    : nothing
+                }
+              </button>
+            `,
+          )}
+        </div>
+      </div>
+
+      <div class="settings-appearance__section">
+        <h3 class="settings-appearance__heading">连接</h3>
+        <div class="settings-info-grid">
+          <div class="settings-info-row">
+            <span class="settings-info-row__label">网关</span>
+            <span class="settings-info-row__value mono">${props.gatewayUrl || "-"}</span>
+          </div>
+          <div class="settings-info-row">
+            <span class="settings-info-row__label">状态</span>
+            <span class="settings-info-row__value">
+              <span class="settings-status-dot ${props.connected ? "settings-status-dot--ok" : ""}"></span>
+              ${props.connected ? "已连接" : "离线"}
+            </span>
+          </div>
+          ${
+            props.assistantName
+              ? html`
+                <div class="settings-info-row">
+                  <span class="settings-info-row__label">助手</span>
+                  <span class="settings-info-row__value">${props.assistantName}</span>
+                </div>
+              `
+              : nothing
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+interface ConfigEphemeralState {
+  rawRevealed: boolean;
+  envRevealed: boolean;
+  validityDismissed: boolean;
+  revealedSensitivePaths: Set<string>;
+}
+
+function createConfigEphemeralState(): ConfigEphemeralState {
+  return {
+    rawRevealed: false,
+    envRevealed: false,
+    validityDismissed: false,
+    revealedSensitivePaths: new Set(),
+  };
+}
+
+const cvs = createConfigEphemeralState();
+
+function isSensitivePathRevealed(path: Array<string | number>): boolean {
+  const key = pathKey(path);
+  return key ? cvs.revealedSensitivePaths.has(key) : false;
+}
+
+function toggleSensitivePathReveal(path: Array<string | number>) {
+  const key = pathKey(path);
+  if (!key) {
+    return;
+  }
+  if (cvs.revealedSensitivePaths.has(key)) {
+    cvs.revealedSensitivePaths.delete(key);
+  } else {
+    cvs.revealedSensitivePaths.add(key);
+  }
+}
+
+export function resetConfigViewStateForTests() {
+  Object.assign(cvs, createConfigEphemeralState());
+}
+
 export function renderConfig(props: ConfigProps) {
+  const showModeToggle = props.showModeToggle ?? false;
   const validity = props.valid == null ? "unknown" : props.valid ? "valid" : "invalid";
-  const analysis = analyzeConfigSchema(props.schema);
+  const includeVirtualSections = props.includeVirtualSections ?? true;
+  const include = props.includeSections?.length ? new Set(props.includeSections) : null;
+  const exclude = props.excludeSections?.length ? new Set(props.excludeSections) : null;
+  const rawAnalysis = analyzeConfigSchema(props.schema);
+  const analysis = {
+    schema: scopeSchemaSections(rawAnalysis.schema, { include, exclude }),
+    unsupportedPaths: scopeUnsupportedPaths(rawAnalysis.unsupportedPaths, { include, exclude }),
+  };
   const formUnsafe = analysis.schema ? analysis.unsupportedPaths.length > 0 : false;
+  const formMode = showModeToggle ? props.formMode : "form";
+  const envSensitiveVisible = cvs.envRevealed;
 
-  // Get available sections from schema
+  // Build categorised nav from schema - only include sections that exist in the schema
   const schemaProps = analysis.schema?.properties ?? {};
-  const availableSections = getSections().filter((s) => s.key in schemaProps);
 
-  // Add any sections in schema but not in our list
-  const knownKeys = new Set(getSections().map((s) => s.key));
+  const VIRTUAL_SECTIONS = new Set(["__appearance__"]);
+  const visibleCategories = SECTION_CATEGORIES.map((cat) => ({
+    ...cat,
+    sections: cat.sections.filter(
+      (s) => (includeVirtualSections && VIRTUAL_SECTIONS.has(s.key)) || s.key in schemaProps,
+    ),
+  })).filter((cat) => cat.sections.length > 0);
+
+  // Catch any schema keys not in our categories
   const extraSections = Object.keys(schemaProps)
-    .filter((k) => !knownKeys.has(k))
+    .filter((k) => !CATEGORISED_KEYS.has(k))
     .map((k) => ({ key: k, label: k.charAt(0).toUpperCase() + k.slice(1) }));
 
-  const allSections = [...availableSections, ...extraSections];
+  const otherCategory: SectionCategory | null =
+    extraSections.length > 0 ? { id: "other", label: "其他", sections: extraSections } : null;
 
+  const isVirtualSection =
+    includeVirtualSections &&
+    props.activeSection != null &&
+    VIRTUAL_SECTIONS.has(props.activeSection);
   const activeSectionSchema =
-    props.activeSection && analysis.schema && schemaType(analysis.schema) === "object"
+    props.activeSection &&
+    !isVirtualSection &&
+    analysis.schema &&
+    schemaType(analysis.schema) === "object"
       ? analysis.schema.properties?.[props.activeSection]
       : undefined;
-  const activeSectionMeta = props.activeSection
-    ? resolveSectionMeta(props.activeSection, activeSectionSchema)
-    : null;
-  const subsections = props.activeSection
-    ? resolveSubsections({
-        key: props.activeSection,
-        schema: activeSectionSchema,
-        uiHints: props.uiHints,
-      })
-    : [];
-  const allowSubnav =
-    props.formMode === "form" && Boolean(props.activeSection) && subsections.length > 0;
-  const isAllSubsection = props.activeSubsection === ALL_SUBSECTION;
-  const effectiveSubsection = props.searchQuery
-    ? null
-    : isAllSubsection
-      ? null
-      : (props.activeSubsection ?? subsections[0]?.key ?? null);
+  const activeSectionMeta =
+    props.activeSection && !isVirtualSection
+      ? resolveSectionMeta(props.activeSection, activeSectionSchema)
+      : null;
+  // Config subsections are always rendered as a single page per section.
+  const effectiveSubsection = null;
+
+  const topTabs = [
+    { key: null as string | null, label: props.navRootLabel ?? t("config.settings") },
+    ...[...visibleCategories, ...(otherCategory ? [otherCategory] : [])].flatMap((cat) =>
+      cat.sections.map((s) => ({ key: s.key, label: s.label })),
+    ),
+  ];
 
   // Compute diff for showing changes (works for both form and raw modes)
-  const diff = props.formMode === "form" ? computeDiff(props.originalValue, props.formValue) : [];
-  const hasRawChanges = props.formMode === "raw" && props.raw !== props.originalRaw;
-  const hasChanges = props.formMode === "form" ? diff.length > 0 : hasRawChanges;
+  const diff = formMode === "form" ? computeDiff(props.originalValue, props.formValue) : [];
+  const hasRawChanges = formMode === "raw" && props.raw !== props.originalRaw;
+  const hasChanges = formMode === "form" ? diff.length > 0 : hasRawChanges;
 
   // Save/apply buttons require actual changes to be enabled.
   // Note: formUnsafe warns about unsupported schema paths but shouldn't block saving.
   const canSaveForm = Boolean(props.formValue) && !props.loading && Boolean(analysis.schema);
   const canSave =
-    props.connected &&
-    !props.saving &&
-    hasChanges &&
-    (props.formMode === "raw" ? true : canSaveForm);
+    props.connected && !props.saving && hasChanges && (formMode === "raw" ? true : canSaveForm);
   const canApply =
     props.connected &&
     !props.applying &&
     !props.updating &&
     hasChanges &&
-    (props.formMode === "raw" ? true : canSaveForm);
+    (formMode === "raw" ? true : canSaveForm);
   const canUpdate = props.connected && !props.applying && !props.updating;
-  const selectedTags = new Set(getTagFilters(props.searchQuery));
+
+  const showAppearanceOnRoot =
+    includeVirtualSections &&
+    formMode === "form" &&
+    props.activeSection === null &&
+    Boolean(include?.has("__appearance__"));
 
   return html`
     <div class="config-layout">
-      <!-- Sidebar -->
-      <aside class="config-sidebar">
-        <div class="config-sidebar__header">
-          <div class="config-sidebar__title">${t("config.settings")}</div>
-          <span
-            class="pill pill--sm ${
-              validity === "valid" ? "pill--ok" : validity === "invalid" ? "pill--danger" : ""
-            }"
-            >${t(`config.${validity}`)}</span
-          >
-        </div>
-
-        <!-- Search -->
-        <div class="config-search">
-          <div class="config-search__input-row">
-            <svg
-              class="config-search__icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="M21 21l-4.35-4.35"></path>
-            </svg>
-            <input
-              type="text"
-              class="config-search__input"
-              .placeholder=${t("config.searchSettings")}
-              .value=${props.searchQuery}
-              @input=${(e: Event) => props.onSearchChange((e.target as HTMLInputElement).value)}
-            />
-            ${
-              props.searchQuery
-                ? html`
-                  <button
-                    class="config-search__clear"
-                    @click=${() => props.onSearchChange("")}
-                  >
-                    ×
-                  </button>
-                `
-                : nothing
-            }
-          </div>
-          <div class="config-search__hint">
-            <span class="config-search__hint-label" id="config-tag-filter-label">${t("config.tagFilters")}</span>
-            <details class="config-search__tag-picker">
-              <summary class="config-search__tag-trigger" aria-labelledby="config-tag-filter-label">
-                ${
-                  selectedTags.size === 0
-                    ? html`
-                        <span class="config-search__tag-placeholder">${t("config.addTags")}</span>
-                      `
-                    : html`
-                        <div class="config-search__tag-chips">
-                          ${Array.from(selectedTags)
-                            .slice(0, 2)
-                            .map(
-                              (tag) =>
-                                html`<span class="config-search__tag-chip">tag:${tag}</span>`,
-                            )}
-                          ${
-                            selectedTags.size > 2
-                              ? html`
-                                  <span class="config-search__tag-chip config-search__tag-chip--count"
-                                    >+${selectedTags.size - 2}</span
-                                  >
-                                `
-                              : nothing
-                          }
-                        </div>
-                      `
-                }
-                <span class="config-search__tag-caret" aria-hidden="true">▾</span>
-              </summary>
-              <div class="config-search__tag-menu">
-                ${TAG_SEARCH_PRESETS.map((tag) => {
-                  const active = selectedTags.has(tag);
-                  return html`
-                    <button
-                      type="button"
-                      class="config-search__tag-option ${active ? "active" : ""}"
-                      data-tag="${tag}"
-                      aria-pressed=${active ? "true" : "false"}
-                      @click=${() => {
-                        const nextTags = active
-                          ? Array.from(selectedTags).filter((value) => value !== tag)
-                          : [...selectedTags, tag];
-                        props.onSearchChange(replaceTagFilters(props.searchQuery, nextTags));
-                      }}
-                    >
-                      tag:${tag}
-                    </button>
-                  `;
-                })}
-              </div>
-            </details>
-          </div>
-        </div>
-
-        <!-- Section nav -->
-        <nav class="config-nav">
-          <button
-            class="config-nav__item ${props.activeSection === null ? "active" : ""}"
-            @click=${() => props.onSectionChange(null)}
-          >
-            <span class="config-nav__icon">${sidebarIcons.all}</span>
-            <span class="config-nav__label">${t("config.allSettings")}</span>
-          </button>
-          ${allSections.map(
-            (section) => html`
-              <button
-                class="config-nav__item ${props.activeSection === section.key ? "active" : ""}"
-                @click=${() => props.onSectionChange(section.key)}
-              >
-                <span class="config-nav__icon"
-                  >${getSectionIcon(section.key)}</span
-                >
-                <span class="config-nav__label">${section.label}</span>
-              </button>
-            `,
-          )}
-        </nav>
-
-        <!-- Mode toggle at bottom -->
-        <div class="config-sidebar__footer">
-          <div class="config-mode-toggle">
-            <button
-              class="config-mode-toggle__btn ${props.formMode === "form" ? "active" : ""}"
-              ?disabled=${props.schemaLoading || !props.schema}
-              @click=${() => props.onFormModeChange("form")}
-            >
-              ${t("config.form")}
-            </button>
-            <button
-              class="config-mode-toggle__btn ${props.formMode === "raw" ? "active" : ""}"
-              @click=${() => props.onFormModeChange("raw")}
-            >
-              ${t("config.raw")}
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main content -->
       <main class="config-main">
-        <!-- Action bar -->
         <div class="config-actions">
           <div class="config-actions__left">
             ${
               hasChanges
                 ? html`
-                  <span class="config-changes-badge"
-                    >${
-                      props.formMode === "raw"
-                        ? t("config.unsavedChanges")
-                        : t("config.viewPendingChanges", { count: String(diff.length) })
-                    }</span
-                  >
-                `
+	                  <span class="config-changes-badge"
+	                    >${
+                        formMode === "raw"
+                          ? t("config.unsavedChanges")
+                          : t("config.viewPendingChanges", { count: String(diff.length) })
+                      }</span
+	                  >
+	                `
                 : html`
                     <span class="config-status muted">${t("config.noChanges")}</span>
                   `
             }
           </div>
           <div class="config-actions__right">
+            ${
+              props.onOpenFile
+                ? html`
+                    <button
+                      class="btn btn--sm"
+                      title=${props.configPath ? `打开 ${props.configPath}` : "打开配置文件"}
+                      @click=${props.onOpenFile}
+                    >
+                      ${icons.fileText} 打开
+                    </button>
+                  `
+                : nothing
+            }
             <button
               class="btn btn--sm"
               ?disabled=${props.loading}
@@ -656,14 +808,120 @@ export function renderConfig(props: ConfigProps) {
           </div>
         </div>
 
+        <div class="config-top-tabs">
+          ${
+            formMode === "form"
+              ? html`
+                  <div class="config-search config-search--top">
+                    <div class="config-search__input-row">
+                      <svg
+                        class="config-search__icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                      </svg>
+                      <input
+                        type="text"
+                        class="config-search__input"
+                        placeholder=${t("config.searchSettings")}
+                        .value=${props.searchQuery}
+                        @input=${(e: Event) =>
+                          props.onSearchChange((e.target as HTMLInputElement).value)}
+                      />
+                      ${
+                        props.searchQuery
+                          ? html`
+                              <button
+                                class="config-search__clear"
+                                @click=${() => props.onSearchChange("")}
+                              >
+                                ×
+                              </button>
+                            `
+                          : nothing
+                      }
+                    </div>
+                  </div>
+                `
+              : nothing
+          }
+
+          <div class="config-top-tabs__scroller" role="tablist" aria-label="设置分区">
+            ${topTabs.map(
+              (tab) => html`
+                <button
+                  class="config-top-tabs__tab ${props.activeSection === tab.key ? "active" : ""}"
+                  role="tab"
+                  aria-selected=${props.activeSection === tab.key}
+                  @click=${() => props.onSectionChange(tab.key)}
+                  title=${tab.label}
+                >
+                  ${tab.label}
+                </button>
+              `,
+            )}
+          </div>
+
+          <div class="config-top-tabs__right">
+            ${
+              showModeToggle
+                ? html`
+                    <div class="config-mode-toggle">
+                      <button
+                        class="config-mode-toggle__btn ${formMode === "form" ? "active" : ""}"
+                        ?disabled=${props.schemaLoading || !props.schema}
+                        title=${formUnsafe ? t("config.formViewWarning") : ""}
+                        @click=${() => props.onFormModeChange("form")}
+                      >
+                        ${t("config.form")}
+                      </button>
+                      <button
+                        class="config-mode-toggle__btn ${formMode === "raw" ? "active" : ""}"
+                        @click=${() => props.onFormModeChange("raw")}
+                      >
+                        ${t("config.raw")}
+                      </button>
+                    </div>
+                  `
+                : nothing
+            }
+          </div>
+        </div>
+
+        ${
+          validity === "invalid" && !cvs.validityDismissed
+            ? html`
+              <div class="config-validity-warning">
+                <svg class="config-validity-warning__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span class="config-validity-warning__text">您的配置无效。某些设置可能无法按预期工作。</span>
+                <button
+                  class="btn btn--sm"
+                  @click=${() => {
+                    cvs.validityDismissed = true;
+                    props.onRawChange(props.raw);
+                  }}
+                >不再提醒</button>
+              </div>
+            `
+            : nothing
+        }
+
         <!-- Diff panel (form mode only - raw mode doesn't have granular diff) -->
         ${
-          hasChanges && props.formMode === "form"
+          hasChanges && formMode === "form"
             ? html`
               <details class="config-diff">
                 <summary class="config-diff__summary">
                   <span
-                    >${t("config.viewPendingChanges", { count: String(diff.length) })}</span
+                    >查看 ${diff.length} 个待处理更改</span
                   >
                   <svg
                     class="config-diff__chevron"
@@ -682,11 +940,11 @@ export function renderConfig(props: ConfigProps) {
                         <div class="config-diff__path">${change.path}</div>
                         <div class="config-diff__values">
                           <span class="config-diff__from"
-                            >${truncateValue(change.from)}</span
+                            >${renderDiffValue(change.path, change.from, props.uiHints)}</span
                           >
                           <span class="config-diff__arrow">→</span>
                           <span class="config-diff__to"
-                            >${truncateValue(change.to)}</span
+                            >${renderDiffValue(change.path, change.to, props.uiHints)}</span
                           >
                         </div>
                       </div>
@@ -697,12 +955,12 @@ export function renderConfig(props: ConfigProps) {
             `
             : nothing
         }
-        ${
-          activeSectionMeta && props.formMode === "form"
-            ? html`
-              <div class="config-section-hero">
-                <div class="config-section-hero__icon">
-                  ${getSectionIcon(props.activeSection ?? "")}
+	        ${
+            activeSectionMeta && formMode === "form"
+              ? html`
+	              <div class="config-section-hero">
+	                <div class="config-section-hero__icon">
+	                  ${getSectionIcon(props.activeSection ?? "")}
                 </div>
                 <div class="config-section-hero__text">
                   <div class="config-section-hero__title">
@@ -716,43 +974,40 @@ export function renderConfig(props: ConfigProps) {
                       : nothing
                   }
                 </div>
+                ${
+                  props.activeSection === "env"
+                    ? html`
+                      <button
+                        class="config-env-peek-btn ${envSensitiveVisible ? "config-env-peek-btn--active" : ""}"
+                        title=${envSensitiveVisible ? "隐藏环境变量值" : "显示环境变量值"}
+                        @click=${() => {
+                          cvs.envRevealed = !cvs.envRevealed;
+                          props.onRawChange(props.raw);
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Peek
+                      </button>
+                    `
+                    : nothing
+                }
               </div>
             `
-            : nothing
-        }
-        ${
-          allowSubnav
-            ? html`
-              <div class="config-subnav">
-                <button
-                  class="config-subnav__item ${effectiveSubsection === null ? "active" : ""}"
-                  @click=${() => props.onSubsectionChange(ALL_SUBSECTION)}
-                >
-                  ${t("config.all")}
-                </button>
-                ${subsections.map(
-                  (entry) => html`
-                    <button
-                      class="config-subnav__item ${
-                        effectiveSubsection === entry.key ? "active" : ""
-                      }"
-                      title=${entry.description || entry.label}
-                      @click=${() => props.onSubsectionChange(entry.key)}
-                    >
-                      ${entry.label}
-                    </button>
-                  `,
-                )}
-              </div>
-            `
-            : nothing
-        }
-
+              : nothing
+          }
         <!-- Form content -->
         <div class="config-content">
           ${
-            props.formMode === "form"
-              ? html`
+            props.activeSection === "__appearance__"
+              ? includeVirtualSections
+                ? renderAppearanceSection(props)
+                : nothing
+              : formMode === "form"
+                ? html`
+                ${showAppearanceOnRoot ? renderAppearanceSection(props) : nothing}
                 ${
                   props.schemaLoading
                     ? html`
@@ -771,28 +1026,74 @@ export function renderConfig(props: ConfigProps) {
                         searchQuery: props.searchQuery,
                         activeSection: props.activeSection,
                         activeSubsection: effectiveSubsection,
+                        revealSensitive:
+                          props.activeSection === "env" ? envSensitiveVisible : false,
+                        isSensitivePathRevealed,
+                        onToggleSensitivePath: (path) => {
+                          toggleSensitivePathReveal(path);
+                          props.onRawChange(props.raw);
+                        },
                       })
                 }
-                ${
-                  formUnsafe
-                    ? html`
-                        <div class="callout danger" style="margin-top: 12px">
-                          ${t("config.formViewWarning")}
-                        </div>
-                      `
-                    : nothing
-                }
               `
-              : html`
-                <label class="field config-raw-field">
-                  <span>${t("config.rawJson5")}</span>
-                  <textarea
-                    .value=${props.raw}
-                    @input=${(e: Event) =>
-                      props.onRawChange((e.target as HTMLTextAreaElement).value)}
-                  ></textarea>
-                </label>
-              `
+                : (() => {
+                    const sensitiveCount = countSensitiveConfigValues(
+                      props.formValue,
+                      [],
+                      props.uiHints,
+                    );
+                    const blurred = sensitiveCount > 0 && !cvs.rawRevealed;
+                    return html`
+                    ${
+                      formUnsafe
+                        ? html`
+                            <div class="callout info" style="margin-bottom: 12px">
+                              您的配置包含表单编辑器无法安全合理呈现的字段。请使用原始模式编辑这些条目。
+                            </div>
+                          `
+                        : nothing
+                    }
+                    <label class="field config-raw-field">
+                      <span style="display:flex;align-items:center;gap:8px;">
+                        ${t("config.rawJson5")}
+                        ${
+                          sensitiveCount > 0
+                            ? html`
+                              <span class="pill pill--sm">${sensitiveCount} 个密钥 ${blurred ? "已隐藏" : "已显示"}</span>
+                              <button
+                                class="btn btn--icon ${blurred ? "" : "active"}"
+                                style="width:28px;height:28px;padding:0;"
+                                title=${
+                                  blurred ? "显示敏感值" : "隐藏敏感值"
+                                }
+                                aria-label="Toggle raw config redaction"
+                                aria-pressed=${!blurred}
+                                @click=${() => {
+                                  cvs.rawRevealed = !cvs.rawRevealed;
+                                  props.onRawChange(props.raw);
+                                }}
+                              >
+                                ${blurred ? icons.eyeOff : icons.eye}
+                              </button>
+                            `
+                            : nothing
+                        }
+                      </span>
+                      <textarea
+                        class="${blurred ? "config-raw-redacted" : ""}"
+                        placeholder=${blurred ? REDACTED_PLACEHOLDER : "原始 JSON5 配置"}
+                        .value=${blurred ? "" : props.raw}
+                        ?readonly=${blurred}
+                        @input=${(e: Event) => {
+                          if (blurred) {
+                            return;
+                          }
+                          props.onRawChange((e.target as HTMLTextAreaElement).value);
+                        }}
+                      ></textarea>
+                    </label>
+                  `;
+                  })()
           }
         </div>
 

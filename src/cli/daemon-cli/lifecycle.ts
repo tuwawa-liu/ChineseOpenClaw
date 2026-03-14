@@ -1,8 +1,5 @@
-import { spawnSync } from "node:child_process";
-import fsSync from "node:fs";
 import { isRestartEnabled } from "../../config/commands.js";
 import { readBestEffortConfig, resolveGatewayPort } from "../../config/config.js";
-import { parseCmdScriptCommandLine } from "../../daemon/cmd-argv.js";
 import { resolveGatewayService } from "../../daemon/service.js";
 import { probeGateway } from "../../gateway/probe.js";
 import { t } from "../../i18n/index.js";
@@ -44,67 +41,6 @@ async function resolveGatewayLifecyclePort(service = resolveGatewayService()) {
   return portFromArgs ?? resolveGatewayPort(await readBestEffortConfig(), mergedEnv);
 }
 
-function extractWindowsCommandLine(raw: string): string | null {
-  const lines = raw
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-  for (const line of lines) {
-    if (!line.toLowerCase().startsWith("commandline=")) {
-      continue;
-    }
-    const value = line.slice("commandline=".length).trim();
-    return value || null;
-  }
-  return lines.find((line) => line.toLowerCase() !== "commandline") ?? null;
-}
-
-function readGatewayProcessArgsSync(pid: number): string[] | null {
-  if (process.platform === "linux") {
-    try {
-      return parseProcCmdline(fsSync.readFileSync(`/proc/${pid}/cmdline`, "utf8"));
-    } catch {
-      return null;
-    }
-  }
-  if (process.platform === "darwin") {
-    const ps = spawnSync("ps", ["-o", "command=", "-p", String(pid)], {
-      encoding: "utf8",
-      timeout: 1000,
-    });
-    if (ps.error || ps.status !== 0) {
-      return null;
-    }
-    const command = ps.stdout.trim();
-    return command ? command.split(/\s+/) : null;
-  }
-  if (process.platform === "win32") {
-    const wmic = spawnSync(
-      "wmic",
-      ["process", "where", `ProcessId=${pid}`, "get", "CommandLine", "/value"],
-      {
-        encoding: "utf8",
-        timeout: 1000,
-      },
-    );
-    if (wmic.error || wmic.status !== 0) {
-      return null;
-    }
-    const command = extractWindowsCommandLine(wmic.stdout);
-    return command ? parseCmdScriptCommandLine(command) : null;
-  }
-  return null;
-}
-
-function resolveGatewayListenerPids(port: number): number[] {
-  return Array.from(new Set(findGatewayPidsOnPortSync(port)))
-    .filter((pid): pid is number => Number.isFinite(pid) && pid > 0)
-    .filter((pid) => {
-      const args = readGatewayProcessArgsSync(pid);
-      return args != null && isGatewayArgv(args, { allowGatewayBinary: true });
-    });
-}
-
 function resolveGatewayPortFallback(): Promise<number> {
   return readBestEffortConfig()
     .then((cfg) => resolveGatewayPort(cfg, process.env))
@@ -144,7 +80,7 @@ async function assertUnmanagedGatewayRestartEnabled(port: number): Promise<void>
 }
 
 function resolveVerifiedGatewayListenerPids(port: number): number[] {
-  return resolveGatewayListenerPids(port).filter(
+  return findVerifiedGatewayListenerPidsOnPortSync(port).filter(
     (pid): pid is number => Number.isFinite(pid) && pid > 0,
   );
 }
@@ -155,7 +91,7 @@ async function stopGatewayWithoutServiceManager(port: number) {
     return null;
   }
   for (const pid of pids) {
-    signalGatewayPid(pid, "SIGTERM");
+    signalVerifiedGatewayPidSync(pid, "SIGTERM");
   }
   return {
     result: "stopped" as const,
@@ -174,7 +110,7 @@ async function restartGatewayWithoutServiceManager(port: number) {
       t("lifecycle.multipleGatewayProcesses", { port: String(port), pids: formatGatewayPidList(pids) }),
     );
   }
-  signalGatewayPid(pids[0], "SIGUSR1");
+  signalVerifiedGatewayPidSync(pids[0], "SIGUSR1");
   return {
     result: "restarted" as const,
     message: t("lifecycle.restartSignalSent", { port: String(port), pid: String(pids[0]) }),

@@ -30,6 +30,8 @@ cd apps/android
 ./gradlew :app:assembleDebug
 ./gradlew :app:installDebug
 ./gradlew :app:testDebugUnitTest
+cd ../..
+bun run android:bundle:release
 ```
 
 ## Kotlin 检查 + 格式化

@@ -1,5 +1,6 @@
 import type { Command } from "commander";
 import type {
+  BrowserTransport,
   BrowserCreateProfileResult,
   BrowserDeleteProfileResult,
   BrowserResetProfileResult,
@@ -13,6 +14,8 @@ import { defaultRuntime } from "../runtime.js";
 import { shortenHomePath } from "../utils.js";
 import { callBrowserRequest, type BrowserParentOpts } from "./browser-cli-shared.js";
 import { runCommandWithRuntime } from "./cli-utils.js";
+
+const BROWSER_MANAGE_REQUEST_TIMEOUT_MS = 45_000;
 
 function resolveProfileQuery(profile?: string) {
   return profile ? { profile } : undefined;
@@ -39,7 +42,7 @@ async function callTabAction(
       query: resolveProfileQuery(profile),
       body,
     },
-    { timeoutMs: 10_000 },
+    { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
   );
 }
 
@@ -55,7 +58,7 @@ async function fetchBrowserStatus(
       query: resolveProfileQuery(profile),
     },
     {
-      timeoutMs: 1500,
+      timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS,
     },
   );
 }
@@ -100,6 +103,29 @@ function logBrowserTabs(tabs: BrowserTab[], json?: boolean) {
   );
 }
 
+function usesChromeMcpTransport(params: {
+  transport?: BrowserTransport;
+  driver?: "openclaw" | "extension" | "existing-session";
+}): boolean {
+  return params.transport === "chrome-mcp" || params.driver === "existing-session";
+}
+
+function formatBrowserConnectionSummary(params: {
+  transport?: BrowserTransport;
+  driver?: "openclaw" | "extension" | "existing-session";
+  isRemote?: boolean;
+  cdpPort?: number | null;
+  cdpUrl?: string | null;
+}): string {
+  if (usesChromeMcpTransport(params)) {
+    return "transport: chrome-mcp";
+  }
+  if (params.isRemote) {
+    return `cdpUrl: ${params.cdpUrl ?? "(unset)"}`;
+  }
+  return `port: ${params.cdpPort ?? "(unset)"}`;
+}
+
 export function registerBrowserManageCommands(
   browser: Command,
   parentOpts: (cmd: Command) => BrowserParentOpts,
@@ -121,8 +147,15 @@ export function registerBrowserManageCommands(
             `profile: ${status.profile ?? "openclaw"}`,
             `enabled: ${status.enabled}`,
             `running: ${status.running}`,
-            `cdpPort: ${status.cdpPort}`,
-            `cdpUrl: ${status.cdpUrl ?? `http://127.0.0.1:${status.cdpPort}`}`,
+            `transport: ${
+              usesChromeMcpTransport(status) ? "chrome-mcp" : (status.transport ?? "cdp")
+            }`,
+            ...(!usesChromeMcpTransport(status)
+              ? [
+                  `cdpPort: ${status.cdpPort ?? "(unset)"}`,
+                  `cdpUrl: ${status.cdpUrl ?? `http://127.0.0.1:${status.cdpPort}`}`,
+                ]
+              : []),
             `browser: ${status.chosenBrowser ?? "unknown"}`,
             `detectedBrowser: ${status.detectedBrowser ?? "unknown"}`,
             `detectedPath: ${detectedDisplay}`,
@@ -197,7 +230,7 @@ export function registerBrowserManageCommands(
             path: "/tabs",
             query: resolveProfileQuery(profile),
           },
-          { timeoutMs: 3000 },
+          { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
         );
         const tabs = result.tabs ?? [];
         logBrowserTabs(tabs, parent?.json);
@@ -221,7 +254,7 @@ export function registerBrowserManageCommands(
               action: "list",
             },
           },
-          { timeoutMs: 10_000 },
+          { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
         );
         const tabs = result.tabs ?? [];
         logBrowserTabs(tabs, parent?.json);
@@ -306,7 +339,7 @@ export function registerBrowserManageCommands(
             query: resolveProfileQuery(profile),
             body: { url },
           },
-          { timeoutMs: 15000 },
+          { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
         );
         if (printJsonResult(parent, tab)) {
           return;
@@ -331,7 +364,7 @@ export function registerBrowserManageCommands(
             query: resolveProfileQuery(profile),
             body: { targetId },
           },
-          { timeoutMs: 5000 },
+          { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
         );
         if (printJsonResult(parent, { ok: true })) {
           return;
@@ -356,7 +389,7 @@ export function registerBrowserManageCommands(
               path: `/tabs/${encodeURIComponent(targetId.trim())}`,
               query: resolveProfileQuery(profile),
             },
-            { timeoutMs: 5000 },
+            { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
           );
         } else {
           await callBrowserRequest(
@@ -367,7 +400,7 @@ export function registerBrowserManageCommands(
               query: resolveProfileQuery(profile),
               body: { kind: "close" },
             },
-            { timeoutMs: 20000 },
+            { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
           );
         }
         if (printJsonResult(parent, { ok: true })) {
@@ -390,7 +423,7 @@ export function registerBrowserManageCommands(
             method: "GET",
             path: "/profiles",
           },
-          { timeoutMs: 3000 },
+          { timeoutMs: BROWSER_MANAGE_REQUEST_TIMEOUT_MS },
         );
         const profiles = result.profiles ?? [];
         if (printJsonResult(parent, { profiles })) {
@@ -406,9 +439,10 @@ export function registerBrowserManageCommands(
               const status = p.running ? "running" : "stopped";
               const tabs = p.running ? ` (${p.tabCount} tabs)` : "";
               const def = p.isDefault ? " [default]" : "";
-              const loc = p.isRemote ? `cdpUrl: ${p.cdpUrl}` : `port: ${p.cdpPort}`;
+              const loc = formatBrowserConnectionSummary(p);
               const remote = p.isRemote ? " [remote]" : "";
-              return `${p.name}: ${status}${tabs}${def}${remote}\n  ${loc}, color: ${p.color}`;
+              const driver = p.driver !== "openclaw" ? ` [${p.driver}]` : "";
+              return `${p.name}: ${status}${tabs}${def}${remote}${driver}\n  ${loc}, color: ${p.color}`;
             })
             .join("\n"),
         );
@@ -435,7 +469,12 @@ export function registerBrowserManageCommands(
                 name: opts.name,
                 color: opts.color,
                 cdpUrl: opts.cdpUrl,
-                driver: opts.driver === "extension" ? "extension" : undefined,
+                driver:
+                  opts.driver === "extension"
+                    ? "extension"
+                    : opts.driver === "existing-session"
+                      ? "existing-session"
+                      : undefined,
               },
             },
             { timeoutMs: 10_000 },
@@ -443,7 +482,7 @@ export function registerBrowserManageCommands(
           if (printJsonResult(parent, result)) {
             return;
           }
-          const loc = result.isRemote ? `  cdpUrl: ${result.cdpUrl}` : `  port: ${result.cdpPort}`;
+          const loc = `  ${formatBrowserConnectionSummary(result)}`;
           defaultRuntime.log(
             info(
               t("browserManageCli.createdProfile", { profile: result.profile, loc, color: result.color, driverExt: opts.driver === "extension" ? "\n  driver: extension" : "" }),

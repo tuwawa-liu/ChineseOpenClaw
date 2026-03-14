@@ -12,6 +12,7 @@ import {
   modelKey,
   resolveModelTarget,
   resolveModelKeysFromEntries,
+  upsertCanonicalModelConfigEntry,
   updateConfig,
 } from "./shared.js";
 
@@ -80,11 +81,10 @@ export async function addFallbackCommand(
 ) {
   const updated = await updateConfig((cfg) => {
     const resolved = resolveModelTarget({ raw: modelRaw, cfg });
-    const targetKey = modelKey(resolved.provider, resolved.model);
-    const nextModels = { ...cfg.agents?.defaults?.models } as Record<string, unknown>;
-    if (!nextModels[targetKey]) {
-      nextModels[targetKey] = {};
-    }
+    const nextModels = {
+      ...cfg.agents?.defaults?.models,
+    } as Record<string, AgentModelEntryConfig>;
+    const targetKey = upsertCanonicalModelConfigEntry(nextModels, resolved);
     const existing = getFallbacks(cfg, params.key);
     const existingKeys = resolveModelKeysFromEntries({ cfg, entries: existing });
     if (existingKeys.includes(targetKey)) {

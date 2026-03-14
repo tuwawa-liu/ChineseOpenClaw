@@ -410,7 +410,7 @@ export async function runOnboardingWizard(
   const { applyOnboardingLocalWorkspaceConfig } = await import("../commands/onboard-config.js");
   let nextConfig: OpenClawConfig = applyOnboardingLocalWorkspaceConfig(baseConfig, workspaceDir);
 
-  const { ensureAuthProfileStore } = await import("../agents/auth-profiles.js");
+  const { ensureAuthProfileStore } = await import("../agents/auth-profiles.runtime.js");
   const { promptAuthChoiceGrouped } = await import("../commands/auth-choice-prompt.js");
   const { promptCustomApiConfig } = await import("../commands/onboard-custom.js");
   const { applyAuthChoice, resolvePreferredProviderForAuthChoice, warnIfModelConfigLooksOff } =
@@ -427,6 +427,8 @@ export async function runOnboardingWizard(
       prompter,
       store: authStore,
       includeSkip: true,
+      config: nextConfig,
+      workspaceDir,
     }));
 
   if (authChoice === "custom-api-key") {
@@ -443,7 +445,7 @@ export async function runOnboardingWizard(
       config: nextConfig,
       prompter,
       runtime,
-      setDefaultModel: !(authChoiceFromPrompt && authChoice === "ollama"),
+      setDefaultModel: true,
       opts: {
         tokenProvider: opts.tokenProvider,
         token: opts.authChoice === "apiKey" && opts.token ? opts.token : undefined,
@@ -462,8 +464,14 @@ export async function runOnboardingWizard(
       prompter,
       allowKeep: true,
       ignoreAllowlist: true,
-      includeVllm: true,
-      preferredProvider: resolvePreferredProviderForAuthChoice(authChoice),
+      includeProviderPluginSetups: true,
+      preferredProvider: resolvePreferredProviderForAuthChoice({
+        choice: authChoice,
+        config: nextConfig,
+        workspaceDir,
+      }),
+      workspaceDir,
+      runtime,
     });
     if (modelSelection.config) {
       nextConfig = modelSelection.config;
@@ -471,11 +479,6 @@ export async function runOnboardingWizard(
     if (modelSelection.model) {
       nextConfig = applyPrimaryModel(nextConfig, modelSelection.model);
     }
-  }
-
-  if (authChoice === "ollama") {
-    const { ensureOllamaModelPulled } = await import("../commands/ollama-setup.js");
-    await ensureOllamaModelPulled({ config: nextConfig, prompter });
   }
 
   await warnIfModelConfigLooksOff(nextConfig, prompter);

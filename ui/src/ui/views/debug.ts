@@ -35,7 +35,7 @@ export function renderDebug(props: DebugProps) {
     critical > 0 ? t("debug.critical", { count: String(critical) }) : warn > 0 ? t("debug.warnings", { count: String(warn) }) : t("debug.noCritical");
 
   return html`
-    <section class="grid grid-cols-2">
+    <section class="grid">
       <div class="card">
         <div class="row" style="justify-content: space-between;">
           <div>

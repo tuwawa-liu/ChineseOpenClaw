@@ -3,12 +3,14 @@ import { t } from "../../i18n/index.ts";
 import { normalizeToolName } from "../../../../src/agents/tool-policy-shared.js";
 import type { SkillStatusEntry, SkillStatusReport, ToolsCatalogResult } from "../types.ts";
 import {
+  type AgentToolEntry,
+  type AgentToolSection,
   isAllowedByPolicy,
   matchesList,
-  PROFILE_OPTIONS,
   resolveAgentConfig,
+  resolveToolProfileOptions,
   resolveToolProfile,
-  TOOL_SECTIONS,
+  resolveToolSections,
 } from "./agents-utils.ts";
 import type { SkillGroup } from "./skills-grouping.ts";
 import { groupSkills } from "./skills-grouping.ts";
@@ -17,6 +19,28 @@ import {
   computeSkillReasons,
   renderSkillStatusChips,
 } from "./skills-shared.ts";
+
+function renderToolBadges(section: AgentToolSection, tool: AgentToolEntry) {
+  const source = tool.source ?? section.source;
+  const pluginId = tool.pluginId ?? section.pluginId;
+  const badges: string[] = [];
+  if (source === "plugin" && pluginId) {
+    badges.push(`plugin:${pluginId}`);
+  } else if (source === "core") {
+    badges.push("core");
+  }
+  if (tool.optional) {
+    badges.push("optional");
+  }
+  if (badges.length === 0) {
+    return nothing;
+  }
+  return html`
+    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
+      ${badges.map((badge) => html`<span class="agent-pill">${badge}</span>`)}
+    </div>
+  `;
+}
 
 export function renderAgentTools(params: {
   agentId: string;
@@ -36,6 +60,8 @@ export function renderAgentTools(params: {
   const agentTools = config.entry?.tools ?? {};
   const globalTools = config.globalTools ?? {};
   const profile = agentTools.profile ?? globalTools.profile ?? "full";
+  const profileOptions = resolveToolProfileOptions(params.toolsCatalogResult);
+  const toolSections = resolveToolSections(params.toolsCatalogResult);
   const profileSource = agentTools.profile
     ? t("agentPanels.agentOverride")
     : globalTools.profile
@@ -44,7 +70,11 @@ export function renderAgentTools(params: {
   const hasAgentAllow = Array.isArray(agentTools.allow) && agentTools.allow.length > 0;
   const hasGlobalAllow = Array.isArray(globalTools.allow) && globalTools.allow.length > 0;
   const editable =
-    Boolean(params.configForm) && !params.configLoading && !params.configSaving && !hasAgentAllow;
+    Boolean(params.configForm) &&
+    !params.configLoading &&
+    !params.configSaving &&
+    !hasAgentAllow &&
+    !(params.toolsCatalogLoading && !params.toolsCatalogResult && !params.toolsCatalogError);
   const alsoAllow = hasAgentAllow
     ? []
     : Array.isArray(agentTools.alsoAllow)
@@ -54,17 +84,7 @@ export function renderAgentTools(params: {
   const basePolicy = hasAgentAllow
     ? { allow: agentTools.allow ?? [], deny: agentTools.deny ?? [] }
     : (resolveToolProfile(profile) ?? undefined);
-  const sections =
-    params.toolsCatalogResult?.groups?.length &&
-    params.toolsCatalogResult.agentId === params.agentId
-      ? params.toolsCatalogResult.groups
-      : TOOL_SECTIONS;
-  const profileOptions =
-    params.toolsCatalogResult?.profiles?.length &&
-    params.toolsCatalogResult.agentId === params.agentId
-      ? params.toolsCatalogResult.profiles
-      : PROFILE_OPTIONS;
-  const toolIds = sections.flatMap((section) => section.tools.map((tool) => tool.id));
+  const toolIds = toolSections.flatMap((section) => section.tools.map((tool) => tool.id));
 
   const resolveAllowed = (toolId: string) => {
     const baseAllowed = isAllowedByPolicy(toolId, basePolicy);
@@ -189,6 +209,22 @@ export function renderAgentTools(params: {
             `
           : nothing
       }
+      ${
+        params.toolsCatalogLoading && !params.toolsCatalogResult && !params.toolsCatalogError
+          ? html`
+              <div class="callout info" style="margin-top: 12px">Loading runtime tool catalog…</div>
+            `
+          : nothing
+      }
+      ${
+        params.toolsCatalogError
+          ? html`
+              <div class="callout info" style="margin-top: 12px">
+                Could not load runtime tool catalog. Showing built-in fallback list instead.
+              </div>
+            `
+          : nothing
+      }
 
       <div class="agent-tools-meta" style="margin-top: 16px;">
         <div class="agent-kv">
@@ -236,7 +272,7 @@ export function renderAgentTools(params: {
       </div>
 
       <div class="agent-tools-grid" style="margin-top: 20px;">
-        ${sections.map(
+        ${toolSections.map(
           (section) =>
             html`
               <div class="agent-tools-section">
@@ -280,6 +316,7 @@ export function renderAgentTools(params: {
                             }
                           </div>
                           <div class="agent-tool-sub">${tool.description}</div>
+                          ${renderToolBadges(section, tool)}
                         </div>
                         <label class="cfg-toggle">
                           <input

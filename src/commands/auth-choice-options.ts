@@ -341,9 +341,20 @@ function getBaseAuthChoiceOptions(): ReadonlyArray<AuthChoiceOption> {
   ];
 }
 
+function resolveDynamicProviderCliChoices(params?: {
+  config?: OpenClawConfig;
+  workspaceDir?: string;
+  env?: NodeJS.ProcessEnv;
+}): string[] {
+  return [...new Set(resolveProviderWizardOptions(params ?? {}).map((option) => option.value))];
+}
+
 export function formatAuthChoiceChoicesForCli(params?: {
   includeSkip?: boolean;
   includeLegacyAliases?: boolean;
+  config?: OpenClawConfig;
+  workspaceDir?: string;
+  env?: NodeJS.ProcessEnv;
 }): string {
   const includeSkip = params?.includeSkip ?? true;
   const includeLegacyAliases = params?.includeLegacyAliases ?? false;
@@ -362,6 +373,9 @@ export function formatAuthChoiceChoicesForCli(params?: {
 export function buildAuthChoiceOptions(params: {
   store: AuthProfileStore;
   includeSkip: boolean;
+  config?: OpenClawConfig;
+  workspaceDir?: string;
+  env?: NodeJS.ProcessEnv;
 }): AuthChoiceOption[] {
   void params.store;
   const options: AuthChoiceOption[] = [...getBaseAuthChoiceOptions()];
@@ -373,7 +387,13 @@ export function buildAuthChoiceOptions(params: {
   return options;
 }
 
-export function buildAuthChoiceGroups(params: { store: AuthProfileStore; includeSkip: boolean }): {
+export function buildAuthChoiceGroups(params: {
+  store: AuthProfileStore;
+  includeSkip: boolean;
+  config?: OpenClawConfig;
+  workspaceDir?: string;
+  env?: NodeJS.ProcessEnv;
+}): {
   groups: AuthChoiceGroup[];
   skipOption?: AuthChoiceOption;
 } {
@@ -391,6 +411,36 @@ export function buildAuthChoiceGroups(params: { store: AuthProfileStore; include
       .map((choice) => optionByValue.get(choice))
       .filter((opt): opt is AuthChoiceOption => Boolean(opt)),
   }));
+  const staticGroupIds = new Set(groups.map((group) => group.value));
+
+  for (const option of resolveProviderWizardOptions({
+    config: params.config,
+    workspaceDir: params.workspaceDir,
+    env: params.env,
+  })) {
+    const existing = groups.find((group) => group.value === option.groupId);
+    const nextOption = optionByValue.get(option.value as AuthChoice) ?? {
+      value: option.value as AuthChoice,
+      label: option.label,
+      hint: option.hint,
+    };
+    if (existing) {
+      if (!existing.options.some((candidate) => candidate.value === nextOption.value)) {
+        existing.options.push(nextOption);
+      }
+      continue;
+    }
+    if (staticGroupIds.has(option.groupId as AuthChoiceGroupId)) {
+      continue;
+    }
+    groups.push({
+      value: option.groupId as AuthChoiceGroupId,
+      label: option.groupLabel,
+      hint: option.groupHint,
+      options: [nextOption],
+    });
+    staticGroupIds.add(option.groupId as AuthChoiceGroupId);
+  }
 
   const skipOption = params.includeSkip
     ? ({ value: "skip", label: t("commands.authOptions.skipForNow") } satisfies AuthChoiceOption)

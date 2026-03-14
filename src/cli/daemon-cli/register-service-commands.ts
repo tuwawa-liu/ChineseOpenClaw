@@ -51,6 +51,7 @@ export function addGatewayServiceCommands(parent: Command, opts?: { statusDescri
       await runDaemonStatus({
         rpc: resolveRpcOptions(cmdOpts, command),
         probe: Boolean(cmdOpts.probe),
+        requireRpc: Boolean(cmdOpts.requireRpc),
         deep: Boolean(cmdOpts.deep),
         json: Boolean(cmdOpts.json),
       });

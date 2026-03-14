@@ -67,8 +67,10 @@ title: "SecretRef 凭证表面"
 - `channels.bluebubbles.password`
 - `channels.bluebubbles.accounts.*.password`
 - `channels.feishu.appSecret`
+- `channels.feishu.encryptKey`
 - `channels.feishu.verificationToken`
 - `channels.feishu.accounts.*.appSecret`
+- `channels.feishu.accounts.*.encryptKey`
 - `channels.feishu.accounts.*.verificationToken`
 - `channels.msteams.appPassword`
 - `channels.mattermost.botToken`

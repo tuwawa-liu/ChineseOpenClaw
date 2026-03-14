@@ -8,7 +8,12 @@ import {
 import { upsertAuthProfile } from "../agents/auth-profiles.js";
 import { resolveDefaultAgentWorkspaceDir } from "../agents/workspace.js";
 import { enablePluginInConfig } from "../plugins/enable.js";
+import {
+  resolveProviderPluginChoice,
+  runProviderModelSelectedHook,
+} from "../plugins/provider-wizard.js";
 import { resolvePluginProviders } from "../plugins/providers.js";
+import type { ProviderAuthMethod } from "../plugins/types.js";
 import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
 import { isRemoteEnvironment } from "./oauth-env.js";
 import { createVpsAwareOAuthHandlers } from "./oauth-flow.js";
@@ -29,51 +34,31 @@ export type PluginProviderAuthChoiceOptions = {
   label: string;
 };
 
-export async function applyAuthChoicePluginProvider(
-  params: ApplyAuthChoiceParams,
-  options: PluginProviderAuthChoiceOptions,
-): Promise<ApplyAuthChoiceResult | null> {
-  if (params.authChoice !== options.authChoice) {
-    return null;
-  }
-
-  const enableResult = enablePluginInConfig(params.config, options.pluginId);
-  let nextConfig = enableResult.config;
-  if (!enableResult.enabled) {
-    await params.prompter.note(
-      t("commands.authPluginProvider.pluginDisabled", { label: options.label, reason: enableResult.reason ?? "blocked" }),
-      options.label,
-    );
-    return { config: nextConfig };
-  }
-
-  const agentId = params.agentId ?? resolveDefaultAgentId(nextConfig);
-  const defaultAgentId = resolveDefaultAgentId(nextConfig);
+export async function runProviderPluginAuthMethod(params: {
+  config: ApplyAuthChoiceParams["config"];
+  runtime: ApplyAuthChoiceParams["runtime"];
+  prompter: ApplyAuthChoiceParams["prompter"];
+  method: ProviderAuthMethod;
+  agentDir?: string;
+  agentId?: string;
+  workspaceDir?: string;
+  emitNotes?: boolean;
+}): Promise<{ config: ApplyAuthChoiceParams["config"]; defaultModel?: string }> {
+  const agentId = params.agentId ?? resolveDefaultAgentId(params.config);
+  const defaultAgentId = resolveDefaultAgentId(params.config);
   const agentDir =
     params.agentDir ??
-    (agentId === defaultAgentId ? resolveOpenClawAgentDir() : resolveAgentDir(nextConfig, agentId));
+    (agentId === defaultAgentId
+      ? resolveOpenClawAgentDir()
+      : resolveAgentDir(params.config, agentId));
   const workspaceDir =
-    resolveAgentWorkspaceDir(nextConfig, agentId) ?? resolveDefaultAgentWorkspaceDir();
-
-  const providers = resolvePluginProviders({ config: nextConfig, workspaceDir });
-  const provider = resolveProviderMatch(providers, options.providerId);
-  if (!provider) {
-    await params.prompter.note(
-      t("commands.authPluginProvider.pluginNotAvailable", { label: options.label }),
-      options.label,
-    );
-    return { config: nextConfig };
-  }
-
-  const method = pickAuthMethod(provider, options.methodId) ?? provider.auth[0];
-  if (!method) {
-    await params.prompter.note(t("commands.authPluginProvider.authMethodMissing", { label: options.label }), options.label);
-    return { config: nextConfig };
-  }
+    params.workspaceDir ??
+    resolveAgentWorkspaceDir(params.config, agentId) ??
+    resolveDefaultAgentWorkspaceDir();
 
   const isRemote = isRemoteEnvironment();
-  const result = await method.run({
-    config: nextConfig,
+  const result = await params.method.run({
+    config: params.config,
     agentDir,
     workspaceDir,
     prompter: params.prompter,
@@ -87,6 +72,7 @@ export async function applyAuthChoicePluginProvider(
     },
   });
 
+  let nextConfig = params.config;
   if (result.configPatch) {
     nextConfig = mergeConfigPatch(nextConfig, result.configPatch);
   }
@@ -108,22 +94,139 @@ export async function applyAuthChoicePluginProvider(
     });
   }
 
+  if (params.emitNotes !== false && result.notes && result.notes.length > 0) {
+    await params.prompter.note(result.notes.join("\n"), t("commands.authPluginProvider.providerNotes"));
+  }
+
+  return {
+    config: nextConfig,
+    defaultModel: result.defaultModel,
+  };
+}
+
+export async function applyAuthChoiceLoadedPluginProvider(
+  params: ApplyAuthChoiceParams,
+): Promise<ApplyAuthChoiceResult | null> {
+  const agentId = params.agentId ?? resolveDefaultAgentId(params.config);
+  const workspaceDir =
+    resolveAgentWorkspaceDir(params.config, agentId) ?? resolveDefaultAgentWorkspaceDir();
+  const providers = resolvePluginProviders({ config: params.config, workspaceDir });
+  const resolved = resolveProviderPluginChoice({
+    providers,
+    choice: params.authChoice,
+  });
+  if (!resolved) {
+    return null;
+  }
+
+  const applied = await runProviderPluginAuthMethod({
+    config: params.config,
+    runtime: params.runtime,
+    prompter: params.prompter,
+    method: resolved.method,
+    agentDir: params.agentDir,
+    agentId: params.agentId,
+    workspaceDir,
+  });
+
   let agentModelOverride: string | undefined;
-  if (result.defaultModel) {
+  if (applied.defaultModel) {
     if (params.setDefaultModel) {
-      nextConfig = applyDefaultModel(nextConfig, result.defaultModel);
-      await params.prompter.note(t("commands.authDefaultModel.modelSet", { model: result.defaultModel }), t("commands.authDefaultModel.modelConfigured"));
-    } else if (params.agentId) {
-      agentModelOverride = result.defaultModel;
+      const nextConfig = applyDefaultModel(applied.config, applied.defaultModel);
+      await runProviderModelSelectedHook({
+        config: nextConfig,
+        model: applied.defaultModel,
+        prompter: params.prompter,
+        agentDir: params.agentDir,
+        workspaceDir,
+      });
       await params.prompter.note(
-        t("commands.authHelpers.modelSetDefault", { model: result.defaultModel, agentId: params.agentId }),
+        `默认模型已设置为 ${applied.defaultModel}`,
+        t("commands.authDefaultModel.modelConfigured"),
+      );
+      return { config: nextConfig };
+    }
+    agentModelOverride = applied.defaultModel;
+  }
+
+  return { config: applied.config, agentModelOverride };
+}
+
+export async function applyAuthChoicePluginProvider(
+  params: ApplyAuthChoiceParams,
+  options: PluginProviderAuthChoiceOptions,
+): Promise<ApplyAuthChoiceResult | null> {
+  if (params.authChoice !== options.authChoice) {
+    return null;
+  }
+
+  const enableResult = enablePluginInConfig(params.config, options.pluginId);
+  let nextConfig = enableResult.config;
+  if (!enableResult.enabled) {
+    await params.prompter.note(
+      `${options.label} 插件已禁用 (${enableResult.reason ?? "blocked"})。`,
+      options.label,
+    );
+    return { config: nextConfig };
+  }
+
+  const agentId = params.agentId ?? resolveDefaultAgentId(nextConfig);
+  const defaultAgentId = resolveDefaultAgentId(nextConfig);
+  const agentDir =
+    params.agentDir ??
+    (agentId === defaultAgentId ? resolveOpenClawAgentDir() : resolveAgentDir(nextConfig, agentId));
+  const workspaceDir =
+    resolveAgentWorkspaceDir(nextConfig, agentId) ?? resolveDefaultAgentWorkspaceDir();
+
+  const providers = resolvePluginProviders({ config: nextConfig, workspaceDir });
+  const provider = resolveProviderMatch(providers, options.providerId);
+  if (!provider) {
+    await params.prompter.note(
+      `${options.label} 认证插件不可用。请启用并重新运行向导。`,
+      options.label,
+    );
+    return { config: nextConfig };
+  }
+
+  const method = pickAuthMethod(provider, options.methodId) ?? provider.auth[0];
+  if (!method) {
+    await params.prompter.note(`${options.label} 认证方法缺失。`, options.label);
+    return { config: nextConfig };
+  }
+
+  const applied = await runProviderPluginAuthMethod({
+    config: nextConfig,
+    runtime: params.runtime,
+    prompter: params.prompter,
+    method,
+    agentDir,
+    agentId,
+    workspaceDir,
+  });
+  nextConfig = applied.config;
+
+  let agentModelOverride: string | undefined;
+  if (applied.defaultModel) {
+    if (params.setDefaultModel) {
+      nextConfig = applyDefaultModel(nextConfig, applied.defaultModel);
+      await runProviderModelSelectedHook({
+        config: nextConfig,
+        model: applied.defaultModel,
+        prompter: params.prompter,
+        agentDir,
+        workspaceDir,
+      });
+      await params.prompter.note(
+        `默认模型已设置为 ${applied.defaultModel}`,
+        t("commands.authDefaultModel.modelConfigured"),
+      );
+    } else if (params.agentId) {
+      agentModelOverride = applied.defaultModel;
+      await params.prompter.note(
+        `默认模型已设置为 ${applied.defaultModel}，代理 "${params.agentId}"。`,
         t("commands.authDefaultModel.modelConfigured"),
       );
     }
-  }
-
-  if (result.notes && result.notes.length > 0) {
-    await params.prompter.note(result.notes.join("\n"), t("commands.authPluginProvider.providerNotes"));
   }
 
   return { config: nextConfig, agentModelOverride };

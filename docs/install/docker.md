@@ -210,7 +210,7 @@ sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
 要加速重建，排序你的 Dockerfile 以便依赖层被缓存。这避免了除非锁文件更改否则重新运行 `pnpm install`：
 
 ```dockerfile
-FROM node:22-bookworm
+FROM node:24-bookworm
 
 # 安装 Bun（构建脚本需要）
 RUN curl -fsSL https://bun.sh/install | bash

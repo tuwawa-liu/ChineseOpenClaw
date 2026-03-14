@@ -7,6 +7,7 @@ import {
   resolveGatewaySystemdServiceName,
   resolveGatewayWindowsTaskName,
 } from "./constants.js";
+import { resolveHomeDir } from "./paths.js";
 import { execSchtasks } from "./schtasks-exec.js";
 
 export type ExtraGatewayService = {

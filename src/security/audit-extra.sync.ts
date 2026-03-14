@@ -21,6 +21,7 @@ import {
 } from "../config/model-input.js";
 import type { AgentToolsConfig } from "../config/types.tools.js";
 import { resolveGatewayAuth } from "../gateway/auth.js";
+import { resolveAllowedAgentIds } from "../gateway/hooks.js";
 import {
   DEFAULT_DANGEROUS_NODE_COMMANDS,
   resolveNodeCommandAllowlist,
@@ -663,6 +664,7 @@ export function collectHooksHardeningFindings(
   const allowRequestSessionKey = cfg.hooks?.allowRequestSessionKey === true;
   const defaultSessionKey =
     typeof cfg.hooks?.defaultSessionKey === "string" ? cfg.hooks.defaultSessionKey.trim() : "";
+  const allowedAgentIds = resolveAllowedAgentIds(cfg.hooks?.allowedAgentIds);
   const allowedPrefixes = Array.isArray(cfg.hooks?.allowedSessionKeyPrefixes)
     ? cfg.hooks.allowedSessionKeyPrefixes
         .map((prefix) => prefix.trim())
@@ -678,6 +680,18 @@ export function collectHooksHardeningFindings(
       detail:
         "Hook 代理未设置显式 sessionKey，将为每次请求生成密钥。请设置 hooks.defaultSessionKey 以将 Hook 入口限制在已知会话范围内。",
       remediation: '请设置 hooks.defaultSessionKey（例如 "hook:ingress"）。',
+    });
+  }
+
+  if (allowedAgentIds === undefined) {
+    findings.push({
+      checkId: "hooks.allowed_agent_ids_unrestricted",
+      severity: remoteExposure ? "critical" : "warn",
+      title: "Hook agent routing allows any configured agent",
+      detail:
+        "hooks.allowedAgentIds is unset or includes '*', so authenticated hook callers may route to any configured agent id.",
+      remediation:
+        'Set hooks.allowedAgentIds to an explicit allowlist (for example, ["hooks", "main"]) or [] to deny explicit agent routing.',
     });
   }
 

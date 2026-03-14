@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
-import { formatPresenceAge, formatPresenceSummary } from "../presenter.ts";
+import { icons } from "../icons.ts";
+import { formatPresenceAge } from "../presenter.ts";
 import type { PresenceEntry } from "../types.ts";
 import { t } from "../../i18n/index.ts";
 
@@ -11,7 +12,11 @@ export type InstancesProps = {
   onRefresh: () => void;
 };
 
+let hostsRevealed = false;
+
 export function renderInstances(props: InstancesProps) {
+  const masked = !hostsRevealed;
+
   return html`
     <section class="card">
       <div class="row" style="justify-content: space-between;">
@@ -43,7 +48,7 @@ export function renderInstances(props: InstancesProps) {
             ? html`
                 <div class="muted">${t("instances.noInstances")}</div>
               `
-            : props.entries.map((entry) => renderEntry(entry))
+            : props.entries.map((entry) => renderEntry(entry, masked))
         }
       </div>
     </section>

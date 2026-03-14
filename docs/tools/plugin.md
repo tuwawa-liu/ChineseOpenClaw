@@ -318,6 +318,9 @@ export default function register(api) {
 通过 `api.registerProvider(...)` 注册提供商。每个提供商暴露一个或多个认证方法（OAuth、API 密钥、设备码等）。这些方法驱动：
 
 - `openclaw models auth login --provider <id> [--method <id>]`
+- `openclaw onboard`
+- model-picker “custom provider” setup entries
+- implicit provider discovery during model resolution/listing
 
 示例：
 
@@ -350,6 +353,31 @@ api.registerProvider({
       },
     },
   ],
+  wizard: {
+    onboarding: {
+      choiceId: "acme",
+      choiceLabel: "AcmeAI",
+      groupId: "acme",
+      groupLabel: "AcmeAI",
+      methodId: "oauth",
+    },
+    modelPicker: {
+      label: "AcmeAI (custom)",
+      hint: "Connect a self-hosted AcmeAI endpoint",
+      methodId: "oauth",
+    },
+  },
+  discovery: {
+    order: "late",
+    run: async () => ({
+      provider: {
+        baseUrl: "https://acme.example/v1",
+        api: "openai-completions",
+        apiKey: "${ACME_API_KEY}",
+        models: [],
+      },
+    }),
+  },
 });
 ```
 

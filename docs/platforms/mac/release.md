@@ -44,7 +44,7 @@ x-i18n:
 # 省略时默认从 APP_VERSION 自动派生。
 SKIP_NOTARIZE=1 \
 BUNDLE_ID=ai.openclaw.mac \
-APP_VERSION=2026.3.11 \
+APP_VERSION=2026.3.13 \
 BUILD_CONFIG=release \
 SIGN_IDENTITY="Developer ID Application: <Developer Name> (<TEAMID>)" \
 scripts/package-mac-app.sh
@@ -63,7 +63,7 @@ scripts/create-dmg.sh dist/OpenClaw.app dist/OpenClaw-2026.3.11.dmg
 #     --apple-id "<apple-id>" --team-id "<team-id>" --password "<app-specific-password>"
 NOTARIZE=1 NOTARYTOOL_PROFILE=openclaw-notary \
 BUNDLE_ID=ai.openclaw.mac \
-APP_VERSION=2026.3.11 \
+APP_VERSION=2026.3.13 \
 BUILD_CONFIG=release \
 SIGN_IDENTITY="Developer ID Application: <Developer Name> (<TEAMID>)" \
 scripts/package-mac-dist.sh
@@ -77,7 +77,7 @@ ditto -c -k --keepParent apps/macos/.build/release/OpenClaw.app.dSYM dist/OpenCl
 使用发布说明生成器，以便 Sparkle 渲染格式化的 HTML 说明：
 
 ```bash
-SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-private-key scripts/make_appcast.sh dist/OpenClaw-2026.3.11.zip https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml
+SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-private-key scripts/make_appcast.sh dist/OpenClaw-2026.3.13.zip https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml
 ```
 
 从 `CHANGELOG.md`（通过 [`scripts/changelog-to-html.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/changelog-to-html.sh)）生成 HTML 发布说明，并将其嵌入 appcast 条目。

@@ -14,10 +14,18 @@ export async function installGatewayDaemonNonInteractive(params: {
   opts: OnboardOptions;
   runtime: RuntimeEnv;
   port: number;
-}) {
+}): Promise<
+  | {
+      installed: true;
+    }
+  | {
+      installed: false;
+      skippedReason?: "systemd-user-unavailable";
+    }
+> {
   const { opts, runtime, port } = params;
   if (!opts.installDaemon) {
-    return;
+    return { installed: false };
   }
 
   const daemonRuntimeRaw = opts.daemonRuntime ?? DEFAULT_GATEWAY_DAEMON_RUNTIME;
@@ -31,7 +39,7 @@ export async function installGatewayDaemonNonInteractive(params: {
   if (!isGatewayDaemonRuntime(daemonRuntimeRaw)) {
     runtime.error(t("onboardNonInteractive.invalidDaemonRuntime"));
     runtime.exit(1);
-    return;
+    return { installed: false };
   }
 
   const service = resolveGatewayService();
@@ -51,7 +59,7 @@ export async function installGatewayDaemonNonInteractive(params: {
       ].join(" "),
     );
     runtime.exit(1);
-    return;
+    return { installed: false };
   }
   const { programArguments, workingDirectory, environment } = await buildGatewayInstallPlan({
     env: process.env,
@@ -71,7 +79,8 @@ export async function installGatewayDaemonNonInteractive(params: {
   } catch (err) {
     runtime.error(t("onboardNonInteractive.gatewayServiceInstallFailed", { error: String(err) }));
     runtime.log(gatewayInstallErrorHint());
-    return;
+    return { installed: false };
   }
   await ensureSystemdUserLingerNonInteractive({ runtime });
+  return { installed: true };
 }
