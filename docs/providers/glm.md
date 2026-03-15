@@ -20,7 +20,17 @@ GLM 是一个**模型系列**（而非公司），通过 Z.AI 平台提供。在
 ## CLI 设置
 
 ```bash
-openclaw onboard --auth-choice zai-api-key
+# Coding Plan Global, recommended for Coding Plan users
+openclaw onboard --auth-choice zai-coding-global
+
+# Coding Plan CN (China region), recommended for Coding Plan users
+openclaw onboard --auth-choice zai-coding-cn
+
+# General API
+openclaw onboard --auth-choice zai-global
+
+# General API CN (China region)
+openclaw onboard --auth-choice zai-cn
 ```
 
 ## 配置片段

@@ -30,6 +30,7 @@ import {
 import { pickPrimaryTailnetIPv4 } from "../../infra/tailnet.js";
 import { loadGatewayTlsRuntime } from "../../infra/tls/gateway.js";
 import { probeGatewayStatus } from "./probe.js";
+import { inspectGatewayRestart } from "./restart-health.js";
 import { normalizeListenerAddress, parsePortFromArgs, pickProbeHostForBind } from "./shared.js";
 import type { GatewayRpcOpts } from "./types.js";
 
@@ -112,6 +113,10 @@ export type DaemonStatus = {
     ok: boolean;
     error?: string;
     url?: string;
+  };
+  health?: {
+    healthy: boolean;
+    staleGatewayPids: number[];
   };
   extraServices: Array<{ label: string; detail: string; scope: string }>;
 };
@@ -332,6 +337,14 @@ export async function gatherDaemonStatus(
         configPath: daemonConfigSummary.path,
       })
     : undefined;
+  const health =
+    opts.probe && loaded
+      ? await inspectGatewayRestart({
+          service,
+          port: daemonPort,
+          env: serviceEnv,
+        }).catch(() => undefined)
+      : undefined;
 
   let lastError: string | undefined;
   if (loaded && runtime?.status === "running" && portStatus && portStatus.status !== "busy") {
@@ -358,6 +371,14 @@ export async function gatherDaemonStatus(
     ...(portCliStatus ? { portCli: portCliStatus } : {}),
     lastError,
     ...(rpc ? { rpc: { ...rpc, url: gateway.probeUrl } } : {}),
+    ...(health
+      ? {
+          health: {
+            healthy: health.healthy,
+            staleGatewayPids: health.staleGatewayPids,
+          },
+        }
+      : {}),
     extraServices,
   };
 }

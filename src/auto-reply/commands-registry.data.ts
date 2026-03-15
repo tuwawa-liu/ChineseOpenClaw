@@ -198,6 +198,14 @@ function buildChatCommands(): ChatCommandDefinition[] {
       category: "status",
     }),
     defineChatCommand({
+      key: "btw",
+      nativeName: "btw",
+      description: "Ask a side question without changing future session context.",
+      textAlias: "/btw",
+      acceptsArgs: true,
+      category: "tools",
+    }),
+    defineChatCommand({
       key: "export-session",
       nativeName: "export-session",
       description: t("chatCmd.exportSession.desc"),

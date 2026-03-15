@@ -98,6 +98,7 @@ openclaw gateway health --url ws://127.0.0.1:18789
 ```bash
 openclaw gateway status
 openclaw gateway status --json
+openclaw gateway status --require-rpc
 ```
 
 选项：
